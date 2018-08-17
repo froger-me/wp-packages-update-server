@@ -34,7 +34,7 @@ This plugin adds the following major features to WordPress:
 * **Packages licensing:** Prevent plugins and themes installed on remote WordPress installation from being updated without a valid license. Check the validity of licenses using Software License Manager, with an extra signature for stronger security. Possibility to use a remote installation of Software License Manager running on a separate WordPress installation.
 * **Packages remote source:** host the packages on a remote repository. WP WUpdate Plugin Server acts as a proxy and checks for packages updates regulary and downloads them automatically when a new version is available. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
 
-To connect their plugins or themes and WP WUpdate Plugin Server, developers can find integration examples in `wp-plugin-update-server/integration-examples`:
+To connect their plugins or themes and WP Plugin Update Server, developers can find integration examples in `wp-plugin-update-server/integration-examples`:
 * **Dummy Plugin:** a folder `dummy-plugin` with a simple, empty plugin that includes the necessary code in the `dummy-plugin.php` main plugin file and the necessary libraries in a `lib` folder.
 * **Dummy Theme:** a folder `dummy-theme` with a simple, empty child theme of Twenty Seventeen that includes the necessary code in the `functions.php` file and the necessary libraries in a `lib` folder.
 * **Remote Software License Manager:** a file `remote-slm.php` demonstrating how a remote installation of Software License Manager can be put in place, with a little bit of extra code.
