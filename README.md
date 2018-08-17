@@ -32,7 +32,7 @@ This plugin adds the following major features to WordPress:
 * **Add Packages:** Upload update packages from your local machine to the server, or download them to the server from a remote repository.
 * **General settings:** for archive files download size, cache, and logs, with force clean.
 * **Packages licensing:** Prevent plugins and themes installed on remote WordPress installation from being updated without a valid license. Check the validity of licenses using Software License Manager, with an extra signature for stronger security. Possibility to use a remote installation of Software License Manager running on a separate WordPress installation.
-* **Packages remote source:** host the packages on a remote repository. WP WUpdate Plugin Server acts as a proxy and checks for packages updates regulary and downloads them automatically when a new version is available. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
+* **Packages remote source:** host the packages on a remote repository. WP Plugin Update Server acts as a proxy and checks for packages updates regulary and downloads them automatically when a new version is available. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
 
 To connect their plugins or themes and WP Plugin Update Server, developers can find integration examples in `wp-plugin-update-server/integration-examples`:
 * **Dummy Plugin:** a folder `dummy-plugin` with a simple, empty plugin that includes the necessary code in the `dummy-plugin.php` main plugin file and the necessary libraries in a `lib` folder.
