@@ -9,7 +9,7 @@ Check `Details URI` below:
  Description:  Empty Child Theme
  Author:       Alexandre Froger
  Author URI:   https://froger.me
- Version:      1.2
+ Version:      X.X.X
  Template:     twentyseventeen
  Tags          dummy, another dummy
  Text Domain   dummy-theme
