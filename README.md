@@ -44,8 +44,8 @@ To connect their plugins or themes and WP Plugin Update Server, developers can f
 * **Remote Software License Manager** (discouraged) **:** a file `remote-slm.php` demonstrating how a remote installation of Software License Manager can be put in place, with a little bit of extra code.
 
 In addition, a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) developers can add to the WordPress installation running WP Update Plugin Server is available in `wp-plugin-update-server/optimisation/wppus-endpoint-optimizer.php`.  
-It allows to bypass all plugins execution when checking for updates (or keep some with a global whitelist in an array `$wppus_always_active_plugins`).  
-It also provides a global variable `$wppus_doing_update_api_request` to test in themes and control if filters and actions should be added/removed.
+It allows to bypass all plugins and themes execution when checking for updates (or keep some with a global whitelist in an array `$wppus_always_active_plugins`).  
+It also provides a global variable `$wppus_doing_update_api_request` to test in plugins kept activated and control if filters and actions should be added/removed.
 
 ### Screenshots
 
@@ -133,16 +133,11 @@ When adding package licenses in Software License Manager, each license must have
 
 When the remote clients where your plugins and themes are installed send a request to check for updates or download a package, this server's WordPress installation is loaded, with its own plugins and themes. This is not optimised because unnecessary action and filter hooks that execute before `parse_request` action hook also triggered, even though the request is not designed to produce any output or further computation.
 
-To solve this for plugins, you can place `wp-content/plugins/wp-plugin-update-server/optimisation/wppus-endpoint-optimiser.php` in `wp-content/mu-plugins/wppus-endpoint-optimiser.php`. This will effectively create a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) that runs before everything else and prevents other plugins from being executed when a request is received by WP Plugin Update Server.
+To solve this, you may place `wp-content/plugins/wp-plugin-update-server/optimisation/wppus-endpoint-optimiser.php` in `wp-content/mu-plugins/wppus-endpoint-optimiser.php`. This will effectively create a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) running before everything else and preventing themes and other plugins from being executed when an update request is received by WP Plugin Update Server.
 
-You may edit the variable `$wppus_always_active_plugins` of the MU Plugin file to allow some plugins to run anyway.
+You may edit the variable `$wppus_always_active_plugins` of the MU Plugin file to allow some plugins to run anyway. If in use and a new version is available,, the MU Plugin will be backed-up to `wp-content/mu-plugins/wppus-endpoint-optimiser.php.backup` when updating WP Plugin Update Server and will automatically be replaced with its new version. If necessary, make sure to report any previous customization from the backup to the new file.  
 
-**IMPORTANT - This MU Plugin does not prevent theme hooks registered before `parse_request` action hook from being fired.**  
-To solve this for themes, a few code changes are necessary.  
-The MU Plugin provides a global variable `$wppus_doing_update_api_request` that can be tested when adding hooks and filters:
-
-- Use the global variable in a **main theme's `functions.php` to test if current theme's hooks should be added.**
-- Use the global variable in a **child theme's `functions.php` to remove action and filter hooks from the parent theme AND test if current theme's hooks should be added.**
+The MU Plugin also provides a global variable `$wppus_doing_update_api_request` that can be tested when adding hooks and filters should you choose to keep some plugins active with `$wppus_always_active_plugins`.
 
 ### Remote license server integration
 
