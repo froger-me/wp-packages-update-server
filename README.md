@@ -123,7 +123,7 @@ The following can also be found under the "Help" tab of the WP Update Plugin Ser
 
 To link your packages to WP Plugin Update Server, and maybe to prevent webmasters from getting updates of your plugins and themes unless they have a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the functions.php file (for themes), and provide the necessary libraries in a lib directory at the root of the package - see [WP Package Updater](https://github.com/froger-me/wp-package-updater) for more information.  
 
-An example of plugin is available in `wp-content/plugins/wp-plugin-update-server/integration-examples/dummy-plugin`, and an example of theme is available in `wp-content/plugins/wp-plugin-update-server/integration-examples/dummy-theme`.  
+See `wp-content/plugins/wp-plugin-update-server/integration-examples/dummy-plugin` for an example of plugin, and  `wp-content/plugins/wp-plugin-update-server/integration-examples/dummy-theme` for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.  
 
 Unless "Use remote repository service" is checked in "Packages remote source", you need to manually upload the packages zip archives (and subsequent updates) in `wp-content/wppus/packages`. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in `package-name.zip` would be `package-name.php`.  
 
