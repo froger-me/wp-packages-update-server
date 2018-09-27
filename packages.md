@@ -37,6 +37,7 @@ WP Plugin Update Server offers a series of functions, actions and filters for de
 	* [wppus_registered_renew_download_url_token_schedule](#user-content-wppus_registered_renew_download_url_token_schedule)
 	* [wppus_cleared_renew_download_url_token_schedule](#user-content-wppus_cleared_renew_download_url_token_schedule)
 	* [wppus_scheduled_renew_download_url_token_event](#user-content-wppus_scheduled_renew_download_url_token_event)
+	* [wppus_before_zip](#user-content-wppus_before_zip)
 * [Filters](#user-content-filters)
 	* [wppus_submitted_data_config](#user-content-wppus_submitted_data_config)
 	* [wppus_submitted_remote_sources_config](#user-content-wppus_submitted_remote_sources_config)
@@ -263,7 +264,7 @@ ___
 ## Actions
 
 WP Plugin Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.  
-**Warning**: the actions below with the mention "Fired during client update API request" need to be used with caution. Although they may also be triggered when using the functions above, these actions will be called when client packages request for updates. Registering functions doing heavy computation to these actions when client update API requests are handled can seriously degrade the server's performances.  
+**Warning**: the actions below with the mention "Fired during client update API request" need to be used with caution. Although they may also be triggered when using the functions above, these actions will possibly be called when client packages request for updates. Registering functions doing heavy computation to these actions when client update API requests are handled can seriously degrade the server's performances.  
 
 ___
 #### wppus_primed_package_from_remote
@@ -362,7 +363,7 @@ $timestamp
 > (int) timestamp for when to run the event the first time after it's been scheduled  
 
 $frequency  
-> (string) frequency at which the even would be ran  
+> (string) frequency at which the event would be ran  
 
 $hook  
 > (string) event hook to fire when the event is ran  
@@ -433,7 +434,7 @@ $timestamp
 > (int) timestamp for when to run the event the first time after it's been scheduled  
 
 $frequency
-> (string) frequency at which the even would be ran  
+> (string) frequency at which the event would be ran  
 
 $hook
 > (string) event hook to fire when the event is ran  
@@ -627,7 +628,6 @@ Fired after the renew download url token event has been unscheduled.
 $scheduled_hook
 > (string) the renew dowload url token event hook that has been unscheduled  
 
-
 ___
 #### wppus_scheduled_renew_download_url_token_event
 
@@ -647,7 +647,7 @@ $timestamp
 > (int) timestamp for when to run the event the first time after it's been scheduled  
 
 $frequency  
-> (string) frequency at which the even would be ran  
+> (string) frequency at which the event would be ran  
 
 $hook  
 > (string) event hook to fire when the event is ran  
@@ -656,10 +656,32 @@ $params
 > (array) parameters passed to the actions registered to $hook when the event is ran  
 
 ___
+#### wppus_before_zip
+
+
+```php
+do_action( 'wppus_before_remote_package_zip', (string) $package_slug, (string) $files_path, (string) $archive_path );
+```
+
+**Description**  
+Fired before packing the files received from the remote repository. Can be used for extra files manipulation.  
+Fired during client update API request.  
+
+**Parameters**  
+$package_slug
+> (string) the slug of the package  
+
+$files_path
+> (string) the path of the directory where the package files are located  
+
+$archive_path
+> (string) the path where the package archive will be located after packing  
+
+___
 ## Filters
 
 WP Plugin Update Server gives developers the possibility to customise its behavior with a series of custom filters.  
-**Warning**: the filters below with the mention "Fired during client update API request" need to be used with caution. Although they may be triggered when using the functions above, these filters will be called when client packages request for updates. Registering functions doing heavy computation to these filters when client update API requests are handled can seriously degrade the server's performances.  
+**Warning**: the filters below with the mention "Fired during client update API request" need to be used with caution. Although they may be triggered when using the functions above, these filters will possibly be called when client packages request for updates. Registering functions doing heavy computation to these filters when client update API requests are handled can seriously degrade the server's performances.  
 
 ___
 #### wppus_submitted_data_config

@@ -811,7 +811,7 @@ $timestamp
 > (int) timestamp for when to run the event the first time after it's been scheduled  
 
 $frequency  
-> (string) frequency at which the even would be ran  
+> (string) frequency at which the event would be ran  
 
 $hook  
 > (string) event hook to fire when the event is ran  
