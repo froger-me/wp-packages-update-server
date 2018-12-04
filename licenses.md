@@ -223,7 +223,7 @@ Response `$data` - **failure** (in case of invalid `license_key`):
 }
 ```
 
-Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are 'expired' and 'blocked'):
+Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"expired"` and `"blocked"`):
 ```json
 {
     "status": "expired"
