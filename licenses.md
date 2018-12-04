@@ -174,7 +174,7 @@ Response `$data` - **success**:
 }
 ```
 
-Response `$data` - **failure** (in case of invalid license key):
+Response `$data` - **failure** (in case of invalid `license_key`):
 ```json
 {
     "license_key": "test-license"
@@ -230,7 +230,7 @@ Response `$data` - **failure** (in case of illegal status - illegal statuses for
 }
 ```
 
-Response `$data` - **failure** (in case of already activated for the provided domain):
+Response `$data` - **failure** (in case of already activated for `allowed_domains`):
 ```json
 {
     "allowed_domains": [
@@ -286,7 +286,7 @@ Response `$data` - **failure** (in case of invalid `license_key`):
 }
 ```
 
-Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are 'expired' and 'blocked'):
+Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"expired"` and `"blocked"`):
 ```json
 {
     "status": "expired"
@@ -313,7 +313,7 @@ Response `$data` - **success** (in case all domains have been deactivated):
 }
 ```
 
-Response `$data` - **failure** (in case of already deactivated for the provided domain):
+Response `$data` - **failure** (in case of already deactivated for `allowed_domains`):
 ```json
 {
     "allowed_domains": [
