@@ -1,0 +1,824 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Plugin Update Server\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-08-27 10:38+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/"
+
+#. %1$s is the path to the MU Plugin
+#: updates/1.2.1.php:27
+#, php-format
+msgid ""
+"<p>Failed to update the MU Plugin <code>%1$s</code> - please check the file "
+"and parent directory are writable by the server.</p>"
+msgstr ""
+
+#: updates/1.2.1.php:37
+msgid "<p>File system not available.</p>"
+msgstr ""
+
+#. %1$s is the path to the plugin's data directory
+#: updates/1.2.php:13
+#, php-format
+msgid ""
+"<p>Failed to update data in <code>%1$s</code> - please check the parent "
+"directory is writable.</p>"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:35
+msgid "Package Name"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:36
+msgid "Version"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:37
+msgid "Type"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:38
+msgid "File Name"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:39
+msgid "Size"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:40
+msgid "Last Modified "
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:41
+msgid "License status"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:127
+msgid "Requires License"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:127
+msgid "Does not Require License"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:129
+#: inc/class-wppus-packages-table.php:160
+msgid "Require License"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:129
+#: inc/class-wppus-packages-table.php:161
+msgid "Do not Require License"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:146
+msgid ""
+"Download: Archive max size exceeded - try to adjust it in the settings below."
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:152
+msgid "Delete All Packages"
+msgstr ""
+
+#: inc/class-wppus-packages-table.php:159
+#: inc/templates/admin/packages-table-row.php:25
+msgid "Download"
+msgstr ""
+
+#: inc/class-wppus-update-server.php:271
+msgid "The $package variable cannot be empty."
+msgstr ""
+
+#: inc/class-wppus-update-server.php:276
+msgid "Unavailable file system."
+msgstr ""
+
+#: inc/class-wppus-update-server.php:510
+msgid "Invalid URL provided."
+msgstr ""
+
+#: inc/class-wppus-update-server.php:517
+msgid "Could not create temporary file."
+msgstr ""
+
+#: inc/class-wppus-secure-license-update-server.php:131
+msgid "An active license key is required to download or update this plugin."
+msgstr ""
+
+#: inc/class-wppus-secure-license-update-server.php:140
+msgid "The associated license has been blocked."
+msgstr ""
+
+#. %s is the license expiry date
+#: inc/class-wppus-secure-license-update-server.php:144
+#, php-format
+msgid "The associated license has expired on %s"
+msgstr ""
+
+#: inc/class-wppus-secure-license-update-server.php:147
+msgid "The associated license is pending activation."
+msgstr ""
+
+#: inc/class-wppus-secure-license-update-server.php:150
+msgid ""
+"Invalid License key. Please contact the developer for help or buying a "
+"license."
+msgstr ""
+
+#: inc/class-wppus-secure-license-update-server.php:172
+msgid "Could not find license data"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:119
+msgid "Error: invalid file format."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:120
+msgid "Error: invalid file size."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:121
+msgid "Error: invalid file name."
+msgstr ""
+
+#. Name of the plugin
+#: inc/class-wp-plugin-update-server-settings.php:139
+#: inc/templates/admin/plugin-options-page.php:5
+msgid "WP Plugin Update Server"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:156
+msgid "Packages per page"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:231
+#: inc/class-wp-plugin-update-server-settings.php:279
+msgid "Error - check the packages directory is readable and not empty"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:238
+#: inc/class-wp-plugin-update-server-settings.php:286
+msgid "Error - an unknown error has occured"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:263
+#: inc/templates/admin/plugin-options-page.php:133
+#: inc/templates/admin/plugin-options-page.php:144
+msgid "Force Clean"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:272
+msgid "Error - check the directory is writable"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:321
+msgid ""
+"Error - could not get remote package. Check if a repository with this slug "
+"exists and has a valid file structure."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:332
+msgid "Reload the page and try again."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:348
+msgid "Something very wrong happened."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:360
+msgid "Make sure the uploaded file is a zip archive."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:399
+msgid "Make sure the uploaded file is not empty."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:408
+msgid ""
+"The uploaded package is not a valid WordPress package, or if it is a plugin, "
+"the main plugin file could not be found."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:434
+msgid "Error - could not upload the package. "
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:628
+msgid "WP Plugin Update Server options successfully updated"
+msgstr ""
+
+#. %1$s is the option display name, %2$s is the condition for update
+#: inc/class-wp-plugin-update-server-settings.php:677
+#, php-format
+msgid "Option %1$s was not updated. Reason: %2$s"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:684
+msgid ""
+"There was an error validating the form. It may be outdated. Please reload "
+"the page."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:720
+#: inc/templates/admin/plugin-options-page.php:162
+msgid "Software License Manager integration"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:726
+#: inc/templates/admin/plugin-options-page.php:205
+msgid "License server URL (Software License Manager plugin)"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:727
+#: inc/class-wp-plugin-update-server-settings.php:758
+msgid "Not a valid URL"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:733
+#: inc/templates/admin/plugin-options-page.php:177
+msgid "HMAC Key"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:734
+#: inc/class-wp-plugin-update-server-settings.php:740
+#: inc/class-wp-plugin-update-server-settings.php:771
+#: inc/class-wp-plugin-update-server-settings.php:777
+msgid "Not a valid string"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:739
+#: inc/templates/admin/plugin-options-page.php:191
+msgid "Encryption Key"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:745
+#: inc/templates/admin/plugin-options-page.php:220
+msgid "Check License signature?"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:751
+#: inc/templates/admin/plugin-options-page.php:243
+msgid "Use remote repository service"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:757
+#: inc/templates/admin/plugin-options-page.php:262
+msgid "Remote repository service URL"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:764
+#: inc/templates/admin/plugin-options-page.php:277
+msgid "Self-hosted remote repository service"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:770
+#: inc/templates/admin/plugin-options-page.php:288
+msgid "Packages branch name"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:776
+#: inc/templates/admin/plugin-options-page.php:299
+msgid "Remote repository service credentials"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:782
+#: inc/templates/admin/plugin-options-page.php:315
+msgid "Remote update check frequency"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:783
+msgid "Not a valid option"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:789
+#: inc/templates/admin/plugin-options-page.php:130
+msgid "Cache max size (in MB)"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:790
+#: inc/class-wp-plugin-update-server-settings.php:797
+#: inc/class-wp-plugin-update-server-settings.php:804
+msgid "Not a valid number"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:796
+#: inc/templates/admin/plugin-options-page.php:141
+msgid "Logs max size (in MB)"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:803
+#: inc/templates/admin/plugin-options-page.php:119
+msgid "Archive max size (in MB)"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:866
+msgid "Theme"
+msgstr ""
+
+#: inc/class-wp-plugin-update-server-settings.php:866
+msgid "Plugin"
+msgstr ""
+
+#. %1$s is the path to the plugin's data directory
+#: inc/class-wp-plugin-update-server.php:97
+#, php-format
+msgid ""
+"Permission errors for <code>%1$s</code> - please check the parent directory "
+"is writable."
+msgstr ""
+
+#. %1$s is the path to the plugin's data directory
+#: inc/class-wp-plugin-update-server.php:123
+#, php-format
+msgid "Directory <code>%1$s</code> is not a valid WPPUS data directory."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server.php:416
+msgid ""
+"<h3>WP Plugin Update Server</h3>License server does not exist of is "
+"unavailable (no response after 20 seconds). Check the plugin configuration."
+msgstr ""
+
+#: inc/class-wp-plugin-update-server.php:423
+msgid ""
+"<h3>WP Plugin Update Server</h3>You are using a remote License server. Make "
+"sure to implement a filter for <code>slm_ap_response_args</code> on the "
+"remote server as described in <code>wp-plugin-update-server/integration-"
+"examples/slm.php</code>"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:39
+msgid "General"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:42
+msgid "Packages licensing"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:45
+msgid "Packages remote source"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:48
+msgid "Help"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:53
+msgid "Packages"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:57
+msgid "Notes:"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:60
+msgid ""
+"- It is not necessary to prime or upload packages linked to a remote "
+"repository for them to appear in this list: they will be automatically added "
+"whenever a client checks for updates."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:62
+msgid ""
+"- If packages linked to a remote repository are deleted using this interface,"
+" they will be added again to the list automatically whenever a client checks "
+"for updates."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:65
+msgid ""
+"- All packages deleted from this interface will have their license status "
+"set to \"Does not Require License\" when added again."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:67
+msgid ""
+"- Packages removed directly on the file system will keep their previously "
+"set license status when added again."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:72
+msgid "Add packages"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:77
+msgid "Prime a package using a remote repository (recommended)"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:80
+msgid "Get remote package"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:82
+#, php-format
+msgid ""
+"Get an archive of a package from a remote repository in the <code>%s</code> "
+"directory by entering the package slug.<br/>The repository name should be "
+"<code>repository-name-aka-plugin-slug</code> and all the files should be "
+"located at the root of the repository.<br/>In the case of a plugin the main "
+"plugin file must have the same name as the repository name - for example, "
+"the main plugin file in <code>repository-name-aka-theme-or-plugin-slug</code>"
+" repository would be <code>repository-name-aka-theme-or-plugin-slug."
+"php</code>."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:84
+msgid ""
+"Using this method adds the package to the list if not present or forcefully "
+"downloads its latest version from the remote repository and overwrites the "
+"existing package."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:86
+msgid ""
+"Note: packages will be overwritten automatically regularly with their "
+"counterpart from the remote repository if a newer version exists."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:93
+msgid "Upload a package"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:95
+msgid " (discouraged)"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:100
+msgid "Choose package archive"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:100
+msgid "Upload package"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:102
+#, php-format
+msgid ""
+"Add a package zip archive to the <code>%s</code> directory. The archive "
+"needs to be a valid WordPress plugin or theme package.<br/>In the case of a "
+"plugin the main plugin file must have the same name as the zip archive - for "
+"example, the main plugin file in <code>package-name.zip</code> would be "
+"<code>package-name.php</code>."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:104
+msgid ""
+"Using this method adds the package to the list if not present or overwrites "
+"the existing package."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:107
+msgid ""
+"Note: a manually uploaded package that does not have its counterpart in a "
+"remote repository will need to be re-uploaded manually to provide updates "
+"for each new release."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:114
+msgid "General Settings"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:124
+msgid "Maximum file size when uploading or downloading packages."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:135
+#: inc/templates/admin/plugin-options-page.php:146
+#, php-format
+msgid ""
+"Maximum size in MB for the <code>%s</code> directory. If the size of the "
+"directory grows larger, its content will be deleted at next cron run "
+"(checked hourly). The size indicated in the \"Force Clean\" button is the "
+"real current size."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:154
+#: inc/templates/admin/plugin-options-page.php:235
+#: inc/templates/admin/plugin-options-page.php:332
+msgid "Save"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:167
+msgid ""
+"Enables this server manages to deliver license-enabled plugins and themes "
+"using Software License Manager licenses."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:169
+msgid ""
+"It affects all the packages with a \"Requires License\" license status "
+"delivered by this installation of WP Plugin Update Server."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:171
+msgid ""
+"Settings of the \"Packages licensing\" section will be saved only if this "
+"option is checked."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:181
+msgid "Ideally a random string, used to authenticate license signatures."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:183
+#: inc/templates/admin/plugin-options-page.php:197
+msgid ""
+"WARNING: Changing this value will invalidate all the licence signatures for "
+"current remote installations."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:185
+#: inc/templates/admin/plugin-options-page.php:199
+msgid ""
+"You may grant a grace period and let webmasters deactivate and re-activate "
+"their license(s) by unchecking \"Check License signature?\" below."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:195
+msgid "Ideally a random string, used to encrypt license signatures."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:210
+msgid ""
+"The URL of the server where Software License Manager plugin is installed. "
+"Must include the protocol (\"http://\" or \"https://\")."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:212
+msgid ""
+"If using a remote install of Software License Manager plugin, the validity "
+"of the server URL will be checked regularly."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:214
+#, php-format
+msgid ""
+"If using a remote install of Software License Manager plugin, see <code>"
+"%s</code>."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:225
+msgid ""
+"Check signatures - can be deactivated if the HMAC Key or the Encryption Key "
+"has been recently changed and remote installations have active licenses."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:227
+msgid ""
+"Typically, all webmasters would have to deactivate and re-activate their "
+"license(s) to re-build their signatures, and this could take time ; it "
+"allows to grant a grace period during which license checking is less strict "
+"to avoid conflicts."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:248
+msgid ""
+"Enables this server to download plugins and themes from a remote repository "
+"before delivering updates."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:250
+msgid "Supports Bitbucket, Github and Gitlab."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:252
+#, php-format
+msgid ""
+"If left unchecked, zip packages need to be manually uploaded to <code>"
+"%s</code>."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:254
+msgid ""
+"It affects all the packages delivered by this installation of WP Plugin "
+"Update Server if they have a corresponding repository in the remote "
+"repository service."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:256
+msgid ""
+"Settings of the \"Packages remote source\" section will be saved only if "
+"this option is checked."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:267
+msgid "The URL of the remote repository service where packages are hosted."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:269
+msgid ""
+"Must follow the following pattern: <code>https://repository-service."
+"tld/username</code> where <code>https://repository-service.tld</code> may be "
+"a self-hosted instance of Gitlab."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:271
+msgid ""
+"Each package repository URL must follow the following pattern: <code>https:"
+"//repository-service.tld/username/package-name/</code> ; the package files "
+"must be located at the root of the repository, and in the case of plugins "
+"the main plugin file must follow the pattern <code>package-name.php</code>."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:282
+msgid ""
+"Check this only if the remote repository service is a self-hosted instance "
+"of Gitlab."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:293
+msgid ""
+"The branch to download when getting remote packages from the remote "
+"repository service."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:304
+msgid "Credentials for non-publicly accessible repositories."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:306
+msgid "In the case of Github and Gitlab, an access token (<code>token</code>)."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:308
+msgid ""
+"In the case of Bitbucket, the Consumer key and secret separated by a pipe "
+"(<code>consumer_key|consumer_secret</code>). IMPORTANT: when creating the "
+"consumer, \"This is a private consumer\" must be checked."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:324
+msgid ""
+"How often WP Plugin Update Server will poll each remote repository for "
+"package updates - checking too often may slow down the server (recommended "
+"\"Once Daily\")."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:339
+msgid "Clear scheduled remote updates"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:342
+msgid "Force Clear Schedules"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:344
+msgid "Clears all scheduled remote updates coming from the repository service."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:346
+msgid ""
+"WARNING: after cleaning the schedules, packages will not be automatically "
+"updated from their remote repository."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:348
+msgid ""
+"Use the \"Prime a package using a remote repository \" feature in the "
+"\"General\" tab to selectively reschedule remote updates, or use the "
+"\"Reschedule remote updates\" option below to reschedule all the existing "
+"packages."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:350
+msgid ""
+"Useful if packages seem to appear randomly in the list - for example, this "
+"may happen if a package was deleted manually on the file system."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:356
+msgid "Reschedule remote updates"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:359
+msgid "Force Register Schedules"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:361
+msgid ""
+"Reschedules remote updates from the repository service for all the packages."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:363
+msgid ""
+"WARNING: after rescheduling remote updates, a wp-cron event will be "
+"scheduled for all the packages, including those uploaded manually and "
+"without a corresponding remote repository."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:365
+msgid ""
+"Make sure either all packages have a corresponding remote repository in the "
+"repository service, or to use the delete operation and re-upload the "
+"packages that were previously manually uploaded to clear the useless "
+"scheduled wp-cron events."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:367
+msgid ""
+"If there were useless scheduled wp-cron events left, they would not trigger "
+"any error, but the server would be querying the repository service "
+"needlessly."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:375
+msgid ""
+"Requirements to add update checker to plugins and themes (and possibly "
+"provide license support)"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:377
+msgid ""
+"To link your packages to WP Plugin Update Server, and maybe to prevent "
+"webmasters from getting updates of your plugins and themes unless they have "
+"a license, your plugins and themes need to include some extra code. It is a "
+"simple matter of adding a few lines in the main plugin file (for plugins) or "
+"in the functions.php file (for themes), and provide the necessary libraries "
+"in a <code>lib</code> directory at the root of the package - see <a "
+"target=\"_blank\" href=\"https://github.com/froger-me/wp-package-updater\">"
+"WP Package Updater</a> for more information."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:380
+#, php-format
+msgid ""
+"An example of plugin is available in <code>%s</code>, and an example of "
+"theme is available in <code>%s</code>."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:383
+#, php-format
+msgid ""
+"Unless \"Use remote repository service\" is checked in \"Packages remote "
+"source\", you need to manually upload the packages zip archives (and "
+"subsequent updates) in <code>%s</code>. Packages need to be valid WordPress "
+"plugin or theme packages, and in the case of a plugin the main plugin file "
+"must have the same name as the zip archive. For example, the main plugin "
+"file in <code>package-name.zip</code> would be <code>package-name.php</code>."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:389
+msgid "Requests optimisation"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:391
+msgid ""
+"When the remote clients where your plugins and themes are installed send a "
+"request to check for updates or download a package, this server's WordPress "
+"installation is loaded, with its own plugins and themes. This is not "
+"optimised if left untouched because unnecessary action and filter hooks that "
+"execute before <code>parse_request</code> action hook are also triggered, "
+"even though the request is not designed to produce any on-screen output or "
+"further computation."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:404
+msgid "Remote license server integration"
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:412
+#, php-format
+msgid ""
+"If you really need to use a remote server integration, an example of filter "
+"implementation is available in <code>%s</code> for you to add in the code "
+"base of the remote WordPress installation running the Software License "
+"Manager plugin. You may add your code in a theme's functions.php file or "
+"build an extra plugin around it."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:415
+msgid "More help..."
+msgstr ""
+
+#: inc/templates/admin/plugin-options-page.php:417
+msgid ""
+"For more help on how to use WP Plugin Update Server, please <a "
+"target=\"_blank\" href=\"https://github.com/froger-me/wp-plugin-update-"
+"server/issues\">open an issue on Github</a> or contact <a href=\"mailto:"
+"wppus-help@froger.me\">wppus-help@froger.me</a>."
+msgstr ""
+
+#. Description of the plugin
+msgid "Run your own update server for plugins and themes."
+msgstr ""
+
+#. URI of the plugin
+msgid "https://github.com/froger-me/wp-plugin-update-server/"
+msgstr ""
+
+#. Author of the plugin
+msgid "Alexandre Froger"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://froger.me/"
+msgstr ""

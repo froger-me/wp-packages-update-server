@@ -34,6 +34,8 @@ Developer documentation:
 WP Update Plugin Server allows developers to provide updates for plugins and themes packages not hosted on wordpress.org, and possibly control the updates with the application of a license on the client packages. It is also useful to provide updates for plugins or themes not compliant with the GPLv2 (or later).
 Packages may be either uploaded directly, or hosted in a remote repository, public or private. It supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
 
+To install, clone this repository and copy the "wp-plugin-update-server" directory into your plugin folder.
+
 ### Overview
 
 This plugin adds the following major features to WordPress:
