@@ -3,7 +3,7 @@
 Plugin Name: Dummy Plugin
 Plugin URI: https://froger.me/
 Description: Empty plugin to demonstrate the WP Plugin Updater.
-Version: 1.4
+Version: 1.4.14
 Author: Alexandre Froger
 Author URI: https://froger.me/
 Icon1x: https://raw.githubusercontent.com/froger-me/wp-plugin-update-server/master/examples/icon-128x128.png
