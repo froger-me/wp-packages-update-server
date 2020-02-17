@@ -45,6 +45,8 @@ In addition, a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) d
 
 When upgrading from v1.3, licenses from Software License Manager plugin will be migrated automatically, and SLM will be bypassed while doing license checks using the old API, and compatibility will be ensured until v2.0. It is recommended to dactivate or uninstall Software license Manager entirely. Developers will need to update the [WP Package Updater](https://github.com/froger-me/wp-package-updater) library before v2.0 as support for SLM API calls will be removed then.
 
+Upgrading from 1.4.13 to 1.4.14 requires to upgrade the `lib` directory of all the packages delivered by WP Plugin Update Server due to a change in the Github API (deprecation of query parameters authentication). You can find the updated `lib` content in the integration examples in the `wp-plugin-update-server/integration-examples` directory.
+
 == Roadmap ==
 
 Aside from minor version updates (bugfixes, interface improvements and simple new features), below is the current roadmap. This can evolve depending on feedback, reviews and popularity.
@@ -66,6 +68,9 @@ This section describes how to install the plugin and get it working.
 3. Edit plugin settings
 
 == Changelog ==
+
+= 1.4.14 =
+* Update Github API: use basic auth instead of query parameters
 
 = 1.4.13 =
 * Fix double slash in `WPPUS_Update_Server::$packageDirectory` path

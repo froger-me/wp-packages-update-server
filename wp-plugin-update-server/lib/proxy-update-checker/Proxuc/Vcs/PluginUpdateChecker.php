@@ -201,12 +201,12 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 				'Author' => 'author',
 				'AuthorName' => 'author',
 				'AuthorURI' => 'author_homepage',
-
 				'Requires WP' => 'requires',
 				'Tested WP' => 'tested',
 				'Requires at least' => 'requires',
 				'Tested up to' => 'tested',
 			);
+
 			foreach ($headerToPropertyMap as $headerName => $property) {
 				if ( isset($fileHeader[$headerName]) && !empty($fileHeader[$headerName]) ) {
 					$pluginInfo->$property = $fileHeader[$headerName];

@@ -238,10 +238,10 @@ if ( !class_exists('Puc_v4p4_Vcs_GitHubApi', false) ):
 			foreach ($variables as $name => $value) {
 				$url = str_replace('/:' . $name, '/' . urlencode($value), $url);
 			}
-			$url = 'https://api.github.com' . $url;
-
 			if ( !empty($this->accessToken) ) {
-				$queryParams['access_token'] = $this->accessToken;
+				$url = 'https://' . $this->userName . ':' . $this->accessToken . '@api.github.com' . $url;
+			} else {
+				$url = 'https://api.github.com' . $url;
 			}
 			if ( !empty($queryParams) ) {
 				$url = add_query_arg($queryParams, $url);

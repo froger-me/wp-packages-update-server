@@ -3,7 +3,7 @@
 Plugin Name: WP Plugin Update Server
 Plugin URI: https://github.com/froger-me/wp-plugin-update-server/
 Description: Run your own update server for plugins and themes.
-Version: 1.4.13
+Version: 1.4.14
 Author: Alexandre Froger
 Author URI: https://froger.me/
 Text Domain: wppus
