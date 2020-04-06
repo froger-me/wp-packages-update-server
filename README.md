@@ -61,7 +61,7 @@ Authorisation to use these libraries freely provided relevant licenses are inclu
 ### Compatibility
 
 * Tested with PHP 7.0.29 - may work with higher PHP versions for the most part (warnings may appear for PHP 7.3)
-* WP Plugin Update Sever proper uses Plugin Update Checker Library 4.4 and WP Update Server Library 4.4
+* WP Plugin Update Server proper uses Plugin Update Checker Library 4.4 and WP Update Server Library 4.4
 * Integration examples use Plugin Update Checker Library 4.9
 
 **Pull requests to update the plugin's Proxy Update Checker Library to ensure compatibility with the latest versions of Plugin Update Checker and WP Update Server Library or to support other PHP versions are now accepted - this plugin is a personal project, receiving payment for its maintenance does not fit into my schedule, and I do not plan to spend extensive amount of time maintaining it except for obvious bugs.**
