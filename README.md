@@ -4,6 +4,7 @@ Plugin documentation:
 * [General description](#user-content-general-description)
 	* [Overview](#user-content-overview)
 	* [Special Thanks](#user-content-special-thanks)
+	* [Compatibility](#user-content-compatibility)
 	* [Screenshots](#user-content-screenshots)
 * [User Interface](#user-content-user-interface)
 	* [Overview Tab](#user-content-overview-tab)
@@ -56,6 +57,14 @@ In addition, requests to the various APIs are optimised with a customisable [Mus
 ### Special Thanks
 A warm thank you to [Yahnis Elsts](https://github.com/YahnisElsts), the author of [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker) and [WP Update Server](https://github.com/YahnisElsts/wp-update-server) libraries, without whom the creation of this plugin would not have been possible.  
 Authorisation to use these libraries freely provided relevant licenses are included has been graciously granted [here](https://github.com/YahnisElsts/wp-update-server/issues/37#issuecomment-386814776).
+
+### Compatibility
+
+* Tested with PHP 7.0.29 - may work with higher PHP versions for the most part (warnings may appear for PHP 7.3)
+* WP Plugin Update Sever proper uses Plugin Update Checker Library 4.4 and WP Update Server Library 4.4
+* Integration examples use Plugin Update Checker Library 4.9
+
+**Pull requests to update the plugin's Proxy Update Checker Library to ensure compatibility with the latest versions of Plugin Update Checker and WP Update Server Library or to support other PHP versions are now accepted - this plugin is a personal project, receiving payment for its maintenance does not fit into my schedule, and I do not plan to spend extensive amount of time maintaining it except for obvious bugs.**
 
 ### Screenshots
 
