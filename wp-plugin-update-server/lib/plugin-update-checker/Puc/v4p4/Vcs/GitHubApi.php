@@ -332,10 +332,7 @@ if ( !class_exists('Puc_v4p4_Vcs_GitHubApi', false) ):
 		 * @return string
 		 */
 		public function signDownloadUrl($url) {
-			if ( empty($this->credentials) ) {
-				return $url;
-			}
-			return add_query_arg('access_token', $this->credentials, $url);
+			return $url;
 		}
 
 		/**

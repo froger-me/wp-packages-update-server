@@ -354,6 +354,9 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			'timeout'  => $timeout,
 			'stream'   => true,
 			'filename' => $local_filename,
+			'headers'  => array(
+				'Authorization' => 'token ' . $this->repository_credentials
+			)
 		) );
 
 		if ( is_wp_error( $response ) ) {
