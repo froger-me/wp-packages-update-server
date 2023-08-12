@@ -19,6 +19,6 @@ Proxuc_Factory::addVersion('Vcs_ThemeUpdateChecker', 'Proxuc_Vcs_ThemeUpdateChec
 
 Proxuc_Factory::setApiVersion('4.0');
 
-Proxuc_Factory::addVersion('GitHubApi', 'Puc_v4p4_Vcs_GitHubApi', '4.4');
-Proxuc_Factory::addVersion('BitBucketApi', 'Puc_v4p4_Vcs_BitBucketApi', '4.4');
-Proxuc_Factory::addVersion('GitLabApi', 'Puc_v4p4_Vcs_GitLabApi', '4.4');
+Proxuc_Factory::addVersion('GitHubApi', 'Puc_v5p1_Vcs_GitHubApi', '4.4');
+Proxuc_Factory::addVersion('BitBucketApi', 'Puc_v5p1_Vcs_BitBucketApi', '4.4');
+Proxuc_Factory::addVersion('GitLabApi', 'Puc_v5p1_Vcs_GitLabApi', '4.4');

@@ -1,21 +1,21 @@
 <?php
 if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 
-	class Proxuc_Vcs_PluginUpdateChecker extends Puc_v4p4_Plugin_UpdateChecker implements Puc_v4p4_Vcs_BaseChecker {
+	class Proxuc_Vcs_PluginUpdateChecker extends Puc_v5p1_Plugin_UpdateChecker implements Puc_v5p1_Vcs_BaseChecker {
 				/**
 		 * @var string The branch where to look for updates. Defaults to "master".
 		 */
 		protected $branch = 'master';
 
 		/**
-		 * @var Puc_v4p4_Vcs_Api Repository API client.
+		 * @var Puc_v5p1_Vcs_Api Repository API client.
 		 */
 		protected $api = null;
 
 		/**
-		 * Puc_v4p4_Vcs_PluginUpdateChecker constructor.
+		 * Puc_v5p1_Vcs_PluginUpdateChecker constructor.
 		 *
-		 * @param Puc_v4p4_Vcs_Api $api
+		 * @param Puc_v5p1_Vcs_Api $api
 		 * @param string $pluginFile
 		 * @param string $slug
 		 * @param int $checkPeriod
@@ -59,7 +59,7 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 			$api = $this->api;
 			$api->setLocalDirectory($this->getAbsoluteDirectoryPath());
 
-			$info = new Puc_v4p4_Plugin_Info();
+			$info = new Puc_v5p1_Plugin_Info();
 			$info->filename = $this->pluginFile;
 			$info->slug = $this->slug;
 
@@ -191,7 +191,7 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 		 * Copy plugin metadata from a file header to a Plugin Info object.
 		 *
 		 * @param array $fileHeader
-		 * @param Puc_v4p4_Plugin_Info $pluginInfo
+		 * @param Puc_v5p1_Plugin_Info $pluginInfo
 		 */
 		protected function setInfoFromHeader($fileHeader, $pluginInfo) {
 			$headerToPropertyMap = array(
@@ -222,7 +222,7 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 		 * Copy plugin metadata from the remote readme.txt file.
 		 *
 		 * @param string $ref GitHub tag or branch where to look for the readme.
-		 * @param Puc_v4p4_Plugin_Info $pluginInfo
+		 * @param Puc_v5p1_Plugin_Info $pluginInfo
 		 */
 		protected function setInfoFromRemoteReadme($ref, $pluginInfo) {
 			$readme = $this->api->getRemoteReadme($ref);

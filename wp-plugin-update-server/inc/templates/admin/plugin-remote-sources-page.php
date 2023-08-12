@@ -8,9 +8,6 @@
 			<p>
 				<?php echo esc_html( $updated ); ?>
 			</p>
-			<button type="button" class="notice-dismiss">
-				<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.' ); ?></span>
-			</button>
 		</div>
 	<?php elseif ( is_array( $updated ) && ! empty( $updated ) ) : ?>
 		<div class="error notice notice-error is-dismissible">
@@ -19,9 +16,6 @@
 					<li><?php echo esc_html( $message ); ?></li>
 				<?php endforeach; ?>
 			</ul>
-			<button type="button" class="notice-dismiss">
-				<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.' ); ?></span>
-			</button>
 		</div>
 	<?php endif; ?>
 	<?php if ( is_string( $action_error ) && ! empty( $action_error ) ) : ?>
@@ -29,9 +23,6 @@
 			<p>
 				<?php echo esc_html( $action_error ); ?>
 			</p>
-			<button type="button" class="notice-dismiss">
-				<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.' ); ?></span>
-			</button>
 		</div>
 	<?php endif; ?>
 	<h2 class="nav-tab-wrapper">

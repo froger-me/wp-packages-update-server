@@ -2,7 +2,7 @@
 
 if ( !class_exists('Proxuc_Vcs_ThemeUpdateChecker', false) ):
 
-	class Proxuc_Vcs_ThemeUpdateChecker extends Puc_v4p4_Theme_UpdateChecker implements Puc_v4p4_Vcs_BaseChecker {
+	class Proxuc_Vcs_ThemeUpdateChecker extends Puc_v5p1_Theme_UpdateChecker implements Puc_v5p1_Vcs_BaseChecker {
 		public $themeAbsolutePath = ''; //Full path of the main plugin file.
 		/**
 		 * @var string The branch where to look for updates. Defaults to "master".
@@ -10,14 +10,14 @@ if ( !class_exists('Proxuc_Vcs_ThemeUpdateChecker', false) ):
 		protected $branch = 'master';
 
 		/**
-		 * @var Puc_v4p4_Vcs_Api Repository API client.
+		 * @var Puc_v5p1_Vcs_Api Repository API client.
 		 */
 		protected $api = null;
 
 		/**
-		 * Puc_v4p4_Vcs_ThemeUpdateChecker constructor.
+		 * Puc_v5p1_Vcs_ThemeUpdateChecker constructor.
 		 *
-		 * @param Puc_v4p4_Vcs_Api $api
+		 * @param Puc_v5p1_Vcs_Api $api
 		 * @param null $stylesheet
 		 * @param null $customSlug
 		 * @param int $checkPeriod
@@ -61,7 +61,7 @@ if ( !class_exists('Proxuc_Vcs_ThemeUpdateChecker', false) ):
 			$api = $this->api;
 			$api->setLocalDirectory($this->getAbsoluteDirectoryPath());
 
-			$update = new Puc_v4p4_Theme_Update();
+			$update = new Puc_v5p1_Theme_Update();
 			$update->slug = $this->slug;
 
 			//Figure out which reference (tag or branch) we'll use to get the latest version of the theme.
@@ -77,9 +77,9 @@ if ( !class_exists('Proxuc_Vcs_ThemeUpdateChecker', false) ):
 			//are what the WordPress install will actually see after upgrading, so they take precedence over releases/tags.
 			$file = $api->getRemoteFile('style.css', $ref);
 			$remoteHeader = $this->getFileHeader($file);
-			$update->version = Puc_v4p4_Utils::findNotEmpty(array(
+			$update->version = Puc_v5p1_Utils::findNotEmpty(array(
 				$remoteHeader['Version'],
-				Puc_v4p4_Utils::get($updateSource, 'version'),
+				Puc_v5p1_Utils::get($updateSource, 'version'),
 			));
 
 			if ( empty($update->version) ) {

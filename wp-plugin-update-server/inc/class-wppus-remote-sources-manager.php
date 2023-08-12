@@ -80,7 +80,7 @@ class WPPUS_Remote_Sources_Manager {
 		$type   = false;
 
 		if ( isset( $_REQUEST['nonce'] ) && wp_verify_nonce( $_REQUEST['nonce'], 'wppus_plugin_options' ) ) {
-			$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_STRING );
+			$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 			if ( 'schedules' === $type ) {
 				$result = self::register_schedules();
@@ -113,7 +113,7 @@ class WPPUS_Remote_Sources_Manager {
 		$type   = false;
 
 		if ( isset( $_REQUEST['nonce'] ) && wp_verify_nonce( $_REQUEST['nonce'], 'wppus_plugin_options' ) ) {
-			$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_STRING );
+			$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 			if ( 'schedules' === $type ) {
 				$result = self::clear_schedules();
@@ -245,17 +245,17 @@ class WPPUS_Remote_Sources_Manager {
 				'condition'    => 'boolean',
 			),
 			'wppus_remote_repository_branch'          => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_branch', FILTER_SANITIZE_STRING ),
+				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_branch', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 				'display_name'            => __( 'Packages branch name', 'wppus' ),
 				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 			),
 			'wppus_remote_repository_credentials'     => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_credentials', FILTER_SANITIZE_STRING ),
+				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_credentials', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 				'display_name'            => __( 'Remote repository service credentials', 'wppus' ),
 				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 			),
 			'wppus_remote_repository_check_frequency' => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_check_frequency', FILTER_SANITIZE_STRING ),
+				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_check_frequency', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 				'display_name'            => __( 'Remote update check frequency', 'wppus' ),
 				'failure_display_message' => __( 'Not a valid option', 'wppus' ),
 				'condition'               => 'known frequency',

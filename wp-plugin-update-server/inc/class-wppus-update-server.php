@@ -291,14 +291,14 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 			if ( 'Plugin' === $this->type ) {
 				$this->update_checker = new Proxuc_Vcs_PluginUpdateChecker(
-					new Puc_v4p4_Vcs_GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
+					new Puc_v5p1_Vcs_GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
 					$slug,
 					$slug,
 					$this->packageDirectory // @codingStandardsIgnoreLine
 				);
 			} elseif ( 'Theme' === $this->type ) {
 				$this->update_checker = new Proxuc_Vcs_ThemeUpdateChecker(
-					new Puc_v4p4_Vcs_GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
+					new Puc_v5p1_Vcs_GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
 					$slug,
 					$slug,
 					$this->packageDirectory // @codingStandardsIgnoreLine

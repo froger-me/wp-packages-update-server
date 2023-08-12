@@ -4,13 +4,17 @@
  * Plugins and themes update library to enable with WP Plugin Update Server
  *
  * @author Alexandre Froger
- * @version 1.4.0
+ * @version 1.4.1
  * @see https://github.com/froger-me/wp-package-updater
  * @copyright Alexandre Froger - https://www.froger.me
  */
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
+defined( 'ABSPATH' ) OR exit; // Exit if accessed directly
+
+/**
+ * Since v5 all classes have been moved into namespaces
+ */
+use YahnisElsts\PluginUpdateChecker\v5p1\PucFactory;
+use YahnisElsts\PluginUpdateChecker\v5p1\Plugin\UpdateChecker;
 
 /* ================================================================================================ */
 /*                                     WP Package Updater                                           */
@@ -70,7 +74,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 
 	class WP_Package_Updater {
 
-		const VERSION = '1.0.2';
+		const VERSION = '1.0.3';
 
 		private $license_server_url;
 		private $package_slug;
@@ -80,6 +84,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		private $update_checker;
 		private $type;
 		private $use_license;
+		private $package_id;
 
 		public function __construct(
 			$update_server_url,
@@ -108,14 +113,14 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			$this->package_slug      = $package_slug;
 			$this->use_license       = $use_license;
 
-			if ( ! class_exists( 'Puc_v4_Factory' ) ) {
+			if ( ! class_exists( 'PucFactory' ) ) {
 				require $this->package_path . 'lib/plugin-update-checker/plugin-update-checker.php';
 			}
 
 			$metadata_url  = trailingslashit( $this->update_server_url ) . '?action=get_metadata&package_id=';
 			$metadata_url .= rawurlencode( $this->package_slug );
 
-			$this->update_checker = Puc_v4_Factory::buildUpdateChecker( $metadata_url, $package_file_path );
+			$this->update_checker = PucFactory::buildUpdateChecker( $metadata_url, $package_file_path );
 
 			$this->set_type();
 

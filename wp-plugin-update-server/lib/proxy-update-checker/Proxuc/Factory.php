@@ -26,7 +26,7 @@ if ( !class_exists('Proxuc_Factory', false) ):
 		 * This method automatically detects if you're using it for a plugin or a theme and chooses
 		 * the appropriate implementation for your update source (JSON file, GitHub, BitBucket, etc).
 		 *
-		 * @see Puc_v4p4_UpdateChecker::__construct
+		 * @see Puc_v5p1_UpdateChecker::__construct
 		 *
 		 * @param string $metadataUrl The URL of the metadata file, a GitHub repository, or another supported update source.
 		 * @param string $fullPath Full path to the main plugin file or to the theme directory.
@@ -34,7 +34,7 @@ if ( !class_exists('Proxuc_Factory', false) ):
 		 * @param int $checkPeriod How often to check for updates (in hours).
 		 * @param string $optionName Where to store book-keeping info about update checks.
 		 * @param string $muPluginFile The plugin filename relative to the mu-plugins directory.
-		 * @return Puc_v4p4_Plugin_UpdateChecker|Puc_v4p4_Theme_UpdateChecker|Puc_v4p4_Vcs_BaseChecker|false
+		 * @return Puc_v5p1_Plugin_UpdateChecker|Puc_v5p1_Theme_UpdateChecker|Puc_v5p1_Vcs_BaseChecker|false
 		 */
 		public static function buildUpdateChecker($metadataUrl, $slug, $plugin_file_name, $type, $package_container, $optionName = '') {
 			//Plugin or theme?
