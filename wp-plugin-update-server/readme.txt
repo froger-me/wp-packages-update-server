@@ -2,7 +2,7 @@
 Contributors: frogerme
 Tags: plugins, themes, updates, license
 Requires at least: 4.9.5
-Tested up to: 5.0
+Tested up to: 6.3
 Stable tag: trunk
 Requires PHP: 7.0
 License: GPLv3
@@ -47,6 +47,8 @@ When upgrading from v1.3, licenses from Software License Manager plugin will be 
 
 Upgrading from 1.4.13 to 1.4.14 requires to upgrade the `lib` directory of all the packages delivered by WP Plugin Update Server due to a change in the Github API (deprecation of query parameters authentication). You can find the updated `lib` content in the integration examples in the `wp-plugin-update-server/integration-examples` directory.
 
+Upgrading from 1.4.15 to 1.4.16 requires an upgrade of the 'lib' directory of all packages provided by the WP Plugin Update Server. The updated 'lib' content can be found in the integration examples in the 'wp-plugin-update-server/integration-examples' directory.
+
 == Roadmap ==
 
 Aside from minor version updates (bugfixes, interface improvements and simple new features), below is the current roadmap. This can evolve depending on feedback, reviews and popularity.
@@ -68,6 +70,11 @@ This section describes how to install the plugin and get it working.
 3. Edit plugin settings
 
 == Changelog ==
+
+= 1.4.15 =
+* 
+
+= 1.4.15 =
 
 = 1.4.14 =
 * Update Github API: use basic auth instead of query parameters
