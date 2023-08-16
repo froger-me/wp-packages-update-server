@@ -1,23 +1,32 @@
 <?php
 
-if ( !class_exists('Proxuc_Vcs_ThemeUpdateChecker', false) ):
+require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/plugin-update-checker.php';
 
-	class Proxuc_Vcs_ThemeUpdateChecker extends Puc_v5p1_Theme_UpdateChecker implements Puc_v5p1_Vcs_BaseChecker {
+use YahnisElsts\PluginUpdateChecker\v5p1\Utils;
+use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BaseChecker;
+use YahnisElsts\PluginUpdateChecker\v5p1\Theme\Update;
+use YahnisElsts\PluginUpdateChecker\v5p1\Theme\UpdateChecker;
+
+if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
+
+	class Proxuc_Vcs_ThemeUpdateChecker extends UpdateChecker implements BaseChecker {
+
 		public $themeAbsolutePath = ''; //Full path of the main plugin file.
+
 		/**
 		 * @var string The branch where to look for updates. Defaults to "master".
 		 */
 		protected $branch = 'master';
 
 		/**
-		 * @var Puc_v5p1_Vcs_Api Repository API client.
+		 * @var Puc\v5p1\Vcs\Api Repository API client.
 		 */
 		protected $api = null;
 
 		/**
-		 * Puc_v5p1_Vcs_ThemeUpdateChecker constructor.
+		 * Puc\v5p1\Vcs\ThemeUpdateChecker constructor.
 		 *
-		 * @param Puc_v5p1_Vcs_Api $api
+		 * @param Puc\v5p1\Vcs\Api $api
 		 * @param null $stylesheet
 		 * @param null $customSlug
 		 * @param int $checkPeriod
@@ -52,17 +61,18 @@ if ( !class_exists('Proxuc_Vcs_ThemeUpdateChecker', false) ):
 			$this->api->setSlug($this->slug);
 		}
 
-		public function getAbsoluteDirectoryPath() {
+		public function Vcs_getAbsoluteDirectoryPath() {
 			
 			return trailingslashit($this->themeAbsolutePath);
 		}
 
 		public function requestUpdate() {
 			$api = $this->api;
-			$api->setLocalDirectory($this->getAbsoluteDirectoryPath());
+			$api->setLocalDirectory($this->Vcs_getAbsoluteDirectoryPath());
 
-			$update = new Puc_v5p1_Theme_Update();
+			$update = new Update();
 			$update->slug = $this->slug;
+            $update->version = null;
 
 			//Figure out which reference (tag or branch) we'll use to get the latest version of the theme.
 			$updateSource = $api->chooseReference($this->branch);
@@ -76,11 +86,13 @@ if ( !class_exists('Proxuc_Vcs_ThemeUpdateChecker', false) ):
 			//Get headers from the main stylesheet in this branch/tag. Its "Version" header and other metadata
 			//are what the WordPress install will actually see after upgrading, so they take precedence over releases/tags.
 			$file = $api->getRemoteFile('style.css', $ref);
-			$remoteHeader = $this->getFileHeader($file);
-			$update->version = Puc_v5p1_Utils::findNotEmpty(array(
-				$remoteHeader['Version'],
-				Puc_v5p1_Utils::get($updateSource, 'version'),
-			));
+            if ( ! empty($file) ) {
+                $remoteHeader = $this->package->getFileHeader($file); 
+			    $update->version = Utils::findNotEmpty(array(
+				    $remoteHeader['Version'],
+				    Utils::get($updateSource, 'version'),
+			    ));
+            }
 
 			if ( empty($update->version) ) {
 				//It looks like we didn't find a valid update after all.

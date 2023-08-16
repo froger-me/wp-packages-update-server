@@ -1,6 +1,6 @@
 <?php
 
-if ( !class_exists('Proxuc_Autoloader', false) ):
+if ( ! class_exists(Proxuc_Autoloader::class, false) ):
 
 	class Proxuc_Autoloader {
 		private $prefix = '';
@@ -17,11 +17,11 @@ if ( !class_exists('Proxuc_Autoloader', false) ):
 
 		public function autoload($className) {
 
-			if (strpos($className, $this->prefix) === 0) {
+			if (strpos($className, $this->prefix) === 0) { //To know that the prefix is at the start of the classname  
 				$path = substr($className, strlen($this->prefix));
 				$path = str_replace('_', '/', $path);
 				$path = $this->rootDir . $path . '.php';
-
+				
 				if (file_exists($path)) {
 					/** @noinspection PhpIncludeInspection */
 					include $path;

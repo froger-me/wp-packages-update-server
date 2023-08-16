@@ -76,7 +76,7 @@ This section describes how to install the plugin and get it working.
 * Update Yahnis Elsts plugin-update-checker library to v5p1
 * Fix PHP 8.2 `Creation of dynamic property is deprecated` warnings
 * Fix PHP 8.2 `Constant FILTER_SANITIZE_FULL_SPECIAL_CHARS is deprecated` warnings
-* Fix (remove) logging SQL queries to error_log file
+* Fix (remove) log SQL queries to error_log file
 * Fix (remove) `notice-dismiss` buttons
 
 = 1.4.15 =

@@ -29,6 +29,7 @@ class WPPUS_Update_Manager {
 
 	protected $packages_table;
 	protected $scheduler;
+    protected $rows = array();
 
 	public function __construct( $init_hooks = false ) {
 
