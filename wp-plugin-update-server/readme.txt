@@ -72,7 +72,7 @@ This section describes how to install the plugin and get it working.
 == Changelog ==
 
 = 1.4.16 =
-* Update Yahnis Elsts wp-update-server library to Master Branch (March 1,2023 v.2.0.1)
+* Update Yahnis Elsts wp-update-server library to Master Branch (March 1, 2023 - v.2.0.1)
 * Update Yahnis Elsts plugin-update-checker library to v5p1
 * Fix PHP 8.2 `Creation of dynamic property is deprecated` warnings
 * Fix PHP 8.2 `Constant FILTER_SANITIZE_FULL_SPECIAL_CHARS is deprecated` warnings
