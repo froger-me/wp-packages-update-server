@@ -439,47 +439,43 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				}
 			}
 
-			if (
-				isset( $license_data->status ) &&
-				'expired' === $license_data->status
-			) {
+			if ( isset( $license_data->status ) && 'expired' === $license_data->status ) {
+				
 				if ( isset( $license_data->date_expiry ) ) {
 					$license_data->message = sprintf(
 						// translators: the license expiry date
 						__( 'The license expired on %s and needs to be renewed to be updated.', 'wp-package-updater' ),
-						date_i18n( get_option( 'date_format' ), $license_data->date_expiry )
+						date_i18n( get_option( 'date_format' ), strtotime( $license_data->date_expiry ) )
 					);
 				} else {
 					$license_data->message = __( 'The license expired and needs to be renewed to be updated.', 'wp-package-updater' );
 				}
-			} elseif (
-				isset( $license_data->status ) &&
-				'blocked' === $license_data->status
-			) {
+
+			} 
+			elseif ( isset( $license_data->status ) && 'blocked' === $license_data->status ) {
 				$license_data->message = __( 'The license is blocked and cannot be updated anymore. Please use another license key.', 'wp-package-updater' );
-			} elseif (
-				isset( $license_data->status ) &&
-				'pending' === $license_data->status
-			) {
+			}
+			elseif ( isset( $license_data->status ) && 'pending' === $license_data->status ) {
 				$license_data->clear_key = true;
 				$license_data->message   = __( 'The license has not been activated and its status is stil pending. Please try again or use another license key.', 'wp-package-updater' );
-			} elseif (
-				isset( $license_data->status ) &&
-				'invalid' === $license_data->status
-			) {
+			}
+			elseif ( isset( $license_data->status ) && 'invalid' === $license_data->status ) {
 				$license_data->clear_key = true;
 				$license_data->message   = __( 'The provided license key is invalid. Please use another license key.', 'wp-package-updater' );
-			} elseif ( isset( $license_data->license_key ) ) {
+			}
+			elseif ( isset( $license_data->license_key ) ) {
 				$license_data->clear_key = true;
 				$license_data->message   = __( 'The provided license key does not appear to be valid. Please use another license key.', 'wp-package-updater' );
-			} elseif ( 1 === count( (array) $license_data ) ) {
+			}
+			elseif ( 1 === count( (array) $license_data ) ) {
 
 				if ( 'Plugin' === $this->type ) {
 					$license_data->message = __( 'An active license is required to update the plugin. Please provide a valid license key in Plugins > Installed Plugins.', 'wp-package-updater' );
 				} else {
 					$license_data->message = __( 'An active license is required to update the theme. Please provide a valid license key in Appearence > Theme License.', 'wp-package-updater' );
 				}
-			} elseif ( ! isset( $license_data->message ) || empty( $license_data->message ) ) {
+			} 
+			elseif ( ! isset( $license_data->message ) || empty( $license_data->message ) ) {
 				$license_data->clear_key = true;
 
 				if ( 'Plugin' === $this->type ) {
