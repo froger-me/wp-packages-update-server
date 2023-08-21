@@ -4,7 +4,7 @@
  * Plugins and themes update library to enable with WP Plugin Update Server
  *
  * @author Alexandre Froger
- * @version 1.4.1
+ * @version 1.4.2
  * @see https://github.com/froger-me/wp-package-updater
  * @copyright Alexandre Froger - https://www.froger.me
  */
@@ -74,7 +74,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 
 	class WP_Package_Updater {
 
-		const VERSION = '1.0.3';
+		const VERSION = '1.0.4';
 
 		private $license_server_url;
 		private $package_slug;
