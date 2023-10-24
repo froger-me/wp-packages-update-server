@@ -20,6 +20,7 @@ class WPPUS_Data_Manager {
 	);
 
 	protected static $root_data_dirname = 'wppus';
+	protected $scheduler;
 
 	public function __construct( $init_hooks = false ) {
 

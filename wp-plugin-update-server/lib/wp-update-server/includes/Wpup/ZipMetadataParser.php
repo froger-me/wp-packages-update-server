@@ -20,6 +20,7 @@ class Wpup_ZipMetadataParser {
 		'ThemeURI' => 'homepage',
 		'Author' => 'author',
 		'AuthorURI' => 'author_homepage',
+		'RequiresPHP' => 'requires_php',
 		'DetailsURI' => 'details_url', //Only for themes.
 		'Depends' => 'depends', // plugin-dependencies plugin
 		'Provides' => 'provides', // plugin-dependencies plugin
@@ -31,6 +32,7 @@ class Wpup_ZipMetadataParser {
 	protected $readmeMap = array(
 		'requires',
 		'tested',
+		'requires_php',
 	);
 
 	/**
@@ -103,7 +105,7 @@ class Wpup_ZipMetadataParser {
 
 			//Update cache.
 			if ( isset($this->cache) ){
-				$this->cache->set($cacheKey, $this->metadata, self::$cacheTime);
+				$this->cache->set($cacheKey, $this->metadata, static::$cacheTime);
 			}
 		}
 	}
@@ -206,6 +208,8 @@ class Wpup_ZipMetadataParser {
 		if ( isset($this->metadata['sections']['upgrade_notice']) && isset($this->metadata['version']) ){
 			$regex = '@<h4>\s*' . preg_quote($this->metadata['version']) . '\s*</h4>[^<>]*?<p>(.+?)</p>@i';
 			if ( preg_match($regex, $this->metadata['sections']['upgrade_notice'], $matches) ){
+				//Since this is meant to also work outside WP, it does not use wp_strip_all_tags().
+				//phpcs:ignore WordPressVIPMinimum.Functions.StripTags.StripTagsOneParameter
 				$this->metadata['upgrade_notice'] = trim(strip_tags($matches[1]));
 			}
 		}

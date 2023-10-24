@@ -1,29 +1,40 @@
 <?php
-if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 
-	class Proxuc_Vcs_PluginUpdateChecker extends Puc_v4p4_Plugin_UpdateChecker implements Puc_v4p4_Vcs_BaseChecker {
-				/**
+require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/plugin-update-checker.php';
+
+use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\Api;
+use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BaseChecker;
+use YahnisElsts\PluginUpdateChecker\v5p1\Plugin\Package;
+use YahnisElsts\PluginUpdateChecker\v5p1\Plugin\UpdateChecker;
+use YahnisElsts\PluginUpdateChecker\v5p1\Plugin\PluginInfo;
+
+if ( ! class_exists(Proxuc_Vcs_PluginUpdateChecker::class, false) ):
+
+	class Proxuc_Vcs_PluginUpdateChecker extends UpdateChecker implements BaseChecker {
+		/**
 		 * @var string The branch where to look for updates. Defaults to "master".
 		 */
 		protected $branch = 'master';
 
 		/**
-		 * @var Puc_v4p4_Vcs_Api Repository API client.
+		 * @var Puc\v5p1\Vcs\Api Repository API client.
 		 */
 		protected $api = null;
 
+		protected $manualCheckErrorTransient = null;
+        protected $package = null;
 		/**
-		 * Puc_v4p4_Vcs_PluginUpdateChecker constructor.
+		 * Puc\v5p1\Vcs\PluginUpdateChecker constructor.
 		 *
-		 * @param Puc_v4p4_Vcs_Api $api
+		 * @param Puc\v5p1\Vcs\Api $api
 		 * @param string $pluginFile
 		 * @param string $slug
 		 * @param int $checkPeriod
 		 * @param string $optionName
 		 * @param string $muPluginFile
 		 */
-		public function __construct($api, $slug, $plugin_file_name, $package_container, $optionName = '') {
-			$this->api = $api;
+		public function __construct($api, $slug, $plugin_file_name, $package_container, $optionName = '') {           
+            $this->api = $api;
 			$this->api->setHttpFilterName($this->getUniqueName('request_info_options'));
 
 			$this->pluginAbsolutePath = trailingslashit($package_container) . $slug;
@@ -35,6 +46,8 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 			$this->metadataUrl = $api->getRepositoryUrl();
 			$this->directoryName = basename(dirname($this->pluginAbsolutePath));
 			$this->slug = $slug;
+
+            $this->package = new Package($this->pluginAbsolutePath, $this);
 
 			$this->optionName = $optionName;
 			if ( empty($this->optionName) ) {
@@ -49,6 +62,11 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 			$this->api->setSlug($this->slug);
 		}
 
+        public function Vcs_getAbsoluteDirectoryPath() {
+			
+			return trailingslashit($this->pluginAbsolutePath);
+		}
+
 		public function requestInfo($unused = null) {
 			//We have to make several remote API requests to gather all the necessary info
 			//which can take a while on slow networks.
@@ -57,13 +75,13 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 			}
 
 			$api = $this->api;
-			$api->setLocalDirectory($this->getAbsoluteDirectoryPath());
+			$api->setLocalDirectory($this->Vcs_getAbsoluteDirectoryPath());
 
-			$info = new Puc_v4p4_Plugin_Info();
+			$info = new PluginInfo();
 			$info->filename = $this->pluginFile;
 			$info->slug = $this->slug;
 
-			$this->setInfoFromHeader($this->getPluginHeader(), $info);
+			$this->setInfoFromHeader($this->Vcs_getPluginHeader(), $info);
 
 			//Pick a branch or tag.
 			$updateSource = $api->chooseReference($this->branch);
@@ -88,7 +106,7 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 			$mainPluginFile = basename($this->pluginFile);
 			$remotePlugin = $api->getRemoteFile($mainPluginFile, $ref);
 			if ( !empty($remotePlugin) ) {
-				$remoteHeader = $this->getFileHeader($remotePlugin);
+				$remoteHeader = $this->package->getFileHeader($remotePlugin);
 				$this->setInfoFromHeader($remoteHeader, $info);
 			}
 
@@ -135,8 +153,8 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 		 *
 		 * @return array
 		 */
-		protected function getPluginHeader() {
-			if ( !is_file($this->pluginAbsolutePath) ) {
+		protected function Vcs_getPluginHeader() {
+			if ( ! is_file($this->pluginAbsolutePath) ) {
 				//This can happen if the plugin filename is wrong OR there is no local package just yet.
 				return array();
 			}
@@ -191,7 +209,7 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 		 * Copy plugin metadata from a file header to a Plugin Info object.
 		 *
 		 * @param array $fileHeader
-		 * @param Puc_v4p4_Plugin_Info $pluginInfo
+		 * @param Puc_v5p1_Plugin_Info $pluginInfo
 		 */
 		protected function setInfoFromHeader($fileHeader, $pluginInfo) {
 			$headerToPropertyMap = array(
@@ -222,7 +240,7 @@ if ( !class_exists('Proxuc_Vcs_PluginUpdateChecker') ):
 		 * Copy plugin metadata from the remote readme.txt file.
 		 *
 		 * @param string $ref GitHub tag or branch where to look for the readme.
-		 * @param Puc_v4p4_Plugin_Info $pluginInfo
+		 * @param Puc_v5p1_Plugin_Info $pluginInfo
 		 */
 		protected function setInfoFromRemoteReadme($ref, $pluginInfo) {
 			$readme = $this->api->getRemoteReadme($ref);

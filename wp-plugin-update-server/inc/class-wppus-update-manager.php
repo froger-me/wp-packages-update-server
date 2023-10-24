@@ -29,6 +29,7 @@ class WPPUS_Update_Manager {
 
 	protected $packages_table;
 	protected $scheduler;
+    protected $rows = array();
 
 	public function __construct( $init_hooks = false ) {
 
@@ -265,7 +266,7 @@ class WPPUS_Update_Manager {
 		$type   = false;
 
 		if ( isset( $_REQUEST['nonce'] ) && wp_verify_nonce( $_REQUEST['nonce'], 'wppus_plugin_options' ) ) {
-			$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_STRING );
+			$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 			if ( in_array( $type, self::$filesystem_clean_types ) ) { // @codingStandardsIgnoreLine
 				$result = WPPUS_Data_Manager::maybe_cleanup( $type, true );
@@ -293,7 +294,7 @@ class WPPUS_Update_Manager {
 		$slug   = 'N/A';
 
 		if ( isset( $_REQUEST['nonce'] ) && wp_verify_nonce( $_REQUEST['nonce'], 'wppus_plugin_options' ) ) {
-			$slug = filter_input( INPUT_POST, 'slug', FILTER_SANITIZE_STRING );
+			$slug = filter_input( INPUT_POST, 'slug', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 			if ( $slug ) {
 				Wppus_Update_Server::unlock_update_from_remote( $slug );

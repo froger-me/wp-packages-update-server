@@ -1,8 +1,11 @@
 <?php
+require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/plugin-update-checker.php';
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
+use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitHubApi;
+use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitLabApi;
+use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BitBucketApi;
+
+defined( 'ABSPATH' ) OR exit; // Exit if accessed directly
 
 class WPPUS_Update_Server extends Wpup_UpdateServer {
 
@@ -284,21 +287,21 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			return;
 		}
 
-		require_once WPPUS_PLUGIN_PATH . 'lib/plugin-update-checker/plugin-update-checker.php';
+		//require_once WPPUS_PLUGIN_PATH . 'lib/plugin-update-checker/plugin-update-checker.php';
 		require_once WPPUS_PLUGIN_PATH . 'lib/proxy-update-checker/proxy-update-checker.php';
 
 		if ( $this->repository_service_self_hosted ) {
 
 			if ( 'Plugin' === $this->type ) {
 				$this->update_checker = new Proxuc_Vcs_PluginUpdateChecker(
-					new Puc_v4p4_Vcs_GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
+					new GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
 					$slug,
 					$slug,
 					$this->packageDirectory // @codingStandardsIgnoreLine
 				);
 			} elseif ( 'Theme' === $this->type ) {
 				$this->update_checker = new Proxuc_Vcs_ThemeUpdateChecker(
-					new Puc_v4p4_Vcs_GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
+					new GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
 					$slug,
 					$slug,
 					$this->packageDirectory // @codingStandardsIgnoreLine

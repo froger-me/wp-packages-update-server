@@ -1,5 +1,9 @@
 <?php
-if ( !class_exists('Proxuc_Factory', false) ):
+use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitHubApi;
+use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitLabApi;
+use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BitBucketApi;
+
+if ( ! class_exists(Proxuc_Factory::class, false) ):
 
 	/**
 	 * A factory that builds update checker instances.
@@ -17,6 +21,7 @@ if ( !class_exists('Proxuc_Factory', false) ):
 
 		protected static $majorVersion = '';
 		protected static $latestCompatibleVersion = '';
+
 		protected static $apiVersion = '';
 		protected static $checkerVersion = '';
 
@@ -26,7 +31,7 @@ if ( !class_exists('Proxuc_Factory', false) ):
 		 * This method automatically detects if you're using it for a plugin or a theme and chooses
 		 * the appropriate implementation for your update source (JSON file, GitHub, BitBucket, etc).
 		 *
-		 * @see Puc_v4p4_UpdateChecker::__construct
+		 * @see UpdateChecker::__construct
 		 *
 		 * @param string $metadataUrl The URL of the metadata file, a GitHub repository, or another supported update source.
 		 * @param string $fullPath Full path to the main plugin file or to the theme directory.
@@ -34,7 +39,7 @@ if ( !class_exists('Proxuc_Factory', false) ):
 		 * @param int $checkPeriod How often to check for updates (in hours).
 		 * @param string $optionName Where to store book-keeping info about update checks.
 		 * @param string $muPluginFile The plugin filename relative to the mu-plugins directory.
-		 * @return Puc_v4p4_Plugin_UpdateChecker|Puc_v4p4_Theme_UpdateChecker|Puc_v4p4_Vcs_BaseChecker|false
+		 * @return Plugin\UpdateChecker|Theme\UpdateChecker|Vcs\BaseChecker|false
 		 */
 		public static function buildUpdateChecker($metadataUrl, $slug, $plugin_file_name, $type, $package_container, $optionName = '') {
 			//Plugin or theme?
@@ -81,6 +86,9 @@ if ( !class_exists('Proxuc_Factory', false) ):
 
 				return null;
 			}
+		
+			require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/Puc/v5p1/Vcs/'. $apiClass .'.php';
+			$apiClass = 'YahnisElsts\PluginUpdateChecker\v5p1\Vcs\\' . $apiClass;
 
 			return new $checkerClass(
 				new $apiClass($metadataUrl),
@@ -123,14 +131,17 @@ if ( !class_exists('Proxuc_Factory', false) ):
 		 * Get the latest version of the specified class that has the same major version number
 		 * as this factory class.
 		 *
-		 * @param string $class Partial class name.
-		 * @return string|null Full class name.
+		 * @param string        $class Partial class name.
+         * @param string        $versionHolder Factory version.
+         * 
+		 * @return string|null  Full class name.
 		 */
 		protected static function getCompatibleClassVersion($class, $versionHolder) {
-
+           
 			if ( isset(self::$classVersions[$class][self::$latestCompatibleVersion[$versionHolder]]) ) {
 				return self::$classVersions[$class][self::$latestCompatibleVersion[$versionHolder]];
 			}
+
 			return null;
 		}
 
@@ -172,9 +183,9 @@ if ( !class_exists('Proxuc_Factory', false) ):
 		 *
 		 * @access private This method is only for internal use by the library.
 		 *
-		 * @param string $generalClass Class name without version numbers, e.g. 'PluginUpdateChecker'.
-		 * @param string $versionedClass Actual class name, e.g. 'PluginUpdateChecker_1_2'.
-		 * @param string $version Version number, e.g. '1.2'.
+		 * @param string $generalClass      Class name without version numbers, e.g. 'PluginUpdateChecker'.
+		 * @param string $versionedClass    Actual class name, e.g. 'PluginUpdateChecker_1_2'.
+		 * @param string $version           Version number, e.g. '1.2'.
 		 */
 		public static function addVersion($generalClass, $versionedClass, $version) {
 			$versionHolder = 'api';

@@ -1,8 +1,10 @@
 <?php
+
 class Wpup_UpdateServer {
 	const FILE_PER_DAY = 'Y-m-d';
 	const FILE_PER_MONTH = 'Y-m';
 
+	protected $serverDirectory;
 	protected $packageDirectory;
 	protected $bannerDirectory;
 	protected $assetDirectories = array();
@@ -25,6 +27,7 @@ class Wpup_UpdateServer {
 		if ( $serverDirectory === null ) {
 			$serverDirectory = realpath(__DIR__ . '/../..');
 		}
+		$this->serverDirectory = $this->normalizeFilePath($serverDirectory);
 		if ( $serverUrl === null ) {
 			$serverUrl = self::guessServerUrl();
 		}
@@ -33,10 +36,10 @@ class Wpup_UpdateServer {
 		$this->packageDirectory = $serverDirectory . '/packages';
 		$this->logDirectory = $serverDirectory . '/logs';
 
-		$this->bannerDirectory = $serverDirectory . '/banners';
+		$this->bannerDirectory = $serverDirectory . '/package-assets/banners';
 		$this->assetDirectories = array(
 			'banners' => $this->bannerDirectory,
-			'icons'   => $serverDirectory . '/icons',
+			'icons'   => $serverDirectory . '/package-assets/icons',
 		);
 
 		//Set up the IP anonymization masks.
@@ -58,9 +61,16 @@ class Wpup_UpdateServer {
 	 * @return string Url
 	 */
 	public static function guessServerUrl() {
-		$serverUrl = ( self::isSsl() ? 'https' : 'http' );
-		$serverUrl .= '://' . $_SERVER['HTTP_HOST'];
-		$path = $_SERVER['SCRIPT_NAME'];
+		if ( !isset($_SERVER['HTTP_HOST']) || !isset($_SERVER['SCRIPT_NAME']) ) {
+			return '/';
+		}
+
+		$serverUrl = (self::isSsl() ? 'https' : 'http');
+		//phpcs:disable WordPress.Security.ValidatedSanitizedInput -- Converting to string should be enough.
+		/** @noinspection PhpUnnecessaryStringCastInspection -- Let's make the cast explicit. */
+		$serverUrl .= '://' . strval($_SERVER['HTTP_HOST']);
+		$path = strval($_SERVER['SCRIPT_NAME']);
+		//phpcs:enable
 
 		if ( basename($path) === 'index.php' ) {
 			$path = dirname($path);
@@ -81,16 +91,18 @@ class Wpup_UpdateServer {
 	/**
 	 * Determine if ssl is used.
 	 *
+	 * @return bool True if SSL, false if not used.
 	 * @see WP core - wp-includes/functions.php
 	 *
-	 * @return bool True if SSL, false if not used.
 	 */
 	public static function isSsl() {
 		if ( isset($_SERVER['HTTPS']) ) {
-			if ( $_SERVER['HTTPS'] == '1' || strtolower($_SERVER['HTTPS']) === 'on' ) {
+			//Sanitization is not needed here because the value is only checked against known values.
+			//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			if ( ($_SERVER['HTTPS'] == '1') || (strtolower($_SERVER['HTTPS']) === 'on') ) {
 				return true;
 			}
-		} elseif ( isset($_SERVER['SERVER_PORT']) && ( '443' == $_SERVER['SERVER_PORT'] ) ) {
+		} elseif ( isset($_SERVER['SERVER_PORT']) && ('443' == $_SERVER['SERVER_PORT']) ) {
 			return true;
 		}
 		return false;
@@ -124,13 +136,24 @@ class Wpup_UpdateServer {
 	 */
 	protected function initRequest($query = null, $headers = null) {
 		if ( $query === null ) {
+			//Nonce verification doesn't apply to the update server. It doesn't
+			//process forms at all, or deal with stateful requests.
+			//phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$query = $_GET;
 		}
 		if ( $headers === null ) {
 			$headers = Wpup_Headers::parseCurrent();
 		}
-		$clientIp = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '0.0.0.0';
-		$httpMethod = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+
+		//As of this writing, the client IP is only used for logging. Any more
+		//advanced uses should implement additional sanitization.
+		//phpcs:ignore WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$clientIp = isset($_SERVER['REMOTE_ADDR']) ? strval($_SERVER['REMOTE_ADDR']) : '0.0.0.0';
+
+		//Ensure that the HTTP method is always a string. That should be enough
+		//sanitization for our purposes.
+		//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$httpMethod = isset($_SERVER['REQUEST_METHOD']) ? strval($_SERVER['REQUEST_METHOD']) : 'GET';
 
 		return new Wpup_Request($query, $headers, $clientIp, $httpMethod);
 	}
@@ -237,11 +260,6 @@ class Wpup_UpdateServer {
 	 * @param Wpup_Request $request
 	 */
 	protected function actionDownload(Wpup_Request $request) {
-		//Required for IE, otherwise Content-Disposition may be ignored.
-		if(ini_get('zlib.output_compression')) {
-			@ini_set('zlib.output_compression', 'Off');
-		}
-
 		$package = $request->package;
 		header('Content-Type: application/zip');
 		header('Content-Disposition: attachment; filename="' . $package->slug . '.zip"');
@@ -287,7 +305,7 @@ class Wpup_UpdateServer {
 	protected function generateDownloadUrl(Wpup_Package $package) {
 		$query = array(
 			'action' => 'download',
-			'slug' => $package->slug,
+			'slug'   => $package->slug,
 		);
 		return self::addQueryArg($query, $this->serverUrl);
 	}
@@ -322,9 +340,9 @@ class Wpup_UpdateServer {
 	/**
 	 * Get a publicly accessible URL for a plugin banner.
 	 *
-	 * @deprecated Use generateAssetUrl() instead.
 	 * @param string $relativeFileName Banner file name relative to the "banners" subdirectory.
 	 * @return string
+	 * @deprecated Use generateAssetUrl() instead.
 	 */
 	protected function generateBannerUrl($relativeFileName) {
 		return $this->generateAssetUrl('banners', $relativeFileName);
@@ -391,8 +409,27 @@ class Wpup_UpdateServer {
 	protected function generateAssetUrl($assetType, $relativeFileName) {
 		//The current implementation is trivially simple, but you could override this method
 		//to (for example) create URLs that don't rely on the directory being public.
-		$subDirectory = basename($this->assetDirectories[$assetType]);
+		$directory = $this->normalizeFilePath($this->assetDirectories[$assetType]);
+		if ( strpos($directory, $this->serverDirectory) === 0 ) {
+			$subDirectory = substr($directory, strlen($this->serverDirectory) + 1);
+		} else {
+			$subDirectory = basename($directory);
+		}
+		$subDirectory = trim($subDirectory, '/\\');
 		return $this->serverUrl . $subDirectory . '/' . $relativeFileName;
+	}
+
+	/**
+	 * Convert all directory separators to forward slashes.
+	 *
+	 * @param string $path
+	 * @return string
+	 */
+	protected function normalizeFilePath($path) {
+		if ( !is_string($path) ) {
+			return $path;
+		}
+		return str_replace(array(DIRECTORY_SEPARATOR, '\\'), '/', $path);
 	}
 
 	/**
@@ -415,8 +452,8 @@ class Wpup_UpdateServer {
 			}
 
 			$columns = array(
-				'ip'                => str_pad($loggedIp, 15, ' '),
-				'http_method'       => str_pad($request->httpMethod, 4, ' '),
+				'ip'                => $loggedIp,
+				'http_method'       => $request->httpMethod,
 				'action'            => $request->param('action', '-'),
 				'slug'              => $request->param('slug', '-'),
 				'installed_version' => $request->param('installed_version', '-'),
@@ -425,11 +462,27 @@ class Wpup_UpdateServer {
 				'query'             => http_build_query($request->query, '', '&'),
 			);
 			$columns = $this->filterLogInfo($columns, $request);
+			$columns = $this->escapeLogInfo($columns);
+
+			if ( isset($columns['ip']) ) {
+				$columns['ip'] = str_pad($columns['ip'], 15, ' ');
+			}
+			if ( isset($columns['http_method']) ) {
+				$columns['http_method'] = str_pad($columns['http_method'], 4, ' ');
+			}
 
 			//Set the time zone to whatever the default is to avoid PHP notices.
 			//Will default to UTC if it's not set properly in php.ini.
-			date_default_timezone_set(@date_default_timezone_get());
+			$configuredTz = ini_get('date.timezone');
+			if ( empty($configuredTz) ) {
+				//The update server can be used outside WP, so it can't rely on WordPress's timezone support.
+				//phpcs:ignore WordPress.DateTime.RestrictedFunctions.timezone_change_date_default_timezone_set
+				date_default_timezone_set(@date_default_timezone_get());
+			}
 
+			//Use date() instead of gmdate() because the person reading the log file will probably
+			//find it more convenient to see a timestamp in their own (server's) time zone.
+			//phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 			$line = date('[Y-m-d H:i:s O]') . ' ' . implode("\t", $columns) . "\n";
 
 			fwrite($handle, $line);
@@ -450,6 +503,7 @@ class Wpup_UpdateServer {
 	protected function getLogFileName() {
 		$path = $this->logDirectory . '/request';
 		if ( $this->logRotationEnabled ) {
+			//phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date -- Similar to above.
 			$path .= '-' . date($this->logDateSuffix);
 		}
 		return $path . '.log';
@@ -463,8 +517,60 @@ class Wpup_UpdateServer {
 	 * @param Wpup_Request|null $request
 	 * @return array
 	 */
-	protected function filterLogInfo($columns, /** @noinspection PhpUnusedParameterInspection */$request = null) {
+	protected function filterLogInfo($columns, /** @noinspection PhpUnusedParameterInspection */ $request = null) {
 		return $columns;
+	}
+
+	/**
+	 * Escapes passed log data so it can be safely written into a plain text file.
+	 *
+	 * @param string[] $columns List of columns in the log entry.
+	 * @return string[] Escaped $columns.
+	 */
+	protected function escapeLogInfo(array $columns) {
+		return array_map(array($this, 'escapeLogValue'), $columns);
+	}
+
+	/**
+	 * Escapes passed value to be safely written into a plain text file.
+	 *
+	 * @param string|null $value Value to escape.
+	 * @return string|null Escaped value.
+	 */
+	protected function escapeLogValue($value) {
+
+		if ( !isset($value) ) {
+			return null;
+		}
+
+		$value = (string)$value;
+
+		$regex = '/[[:^graph:]]/';
+
+		//preg_replace_callback will return NULL if the input contains invalid Unicode sequences,
+		//so only enable the Unicode flag if the input encoding looks valid.
+		/** @noinspection PhpComposerExtensionStubsInspection */
+		if ( function_exists('mb_check_encoding') && mb_check_encoding($value, 'UTF-8') ) {
+			$regex = $regex . 'u';
+		}
+
+		$value = str_replace('\\', '\\\\', $value);
+		$value = preg_replace_callback(
+			$regex,
+			function (array $matches) {
+				$length = strlen($matches[0]);
+				$escaped = '';
+				for ($i = 0; $i < $length; $i++) {
+					//Convert the character to a hexadecimal escape sequence.
+					$hexCode = dechex(ord($matches[0][$i]));
+					$escaped .= '\x' . strtoupper(str_pad($hexCode, 2, '0', STR_PAD_LEFT));
+				}
+				return $escaped;
+			},
+			$value
+		);
+
+		return $value;
 	}
 
 	/**
@@ -505,7 +611,7 @@ class Wpup_UpdateServer {
 		$logFiles = array_reverse($logFiles);
 
 		//Keep the most recent $logBackupCount files, delete the rest.
-		foreach(array_slice($logFiles, $this->logBackupCount) as $fileName) {
+		foreach (array_slice($logFiles, $this->logBackupCount) as $fileName) {
 			@unlink($fileName);
 		}
 	}
@@ -546,19 +652,30 @@ class Wpup_UpdateServer {
 	protected function outputAsJson($response) {
 		header('Content-Type: application/json; charset=utf-8');
 		if ( defined('JSON_PRETTY_PRINT') ) {
-			$output = json_encode($response, JSON_PRETTY_PRINT);
+			$output = $this->jsonEncode($response, JSON_PRETTY_PRINT);
 		} elseif ( function_exists('wsh_pretty_json') ) {
-			$output = wsh_pretty_json(json_encode($response));
+			$output = wsh_pretty_json($this->jsonEncode($response));
 		} else {
-			$output = json_encode($response);
+			$output = $this->jsonEncode($response);
 		}
+		//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- The output is JSON, not HTML.
 		echo $output;
+	}
+
+	protected function jsonEncode($value, $flags = 0) {
+		if ( function_exists('wp_json_encode') ) {
+			return wp_json_encode($value, $flags);
+		} else {
+			//Fall back to the native json_encode() when running outside of WordPress.
+			//phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+			return json_encode($value, $flags);
+		}
 	}
 
 	/**
 	 * Stop script execution with an error message.
 	 *
-	 * @param string $message Error message.
+	 * @param string $message Error message. It should already be HTML-escaped. This method will not sanitize it.
 	 * @param int $httpStatus Optional HTTP status code. Defaults to 500 (Internal Server Error).
 	 */
 	protected function exitWithError($message = '', $httpStatus = 500) {
@@ -589,16 +706,18 @@ class Wpup_UpdateServer {
 			502 => '502 Bad Gateway',
 			503 => '503 Service Unavailable',
 			504 => '504 Gateway Timeout',
-			505 => '505 HTTP Version Not Supported'
+			505 => '505 HTTP Version Not Supported',
 		);
 
-		if ( !isset($_SERVER['SERVER_PROTOCOL']) || $_SERVER['SERVER_PROTOCOL'] === '' ) {
+		if ( !isset($_SERVER['SERVER_PROTOCOL']) || ($_SERVER['SERVER_PROTOCOL'] === '') ) {
 			$protocol = 'HTTP/1.1';
 		} else {
-			$protocol = $_SERVER['SERVER_PROTOCOL'];
+			//We'll just return the same protocol as the client used.
+			//phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$protocol = strval($_SERVER['SERVER_PROTOCOL']);
 		}
 
-		//Output a HTTP status header.
+		//Output an HTTP status header.
 		if ( isset($statusMessages[$httpStatus]) ) {
 			header($protocol . ' ' . $statusMessages[$httpStatus]);
 			$title = $statusMessages[$httpStatus];
@@ -617,7 +736,10 @@ class Wpup_UpdateServer {
 				<head> <title>%1$s</title> </head>
 				<body> <h1>%1$s</h1> <p>%2$s</p> </body>
 			 </html>',
-			$title, $message
+			//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- esc_html() might not be available here.
+			htmlentities($title),
+			//phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Should already be escaped.
+			$message
 		);
 		exit;
 	}
@@ -630,7 +752,7 @@ class Wpup_UpdateServer {
 	 * @param string $url The old URL. Optional, defaults to the request url without query arguments.
 	 * @return string New URL.
 	 */
-	protected static function addQueryArg($args, $url = null ) {
+	protected static function addQueryArg($args, $url = null) {
 		if ( !isset($url) ) {
 			$url = self::guessServerUrl();
 		}
@@ -646,7 +768,7 @@ class Wpup_UpdateServer {
 		$query = array_merge($query, $args);
 
 		//Remove null/false arguments.
-		$query = array_filter($query, function($value) {
+		$query = array_filter($query, function ($value) {
 			return ($value !== null) && ($value !== false);
 		});
 

@@ -1,7 +1,8 @@
 <?php
 
-if ( !function_exists('Markdown') ) {
-	include 'markdown.php'; //Used to convert readme.txt contents to HTML.
+if ( !class_exists('Parsedown') ) {
+	//Used to convert readme.txt contents to HTML.
+	require_once __DIR__ . '/../Parsedown/Parsedown.php';
 }
 
 class WshWordPressPackageParser {
@@ -125,6 +126,7 @@ class WshWordPressPackageParser {
 			'donate' => '',
 			'tags' => array(),
 			'requires' => '',
+			'requires_php' => '',
 			'tested' => '',
 			'stable' => '',
 			'short_description' => '',
@@ -148,6 +150,7 @@ class WshWordPressPackageParser {
 			'Tags' => 'tags',
 			'Requires at least' => 'requires',
 			'Tested up to' => 'tested',
+			'Requires PHP' => 'requires_php',
 			'Stable tag' => 'stable',
 		);
 		do { //Parse each readme.txt header
@@ -221,8 +224,8 @@ class WshWordPressPackageParser {
 	 */
 	private static function applyMarkdown($text){
 		//The WP standard for readme files uses some custom markup, like "= H4 headers ="
-		$text = preg_replace('@^\s*=\s*(.+?)\s*=\s*$@m', "<h4>$1</h4>\n", $text);
-		return Markdown($text);
+		$text = preg_replace('@^\s*=\s*(.+?)\s*=\s*$@m', "\n####$1####\n", $text);
+		return Parsedown::instance()->text($text);
 	}
 
 	/**
@@ -261,6 +264,7 @@ class WshWordPressPackageParser {
 			'Network' => 'Network',
 			'Depends' => 'Depends',
 			'Provides' => 'Provides',
+			'RequiresPHP' => 'Requires PHP',
 
 			//Site Wide Only is deprecated in favor of Network.
 			'_sitewide' => 'Site Wide Only',

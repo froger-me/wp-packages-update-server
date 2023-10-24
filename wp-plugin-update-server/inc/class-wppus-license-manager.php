@@ -223,17 +223,17 @@ class WPPUS_License_Manager {
 				'condition'    => 'boolean',
 			),
 			'wppus_license_private_api_auth_key' => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_auth_key', FILTER_SANITIZE_STRING ),
+				'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_auth_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 				'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
 				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 			),
 			'wppus_license_hmac_key'             => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_license_hmac_key', FILTER_SANITIZE_STRING ),
+				'value'                   => filter_input( INPUT_POST, 'wppus_license_hmac_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 				'display_name'            => __( 'Signatures HMAC Key', 'wppus' ),
 				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 			),
 			'wppus_license_crypto_key'           => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_license_crypto_key', FILTER_SANITIZE_STRING ),
+				'value'                   => filter_input( INPUT_POST, 'wppus_license_crypto_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 				'display_name'            => __( 'Signatures Encryption Key', 'wppus' ),
 				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 			),
