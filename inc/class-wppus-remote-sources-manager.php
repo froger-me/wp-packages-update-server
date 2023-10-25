@@ -138,13 +138,15 @@ class WPPUS_Remote_Sources_Manager {
 	protected function plugin_options_handler() {
 		$errors = array();
 		$result = '';
-
 		$original_wppus_remote_repository_check_frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
 		$new_wppus_remote_repository_check_frequency      = null;
 		$original_wppus_use_remote_repository             = get_option( 'wppus_use_remote_repository' );
 		$new_wppus_use_remote_repository                  = null;
 
-		if ( isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) && wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' ) ) {
+		if (
+			isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) &&
+			wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' )
+		) {
 			$result  = __( 'WP Plugin Update Server options successfully updated', 'wppus' );
 			$options = $this->get_submitted_options();
 
@@ -168,11 +170,14 @@ class WPPUS_Remote_Sources_Manager {
 					if ( 'service_url' === $condition ) {
 						$repo_regex = '@^/?([^/]+?)/([^/#?&]+?)/?$@';
 						$path       = wp_parse_url( $option_info['value'], PHP_URL_PATH );
-						$condition  = (bool) preg_match( $username_repo_regex, $path );
+						$condition  = (bool) preg_match( $repo_regex, $path );
 					}
 				}
 
-				if ( ! $skip && isset( $option_info['dependency'] ) && ! $options[ $option_info['dependency'] ]['value'] ) {
+				if (
+					! $skip && isset( $option_info['dependency'] ) &&
+					! $options[ $option_info['dependency'] ]['value']
+				) {
 					$skip      = true;
 					$condition = false;
 				}
@@ -196,7 +201,10 @@ class WPPUS_Remote_Sources_Manager {
 					);
 				}
 			}
-		} elseif ( isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) && ! wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' ) ) {
+		} elseif (
+			isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) &&
+			! wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' )
+		) {
 			$errors['general'] = __( 'There was an error validating the form. It may be outdated. Please reload the page.', 'wppus' );
 		}
 
@@ -206,8 +214,10 @@ class WPPUS_Remote_Sources_Manager {
 
 		$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
 
-		if ( null !== $new_wppus_use_remote_repository &&
-			$new_wppus_use_remote_repository !== $original_wppus_use_remote_repository ) {
+		if (
+			null !== $new_wppus_use_remote_repository &&
+			$new_wppus_use_remote_repository !== $original_wppus_use_remote_repository
+		) {
 
 			if ( ! $original_wppus_use_remote_repository && $new_wppus_use_remote_repository ) {
 				$this->scheduler->reschedule_remote_check_events( $frequency );
@@ -216,8 +226,10 @@ class WPPUS_Remote_Sources_Manager {
 			}
 		}
 
-		if ( null !== $new_wppus_remote_repository_check_frequency &&
-			$new_wppus_remote_repository_check_frequency !== $original_wppus_remote_repository_check_frequency ) {
+		if (
+			null !== $new_wppus_remote_repository_check_frequency &&
+			$new_wppus_remote_repository_check_frequency !== $original_wppus_remote_repository_check_frequency
+		) {
 			$this->scheduler->reschedule_remote_check_events( $new_wppus_remote_repository_check_frequency );
 		}
 
@@ -226,41 +238,44 @@ class WPPUS_Remote_Sources_Manager {
 
 	protected function get_submitted_options() {
 
-		return apply_filters( 'wppus_submitted_remote_sources_config', array(
-			'wppus_use_remote_repository'             => array(
-				'value'        => filter_input( INPUT_POST, 'wppus_use_remote_repository', FILTER_VALIDATE_BOOLEAN ),
-				'display_name' => __( 'Use remote repository service', 'wppus' ),
-				'condition'    => 'boolean',
-			),
-			'wppus_remote_repository_url'             => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_url', FILTER_VALIDATE_URL ),
-				'display_name'            => __( 'Remote repository service URL', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid URL', 'wppus' ),
-				'dependency'              => 'wppus_use_remote_repository',
-				'condition'               => 'service_url',
-			),
-			'wppus_remote_repository_self_hosted'     => array(
-				'value'        => filter_input( INPUT_POST, 'wppus_remote_repository_self_hosted', FILTER_VALIDATE_BOOLEAN ),
-				'display_name' => __( 'Self-hosted remote repository service', 'wppus' ),
-				'condition'    => 'boolean',
-			),
-			'wppus_remote_repository_branch'          => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_branch', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-				'display_name'            => __( 'Packages branch name', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-			),
-			'wppus_remote_repository_credentials'     => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_credentials', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-				'display_name'            => __( 'Remote repository service credentials', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-			),
-			'wppus_remote_repository_check_frequency' => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_check_frequency', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-				'display_name'            => __( 'Remote update check frequency', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid option', 'wppus' ),
-				'condition'               => 'known frequency',
-			),
-		) );
+		return apply_filters(
+			'wppus_submitted_remote_sources_config',
+			array(
+				'wppus_use_remote_repository'             => array(
+					'value'        => filter_input( INPUT_POST, 'wppus_use_remote_repository', FILTER_VALIDATE_BOOLEAN ),
+					'display_name' => __( 'Use remote repository service', 'wppus' ),
+					'condition'    => 'boolean',
+				),
+				'wppus_remote_repository_url'             => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_url', FILTER_VALIDATE_URL ),
+					'display_name'            => __( 'Remote repository service URL', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid URL', 'wppus' ),
+					'dependency'              => 'wppus_use_remote_repository',
+					'condition'               => 'service_url',
+				),
+				'wppus_remote_repository_self_hosted'     => array(
+					'value'        => filter_input( INPUT_POST, 'wppus_remote_repository_self_hosted', FILTER_VALIDATE_BOOLEAN ),
+					'display_name' => __( 'Self-hosted remote repository service', 'wppus' ),
+					'condition'    => 'boolean',
+				),
+				'wppus_remote_repository_branch'          => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_branch', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Packages branch name', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+				),
+				'wppus_remote_repository_credentials'     => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_credentials', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Remote repository service credentials', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+				),
+				'wppus_remote_repository_check_frequency' => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_check_frequency', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Remote update check frequency', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid option', 'wppus' ),
+					'condition'               => 'known frequency',
+				),
+			)
+		);
 	}
 
 }

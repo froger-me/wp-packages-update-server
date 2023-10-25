@@ -73,7 +73,6 @@ class WPPUS_License_Server {
 	public function browse_licenses( $payload ) {
 		global $wpdb;
 
-		$result         = array();
 		$prepare_args   = array();
 		$payload        = apply_filters( 'wppus_browse_licenses_payload', $payload );
 		$browsing_query = $this->build_browsing_query( $payload );
@@ -128,7 +127,7 @@ class WPPUS_License_Server {
 		$payload    = apply_filters( 'wppus_read_license_payload', $payload );
 		$validation = ( isset( $payload['id'] ) && ! empty( $payload['id'] ) );
 		$validation = $validation || ( isset( $payload['license_key'] ) && ! empty( $payload['license_key'] ) );
-		$return     = array();
+		$return     = new stdClass();
 
 		if ( true === $validation ) {
 			global $wpdb;
@@ -261,28 +260,14 @@ class WPPUS_License_Server {
 	}
 
 	public function generate_license_signature( $license, $domain ) {
-
-		$crypt_payload = array(
-			$domain,
-			$license->package_slug,
-		);
-
-		$hmac_payload = array(
-			$license->license_key,
-			$license->id,
-		);
-
-		$crypt = CryptoUrl::encrypt(
-			implode( self::DATA_SEPARATOR, $crypt_payload ),
-			get_option( 'wppus_license_crypto_key', 'crypto' )
-		);
-
-		$hmac = CryptoUrl::hmac_sign(
-			implode( self::DATA_SEPARATOR, $hmac_payload ),
-			get_option( 'wppus_license_hmac_key', 'hmac' )
-		);
-
-		$signature = $crypt . self::CRYPT_HMAC_SEPARATOR . $hmac;
+		$config        = WPPUS_License_API::get_config();
+		$hmac_key      = $config['licenses_hmac_key'];
+		$crypto_key    = $config['licenses_crypto_key'];
+		$crypt_payload = array( $domain, $license->package_slug );
+		$hmac_payload  = array( $license->license_key, $license->id );
+		$crypt         = WPPUS_Crypto::encrypt( implode( self::DATA_SEPARATOR, $crypt_payload ), $crypto_key, $hmac_key );
+		$hmac          = WPPUS_Crypto::hmac_sign( implode( self::DATA_SEPARATOR, $hmac_payload ), $hmac_key );
+		$signature     = $crypt . self::CRYPT_HMAC_SEPARATOR . $hmac;
 
 		return $signature;
 	}
@@ -296,11 +281,11 @@ class WPPUS_License_Server {
 		$hmac_key   = $config['licenses_hmac_key'];
 		$crypto_key = $config['licenses_crypto_key'];
 
-		if ( ! ( empty( $crypt ) || empty( $hmac ) || ! CryptoUrl::hmac_verify( $hmac, $hmac_key ) ) ) {
+		if ( ! ( empty( $crypt ) || empty( $hmac ) || ! WPPUS_Crypto::hmac_verify( $hmac, $hmac_key ) ) ) {
 			$payload = null;
 
 			try {
-				$payload = CryptoUrl::decrypt( $crypt, $crypto_key );
+				$payload = WPPUS_Crypto::decrypt( $crypt, $crypto_key, $hmac_key );
 			} catch ( Exception $e ) {
 				$payload = false;
 			}
@@ -310,23 +295,10 @@ class WPPUS_License_Server {
 				$domain       = isset( $data[0] ) ? $data[0] : null;
 				$package_slug = isset( $data[1] ) ? $data[1] : null;
 
-				$condition = in_array( $domain, $license->allowed_domains, true );
-				$condition = $condition && $license->package_slug === $package_slug;
-
-				// @todo remove in 2.0
-				if ( ! $condition ) {
-					$condition = in_array( $domain, $license->allowed_domains, true );
-
-					if ( 'plugin' === $license->package_type ) {
-						$item_reference = $license->package_slug . '/' . $license->package_slug . '.php';
-					} else {
-						$item_reference = $license->package_slug . '/functions.php';
-					}
-
-					$condition = $condition && $item_reference === $package_slug;
-				}
-
-				if ( $condition ) {
+				if (
+					in_array( $domain, $license->allowed_domains, true ) &&
+					$license->package_slug === $package_slug
+				) {
 					$valid = true;
 				}
 			}
@@ -338,9 +310,9 @@ class WPPUS_License_Server {
 	public function switch_expired_licenses_status() {
 		global $wpdb;
 
-		$sql = "UPDATE {$wpdb->prefix}wppus_licenses 
-				SET status = 'expired' 
-				WHERE date_expiry <= %s 
+		$sql = "UPDATE {$wpdb->prefix}wppus_licenses
+				SET status = 'expired'
+				WHERE date_expiry <= %s
 				AND status != 'blocked'
 				AND date_expiry != '0000-00-00'";
 
@@ -515,9 +487,11 @@ class WPPUS_License_Server {
 			}
 		}
 
-		if ( ! empty( $license['date_expiry'] ) &&
+		if (
+			! empty( $license['date_expiry'] ) &&
 			'blocked' !== $license['status'] &&
-			strtotime( $license['date_expiry'] ) <= strtotime( mysql2date( 'Y-m-d', current_time( 'mysql' ), false ) ) ) {
+			strtotime( $license['date_expiry'] ) <= strtotime( mysql2date( 'Y-m-d', current_time( 'mysql' ), false ) )
+		) {
 			$license['status'] = 'expired';
 		}
 
@@ -563,7 +537,14 @@ class WPPUS_License_Server {
 				}
 			}
 
-			if ( ! ( $partial && ! isset( $license['license_key'] ) ) && ( ! is_string( $license['license_key'] ) || empty( $license['license_key'] ) ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['license_key'] ) ) &&
+				(
+					! is_string( $license['license_key'] ) ||
+					empty( $license['license_key'] )
+				)
+			) {
 				$errors[] = __( 'The license key is required and must be a string.', 'wppus' );
 			} elseif ( ! $partial && isset( $license['license_key'] ) ) {
 				$sql    = "SELECT COUNT(*) FROM {$wpdb->prefix}wppus_licenses WHERE license_key = %s;";
@@ -574,47 +555,110 @@ class WPPUS_License_Server {
 				}
 			}
 
-			if ( ! ( $partial && ! isset( $license['max_allowed_domains'] ) ) && ( ! is_numeric( $license['max_allowed_domains'] ) || $license['max_allowed_domains'] < 1 ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['max_allowed_domains'] ) ) &&
+				(
+					! is_numeric( $license['max_allowed_domains'] ) ||
+					$license['max_allowed_domains'] < 1
+				)
+			) {
 				$errors[] = __( 'The number of allowed domains is required and must be greater than 1.', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['status'] ) ) && ( ! in_array( $license['status'], self::$license_statuses, true ) ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['status'] ) ) &&
+				! in_array( $license['status'], self::$license_statuses, true )
+			) {
 				$errors[] = __( 'The license status is invalid.', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['email'] ) ) && ( ! filter_var( $license['email'] ) ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['email'] ) ) &&
+				! filter_var( $license['email'] )
+			) {
 				$errors[] = __( 'The registered email is required and must be a valid email address.', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['date_created'] ) ) && ( empty( $license['date_created'] ) || ! preg_match( $date_regex, $license['date_created'] ) ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['date_created'] ) ) &&
+				(
+					empty( $license['date_created'] ) ||
+					! preg_match( $date_regex, $license['date_created'] )
+				)
+			) {
 				$errors[] = __( 'The creation date is required and must follow the following format: YYYY-MM-DD', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['date_renewed'] ) ) && ( ! empty( $license['date_renewed'] ) && ! preg_match( $date_regex, $license['date_renewed'] ) ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['date_renewed'] ) ) &&
+				(
+					! empty( $license['date_renewed'] ) &&
+					! preg_match( $date_regex, $license['date_renewed'] )
+				)
+			) {
 				$errors[] = __( 'The renewal date must follow the following format: YYYY-MM-DD', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['date_expiry'] ) ) && ( ! empty( $license['date_expiry'] ) && ! preg_match( $date_regex, $license['date_expiry'] ) ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['date_expiry'] ) ) &&
+				(
+					! empty( $license['date_expiry'] ) &&
+					! preg_match( $date_regex, $license['date_expiry'] )
+				)
+			) {
 				$errors[] = __( 'The expiry date must follow the following format: YYYY-MM-DD', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['package_slug'] ) ) && ( empty( $license['package_slug'] ) || ! preg_match( '/[a-z0-9-]*/', $license['package_slug'] ) ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['package_slug'] ) ) &&
+				(
+					empty( $license['package_slug'] ) ||
+					! preg_match( '/[a-z0-9-]*/', $license['package_slug'] )
+				)
+			) {
 				$errors[] = __( 'The package slug is required and must contain only alphanumeric characters or dashes.', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['package_type'] ) ) && ( 'plugin' !== $license['package_type'] && 'theme' !== $license['package_type'] ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['package_type'] ) ) &&
+				'plugin' !== $license['package_type'] &&
+				'theme' !== $license['package_type']
+			) {
 				$errors[] = __( 'The package type is required and must be "plugin" or "theme".', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['owner_name'] ) ) && ! empty( $license['owner_name'] ) && ! is_string( $license['owner_name'] ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['owner_name'] ) ) &&
+				! empty( $license['owner_name'] ) &&
+				! is_string( $license['owner_name'] )
+			) {
 				$errors[] = __( 'The license owner name must be a string.', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['company_name'] ) ) && ! empty( $license['company_name'] ) && ! is_string( $license['company_name'] ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['company_name'] ) ) &&
+				! empty( $license['company_name'] ) &&
+				! is_string( $license['company_name'] )
+			) {
 				$errors[] = __( 'The company name must be a string.', 'wppus' );
 			}
 
-			if ( ! ( $partial && ! isset( $license['txn_id'] ) ) && ! empty( $license['txn_id'] ) && ! is_string( $license['txn_id'] ) ) {
+			if (
+				! ( $partial &&
+				! isset( $license['txn_id'] ) ) &&
+				! empty( $license['txn_id'] ) &&
+				! is_string( $license['txn_id'] )
+			) {
 				$errors[] = __( 'The transaction ID must be a string.', 'wppus' );
 			}
 

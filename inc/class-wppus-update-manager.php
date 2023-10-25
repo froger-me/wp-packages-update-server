@@ -4,18 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-if ( ! defined( 'WPPUS_MB_TO_B' ) ) {
-	define( 'WPPUS_MB_TO_B', 1000000 );
-}
-
-if ( ! defined( 'WPPUS_DEFAULT_LOGS_MAX_SIZE' ) ) {
-	define( 'WPPUS_DEFAULT_LOGS_MAX_SIZE', 10 );
-}
-
-if ( ! defined( 'WPPUS_DEFAULT_CACHE_MAX_SIZE' ) ) {
-	define( 'WPPUS_DEFAULT_CACHE_MAX_SIZE', 100 );
-}
-
 class WPPUS_Update_Manager {
 
 	const WPPUS_DEFAULT_LOGS_MAX_SIZE    = 10;
@@ -29,7 +17,7 @@ class WPPUS_Update_Manager {
 
 	protected $packages_table;
 	protected $scheduler;
-    protected $rows = array();
+	protected $rows = array();
 
 	public function __construct( $init_hooks = false ) {
 
@@ -75,7 +63,6 @@ class WPPUS_Update_Manager {
 
 		if ( is_admin() && ! wp_doing_ajax() && ! wp_doing_cron() ) {
 			$this->packages_table = new WPPUS_Packages_Table( $this );
-			$redirect             = false;
 
 			$condition = ( isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], $this->packages_table->nonce_action ) );
 			$condition = $condition || ( isset( $_REQUEST['linknonce'] ) && wp_verify_nonce( $_REQUEST['linknonce'], 'linknonce' ) );
@@ -93,11 +80,10 @@ class WPPUS_Update_Manager {
 				}
 
 				if ( 'wppus-page' === $page ) {
-					// $redirect = admin_url( 'admin.php?page=wppus-page' );
 
 					if ( $packages && 'download' === $action ) {
-						$error    = $this->download_packages_bulk( $packages );
-						$redirect = false;
+						$error = $this->download_packages_bulk( $packages );
+
 						if ( $error ) {
 							$this->packages_table->bulk_action_error = $error;
 						}
@@ -123,15 +109,6 @@ class WPPUS_Update_Manager {
 
 			$this->packages_table->licensed_package_slugs = get_option( 'wppus_licensed_package_slugs', array() );
 			$this->packages_table->show_license_info      = get_option( 'wppus_use_licenses', false );
-
-			// if ( $redirect ) {
-
-			// 	if ( isset( $_REQUEST['s'] ) ) {
-			// 		$redirect = add_query_arg( 's', $_REQUEST['s'], $redirect );
-			// 	}
-
-			// 	wp_redirect( $redirect );
-			// }
 		}
 	}
 
@@ -156,7 +133,13 @@ class WPPUS_Update_Manager {
 			} else {
 				$params['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nAll packages will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
 			}
-			wp_enqueue_script( 'wp-plugin-update-server-script', WPPUS_PLUGIN_URL . 'js/admin/main' . $js_ext, array( 'jquery' ), $ver_js, true );
+			wp_enqueue_script(
+				'wp-plugin-update-server-script',
+				WPPUS_PLUGIN_URL . 'js/admin/main' . $js_ext,
+				array( 'jquery' ),
+				$ver_js,
+				true
+			);
 			wp_localize_script( 'wp-plugin-update-server-script', 'Wppus', $params );
 
 			$css_ext = ( $debug ) ? '.css' : '.min.css';
@@ -275,16 +258,13 @@ class WPPUS_Update_Manager {
 
 		if ( $result && $type ) {
 			wp_send_json_success( array( 'btnVal' => __( 'Force Clean', 'wppus' ) . ' (' . self::get_dir_size_mb( $type ) . ')' ) );
-		} else {
+		} elseif ( in_array( $type, self::$filesystem_clean_types ) ) { // @codingStandardsIgnoreLine
+			$error = new WP_Error(
+				__METHOD__,
+				__( 'Error - check the directory is writable', 'wppus' )
+			);
 
-			if ( in_array( $type, self::$filesystem_clean_types ) ) { // @codingStandardsIgnoreLine
-				$error = new WP_Error(
-					__METHOD__,
-					__( 'Error - check the directory is writable', 'wppus' )
-				);
-
-				wp_send_json_error( $error );
-			}
+			wp_send_json_error( $error );
 		}
 	}
 
@@ -554,7 +534,7 @@ class WPPUS_Update_Manager {
 		}
 
 		$temp_directory = WPPUS_Data_Manager::get_data_dir( 'tmp' );
-		$archive_name   = 'archive-' . current_time( 'timestamp' );
+		$archive_name   = 'archive-' . time();
 		$archive_path   = trailingslashit( $temp_directory ) . $archive_name . '.zip';
 
 		$zip = new ZipArchive();
@@ -637,23 +617,12 @@ class WPPUS_Update_Manager {
 			foreach ( $options as $option_name => $option_info ) {
 				$condition = $option_info['value'];
 
-				if ( isset( $option_info['condition'] ) ) {
-
-					if ( 'number' === $option_info['condition'] ) {
-						$condition = is_numeric( $option_info['value'] );
-					}
+				if ( isset( $option_info['condition'] ) && 'number' === $option_info['condition'] ) {
+					$condition = is_numeric( $option_info['value'] );
 				}
 
 				if ( $condition ) {
 					update_option( $option_name, $option_info['value'] );
-
-					if ( 'wppus_remote_repository_check_frequency' === $option_name ) {
-						$new_wppus_remote_repository_check_frequency = $option_info['value'];
-					}
-
-					if ( 'wppus_use_remote_repository' === $option_name ) {
-						$new_wppus_use_remote_repository = $option_info['value'];
-					}
 				} else {
 					$errors[ $option_name ] = sprintf(
 						// translators: %1$s is the option display name, %2$s is the condition for update
@@ -663,7 +632,10 @@ class WPPUS_Update_Manager {
 					);
 				}
 			}
-		} elseif ( isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) && ! wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' ) ) {
+		} elseif (
+			isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) &&
+			! wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' )
+		) {
 			$errors['general'] = __( 'There was an error validating the form. It may be outdated. Please reload the page.', 'wppus' );
 		}
 
@@ -676,26 +648,29 @@ class WPPUS_Update_Manager {
 
 	protected function get_submitted_options() {
 
-		return apply_filters( 'wppus_submitted_data_config', array(
-			'wppus_cache_max_size'   => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_cache_max_size', FILTER_VALIDATE_INT ),
-				'display_name'            => __( 'Cache max size (in MB)', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid number', 'wppus' ),
-				'condition'               => 'number',
-			),
-			'wppus_logs_max_size'    => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_logs_max_size', FILTER_VALIDATE_INT ),
-				'display_name'            => __( 'Logs max size (in MB)', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid number', 'wppus' ),
-				'condition'               => 'number',
-			),
-			'wppus_archive_max_size' => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_archive_max_size', FILTER_VALIDATE_INT ),
-				'display_name'            => __( 'Archive max size (in MB)', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid number', 'wppus' ),
-				'condition'               => 'number',
-			),
-		) );
+		return apply_filters(
+			'wppus_submitted_data_config',
+			array(
+				'wppus_cache_max_size'   => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cache_max_size', FILTER_VALIDATE_INT ),
+					'display_name'            => __( 'Cache max size (in MB)', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid number', 'wppus' ),
+					'condition'               => 'number',
+				),
+				'wppus_logs_max_size'    => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_logs_max_size', FILTER_VALIDATE_INT ),
+					'display_name'            => __( 'Logs max size (in MB)', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid number', 'wppus' ),
+					'condition'               => 'number',
+				),
+				'wppus_archive_max_size' => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_archive_max_size', FILTER_VALIDATE_INT ),
+					'display_name'            => __( 'Archive max size (in MB)', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid number', 'wppus' ),
+					'condition'               => 'number',
+				),
+			)
+		);
 	}
 
 	protected function change_packages_license_status_bulk( $package_slugs, $add ) {
@@ -711,11 +686,10 @@ class WPPUS_Update_Manager {
 
 				do_action( 'wppus_added_license_check', $package_slug );
 			} elseif ( ! $add && in_array( $package_slug, $licensed_package_slugs, true ) ) {
-				$key = array_search( $package_slug, $licensed_package_slugs, true );
+				$key     = array_search( $package_slug, $licensed_package_slugs, true );
+				$changed = true;
 
 				unset( $licensed_package_slugs[ $key ] );
-
-				$changed = true;
 
 				do_action( 'wppus_removed_license_check', $package_slug );
 			}

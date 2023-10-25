@@ -5,7 +5,7 @@ use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitHubApi;
 use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitLabApi;
 use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BitBucketApi;
 
-defined( 'ABSPATH' ) OR exit; // Exit if accessed directly
+defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
 class WPPUS_Update_Server extends Wpup_UpdateServer {
 
@@ -20,7 +20,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	protected $repository_check_frequency;
 	protected $update_checker;
 	protected $type;
-	protected $packageFileLoader = array('Wpup_Package_Extended', 'fromArchive'); // @codingStandardsIgnoreLine
+	protected $package_file_loader = array( 'Wpup_Package_Extended', 'fromArchive' );
 	protected $scheduler;
 
 	public function __construct(
@@ -62,9 +62,9 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$locks = get_option( 'wppus_update_from_remote_locks' );
 
 		if ( ! is_array( $locks ) ) {
-			update_option( 'wppus_update_from_remote_locks', array( $slug => current_time( 'timestamp' ) + self::LOCK_REMOTE_UPDATE_SEC ) );
+			update_option( 'wppus_update_from_remote_locks', array( $slug => time() + self::LOCK_REMOTE_UPDATE_SEC ) );
 		} elseif ( ! array_key_exists( $slug, $locks ) ) {
-			$locks[ $slug ] = current_time( 'timestamp' ) + self::LOCK_REMOTE_UPDATE_SEC;
+			$locks[ $slug ] = time() + self::LOCK_REMOTE_UPDATE_SEC;
 
 			update_option( 'wppus_update_from_remote_locks', $locks );
 		}
@@ -72,7 +72,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 	public static function is_update_from_remote_locked( $slug ) {
 		$locks     = get_option( 'wppus_update_from_remote_locks' );
-		$is_locked = is_array( $locks ) && array_key_exists( $slug, $locks ) && $locks[ $slug ] >= current_time( 'timestamp' );
+		$is_locked = is_array( $locks ) && array_key_exists( $slug, $locks ) && $locks[ $slug ] >= time();
 
 		return $is_locked;
 	}
@@ -104,14 +104,9 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 							WPPUS_Data_Manager::get_data_dir( 'tmp' ),
 							WPPUS_Data_Manager::get_data_dir( 'packages' )
 						);
+						$local_ready     = $package_manager->clean_package();
 
-						$downloaded = $package_manager->clean_package();
-
-						do_action( 'wppus_saved_remote_package_to_local', $downloaded, $info['type'], $safe_slug );
-
-						if ( $downloaded ) {
-							$local_ready = true;
-						}
+						do_action( 'wppus_saved_remote_package_to_local', $local_ready, $info['type'], $safe_slug );
 					} else {
 						error_log( __METHOD__ . ' invalid value for $info: ' . print_r( $info, true ) ); // @codingStandardsIgnoreLine
 					}
@@ -139,7 +134,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$has_update    = true;
 		$local_package = $this->findPackage( $slug );
 
-		if ( null !== $local_package ) {
+		if ( $local_package instanceof Wpup_Package ) {
 			$package_path = $local_package->getFileName();
 			$local_meta   = WshWordPressPackageParser::parsePackage( $package_path, true );
 			$local_info   = array(
@@ -152,8 +147,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			$this->type = ucfirst( $local_info['type'] );
 
 			if ( 'Plugin' === $this->type || 'Theme' === $this->type ) {
-				$remote_info = null;
-
 				$this->init_update_checker( $slug );
 
 				$remote_info = $this->update_checker->requestInfo();
@@ -179,11 +172,9 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$package_path = trailingslashit( $this->packageDirectory ) . $slug . '.zip'; // @codingStandardsIgnoreLine
 
 		if ( $wp_filesystem->is_file( $package_path ) ) {
-			$parsed_info    = WshWordPressPackageParser::parsePackage( $package_path, true );
-			$type           = ucfirst( $parsed_info['type'] );
-			$result         = $wp_filesystem->delete( $package_path );
-			$scheduled_hook = 'wppus_check_remote_' . $slug;
-			$params         = array( $slug );
+			$parsed_info = WshWordPressPackageParser::parsePackage( $package_path, true );
+			$type        = ucfirst( $parsed_info['type'] );
+			$result      = $wp_filesystem->delete( $package_path );
 
 			do_action( 'wppus_deleted_package', $result, $type, $slug );
 
@@ -195,7 +186,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 	protected function initRequest( $query = null, $headers = null ) {
 		$request = parent::initRequest( $query, $headers );
-		$license = null;
 
 		if ( $request->param( 'type' ) ) {
 			$request->type = $request->param( 'type' );
@@ -209,12 +199,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 	protected function checkAuthorization( $request ) {
 		parent::checkAuthorization( $request );
-
-		// @todo remove in 2.0
-		if ( false !== strpos( $_SERVER['REQUEST_URI'], 'wp-update-server' ) ) {
-
-			return;
-		};
 
 		if ( 'download' === $request->action && get_option( 'wppus_package_download_url_token' ) !== $request->token ) {
 			$message = __( 'The download URL token has expired.', 'wppus' );
@@ -266,7 +250,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			$this->scheduler->register_remote_check_event( $safe_slug, $this->repository_check_frequency );
 		}
 
-		return call_user_func( $this->packageFileLoader, $filename, $slug, $this->cache ); // @codingStandardsIgnoreLine
+		return call_user_func( $this->package_file_loader, $filename, $slug, $this->cache );
 	}
 
 	protected function actionGetMetadata( Wpup_Request $request ) {
@@ -287,7 +271,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			return;
 		}
 
-		//require_once WPPUS_PLUGIN_PATH . 'lib/plugin-update-checker/plugin-update-checker.php';
 		require_once WPPUS_PLUGIN_PATH . 'lib/proxy-update-checker/proxy-update-checker.php';
 
 		if ( $this->repository_service_self_hosted ) {
@@ -343,6 +326,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	protected function download_remote_package( $url, $timeout = 300 ) {
 
 		if ( ! $url ) {
+
 			return new WP_Error( 'http_no_url', __( 'Invalid URL provided.', 'wppus' ) );
 		}
 
@@ -353,14 +337,17 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			return new WP_Error( 'http_no_file', __( 'Could not create temporary file.', 'wppus' ) );
 		}
 
-		$response = wp_safe_remote_get( $url, array(
-			'timeout'  => $timeout,
-			'stream'   => true,
-			'filename' => $local_filename,
-			'headers'  => array(
-				'Authorization' => 'token ' . $this->repository_credentials
+		$response = wp_safe_remote_get(
+			$url,
+			array(
+				'timeout'  => $timeout,
+				'stream'   => true,
+				'filename' => $local_filename,
+				'headers'  => array(
+					'Authorization' => 'token ' . $this->repository_credentials,
+				),
 			)
-		) );
+		);
 
 		if ( is_wp_error( $response ) ) {
 			unlink( $local_filename );

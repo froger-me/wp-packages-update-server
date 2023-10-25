@@ -26,10 +26,10 @@ if ( $wp_filesystem->is_dir( $package_directory ) ) {
 	}
 }
 
-$mu_plugin = trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ) . 'wppus-endpoint-optimizer.php';
+$wppus_mu_plugin = trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ) . 'wppus-endpoint-optimizer.php';
 
-$wp_filesystem->delete( $mu_plugin );
-$wp_filesystem->delete( $mu_plugin . '.backup' );
+$wp_filesystem->delete( $wppus_mu_plugin );
+$wp_filesystem->delete( $wppus_mu_plugin . '.backup' );
 
 wp_clear_scheduled_hook( 'wppus_cleanup', array( 'cache' ) );
 wp_clear_scheduled_hook( 'wppus_cleanup', array( 'logs' ) );

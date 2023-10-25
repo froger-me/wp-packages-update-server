@@ -12,11 +12,13 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 	protected $rows;
 
 	public function __construct() {
-		parent::__construct( array(
-			'singular' => 'wppus-licenses-table',
-			'plural'   => 'wppus-licenses-table',
-			'ajax'     => false,
-		) );
+		parent::__construct(
+			array(
+				'singular' => 'wppus-licenses-table',
+				'plural'   => 'wppus-licenses-table',
+				'ajax'     => false,
+			)
+		);
 
 		$this->nonce_action = 'bulk-wppus-licenses-table';
 	}
@@ -130,11 +132,13 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 			$offset = ( $paged - 1 ) * $per_page;
 		}
 
-		$this->set_pagination_args( array(
-			'total_items' => $total_items,
-			'total_pages' => $total_pages,
-			'per_page'    => $per_page,
-		) );
+		$this->set_pagination_args(
+			array(
+				'total_items' => $total_items,
+				'total_pages' => $total_pages,
+				'per_page'    => $per_page,
+			)
+		);
 
 		$columns  = $this->get_columns();
 		$hidden   = array();
@@ -143,12 +147,11 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 		$this->process_bulk_action();
 
 		$this->_column_headers = array( $columns, $hidden, $sortable );
-
-		$args = array(
+		$args                  = array(
 			$per_page,
 			$offset,
 		);
-		$sql  = "SELECT * FROM {$wpdb->prefix}wppus_licenses";
+		$sql                   = "SELECT * FROM {$wpdb->prefix}wppus_licenses";
 
 		if ( $search ) {
 			$sql .= $where;
@@ -160,7 +163,6 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 
 		$sql  .= " ORDER BY $order_by $order LIMIT %d OFFSET %d";
 		$query = $wpdb->prepare( $sql, $args ); // @codingStandardsIgnoreLine
-		
 		$items = $wpdb->get_results( $query, ARRAY_A ); // @codingStandardsIgnoreLine
 
 		foreach ( $items as $index => $item ) {
@@ -169,7 +171,6 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 
 		$this->items = $items;
 	}
-
 
 	public function display_rows() {
 		$records = $this->items;
@@ -201,15 +202,17 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 		}
 
 		$out = '<div class="' . ( $always_visible ? 'row-actions visible open-panel' : 'row-actions open-panel' ) . '">';
+
 		foreach ( $actions as $action => $link ) {
 			++$i;
-			( $i === $action_count ) ? $sep = '' : $sep = ' | ';
 
+			$sep  = ( $i === $action_count ) ? '' : ' | ';
 			$out .= "<span class='$action'>$link$sep</span>";
 		}
-		$out .= '</div>';
 
-		$out .= '<button type="button" class="toggle-row"><span class="screen-reader-text">' . __( 'Show more details' ) . '</span></button>';
+		$out .= '</div>';
+		$out .= '<button type="button" class="toggle-row"><span class="screen-reader-text">'
+			. __( 'Show more details' ) . '</span></button>';
 
 		return $out;
 	}
@@ -223,6 +226,7 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 				$message = __( 'Download: Archive max size exceeded - try to adjust it in the settings below.', 'wppus' );
 
 				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );// @codingStandardsIgnoreLine
+
 				$this->bulk_action_error = '';
 			}
 		} elseif ( 'bottom' === $which ) {

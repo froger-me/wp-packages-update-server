@@ -16,7 +16,8 @@
 		if ( 'license_key' === $key ) {
 			$actions = array(
 				'edit'   => sprintf( '<a href="#">%s</a>', __( 'Edit', 'wppus' ) ),
-				'delete' => sprintf( '<a href="?page=%s&action=%s&license_data=%s&linknonce=%s">%s</a>',
+				'delete' => sprintf(
+					'<a href="?page=%s&action=%s&license_data=%s&linknonce=%s">%s</a>',
 					$_REQUEST['page'], //@codingStandardsIgnoreLine
 					'delete',
 					$record['id'],

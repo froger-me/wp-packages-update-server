@@ -54,7 +54,7 @@ class WPPUS_Scheduler {
 		if ( ! wp_next_scheduled( $hook, array( $slug ) ) ) {
 			$params    = array( $slug );
 			$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
-			$timestamp = current_time( 'timestamp' );
+			$timestamp = time();
 			$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
 
 			do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, $frequency, $hook, $params );
@@ -128,7 +128,7 @@ class WPPUS_Scheduler {
 
 		if ( ! wp_next_scheduled( $hook ) ) {
 			$frequency = apply_filters( 'wppus_schedule_license_frequency', 'hourly' );
-			$timestamp = current_time( 'timestamp' );
+			$timestamp = time();
 			$result    = wp_schedule_event( $timestamp, $frequency, $hook );
 
 			do_action( 'wppus_scheduled_license_event', $result, $timestamp, $frequency, $hook );
@@ -161,7 +161,7 @@ class WPPUS_Scheduler {
 
 			if ( ! wp_next_scheduled( $hook, $params ) ) {
 				$frequency = apply_filters( 'wppus_schedule_cleanup_frequency', 'hourly', $type );
-				$timestamp = current_time( 'timestamp' );
+				$timestamp = time();
 				$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
 
 				do_action( 'wppus_scheduled_cleanup_event', $result, $type, $timestamp, $frequency, $hook, $params );

@@ -11,7 +11,7 @@ jQuery(document).ready(function($) {
 
 	$('.wppus-wrap .wp-list-table .delete a').on('click', function(e) {
 		var r = window.confirm(Wppus.deleteRecord);
-			
+
 		if (!r) {
 			e.preventDefault();
 		}
@@ -19,7 +19,7 @@ jQuery(document).ready(function($) {
 
 	$('.wppus-delete-all-packages').on('click', function(e) {
 		var r = window.confirm(Wppus.deletePackagesConfirm);
-			
+
 		if (!r) {
 			e.preventDefault();
 		}
@@ -27,12 +27,12 @@ jQuery(document).ready(function($) {
 
 	$('.wppus-delete-all-licenses').on('click', function(e) {
 		var r = window.confirm(Wppus.deleteLicensesConfirm);
-			
+
 		if (!r) {
 			e.preventDefault();
 		}
 	});
-	
+
 	$('.ajax-trigger').on('click', function(e) {
 		e.preventDefault();
 
@@ -74,12 +74,12 @@ jQuery(document).ready(function($) {
 				Wppus.debug && console.log(textStatus);
 			}
 		});
-		
+
 	});
 
 	$('#wppus_prime_package_slug').on('keyup', function() {
 		var textinput = $(this);
-		
+
 		if (0 < textinput.val().length) {
 			$('#wppus_prime_package_trigger').removeAttr('disabled');
 		} else {
@@ -119,19 +119,19 @@ jQuery(document).ready(function($) {
 					button.next().css('visibility', 'hidden');
 					window.alert(message);
 				} else {
-					window.location.reload(true); 
+					window.location.reload(true);
 				}
 			},
 			error: function (jqXHR, textStatus) {
 				Wppus.debug && console.log(textStatus);
 			}
 		});
-		
+
 	});
 
 	$('#wppus_manual_package_upload').on('change', function() {
 		var fileinput = $(this);
-		
+
 		if (0 < fileinput.prop('files').length) {
 			$('#wppus_manual_package_upload_filename').val(fileinput.prop('files')[0].name);
 			$('#wppus_manual_package_upload_trigger').removeAttr('disabled');
@@ -192,7 +192,7 @@ jQuery(document).ready(function($) {
 
 				valid = false;
 			}
-			
+
 		} else {
 			window.alert(Wppus.invalidFile);
 
@@ -225,7 +225,7 @@ jQuery(document).ready(function($) {
 						button.removeAttr('disabled');
 						window.alert(message);
 					} else {
-						window.location.reload(true); 
+						window.location.reload(true);
 					}
 				},
 				error: function (jqXHR, textStatus) {
@@ -279,7 +279,7 @@ jQuery(document).ready(function($) {
 			resetLicensePanel();
 		});
 	});
-	
+
 	if ($.validator) {
 		$.validator.methods.licenseDate = function( value, element ) {
 			return this.optional( element ) || /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/.test( value );
@@ -324,7 +324,7 @@ jQuery(document).ready(function($) {
 			}
 		});
 	}
-	
+
 	$('#wppus_license_registered_domains').on('click', '.wppus-remove-domain', function(e) {
 		e.preventDefault();
 		$(this).parent().remove();

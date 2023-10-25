@@ -230,7 +230,7 @@ function wppus_tests_log( $message, $array_or_object = null ) {
 
 	date_default_timezone_set( @date_default_timezone_get() ); // @codingStandardsIgnoreLine
 
-	$line = date( '[Y-m-d H:i:s O]' ) . ' ' . $message;
+	$line = date( '[Y-m-d H:i:s O]' ) . ' ' . $message; // @codingStandardsIgnoreLine
 
 	if ( 'serverlog' === $wppus_output_log ) {
 		error_log( $line ); // @codingStandardsIgnoreLine

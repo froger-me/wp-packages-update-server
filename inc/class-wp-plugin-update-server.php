@@ -48,7 +48,7 @@ class WP_Plugin_Update_Server {
 		}
 
 		if ( ! class_exists( 'ZipArchive' ) ) {
-			$error_message  = __( 'The <a href="">zip</a> PHP extension is required by WP Plugin Update Server. Please check your server configuration.', 'wppus' );
+			$error_message = __( 'The <a href="">zip</a> PHP extension is required by WP Plugin Update Server. Please check your server configuration.', 'wppus' );
 		}
 
 		if ( ! get_option( 'wppus_plugin_version' ) ) {
@@ -119,9 +119,10 @@ class WP_Plugin_Update_Server {
 	}
 
 	public static function setup_mu_plugin_failure_notice() {
-		$class = 'notice notice-error';
-		// translators: %1$s is the path to the mu-plugins directory, %2$s is the path of the source MU Plugin
-		$message = sprintf( __( 'Permission errors for <code>%1$s</code> - could not setup the endpoint optimizer MU Plugin. You may create the directory if necessary and manually copy <code>%2$s</code> in it (recommended).', 'wppus' ),
+		$class   = 'notice notice-error';
+		$message = sprintf(
+			// translators: %1$s is the path to the mu-plugins directory, %2$s is the path of the source MU Plugin
+			__( 'Permission errors for <code>%1$s</code> - could not setup the endpoint optimizer MU Plugin. You may create the directory if necessary and manually copy <code>%2$s</code> in it (recommended).', 'wppus' ),
 			trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ),
 			wp_normalize_path( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimizer.php' )
 		);
@@ -130,9 +131,10 @@ class WP_Plugin_Update_Server {
 	}
 
 	public static function setup_mu_plugin_success_notice() {
-		$class = 'notice notice-info is-dismissible';
-		// translators: %1$s is the path to the mu-plugin
-		$message = sprintf( __( 'An endpoint optimizer MU Plugin has been confirmed to be installed in <code>%1$s</code>.', 'wppus' ),
+		$class   = 'notice notice-info is-dismissible';
+		$message = sprintf(
+			// translators: %1$s is the path to the mu-plugin
+			__( 'An endpoint optimizer MU Plugin has been confirmed to be installed in <code>%1$s</code>.', 'wppus' ),
 			trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ) . 'wppus-endpoint-optimizer.php'
 		);
 
@@ -176,7 +178,7 @@ class WP_Plugin_Update_Server {
 			license_key varchar(255) NOT NULL,
 			max_allowed_domains int(12) NOT NULL,
 			allowed_domains longtext NOT NULL,
-			status ENUM('pending', 'activated', 'deactivated', 'blocked', 'expired') NOT NULL DEFAULT 'pending',         
+			status ENUM('pending', 'activated', 'deactivated', 'blocked', 'expired') NOT NULL DEFAULT 'pending',
 			owner_name varchar(255) NOT NULL default '',
 			email varchar(64) NOT NULL,
 			company_name varchar(100) NOT NULL default '',
@@ -193,12 +195,9 @@ class WP_Plugin_Update_Server {
 		dbDelta( $sql );
 
 		$table_name = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "wppus_licenses'" );
+		$success    = $wpdb->prefix . 'wppus_licenses' === $table_name;
 
-		if ( $wpdb->prefix . 'wppus_licenses' !== $table_name ) {
-			return false;
-		}
-
-		return true;
+		return $success;
 	}
 
 	public static function maybe_setup_mu_plugin() {

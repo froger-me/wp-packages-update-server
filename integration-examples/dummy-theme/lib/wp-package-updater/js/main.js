@@ -3,7 +3,7 @@
 jQuery(document).ready(function($) {
 
 	var labelTheme = $('.appearance_page_theme-license .wrap-license label');
-	
+
 	labelTheme.css('display', 'block');
 	labelTheme.css('margin-bottom', '10px');
 	$('.appearance_page_theme-license .wrap-license input[type="text"]').css('width', '50%');
@@ -25,7 +25,7 @@ jQuery(document).ready(function($) {
 			data: data,
 			type: 'POST',
 			success: function(response) {
-				
+
 				if (response.success) {
 					licenseContainer.find('.current-license').html(licenseContainer.find('.license').val());
 					licenseContainer.find('.current-license-error').hide();
@@ -33,7 +33,7 @@ jQuery(document).ready(function($) {
 					$( '.license-error-' + licenseContainer.data('package_slug') + '.notice' ).hide();
 				} else {
 					var errorContainer = licenseContainer.find('.current-license-error');
-					
+
 					errorContainer.html(response.data[0].message + '<br/>');
 					errorContainer.show();
 					licenseContainer.find('.license-message').show();

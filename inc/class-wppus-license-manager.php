@@ -108,7 +108,9 @@ class WPPUS_License_Manager {
 		$debug = (bool) ( constant( 'WP_DEBUG' ) );
 
 		if ( 'wp-plugin-update-server_page_wppus-page-licenses' === $hook ) {
-			wp_enqueue_script( 'wp-plugin-update-server-validate-script', WPPUS_PLUGIN_URL . 'js/admin/jquery.validate.min.js', array( 'jquery' ), false, true );
+			$version = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/jquery.validate.min.js' );
+
+			wp_enqueue_script( 'wp-plugin-update-server-validate-script', WPPUS_PLUGIN_URL . 'js/admin/jquery.validate.min.js', array( 'jquery' ), $version, true );
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 
 			$css_ext = ( $debug ) ? '.css' : '.min.css';
@@ -150,6 +152,7 @@ class WPPUS_License_Manager {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
 		}
+
 		$result         = $this->plugin_options_handler();
 		$licences_table = $this->licences_table;
 
@@ -163,6 +166,7 @@ class WPPUS_License_Manager {
 		}
 
 		$licences_table->prepare_items();
+
 		ob_start();
 
 		require_once WPPUS_PLUGIN_PATH . 'inc/templates/admin/plugin-licenses-page.php';
@@ -174,8 +178,10 @@ class WPPUS_License_Manager {
 		$errors = array();
 		$result = false;
 
-		if ( isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) &&
-			wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' ) ) {
+		if (
+			isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) &&
+			wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' )
+		) {
 			$result  = __( 'WP Plugin Update Server license options successfully updated.', 'wppus' );
 			$options = $this->get_submitted_options();
 
@@ -202,7 +208,10 @@ class WPPUS_License_Manager {
 					);
 				}
 			}
-		} elseif ( isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) && ! wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' ) ) {
+		} elseif (
+			isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) &&
+			! wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' )
+		) {
 			$errors['general'] = __( 'There was an error validating the form. It may be outdated. Please reload the page.', 'wppus' );
 		}
 
@@ -216,33 +225,36 @@ class WPPUS_License_Manager {
 
 	protected function get_submitted_options() {
 
-		return apply_filters( 'wppus_submitted_licenses_config', array(
-			'wppus_use_licenses'                 => array(
-				'value'        => filter_input( INPUT_POST, 'wppus_use_licenses', FILTER_VALIDATE_BOOLEAN ),
-				'display_name' => __( 'Enable Package Licenses', 'wppus' ),
-				'condition'    => 'boolean',
-			),
-			'wppus_license_private_api_auth_key' => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_auth_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-				'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-			),
-			'wppus_license_hmac_key'             => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_license_hmac_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-				'display_name'            => __( 'Signatures HMAC Key', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-			),
-			'wppus_license_crypto_key'           => array(
-				'value'                   => filter_input( INPUT_POST, 'wppus_license_crypto_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-				'display_name'            => __( 'Signatures Encryption Key', 'wppus' ),
-				'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-			),
-			'wppus_license_check_signature'      => array(
-				'value'        => filter_input( INPUT_POST, 'wppus_license_check_signature', FILTER_VALIDATE_BOOLEAN ),
-				'display_name' => __( 'Check License signature?', 'wppus' ),
-				'condition'    => 'boolean',
-			),
-		) );
+		return apply_filters(
+			'wppus_submitted_licenses_config',
+			array(
+				'wppus_use_licenses'                 => array(
+					'value'        => filter_input( INPUT_POST, 'wppus_use_licenses', FILTER_VALIDATE_BOOLEAN ),
+					'display_name' => __( 'Enable Package Licenses', 'wppus' ),
+					'condition'    => 'boolean',
+				),
+				'wppus_license_private_api_auth_key' => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_auth_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+				),
+				'wppus_license_hmac_key'             => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_license_hmac_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Signatures HMAC Key', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+				),
+				'wppus_license_crypto_key'           => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_license_crypto_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Signatures Encryption Key', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+				),
+				'wppus_license_check_signature'      => array(
+					'value'        => filter_input( INPUT_POST, 'wppus_license_check_signature', FILTER_VALIDATE_BOOLEAN ),
+					'display_name' => __( 'Check License signature?', 'wppus' ),
+					'condition'    => 'boolean',
+				),
+			)
+		);
 	}
 
 	protected function change_license_statuses_bulk( $status, $license_data ) {
@@ -259,7 +271,7 @@ class WPPUS_License_Manager {
 				if ( 'blocked' === $status || 'expired' === $status ) {
 					$include = true;
 				} elseif ( '0000-00-00' !== $license_info->date_expiry ) {
-					$include = current_time( 'timestamp' ) < mysql2date( 'U', $license_info->date_expiry );
+					$include = time() < mysql2date( 'U', $license_info->date_expiry );
 				} else {
 					$include = true;
 				}

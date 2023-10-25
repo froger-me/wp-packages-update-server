@@ -49,15 +49,15 @@
 			<?php esc_html_e( 'Notes:', 'wppus' ); ?>
 			<?php if ( get_option( 'wppus_use_remote_repository', false ) ) : ?>
 			<br/>
-			<?php esc_html_e( '- It is not necessary to prime or upload packages linked to a remote repository for them to appear in this list: they will be automatically added whenever a client checks for updates.', 'wppus' ); ?>
+				<?php esc_html_e( '- It is not necessary to prime or upload packages linked to a remote repository for them to appear in this list: they will be automatically added whenever a client checks for updates.', 'wppus' ); ?>
 			<br/>
-			<?php esc_html_e( '- If packages linked to a remote repository are deleted using this interface, they will be added again to the list automatically whenever a client checks for updates.', 'wppus' ); ?>
+				<?php esc_html_e( '- If packages linked to a remote repository are deleted using this interface, they will be added again to the list automatically whenever a client checks for updates.', 'wppus' ); ?>
 			<?php endif; ?>
 			<?php if ( get_option( 'wppus_use_licenses', false ) ) : ?>
 			<br/>
-			<?php esc_html_e( '- All packages deleted from this interface will have their license status set to "Does not Require License" when added again.', 'wppus' ); ?>
+				<?php esc_html_e( '- All packages deleted from this interface will have their license status set to "Does not Require License" when added again.', 'wppus' ); ?>
 			<br/>
-			<?php esc_html_e( '- Packages removed directly on the file system will keep their previously set license status when added again.', 'wppus' ); ?>
+				<?php esc_html_e( '- Packages removed directly on the file system will keep their previously set license status when added again.', 'wppus' ); ?>
 			<?php endif; ?>
 		</p>
 		<?php endif; ?>
@@ -99,7 +99,7 @@
 					<?php esc_html_e( 'Using this method adds the package to the list if not present or overwrites the existing package.', 'wppus' ); ?>
 					<?php if ( get_option( 'wppus_use_remote_repository', false ) ) : ?>
 					<br>
-					<?php esc_html_e( 'Note: a manually uploaded package that does not have its counterpart in a remote repository will need to be re-uploaded manually to provide updates for each new release.', 'wppus' ); ?>
+						<?php esc_html_e( 'Note: a manually uploaded package that does not have its counterpart in a remote repository will need to be re-uploaded manually to provide updates for each new release.', 'wppus' ); ?>
 					<?php endif; ?>
 				</p>
 			</td>

@@ -140,18 +140,17 @@ class WPPUS_Zip_Package_Manager {
 					$wp_filesystem->chmod( $archive_path, 0755 );
 				} else {
 					$return         = false;
-					$error_message .= sprintf( // @codingStandardsIgnoreLine
+					$error_message .= sprintf(
 						'Could not create archive from %s to %s - zipping failed',
 						esc_html( $temp_path ),
-						esc_html( $zip )
+						esc_html( $archive_path )
 					);
 				}
 			} else {
 				$return         = false;
-				$error_message .= sprintf( // @codingStandardsIgnoreLine
+				$error_message .= sprintf(
 					'Could not create archive for %s - invalid remote package (must contain only one directory)',
-					esc_html( $package ),
-					esc_html( trailingslashit( dirname( $package ) ) . $this->package_slug . '.zip' )
+					esc_html( $this->package_slug ),
 				);
 			}
 		}
@@ -203,7 +202,7 @@ class WPPUS_Zip_Package_Manager {
 
 			while ( $it->valid() ) {
 
-				if ( ! $it->isDot() ) {
+				if ( $it instanceof RecursiveDirectoryIterator && ! $it->isDot() ) {
 					$file      = str_replace( '\\', '/', $it->key() );
 					$file_name = $it->getSubPathName();
 
@@ -218,7 +217,7 @@ class WPPUS_Zip_Package_Manager {
 
 				$it->next();
 			}
-		} elseif ( true === $wp_filesystem->is_file( $source ) && '.' !== $file && '..' !== $file ) {
+		} elseif ( true === $wp_filesystem->is_file( $source ) && '.' !== $source && '..' !== $source ) {
 			$file_name = str_replace( ' ', '', basename( $source ) );
 
 			if ( ! empty( $file_name ) ) {

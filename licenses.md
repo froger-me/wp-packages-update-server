@@ -1,69 +1,70 @@
 # WP Plugin Update Server - Licenses - Developer documentation
-(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-plugin-update-server/blob/master/README.md))  
+(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-plugin-update-server/blob/master/README.md))
 
-WP Plugin Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin when managing licenses.  
+WP Plugin Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin when managing licenses.
 
-* [The License Query](#user-content-the-license-query)
-* [API](#user-content-api)
-    * [Public API](#user-content-public-api)
-        * [check](#user-content-check)
-        * [activate](#user-content-activate)
-        * [deactivate](#user-content-deactivate)
-    * [Private API](#user-content-private-api)
-        * [browse](#user-content-browse)
-        * [read](#user-content-read)
-        * [edit](#user-content-edit)
-        * [add](#user-content-add)
-        * [delete](#user-content-delete)
-* [Functions](#user-content-functions)
-    * [wppus_is_doing_license_api_request](#user-content-wppus_is_doing_license_api_request)
-    * [wppus_browse_licenses](#user-content-wppus_browse_licenses)
-    * [wppus_read_license](#user-content-wppus_read_license)
-    * [wppus_edit_license](#user-content-wppus_edit_license)
-    * [wppus_add_license](#user-content-wppus_add_license)
-    * [wppus_delete_license](#user-content-wppus_delete_license)
-    * [wppus_check_license](#user-content-wppus_check_license)
-    * [wppus_activate_license](#user-content-wppus_activate_license)
-    * [wppus_deactivate_license](#user-content-wppus_deactivate_license)
-* [Actions](#user-content-actions)
-    * [wppus_added_license_check](#user-content-wppus_added_license_check)
-    * [wppus_removed_license_check](#user-content-wppus_removed_license_check)
-    * [wppus_registered_license_schedule](#user-content-wppus_registered_license_schedule)
-    * [wppus_cleared_license_schedule](#user-content-wppus_cleared_license_schedule)
-    * [wppus_scheduled_license_event](#user-content-wppus_scheduled_license_event)
-    * [wppus_browse_licenses](#user-content-wppus_browse_licenses)
-    * [wppus_did_browse_licenses](#user-content-wppus_did_browse_licenses)
-    * [wppus_did_read_license](#user-content-wppus_did_read_license)
-    * [wppus_did_edit_license](#user-content-wppus_did_edit_license)
-    * [wppus_did_add_license](#user-content-wppus_did_add_license)
-    * [wppus_did_delete_license](#user-content-wppus_did_delete_license)
-    * [wppus_did_check_license](#user-content-wppus_did_check_license)
-    * [wppus_did_activate_license](#user-content-wppus_did_activate_license)
-    * [wppus_did_deactivate_license](#user-content-wppus_did_deactivate_license)
-* [Filters](#user-content-filters)
-    * [wppus_licensed_package_slugs]('#user-content-wppus_licensed_package_slugs')
-    * [wppus_license_valid]('#user-content-wppus_license_valid')
-    * [wppus_license_server]('#user-content-wppus_license_server')
-    * [wppus_license_api_config]('#user-content-wppus_license_api_config')
-    * [wppus_submitted_licenses_config]('#user-content-wppus_submitted_licenses_config')
-    * [wppus_check_license_result]('#user-content-wppus_check_license_result')
-    * [wppus_activate_license_result]('#user-content-wppus_activate_license_result')
-    * [wppus_deactivate_license_result]('#user-content-wppus_deactivate_license_result')
-    * [wppus_check_license_dirty_payload]('#user-content-wppus_check_license_dirty_payload')
-    * [wppus_activate_license_dirty_payload]('#user-content-wppus_activate_license_dirty_payload')
-    * [wppus_deactivate_license_dirty_payload]('#user-content-wppus_deactivate_license_dirty_payload')
-    * [wppus_browse_licenses_payload]('#user-content-wppus_browse_licenses_payload')
-    * [wppus_read_license_payload]('#user-content-wppus_read_license_payload')
-    * [wppus_edit_license_payload]('#user-content-wppus_edit_license_payload')
-    * [wppus_add_license_payload]('#user-content-wppus_add_license_payload')
-    * [wppus_delete_license_payload]('#user-content-wppus_delete_license_payload')
-    * [wppus_activate_license_payload]('#user-content-wppus_activate_license_payload')
-    * [wppus_deactivate_license_payload]('#user-content-wppus_deactivate_license_payload')
+- [WP Plugin Update Server - Licenses - Developer documentation](#wp-plugin-update-server---licenses---developer-documentation)
+      - [The License Query](#the-license-query)
+  - [API](#api)
+    - [Public API](#public-api)
+      - [check](#check)
+      - [activate](#activate)
+      - [deactivate](#deactivate)
+    - [Private API](#private-api)
+      - [browse](#browse)
+      - [read](#read)
+      - [edit](#edit)
+      - [add](#add)
+      - [delete](#delete)
+  - [Functions](#functions)
+      - [wppus\_is\_doing\_license\_api\_request](#wppus_is_doing_license_api_request)
+      - [wppus\_browse\_licenses](#wppus_browse_licenses)
+      - [wppus\_read\_license](#wppus_read_license)
+      - [wppus\_edit\_license](#wppus_edit_license)
+      - [wppus\_add\_license](#wppus_add_license)
+      - [wppus\_delete\_license](#wppus_delete_license)
+      - [wppus\_check\_license](#wppus_check_license)
+      - [wppus\_activate\_license](#wppus_activate_license)
+      - [wppus\_deactivate\_license](#wppus_deactivate_license)
+  - [Actions](#actions)
+      - [wppus\_added\_license\_check](#wppus_added_license_check)
+      - [wppus\_removed\_license\_check](#wppus_removed_license_check)
+      - [wppus\_registered\_license\_schedule](#wppus_registered_license_schedule)
+      - [wppus\_cleared\_license\_schedule](#wppus_cleared_license_schedule)
+      - [wppus\_scheduled\_license\_event](#wppus_scheduled_license_event)
+      - [wppus\_browse\_licenses](#wppus_browse_licenses-1)
+      - [wppus\_did\_browse\_licenses](#wppus_did_browse_licenses)
+      - [wppus\_did\_read\_license](#wppus_did_read_license)
+      - [wppus\_did\_edit\_license](#wppus_did_edit_license)
+      - [wppus\_did\_add\_license](#wppus_did_add_license)
+      - [wppus\_did\_delete\_license](#wppus_did_delete_license)
+      - [wppus\_did\_check\_license](#wppus_did_check_license)
+      - [wppus\_did\_activate\_license](#wppus_did_activate_license)
+      - [wppus\_did\_deactivate\_license](#wppus_did_deactivate_license)
+  - [Filters](#filters)
+      - [wppus\_licensed\_package\_slugs](#wppus_licensed_package_slugs)
+      - [wppus\_license\_valid](#wppus_license_valid)
+      - [wppus\_license\_server](#wppus_license_server)
+      - [wppus\_license\_api\_config](#wppus_license_api_config)
+      - [wppus\_submitted\_licenses\_config](#wppus_submitted_licenses_config)
+      - [wppus\_check\_license\_result](#wppus_check_license_result)
+      - [wppus\_activate\_license\_result](#wppus_activate_license_result)
+      - [wppus\_deactivate\_license\_result](#wppus_deactivate_license_result)
+      - [wppus\_check\_license\_dirty\_payload](#wppus_check_license_dirty_payload)
+      - [wppus\_activate\_license\_dirty\_payload](#wppus_activate_license_dirty_payload)
+      - [wppus\_deactivate\_license\_dirty\_payload](#wppus_deactivate_license_dirty_payload)
+      - [wppus\_activate\_license\_payload](#wppus_activate_license_payload)
+      - [wppus\_deactivate\_license\_payload](#wppus_deactivate_license_payload)
+      - [wppus\_browse\_licenses\_payload](#wppus_browse_licenses_payload)
+      - [wppus\_read\_license\_payload](#wppus_read_license_payload)
+      - [wppus\_edit\_license\_payload](#wppus_edit_license_payload)
+      - [wppus\_add\_license\_payload](#wppus_add_license_payload)
+      - [wppus\_delete\_license\_payload](#wppus_delete_license_payload)
 
 ___
 #### The License Query
 
-The License Query is an associative array. It is used to browse the license records either with the [Private API action](#user-content-browse) `browse` or with the `wppus_browse_licenses` [function](#user-content-wppus_browse_licenses).  
+The License Query is an associative array. It is used to browse the license records either with the [Private API action](#user-content-browse) `browse` or with the `wppus_browse_licenses` [function](#user-content-wppus_browse_licenses).
 
 ```php
 $license_query = array(
@@ -87,11 +88,11 @@ $license_query = array(
 );
 ```
 
-Accepted operators are: `=`, `>`, `<`, `>=`, `<=`, `BETWEEN`, `NOT BETWEEN`, `IN`, `NOT IN`, `LIKE`, `NOT LIKE`.  
+Accepted operators are: `=`, `>`, `<`, `>=`, `<=`, `BETWEEN`, `NOT BETWEEN`, `IN`, `NOT IN`, `LIKE`, `NOT LIKE`.
 
-Accepted license fields are: `id`, `license_key`, `max_allowed_domains`, `allowed_domains`, `status`, `owner_name`, `email`, `company_name`, `txn_id`, `date_created`, `date_renewed`, `date_expiry`, `package_slug`, `package_type`.  
+Accepted license fields are: `id`, `license_key`, `max_allowed_domains`, `allowed_domains`, `status`, `owner_name`, `email`, `company_name`, `txn_id`, `date_created`, `date_renewed`, `date_expiry`, `package_slug`, `package_type`.
 
-NOTE: the field `allowed_domains` is a serialized array, therefore when used in a criteria the only operators likely to return results are `LIKE` and `NOT LIKE`.  
+NOTE: the field `allowed_domains` is a serialized array, therefore when used in a criteria the only operators likely to return results are `LIKE` and `NOT LIKE`.
 
 ___
 ## API
@@ -133,14 +134,12 @@ if ( is_wp_error( $response ) ) {
 }
 ```
 
-NOTE: until version 2.0 of the plugin, the API is compatible with deprecated calls to `slm_create_new`, `slm_check`, `slm_activate`, and `slm_deactivate` actions as described by the Software License Manager plugin. This is for retro-compatibility with old versions of [WP Package Updater](https://github.com/froger-me/wp-package-updater) and this will not be documented here. **However, until version 2.0, be advised the response data of the API actions documented below will contain deprecated data related to SLM integration that should not be relied on.**
-
 ___
 ### Public API
 
-The public API does not require an authentication key, because for each provided operation, the License Key **IS** the authentication key for the API: indeed, by default, keys are randomly generated using `bin2hex( openssl_random_pseudo_bytes( 12 ) )` which gives back an unguessable, random string of 24 characters. Even if the keys **CAN** be edited, it is highly recommended to use an unguessable, random string regardless.  
+The public API does not require an authentication key, because for each provided operation, the License Key **IS** the authentication key for the API: indeed, by default, keys are randomly generated using `bin2hex( openssl_random_pseudo_bytes( 12 ) )` which gives back an unguessable, random string of 24 characters. Even if the keys **CAN** be edited, it is highly recommended to use an unguessable, random string regardless.
 
-It provides 3 simple operations: `check`, `activate` and `deactivate`.  
+It provides 3 simple operations: `check`, `activate` and `deactivate`.
 
 ___
 #### check
@@ -325,7 +324,7 @@ Response `$data` - **failure** (in case of already deactivated for `allowed_doma
 ___
 ### Private API
 
-The Private API necessitates extra authentication for all its actions, `browse`, `edit`, `add`, `delete`. The first action, `browse`, is particular in the sense that, unlike the other actions and aside from the Private API Authentication Key, it accepts a JSON License Query instead of the classic form-data payload.  
+The Private API necessitates extra authentication for all its actions, `browse`, `edit`, `add`, `delete`. The first action, `browse`, is particular in the sense that, unlike the other actions and aside from the Private API Authentication Key, it accepts a JSON License Query instead of the classic form-data payload.
 With the Private API, developers can perform any operation on the license records - be careful to keep the Private API Authentication Key an absolute secret!
 
 In case the Private API Authentication Key is invalid, all the actions of the Private API will return the same response (message's language depending on availabe translations), with HTTP headers set to `403`:
@@ -340,7 +339,7 @@ Response `$data` - forbidden access:
 ___
 #### browse
 
-See [The License Query](#user-content-the-license-query) for more information on the `$license_query` parameter 
+See [The License Query](#user-content-the-license-query) for more information on the `$license_query` parameter
 
 ```php
 $params = array(
@@ -581,7 +580,7 @@ Response `$data` - **failure**:
 ___
 ## Functions
 
-The functions listed below are made publicly available by the plugin for theme and plugin developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).  
+The functions listed below are made publicly available by the plugin for theme and plugin developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).
 Although the main classes can theoretically be instanciated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
 
 ___
@@ -591,7 +590,7 @@ ___
 wppus_is_doing_license_api_request();
 ```
 
-**Description**  
+**Description**
 Determine wether the current request is made by a client plugin or theme interacting with the plugin's license API.
 
 **Return value**
@@ -604,10 +603,10 @@ ___
 wppus_browse_licenses( array $browse_query );
 ```
 
-**Description**  
-Browse the license records filtered using various criteria.  
+**Description**
+Browse the license records filtered using various criteria.
 
-**Parameters**  
+**Parameters**
 $browse_query
 > (array) See [The License Query](#user-content-the-license-query)
 
@@ -621,10 +620,10 @@ ___
 wppus_read_license( array $payload );
 ```
 
-**Description**  
-Read a license record.  
+**Description**
+Read a license record.
 
-**Parameters**  
+**Parameters**
 $payload
 > (array) See the License API action [read](#user-content-read)
 
@@ -638,10 +637,10 @@ ___
 wppus_edit_license( array $payload );
 ```
 
-**Description** 
+**Description**
 Add a license record.
 
-**Parameters**  
+**Parameters**
 $payload
 > (array) See `$params` for the License API action [add](#user-content-add)
 
@@ -655,10 +654,10 @@ ___
 wppus_add_license( array $payload );
 ```
 
-**Description**  
+**Description**
 Add a license.
 
-**Parameters**  
+**Parameters**
 $payload
 > (array) See `$params` for the License API action [add](#user-content-add)
 
@@ -672,10 +671,10 @@ ___
 wppus_delete_license( array $payload );
 ```
 
-**Description**  
-Delete a license record.  
+**Description**
+Delete a license record.
 
-**Parameters**  
+**Parameters**
 $payload
 > (array) See `$params` for the License API action [delete](#user-content-delete)
 
@@ -689,10 +688,10 @@ ___
 wppus_check_license( array $payload );
 ```
 
-**Description**  
-Check a License information.  
+**Description**
+Check a License information.
 
-**Parameters**  
+**Parameters**
 $payload
 > (array) An associative array with a single value - `array( 'license_key' => 'key_of_the_license_to_check' )`.
 
@@ -706,10 +705,10 @@ ___
 wppus_activate_license( array $payload );
 ```
 
-**Description**  
-Activate a License.  
+**Description**
+Activate a License.
 
-**Parameters**  
+**Parameters**
 $payload
 > (array) An associative array with 2 values - `array( 'license_key' => 'key_of_the_license_to_activate', 'allowed_domains' => 'domain_to_activate' )`.
 
@@ -723,10 +722,10 @@ ___
 wppus_deactivate_license( array $payload );
 ```
 
-**Description**  
-Deactivate a License.  
+**Description**
+Deactivate a License.
 
-**Parameters**  
+**Parameters**
 $payload
 > (array) An associative array with 2 values - `array( 'license_key' => 'key_of_the_license_to_deactivate', 'allowed_domains' => 'domain_to_deactivate' )`.
 
@@ -736,8 +735,8 @@ $payload
 ___
 ## Actions
 
-WP Plugin Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.  
-**Warning**: the actions below with the mention "Fired during client license API request" need to be used with caution. Although they may also be triggered when using the functions above, these actions will be called when client packages request for updates or when License API calls are performed. Registering functions doing heavy computation to these actions when client license API requests are handled can seriously degrade the server's performances.  
+WP Plugin Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.
+**Warning**: the actions below with the mention "Fired during client license API request" need to be used with caution. Although they may also be triggered when using the functions above, these actions will be called when client packages request for updates or when License API calls are performed. Registering functions doing heavy computation to these actions when client license API requests are handled can seriously degrade the server's performances.
 
 ___
 #### wppus_added_license_check
@@ -746,10 +745,10 @@ ___
 do_action( 'wppus_added_license_check', string $package_slug );
 ```
 
-**Description**  
-Fired after a package was marked as "Requires License".  
+**Description**
+Fired after a package was marked as "Requires License".
 
-**Parameters**  
+**Parameters**
 > (string) the slug of the package
 
 ___
@@ -759,10 +758,10 @@ ___
 do_action( 'wppus_removed_license_check', string $package_slug );
 ```
 
-**Description**  
-Fired after a package was marked as "Does not Require License".  
+**Description**
+Fired after a package was marked as "Does not Require License".
 
-**Parameters**  
+**Parameters**
 > (string) the slug of the package
 
 ___
@@ -772,12 +771,12 @@ ___
 do_action( 'wppus_registered_license_schedule', string $scheduled_hook );
 ```
 
-**Description**  
+**Description**
 Fired after the license maintenance action has been registered.
 
-**Parameters**  
-$scheduled_hook  
-> (string) the license event hook that has been registered  
+**Parameters**
+$scheduled_hook
+> (string) the license event hook that has been registered
 
 ___
 #### wppus_cleared_license_schedule
@@ -786,12 +785,12 @@ ___
 do_action( 'wppus_cleared_license_schedule', string $scheduled_hook );
 ```
 
-**Description**  
-Fired after the license maintenance event has been unscheduled.  
+**Description**
+Fired after the license maintenance event has been unscheduled.
 
-**Parameters**  
+**Parameters**
 $scheduled_hook
-> (string) the license event hook that has been unscheduled  
+> (string) the license event hook that has been unscheduled
 
 ___
 #### wppus_scheduled_license_event
@@ -800,24 +799,24 @@ ___
 do_action( 'wppus_scheduled_license_event', bool $result, int $timestamp, string $frequency, string $hook );
 ```
 
-**Description**  
-Fired after the license maintenance event has been scheduled.  
+**Description**
+Fired after the license maintenance event has been scheduled.
 
-**Parameters**  
-$result  
-> (bool) true if the event was scheduled, false otherwise  
+**Parameters**
+$result
+> (bool) true if the event was scheduled, false otherwise
 
-$timestamp  
-> (int) timestamp for when to run the event the first time after it's been scheduled  
+$timestamp
+> (int) timestamp for when to run the event the first time after it's been scheduled
 
-$frequency  
-> (string) frequency at which the event would be ran  
+$frequency
+> (string) frequency at which the event would be ran
 
-$hook  
-> (string) event hook to fire when the event is ran  
+$hook
+> (string) event hook to fire when the event is ran
 
-$params  
-> (array) parameters passed to the actions registered to $hook when the event is ran  
+$params
+> (array) parameters passed to the actions registered to $hook when the event is ran
 
 ___
 #### wppus_browse_licenses
@@ -826,13 +825,13 @@ ___
 do_action( 'wppus_browse_licenses', array $payload );
 ```
 
-**Description**  
-Fired when about to browse license records, before the payload has been cleaned up and the License Query has been validated.  
-Fired during client license API request.  
+**Description**
+Fired when about to browse license records, before the payload has been cleaned up and the License Query has been validated.
+Fired during client license API request.
 
-**Parameters**  
-$payload  
-> (array) a dirty payload for a License Query  
+**Parameters**
+$payload
+> (array) a dirty payload for a License Query
 
 ___
 #### wppus_did_browse_licenses
@@ -841,13 +840,13 @@ ___
 do_action( 'wppus_did_browse_licenses', array $licenses );
 ```
 
-**Description**  
+**Description**
 Fired after browsing license records.
-Fired during client license API request.  
+Fired during client license API request.
 
-**Parameters**  
-$licenses  
-> (array) the license records retrieved or an empty array  
+**Parameters**
+$licenses
+> (array) the license records retrieved or an empty array
 
 ___
 #### wppus_did_read_license
@@ -856,13 +855,13 @@ ___
 do_action( 'wppus_did_read_license', array $result );
 ```
 
-**Description**  
-Fired after reading a license record.  
-Fired during client license API request.  
+**Description**
+Fired after reading a license record.
+Fired during client license API request.
 
-**Parameters**  
-$result  
-> (mixed) the result of the operation - a license object record or an empty array  
+**Parameters**
+$result
+> (mixed) the result of the operation - a license object record or an empty array
 
 ___
 #### wppus_did_edit_license
@@ -871,13 +870,13 @@ ___
 do_action( 'wppus_did_edit_license', array $result );
 ```
 
-**Description**  
-Fired after editing a license record.  
-Fired during client license API request.  
+**Description**
+Fired after editing a license record.
+Fired during client license API request.
 
-**Parameters**  
-$result  
-> (mixed) the result of the operation - a license record object or an array of errors  
+**Parameters**
+$result
+> (mixed) the result of the operation - a license record object or an array of errors
 
 ___
 #### wppus_did_add_license
@@ -886,13 +885,13 @@ ___
 do_action( 'wppus_did_add_license', array $result );
 ```
 
-**Description**  
-Fired after adding a license record.  
-Fired during client license API request.  
+**Description**
+Fired after adding a license record.
+Fired during client license API request.
 
-**Parameters**  
-$result  
-> (mixed) the result of the operation - a license record object or an array of errors  
+**Parameters**
+$result
+> (mixed) the result of the operation - a license record object or an array of errors
 
 ___
 #### wppus_did_delete_license
@@ -901,13 +900,13 @@ ___
 do_action( 'wppus_did_delete_license', array $result );
 ```
 
-**Description**  
-Fired after deleting a license record.  
-Fired during client license API request.  
+**Description**
+Fired after deleting a license record.
+Fired during client license API request.
 
-**Parameters**  
-$result  
-> (mixed) the result of the operation - a license record object or an empty array  
+**Parameters**
+$result
+> (mixed) the result of the operation - a license record object or an empty array
 
 ___
 #### wppus_did_check_license
@@ -916,13 +915,13 @@ ___
 do_action( 'wppus_did_check_license', array $result );
 ```
 
-**Description**  
-Fired after checking a License.  
-Fired during client license API request.  
+**Description**
+Fired after checking a License.
+Fired during client license API request.
 
-**Parameters**  
-$result  
-> (mixed) the result of the operation - a license record object or an associative array with non-existant license key  
+**Parameters**
+$result
+> (mixed) the result of the operation - a license record object or an associative array with non-existant license key
 
 ___
 #### wppus_did_activate_license
@@ -931,13 +930,13 @@ ___
 do_action( 'wppus_did_activate_license', array $result );
 ```
 
-**Description**  
-Fired after activating a License.  
-Fired during client license API request.  
+**Description**
+Fired after activating a License.
+Fired during client license API request.
 
-**Parameters**  
-$result  
-> (mixed) the result of the operation - a license record object, an associative array with the illegal status, an associative array with the domain already active for the license record, or an associative array with the maximum number of domains reached for the license record  
+**Parameters**
+$result
+> (mixed) the result of the operation - a license record object, an associative array with the illegal status, an associative array with the domain already active for the license record, or an associative array with the maximum number of domains reached for the license record
 
 ___
 #### wppus_did_deactivate_license
@@ -946,18 +945,18 @@ ___
 do_action( 'wppus_did_deactivate_license', array $result );
 ```
 
-**Description**  
-Fired after activating a License.  
-Fired during client license API request.  
+**Description**
+Fired after activating a License.
+Fired during client license API request.
 
-**Parameters**  
-> (mixed) the result of the operation - a license record object, an associative array with the illegal status, or an associative array with the domain already inactive for the license record  
+**Parameters**
+> (mixed) the result of the operation - a license record object, an associative array with the illegal status, or an associative array with the domain already inactive for the license record
 
 ___
 ## Filters
 
-WP Plugin Update Server gives developers the possibility to customise its behavior with a series of custom filters.  
-**Warning**: the filters below with the mention "Fired during client license API request" need to be used with caution. Although they may be triggered when using the functions above, these filters will be called when client packages request for updates or when License API calls are performed. Registering functions doing heavy computation to these filters when client license API requests are handled can seriously degrade the server's performances.  
+WP Plugin Update Server gives developers the possibility to customise its behavior with a series of custom filters.
+**Warning**: the filters below with the mention "Fired during client license API request" need to be used with caution. Although they may be triggered when using the functions above, these filters will be called when client packages request for updates or when License API calls are performed. Registering functions doing heavy computation to these filters when client license API requests are handled can seriously degrade the server's performances.
 
 ___
 #### wppus_licensed_package_slugs
@@ -966,13 +965,13 @@ ___
 apply_filters( 'wppus_licensed_package_slugs', array $package_slugs );
 ```
 
-**Description**  
-Filter the slugs of packages requiring a license.  
-Fired during client license API request.  
+**Description**
+Filter the slugs of packages requiring a license.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $package_slugs
-> (array) the slugs of packages requiring a license  
+> (array) the slugs of packages requiring a license
 
 ___
 #### wppus_license_valid
@@ -981,21 +980,21 @@ ___
 apply_filters( 'wppus_license_valid', bool $is_valid, mixed $license, string $license_signature );
 ```
 
-**Description**  
-Filter wether a license is valid when requesting for an update.  
-Fired during client license API request.  
+**Description**
+Filter wether a license is valid when requesting for an update.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $is_valid
-> (bool) wheter the license is valid  
+> (bool) wheter the license is valid
 
-**Parameters**  
+**Parameters**
 $license
-> (mixed) the license to validate  
+> (mixed) the license to validate
 
-**Parameters**  
+**Parameters**
 $license_signature
-> (string) the signature of the license  
+> (string) the signature of the license
 
 ___
 #### wppus_license_server
@@ -1004,13 +1003,13 @@ ___
 apply_filters( 'wppus_license_server', mixed $license_server );
 ```
 
-**Description**  
-Filter the Wppus_License_Server object to use.  
-Fired during client license API request.  
+**Description**
+Filter the Wppus_License_Server object to use.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $license_server
-> (mixed) the Wppus_License_Server object  
+> (mixed) the Wppus_License_Server object
 
 ___
 #### wppus_license_api_config
@@ -1019,13 +1018,13 @@ ___
 apply_filters( 'wppus_license_api_config', array $config );
 ```
 
-**Description**  
-Filter the license API configuration values before using them.  
-Fired during client license API request.  
+**Description**
+Filter the license API configuration values before using them.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $config
-> (array) the license api configuration values  
+> (array) the license api configuration values
 
 ___
 #### wppus_submitted_licenses_config
@@ -1034,10 +1033,10 @@ ___
 apply_filters( 'wppus_submitted_licenses_config', array $config );
 ```
 
-**Description**  
-Filter the submitted license configuration values before saving them.  
+**Description**
+Filter the submitted license configuration values before saving them.
 
-**Parameters**  
+**Parameters**
 $config
 > (array) the submitted license configuration values
 
@@ -1048,17 +1047,17 @@ ___
 apply_filters( 'wppus_check_license_result', mixed $result, array $payload );
 ```
 
-**Description**  
-Filter the result of license check.  
-Fired during client license API request.  
+**Description**
+Filter the result of license check.
+Fired during client license API request.
 
-**Parameters**  
-$result  
-> (mixed) the result of the operation - a license record object or an associative array with non-existant license key  
+**Parameters**
+$result
+> (mixed) the result of the operation - a license record object or an associative array with non-existant license key
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) the data used to attempt to check the license  
+> (array) the data used to attempt to check the license
 
 
 ___
@@ -1068,21 +1067,21 @@ ___
 apply_filters( 'wppus_activate_license_result', mixed $result, array $payload, mixed $maybe_license );
 ```
 
-**Description**  
-Filter the result of license activation.  
-Fired during client license API request.  
+**Description**
+Filter the result of license activation.
+Fired during client license API request.
 
-**Parameters**  
-$result  
-> (mixed) the result of the operation - a license record object, an associative array with the illegal status, an associative array with the domain already active for the license record, or an associative array with the maximum number of domains reached for the license record  
+**Parameters**
+$result
+> (mixed) the result of the operation - a license record object, an associative array with the illegal status, an associative array with the domain already active for the license record, or an associative array with the maximum number of domains reached for the license record
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) the data used to attempt to activate the license  
+> (array) the data used to attempt to activate the license
 
-**Parameters**  
+**Parameters**
 $maybe_license
-> (mixed) a license object record or an empty array  
+> (mixed) a license object record or an empty array
 
 ___
 #### wppus_deactivate_license_result
@@ -1091,21 +1090,21 @@ ___
 apply_filters( 'wppus_deactivate_license_result', mixed $result, array $payload, mixed $maybe_license );
 ```
 
-**Description**  
-Filter the result of license deactivation.  
-Fired during client license API request.  
+**Description**
+Filter the result of license deactivation.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $result
-> (mixed) the result of the operation - a license record object, an associative array with the illegal status, or an associative array with the domain already inactive for the license record  
+> (mixed) the result of the operation - a license record object, an associative array with the illegal status, or an associative array with the domain already inactive for the license record
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) the data used to attempt to deactivate the license  
+> (array) the data used to attempt to deactivate the license
 
-**Parameters**  
+**Parameters**
 $maybe_license
-> (mixed) a license object record or an empty array  
+> (mixed) a license object record or an empty array
 
 ___
 #### wppus_check_license_dirty_payload
@@ -1114,13 +1113,13 @@ ___
 apply_filters( 'wppus_check_license_dirty_payload', array $dirty_payload );
 ```
 
-**Description**  
-Filter the payload used to check a license before it is cleaned up or used in any way.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to check a license before it is cleaned up or used in any way.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $dirty_payload
-> (array) the dirty payload used to attempt to check a license  
+> (array) the dirty payload used to attempt to check a license
 
 ___
 #### wppus_activate_license_dirty_payload
@@ -1129,13 +1128,13 @@ ___
 apply_filters( 'wppus_activate_license_dirty_payload', array $dirty_payload );
 ```
 
-**Description**  
-Filter the payload used to activate a license before it is cleaned up or used in any way.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to activate a license before it is cleaned up or used in any way.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $dirty_payload
-> (array) the dirty payload used to attempt to activate a license  
+> (array) the dirty payload used to attempt to activate a license
 
 ___
 #### wppus_deactivate_license_dirty_payload
@@ -1144,13 +1143,13 @@ ___
 apply_filters( 'wppus_deactivate_license_dirty_payload', array $dirty_payload );
 ```
 
-**Description**  
-Filter the payload used to deactivate a license before it is cleaned up or used in any way.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to deactivate a license before it is cleaned up or used in any way.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $dirty_payload
-> (array) the dirty payload used to attempt to deactivate a license  
+> (array) the dirty payload used to attempt to deactivate a license
 
 ___
 #### wppus_activate_license_payload
@@ -1159,13 +1158,13 @@ ___
 apply_filters( 'wppus_activate_license_payload', array $payload );
 ```
 
-**Description**  
-Filter the payload used to activate a license - fired only if the payload was valid.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to activate a license - fired only if the payload was valid.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) the payload used to activate a license  
+> (array) the payload used to activate a license
 
 ___
 #### wppus_deactivate_license_payload
@@ -1174,13 +1173,13 @@ ___
 apply_filters( 'wppus_deactivate_license_payload', array $payload );
 ```
 
-**Description**  
-Filter the payload used to deactivate a license - fired only if the payload was valid.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to deactivate a license - fired only if the payload was valid.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) the payload used to deactivate a license  
+> (array) the payload used to deactivate a license
 
 ___
 #### wppus_browse_licenses_payload
@@ -1189,13 +1188,13 @@ ___
 apply_filters( 'wppus_browse_licenses_payload', array $payload );
 ```
 
-**Description**  
-Filter the payload used to browse licenses - before the payload has been cleaned up and the License Query has been validated.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to browse licenses - before the payload has been cleaned up and the License Query has been validated.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) a dirty payload for a License Query  
+> (array) a dirty payload for a License Query
 
 ___
 #### wppus_read_license_payload
@@ -1204,13 +1203,13 @@ ___
 apply_filters( 'wppus_read_license_payload', array $payload );
 ```
 
-**Description**  
-Filter the payload used to read a license record - after the payload has been cleaned up, before the payload has been validated.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to read a license record - after the payload has been cleaned up, before the payload has been validated.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) payload used to read a license record  
+> (array) payload used to read a license record
 
 ___
 #### wppus_edit_license_payload
@@ -1219,13 +1218,13 @@ ___
 apply_filters( 'wppus_edit_license_payload', array $payload );
 ```
 
-**Description**  
-Filter the payload used to edit a license record - after the payload has been cleaned up, before the payload has been validated.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to edit a license record - after the payload has been cleaned up, before the payload has been validated.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) payload used to edit a license record  
+> (array) payload used to edit a license record
 
 ___
 #### wppus_add_license_payload
@@ -1234,13 +1233,13 @@ ___
 apply_filters( 'wppus_add_license_payload', array $payload );
 ```
 
-**Description**  
-Filter the payload used to add a license record - after the payload has been cleaned up, before the payload has been validated.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to add a license record - after the payload has been cleaned up, before the payload has been validated.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) payload used to add a license record  
+> (array) payload used to add a license record
 
 ___
 #### wppus_delete_license_payload
@@ -1249,10 +1248,10 @@ ___
 apply_filters( 'wppus_delete_license_payload', array $payload );
 ```
 
-**Description**  
-Filter the payload used to delete a license record - after the payload has been cleaned up, before the payload has been validated.  
-Fired during client license API request.  
+**Description**
+Filter the payload used to delete a license record - after the payload has been cleaned up, before the payload has been validated.
+Fired during client license API request.
 
-**Parameters**  
+**Parameters**
 $payload
-> (array) payload used to delete a license record  
+> (array) payload used to delete a license record

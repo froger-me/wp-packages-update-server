@@ -15,11 +15,13 @@ class WPPUS_Packages_Table extends WP_List_Table {
 	protected $update_manager;
 
 	public function __construct( $update_manager ) {
-		parent::__construct( array(
-			'singular' => 'wppus-packages-table',
-			'plural'   => 'wppus-packages-table',
-			'ajax'     => false,
-		) );
+		parent::__construct(
+			array(
+				'singular' => 'wppus-packages-table',
+				'plural'   => 'wppus-packages-table',
+				'ajax'     => false,
+			)
+		);
 
 		$this->nonce_action   = 'bulk-wppus-packages-table';
 		$this->update_manager = $update_manager;
@@ -103,11 +105,13 @@ class WPPUS_Packages_Table extends WP_List_Table {
 			$offset = ( $paged - 1 ) * $per_page;
 		}
 
-		$this->set_pagination_args( array(
-			'total_items' => $total_items,
-			'total_pages' => $total_pages,
-			'per_page'    => $per_page,
-		) );
+		$this->set_pagination_args(
+			array(
+				'total_items' => $total_items,
+				'total_pages' => $total_pages,
+				'per_page'    => $per_page,
+			)
+		);
 
 		$columns  = $this->get_columns();
 		$hidden   = array();

@@ -25,7 +25,6 @@ class WPPUS_Data_Manager {
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
-
 			$this->scheduler = new WPPUS_Scheduler(
 				array_merge( self::$transient_data_dirs, self::$transient_data_db ),
 				self::$persistent_data_dirs
@@ -61,7 +60,7 @@ class WPPUS_Data_Manager {
 		global $wp_filesystem;
 
 		if ( ! $wp_filesystem->is_dir( $root_dir ) ) {
-			$result = $result && self::create_data_dir( 'wpppus', false, true );
+			$result = self::create_data_dir( 'wpppus', false, true );
 		}
 
 		if ( $result ) {
@@ -83,7 +82,6 @@ class WPPUS_Data_Manager {
 		global $wp_filesystem;
 
 		if ( ! $wp_filesystem ) {
-
 			wp_die( 'File system not available.', __METHOD__ );
 		}
 
@@ -173,7 +171,7 @@ class WPPUS_Data_Manager {
 
 			if ( method_exists( get_called_class(), $method_name ) && ! $force ) {
 
-				return call_user_func( array( get_called_class(), $method_name ) );
+				return static::$method_name();
 			} else {
 
 				return delete_option( 'wppus_' . $type );
@@ -195,7 +193,7 @@ class WPPUS_Data_Manager {
 
 			foreach ( $locks as $slug => $timestamp ) {
 
-				if ( $timestamp <= current_time( 'timestamp' ) ) {
+				if ( $timestamp <= time() ) {
 					unset( $locks[ $slug ] );
 				}
 			}
@@ -209,8 +207,7 @@ class WPPUS_Data_Manager {
 
 		$root_dir = self::get_data_dir();
 		$path     = ( $is_root_dir ) ? $root_dir : $root_dir . $name;
-
-		$result = $wp_filesystem->mkdir( $path );
+		$result   = $wp_filesystem->mkdir( $path );
 
 		if ( $result && $include_htaccess ) {
 			self::generate_restricted_htaccess( $path );
