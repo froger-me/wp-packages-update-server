@@ -337,17 +337,19 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			return new WP_Error( 'http_no_file', __( 'Could not create temporary file.', 'wppus' ) );
 		}
 
-		$response = wp_safe_remote_get(
-			$url,
-			array(
-				'timeout'  => $timeout,
-				'stream'   => true,
-				'filename' => $local_filename,
-				'headers'  => array(
-					'Authorization' => 'token ' . $this->repository_credentials,
-				),
-			)
+		$params = array(
+			'timeout'  => $timeout,
+			'stream'   => true,
+			'filename' => $local_filename,
 		);
+
+		if ( is_string( $this->repository_credentials ) ) {
+			$params['headers'] = array(
+				'Authorization' => 'token ' . $this->repository_credentials,
+			);
+		}
+
+		$response = wp_safe_remote_get( $url, $params );
 
 		if ( is_wp_error( $response ) ) {
 			unlink( $local_filename );
