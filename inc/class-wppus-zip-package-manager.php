@@ -190,21 +190,22 @@ class WPPUS_Zip_Package_Manager {
 
 		$source = str_replace( '\\', '/', realpath( $source ) );
 
-		if ( true === $wp_filesystem->is_dir( $source ) ) {
-
+		if ( $wp_filesystem->is_dir( $source ) ) {
 			$it = new RecursiveIteratorIterator(
 				new RecursiveDirectoryIterator(
-					$source
+					$source,
+					FilesystemIterator::SKIP_DOTS
 				)
 			);
 
 			$it->rewind();
 
 			while ( $it->valid() ) {
+				$innerIt = $it->getInnerIterator();
 
-				if ( $it instanceof RecursiveDirectoryIterator && ! $it->isDot() ) {
+				if ( $innerIt instanceof RecursiveDirectoryIterator ) {
 					$file      = str_replace( '\\', '/', $it->key() );
-					$file_name = $it->getSubPathName();
+					$file_name = $innerIt->getSubPathName();
 
 					if ( true === $wp_filesystem->is_dir( $file ) ) {
 						$dir_name = $container_dir . trailingslashit( $file_name );
@@ -217,7 +218,11 @@ class WPPUS_Zip_Package_Manager {
 
 				$it->next();
 			}
-		} elseif ( true === $wp_filesystem->is_file( $source ) && '.' !== $source && '..' !== $source ) {
+		} elseif (
+			$wp_filesystem->is_file( $source ) &&
+			'.' !== $source &&
+			'..' !== $source
+		) {
 			$file_name = str_replace( ' ', '', basename( $source ) );
 
 			if ( ! empty( $file_name ) ) {
