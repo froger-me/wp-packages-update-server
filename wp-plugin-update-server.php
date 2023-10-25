@@ -65,6 +65,12 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 function wppus_run() {
 	require_once WPPUS_PLUGIN_PATH . 'functions.php';
 
+	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+	$encryption_settings = $settings_class::get_option( 'encryption' );
+
+	Wppus_Nonce::init( false, true );
+
 	$is_update_api_request  = WPPUS_Update_API::is_doing_api_request();
 	$is_license_api_request = WPPUS_License_API::is_doing_api_request();
 	$is_api_request         = $is_license_api_request || $is_update_api_request;

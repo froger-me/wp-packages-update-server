@@ -159,7 +159,11 @@ class WP_Plugin_Update_Server {
 		}
 
 		if ( ! get_option( 'wppus_package_download_url_token' ) ) {
-			update_option( 'wppus_package_download_url_token', bin2hex( openssl_random_pseudo_bytes( 8 ) ), true );
+			update_option(
+				'wppus_package_download_url_token',
+				bin2hex( openssl_random_pseudo_bytes( 8 ) ),
+				true
+			);
 		}
 
 		$charset_collate = '';
@@ -170,6 +174,25 @@ class WP_Plugin_Update_Server {
 
 		if ( ! empty( $wpdb->collate ) ) {
 			$charset_collate .= " COLLATE {$wpdb->collate}";
+		}
+
+		$table_name = $wpdb->prefix . 'wppus_nonce';
+		$sql        =
+			'CREATE TABLE ' . $table_name . ' (
+				id int(12) NOT NULL auto_increment,
+				nonce varchar(255) NOT NULL,
+				expiry int(12) NOT NULL,
+				PRIMARY KEY (id),
+				KEY nonce (nonce)
+			)' . $charset_collate . ';';
+
+		dbDelta( $sql );
+
+		$table_name = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "wppus_nonce'" );
+
+		if ( $wpdb->prefix . 'wppus_nonce' !== $table_name ) {
+
+			return false;
 		}
 
 		$table_name = $wpdb->prefix . 'wppus_licenses';
@@ -195,9 +218,13 @@ class WP_Plugin_Update_Server {
 		dbDelta( $sql );
 
 		$table_name = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "wppus_licenses'" );
-		$success    = $wpdb->prefix . 'wppus_licenses' === $table_name;
 
-		return $success;
+		if ( $wpdb->prefix . 'wppus_licenses' !== $table_name ) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	public static function maybe_setup_mu_plugin() {
