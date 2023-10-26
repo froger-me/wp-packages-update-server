@@ -81,7 +81,7 @@ if ( !class_exists(PluginUpdateChecker::class, false) ):
 			$mainPluginFile = basename($this->pluginFile);
 			$remotePlugin = $api->getRemoteFile($mainPluginFile, $ref);
 			if ( !empty($remotePlugin) ) {
-				$remoteHeader = $this->getFileHeader($remotePlugin);
+				$remoteHeader = $this->package->getFileHeader($remotePlugin);
 				$this->setInfoFromHeader($remoteHeader, $info);
 			}
 

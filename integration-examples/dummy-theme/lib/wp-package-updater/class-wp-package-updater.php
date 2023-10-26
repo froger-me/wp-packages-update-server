@@ -143,6 +143,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 					add_action( 'admin_menu', array( $this, 'setup_theme_admin_menus' ), 10, 0 );
 
 					add_filter( 'custom_menu_order', array( $this, 'alter_admin_appearence_submenu_order' ), 10, 1 );
+					add_filter( 'wp_prepare_themes_for_js', array( $this, 'wp_prepare_themes_for_js' ), 10, 1 );
 				}
 
 				add_action( 'wp_ajax_wppu_' . $this->package_id . '_activate_license', array( $this, 'activate_license' ), 10, 0 );
@@ -151,6 +152,15 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				add_action( 'admin_notices', array( $this, 'show_license_error_notice' ), 10, 0 );
 				add_action( 'init', array( $this, 'load_textdomain' ), 10, 0 );
 			}
+		}
+
+		public function wp_prepare_themes_for_js( $prepared_themes ) {
+
+			if ( isset( $prepared_themes[ $this->package_slug ] ) ) {
+				$prepared_themes[ $this->package_slug ]['description'] .= '<div>' . $this->get_license_form() . '</div>';
+			}
+
+			return $prepared_themes;
 		}
 
 		public function load_textdomain() {
@@ -216,10 +226,11 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		public function add_admin_scripts( $hook ) {
 			$debug = (bool) ( constant( 'WP_DEBUG' ) );
 
-			$condition = 'plugins.php' === $hook;
-			$condition = $condition || 'appearance_page_theme-license' === $hook;
-			$condition = $condition || 'appearance_page_parent-theme-license' === $hook;
-			$condition = $condition && ! wp_script_is( 'wp-package-updater-script' );
+			$condition = 'plugins.php' === $hook ||
+				'themes.php' === $hook ||
+				'appearance_page_theme-license' === $hook ||
+				'appearance_page_parent-theme-license' === $hook &&
+				! wp_script_is( 'wp-package-updater-script' );
 
 			if ( $condition ) {
 				$js_ext = ( $debug ) ? '.js' : '.min.js';
@@ -231,6 +242,59 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 
 				wp_enqueue_script( 'wp-package-updater-script', $this->package_url . '/lib/wp-package-updater/js/main' . $js_ext, array( 'jquery' ), $ver_js, true );
 				wp_localize_script( 'wp-package-updater-script', 'WP_PackageUpdater', $params );
+
+				if ( ! wp_style_is( 'wp-package-updater-style' ) ) {
+					wp_register_style( 'wp-package-updater-style', false, array(), '1.0' );
+					wp_enqueue_style( 'wp-package-updater-style' );
+
+					$css = '
+						.appearance_page_theme-license .license-error.notice {
+							display: none;
+						}
+
+						.appearance_page_theme-license .postbox {
+							max-width: 500px;
+							margin: 0 auto;
+						}
+
+						.appearance_page_theme-license .wrap-license label {
+							margin-bottom: 10px;
+						}
+
+						.appearance_page_theme-license .wrap-license input[type="text"],
+						.theme-about .wrap-license input[type="text"] {
+							width: 100%;
+						}
+
+						.appearance_page_theme-license .inside {
+							margin: 2em;
+						}
+
+						.license-change {
+							display: flex;
+							flex-direction: column;
+							gap: 1em;
+							margin: 2em;
+						}
+
+						.plugin-update .license-change {
+							flex-direction: row;
+							align-items: center;
+						}
+
+						.license-message {
+							font-weight: bold;
+						}
+
+						.current-license-error {
+						    background: #a00;
+							color: white;
+							padding: 0.25em;
+						}
+					';
+
+					wp_add_inline_style( 'wp-package-updater-style', $css );
+				}
 			}
 		}
 
@@ -287,7 +351,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			} else {
 				$error = new WP_Error( 'License', $license_data->message );
 
-				if ( $license_data->clear_key ) {
+				if ( property_exists( $license_data, 'clear_key' ) && $license_data->clear_key ) {
 					delete_option( 'license_signature_' . $this->package_slug );
 					delete_option( 'license_key_' . $this->package_slug );
 				}
@@ -342,7 +406,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			$error = get_option( 'wppu_' . $this->package_slug . '_license_error' );
 
 			if ( $error ) {
-				$class = 'license-error-' . $this->package_slug . ' notice notice-error is-dismissible';
+				$class = 'license-error license-error-' . $this->package_slug . ' notice notice-error is-dismissible';
 
 				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $error ); // @codingStandardsIgnoreLine
 			}
@@ -430,11 +494,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 					$license_data->message = sprintf(
 						// translators: the license expiry date
 						__( 'The license expired on %s and needs to be renewed to be updated.', 'wp-package-updater' ),
-						wp_date(
-							get_option( 'date_format' ),
-							strtotime( $license_data->date_expiry ),
-							new DateTimeZone( wp_timezone_string() )
-						)
+						date_i18n( get_option( 'date_format' ), strtotime( $license_data->date_expiry ) )
 					);
 				} else {
 					$license_data->message = __( 'The license expired and needs to be renewed to be updated.', 'wp-package-updater' );

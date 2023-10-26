@@ -1,15 +1,8 @@
 /* version 1.4.0 */
 /* global WP_PackageUpdater */
-jQuery(document).ready(function($) {
+jQuery(document).ready(function ($) {
 
-	var labelTheme = $('.appearance_page_theme-license .wrap-license label');
-
-	labelTheme.css('display', 'block');
-	labelTheme.css('margin-bottom', '10px');
-	$('.appearance_page_theme-license .wrap-license input[type="text"]').css('width', '50%');
-	$('.appearance_page_theme-license .postbox').show();
-
-	$('.wrap-license .activate-license').on('click', function(e) {
+	$('body').on('click', '.wrap-license .activate-license', function(e) {
 		e.preventDefault();
 
 		var licenseContainer = $(this).parent().parent(),
@@ -50,7 +43,7 @@ jQuery(document).ready(function($) {
 		});
 	});
 
-	$('.wrap-license .deactivate-license').on('click', function(e) {
+	$('body').on('click', '.wrap-license .deactivate-license', function(e) {
 		e.preventDefault();
 
 		var licenseContainer = $(this).parent().parent(),
