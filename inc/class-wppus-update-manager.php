@@ -118,8 +118,7 @@ class WPPUS_Update_Manager {
 		if ( false !== strpos( $hook, 'page_wppus' ) ) {
 			$js_ext = ( $debug ) ? '.js' : '.min.js';
 			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/main' . $js_ext );
-			$params = array(
-				'ajax_url'              => admin_url( 'admin-ajax.php' ),
+			$l10n   = array(
 				'invalidFileFormat'     => __( 'Error: invalid file format.', 'wppus' ),
 				'invalidFileSize'       => __( 'Error: invalid file size.', 'wppus' ),
 				'invalidFileName'       => __( 'Error: invalid file name.', 'wppus' ),
@@ -127,11 +126,15 @@ class WPPUS_Update_Manager {
 				'deleteRecord'          => __( 'Are you sure you want to delete this record?', 'wppus' ),
 				'deleteLicensesConfirm' => __( "You are about to delete all the licenses from this server.\nAll the records will be permanently deleted.\nPackages requiring these licenses will not be able to get a successful response from this server.\n\nAre you sure you want to do this?", 'wppus' ),
 			);
+			$params = array(
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'debug'    => $debug,
+			);
 
 			if ( get_option( 'wppus_use_remote_repository' ) ) {
-				$params['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a remote repository will be added again automatically whenever a client asks for updates.\nAll packages manually uploaded without counterpart in a remote repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
+				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a remote repository will be added again automatically whenever a client asks for updates.\nAll packages manually uploaded without counterpart in a remote repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
 			} else {
-				$params['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nAll packages will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
+				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nAll packages will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
 			}
 			wp_enqueue_script(
 				'wp-plugin-update-server-script',
@@ -140,7 +143,12 @@ class WPPUS_Update_Manager {
 				$ver_js,
 				true
 			);
-			wp_localize_script( 'wp-plugin-update-server-script', 'Wppus', $params );
+			wp_localize_script( 'wp-plugin-update-server-script', 'Wppus_l10n', $l10n );
+			wp_add_inline_script(
+				'wp-plugin-update-server-script',
+				'var Wppus = ' . wp_json_encode( $params ),
+				'before'
+			);
 
 			$css_ext = ( $debug ) ? '.css' : '.min.css';
 			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/main' . $css_ext );
