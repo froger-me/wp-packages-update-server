@@ -168,6 +168,10 @@ class WPPUS_Remote_Sources_Manager {
 						$option_info['value'] = ( $option_info['value'] );
 					}
 
+					if ( 'non-empty' === $option_info['condition'] ) {
+						$condition = ! empty( $option_info['value'] );
+					}
+
 					if ( 'positive number' === $option_info['condition'] ) {
 						$condition = is_numeric( $option_info['value'] ) && intval( $option_info['value'] ) >= 0;
 					}
@@ -248,6 +252,16 @@ class WPPUS_Remote_Sources_Manager {
 			);
 		}
 
+		if (
+			! get_option( 'wppus_remote_repository_use_webhooks' ) &&
+			null !== $new_wppus_remote_repository_use_webhooks &&
+			$new_wppus_remote_repository_use_webhooks !== $original_wppus_remote_repository_use_webhooks
+		) {
+			$this->scheduler->reschedule_remote_check_recurring_events(
+				$new_wppus_remote_repository_check_frequency
+			);
+		}
+
 		return $result;
 	}
 
@@ -299,6 +313,12 @@ class WPPUS_Remote_Sources_Manager {
 					'display_name'            => __( 'Remote update schedule', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid option', 'wppus' ),
 					'condition'               => 'positive number',
+				),
+				'wppus_remote_repository_webhook_secret'  => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_webhook_secret', FILTER_UNSAFE_RAW ),
+					'display_name'            => __( 'Remote repository Webhook Secret', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'non-empty',
 				),
 			)
 		);
