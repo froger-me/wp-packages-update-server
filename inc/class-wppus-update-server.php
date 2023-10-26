@@ -200,7 +200,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	protected function checkAuthorization( $request ) {
 		parent::checkAuthorization( $request );
 
-		// @todo use true nonce
 		if (
 			'download' === $request->action &&
 			get_option( 'wppus_package_download_url_token' ) !== $request->token
@@ -212,7 +211,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	}
 
 	protected function generateDownloadUrl( Wpup_Package $package ) {
-		// @todo use true nonce
 		$query = array(
 			'action'     => 'download',
 			'token'      => get_option( 'wppus_package_download_url_token' ),

@@ -176,25 +176,6 @@ class WP_Plugin_Update_Server {
 			$charset_collate .= " COLLATE {$wpdb->collate}";
 		}
 
-		$table_name = $wpdb->prefix . 'wppus_nonce';
-		$sql        =
-			'CREATE TABLE ' . $table_name . ' (
-				id int(12) NOT NULL auto_increment,
-				nonce varchar(255) NOT NULL,
-				expiry int(12) NOT NULL,
-				PRIMARY KEY (id),
-				KEY nonce (nonce)
-			)' . $charset_collate . ';';
-
-		dbDelta( $sql );
-
-		$table_name = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "wppus_nonce'" );
-
-		if ( $wpdb->prefix . 'wppus_nonce' !== $table_name ) {
-
-			return false;
-		}
-
 		$table_name = $wpdb->prefix . 'wppus_licenses';
 		$sql        = 'CREATE TABLE ' . $table_name . " (
 			id int(12) NOT NULL auto_increment,
