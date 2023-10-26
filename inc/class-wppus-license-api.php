@@ -197,7 +197,14 @@ class WPPUS_License_API {
 			unset( $license_data['id'] );
 		}
 
-		$result                = $this->license_server->read_license( $license_data );
+		$result = $this->license_server->read_license( $license_data );
+
+		if ( is_object( $result ) ) {
+			$result = json_decode( wp_json_encode( $result ), true );
+		} else {
+			$result = array();
+		}
+
 		$result['license_key'] = isset( $license_data['license_key'] ) ? $license_data['license_key'] : false;
 		$result                = apply_filters( 'wppus_check_license_result', $result, $license_data );
 
@@ -226,7 +233,6 @@ class WPPUS_License_API {
 		}
 
 		if ( is_object( $license ) && ! empty( $license_data['allowed_domains'] ) ) {
-
 			$domain_count = count( $license_data['allowed_domains'] ) + count( $license->allowed_domains );
 
 			if ( 'expired' === $license->status || 'blocked' === $license->status ) {
@@ -291,12 +297,13 @@ class WPPUS_License_API {
 			}
 
 			if ( empty( $result ) ) {
-				$payload = array(
+				$allowed_domains = array_diff( $license->allowed_domains, $license_data['allowed_domains'] );
+				$payload         = array(
 					'id'              => $license->id,
-					'status'          => empty( $license->allowed_domains ) ? 'deactivated' : $license->status,
-					'allowed_domains' => array_diff( $license->allowed_domains, $license_data['allowed_domains'] ),
+					'status'          => empty( $allowed_domains ) ? 'deactivated' : $license->status,
+					'allowed_domains' => $allowed_domains,
 				);
-				$result  = $this->license_server->edit_license(
+				$result          = $this->license_server->edit_license(
 					apply_filters( 'wppus_deactivate_license_payload', $payload )
 				);
 			}

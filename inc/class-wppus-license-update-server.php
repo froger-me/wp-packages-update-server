@@ -162,20 +162,23 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 	}
 
 	protected function verify_license_exists( $license_key ) {
-		$license_server             = new WPPUS_License_Server();
-		$payload                    = array( 'license_key' => $license_key );
-		$result                     = $license_server->read_license( $payload );
-		$name_parts                 = explode( ' ', $result->owner_name );
-		$first_name                 = array_shift( $name_parts );
-		$last_name                  = implode( ' ', $name_parts );
-		$result->result             = 'success';
-		$result->first_name         = $first_name;
-		$result->last_name          = $last_name;
-		$result->registered_domains = $result->allowed_domains;
-		$result->message            = __( 'License key details retrieved.', 'wppus' );
-		$result->product_ref        = ( 'theme' === $result->package_type ) ?
-			$result->package_slug . '/functions.php' :
-			$result->package_slug . '/' . $result->package_slug . '.php';
+		$license_server = new WPPUS_License_Server();
+		$payload        = array( 'license_key' => $license_key );
+		$result         = $license_server->read_license( $payload );
+		$name_parts     = explode( ' ', $result->owner_name );
+		$first_name     = array_shift( $name_parts );
+		$last_name      = implode( ' ', $name_parts );
+
+		if ( is_object( $result ) ) {
+			$result->result             = 'success';
+			$result->first_name         = $first_name;
+			$result->last_name          = $last_name;
+			$result->registered_domains = $result->allowed_domains;
+			$result->message            = __( 'License key details retrieved.', 'wppus' );
+			$result->product_ref        = ( 'theme' === $result->package_type ) ?
+				$result->package_slug . '/functions.php' :
+				$result->package_slug . '/' . $result->package_slug . '.php';
+		}
 
 		return $result;
 	}

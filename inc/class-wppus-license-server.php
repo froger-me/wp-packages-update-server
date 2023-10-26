@@ -127,7 +127,7 @@ class WPPUS_License_Server {
 		$payload    = apply_filters( 'wppus_read_license_payload', $payload );
 		$validation = ( isset( $payload['id'] ) && ! empty( $payload['id'] ) );
 		$validation = $validation || ( isset( $payload['license_key'] ) && ! empty( $payload['license_key'] ) );
-		$return     = new stdClass();
+		$return     = false;
 
 		if ( true === $validation ) {
 			global $wpdb;
@@ -181,8 +181,6 @@ class WPPUS_License_Server {
 
 				error_log( __METHOD__ . ': License update failed - database update error.' ); // @codingStandardsIgnoreLine
 			}
-		} else {
-			$return = array( 'errors' => $return );
 		}
 
 		do_action( 'wppus_did_edit_license', $return );
@@ -216,8 +214,6 @@ class WPPUS_License_Server {
 
 				error_log( __METHOD__ . ': License creation failed - database insertion error.' ); // @codingStandardsIgnoreLine
 			}
-		} else {
-			$return = array( 'errors' => $return );
 		}
 
 		do_action( 'wppus_did_add_license', $return );
@@ -263,11 +259,8 @@ class WPPUS_License_Server {
 		$config        = WPPUS_License_API::get_config();
 		$hmac_key      = $config['licenses_hmac_key'];
 		$crypto_key    = $config['licenses_crypto_key'];
-		$crypt_payload = array( $domain, $license->package_slug );
-		$hmac_payload  = array( $license->license_key, $license->id );
-		$crypt         = WPPUS_Crypto::encrypt( implode( self::DATA_SEPARATOR, $crypt_payload ), $crypto_key, $hmac_key );
-		$hmac          = WPPUS_Crypto::hmac_sign( implode( self::DATA_SEPARATOR, $hmac_payload ), $hmac_key );
-		$signature     = $crypt . self::CRYPT_HMAC_SEPARATOR . $hmac;
+		$crypt_payload = array( $domain, $license->package_slug, $license->license_key, $license->id );
+		$signature     = WPPUS_Crypto::encrypt( implode( self::DATA_SEPARATOR, $crypt_payload ), $crypto_key, $hmac_key );
 
 		return $signature;
 	}
@@ -275,13 +268,11 @@ class WPPUS_License_Server {
 	public function is_signature_valid( $license, $license_signature ) {
 		$config     = WPPUS_License_API::get_config();
 		$valid      = false;
-		$raw_data   = explode( self::CRYPT_HMAC_SEPARATOR, $license_signature );
-		$hmac       = end( $raw_data );
-		$crypt      = reset( $raw_data );
+		$crypt      = $license_signature;
 		$hmac_key   = $config['licenses_hmac_key'];
 		$crypto_key = $config['licenses_crypto_key'];
 
-		if ( ! ( empty( $crypt ) || empty( $hmac ) || ! WPPUS_Crypto::hmac_verify( $hmac, $hmac_key ) ) ) {
+		if ( ! ( empty( $crypt ) ) ) {
 			$payload = null;
 
 			try {
