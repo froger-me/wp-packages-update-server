@@ -11,14 +11,12 @@ class WPPUS_Remote_Sources_Manager {
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
-			$use_remote_repository = get_option( 'wppus_use_remote_repository', false );
-
 			$this->scheduler = new WPPUS_Scheduler();
 
-			if ( $use_remote_repository ) {
-				add_action( 'init', array( $this->scheduler, 'register_remote_check_schedules' ), 10, 0 );
+			if ( get_option( 'wppus_use_remote_repository' ) ) {
+				add_action( 'init', array( $this->scheduler, 'register_remote_check_scheduled_hooks' ), 10, 0 );
 			} else {
-				add_action( 'init', array( $this->scheduler, 'clear_remote_check_schedules' ), 10, 0 );
+				add_action( 'init', array( $this->scheduler, 'clear_remote_check_scheduled_hooks' ), 10, 0 );
 			}
 
 			add_action( 'wp_ajax_wppus_force_clean', array( $this, 'force_clean' ), 10, 0 );
@@ -30,14 +28,20 @@ class WPPUS_Remote_Sources_Manager {
 	public static function clear_schedules() {
 		$scheduler = new WPPUS_Scheduler();
 
-		return $scheduler->clear_remote_check_schedules();
+		return $scheduler->clear_remote_check_scheduled_hooks();
 	}
 
 	public static function register_schedules() {
 		$scheduler = new WPPUS_Scheduler();
-		$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
+		$result    = false;
 
-		return $scheduler->reschedule_remote_check_events( $frequency );
+		if ( ! get_option( 'wppus_remote_repository_use_webhooks' ) ) {
+			$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
+
+			$scheduler->reschedule_remote_check_recurring_events( $frequency );
+		}
+
+		return $result;
 	}
 
 	public function plugin_options_menu() {
@@ -61,6 +65,7 @@ class WPPUS_Remote_Sources_Manager {
 		$action_error         = '';
 		$registered_schedules = wp_get_schedules();
 		$schedules            = array();
+		$use_webhooks         = get_option( 'wppus_remote_repository_use_webhooks', 0 );
 
 		foreach ( $registered_schedules as $key => $schedule ) {
 			$schedules[ $schedule['display'] ] = array(
@@ -142,6 +147,8 @@ class WPPUS_Remote_Sources_Manager {
 		$new_wppus_remote_repository_check_frequency      = null;
 		$original_wppus_use_remote_repository             = get_option( 'wppus_use_remote_repository' );
 		$new_wppus_use_remote_repository                  = null;
+		$original_wppus_remote_repository_use_webhooks    = get_option( 'wppus_remote_repository_use_webhooks' );
+		$new_wppus_remote_repository_use_webhooks         = null;
 
 		if (
 			isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) &&
@@ -159,6 +166,10 @@ class WPPUS_Remote_Sources_Manager {
 					if ( 'boolean' === $option_info['condition'] ) {
 						$condition            = true;
 						$option_info['value'] = ( $option_info['value'] );
+					}
+
+					if ( 'positive number' === $option_info['condition'] ) {
+						$condition = is_numeric( $option_info['value'] ) && intval( $option_info['value'] ) >= 0;
 					}
 
 					if ( 'known frequency' === $option_info['condition'] ) {
@@ -215,22 +226,26 @@ class WPPUS_Remote_Sources_Manager {
 		$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
 
 		if (
+			! get_option( 'wppus_remote_repository_use_webhooks' ) &&
 			null !== $new_wppus_use_remote_repository &&
 			$new_wppus_use_remote_repository !== $original_wppus_use_remote_repository
 		) {
 
 			if ( ! $original_wppus_use_remote_repository && $new_wppus_use_remote_repository ) {
-				$this->scheduler->reschedule_remote_check_events( $frequency );
+				$this->scheduler->reschedule_remote_check_recurring_events( $frequency );
 			} elseif ( $original_wppus_use_remote_repository && ! $new_wppus_use_remote_repository ) {
-				$this->scheduler->clear_remote_check_schedules();
+				$this->scheduler->clear_remote_check_scheduled_hooks();
 			}
 		}
 
 		if (
+			! get_option( 'wppus_remote_repository_use_webhooks' ) &&
 			null !== $new_wppus_remote_repository_check_frequency &&
 			$new_wppus_remote_repository_check_frequency !== $original_wppus_remote_repository_check_frequency
 		) {
-			$this->scheduler->reschedule_remote_check_events( $new_wppus_remote_repository_check_frequency );
+			$this->scheduler->reschedule_remote_check_recurring_events(
+				$new_wppus_remote_repository_check_frequency
+			);
 		}
 
 		return $result;
@@ -273,6 +288,17 @@ class WPPUS_Remote_Sources_Manager {
 					'display_name'            => __( 'Remote update check frequency', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid option', 'wppus' ),
 					'condition'               => 'known frequency',
+				),
+				'wppus_remote_repository_use_webhooks'    => array(
+					'value'        => filter_input( INPUT_POST, 'wppus_remote_repository_use_webhooks', FILTER_VALIDATE_BOOLEAN ),
+					'display_name' => __( 'Use Webhooks', 'wppus' ),
+					'condition'    => 'boolean',
+				),
+				'wppus_remote_repository_check_delay'     => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_check_delay', FILTER_UNSAFE_RAW ),
+					'display_name'            => __( 'Remote update schedule', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid option', 'wppus' ),
+					'condition'               => 'positive number',
 				),
 			)
 		);

@@ -33,6 +33,17 @@ jQuery(document).ready(function($) {
 		}
 	});
 
+	$('#wppus_remote_repository_use_webhooks').on('change', function (e) {
+
+		if ($(this).prop('checked')) {
+			$('.hide-if-webhooks').addClass('hidden');
+			$('.hide-if-no-webhooks').removeClass('hidden');
+		} else {
+			$('.hide-if-no-webhooks').addClass('hidden');
+			$('.hide-if-webhooks').removeClass('hidden');
+		}
+	})
+
 	$('.ajax-trigger').on('click', function(e) {
 		e.preventDefault();
 

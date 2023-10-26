@@ -109,6 +109,25 @@
 			</tr>
 			<tr>
 				<th>
+					<label for="wppus_remote_repository_use_webhooks"><?php esc_html_e( 'Use Webhooks', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input type="checkbox" id="wppus_remote_repository_use_webhooks" name="wppus_remote_repository_use_webhooks" value="1" <?php checked( $use_webhooks, 1 ); ?>>
+					<p class="description">
+						<?php esc_html_e( 'Check this if you wish each repository of the remote repository service to call a Webhook when updates are pushed.', 'wppus' ); ?><br>
+						<?php esc_html_e( 'When checked, WP Plugin Update Server will not regularly poll repositories for package updates, but relies event sent by the repositories to schedule package downloads.', 'wppus' ); ?><br/>
+						<?php
+						printf(
+							// translators: %s is the webhook URL
+							esc_html( 'Webhook URL: %s.', 'wppus' ),
+							'<code>' . esc_url( home_url( '/wppus-webhook/' ) ) . '</code>'
+						);
+						?>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<th>
 					<label for="wppus_remote_repository_branch"><?php esc_html_e( 'Packages branch name', 'wppus' ); ?></label>
 				</th>
 				<td>
@@ -147,7 +166,19 @@
 					</p>
 				</td>
 			</tr>
-			<tr>
+			<tr class="hide-if-no-webhooks <?php echo ( $use_webhooks ) ? '' : 'hidden'; ?>">
+				<th>
+					<label for="wppus_remote_repository_check_delay"><?php esc_html_e( 'Remote update schedule', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input type="number" min="0" id="wppus_remote_repository_check_delay" name="wppus_remote_repository_check_delay" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_check_delay', 0 ) ); ?>">
+					<p class="description">
+						<?php esc_html_e( 'Delay in seconds after which WP Plugin Update Server will poll the remote repository for package updates when the Webhook has been called.', 'wppus' ); ?><br>
+						<?php esc_html_e( 'Leave at 0 to schedule a package update at next cron run.', 'wppus' ); ?>
+					</p>
+				</td>
+			</tr>
+			<tr class="hide-if-webhooks <?php echo ( $use_webhooks ) ? 'hidden' : ''; ?>">
 				<th>
 					<label for="wppus_remote_repository_check_frequency"><?php esc_html_e( 'Remote update check frequency', 'wppus' ); ?></label>
 				</th>

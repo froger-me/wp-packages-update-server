@@ -36,7 +36,74 @@ class WPPUS_Scheduler {
 			$timestamp = strtotime( 'today midnight' );
 			$result    = wp_schedule_event( $timestamp, $frequency, $hook );
 
-			do_action( 'wppus_scheduled_renew_download_url_token_event', $result, $timestamp, $frequency, $hook );
+			do_action(
+				'wppus_scheduled_renew_download_url_token_event',
+				$result,
+				$timestamp,
+				$frequency,
+				$hook
+			);
+		}
+	}
+
+	public function reschedule_remote_check_recurring_events( $frequency ) {
+
+		if ( WPPUS_Update_API::is_doing_api_request() ) {
+
+			return false;
+		}
+
+		$slugs = $this->get_package_slugs();
+
+		if ( ! empty( $slugs ) ) {
+
+			foreach ( $slugs as $slug ) {
+				$hook = 'wppus_check_remote_' . $slug;
+
+				$this->clear_remote_check_schedule( $slug );
+
+				if ( ! wp_next_scheduled( $hook, array( $slug ) ) ) {
+					$params    = array( $slug );
+					$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
+					$timestamp = time();
+					$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+
+					do_action(
+						'wppus_scheduled_check_remote_event',
+						$result,
+						$slug,
+						$timestamp,
+						$frequency,
+						$hook,
+						$params
+					);
+				}
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public function register_remote_check_single_event( $slug, $delay ) {
+		$hook = 'wppus_check_remote_' . $slug;
+
+		if ( ! wp_next_scheduled( $hook, array( $slug ) ) ) {
+			$params    = array( $slug );
+			$delay     = apply_filters( 'wppus_check_remote_delay', $delay, $slug );
+			$timestamp = time() + abs( intval( $delay ) );
+			$result    = wp_schedule_single_event( $timestamp, $hook, $params );
+
+			do_action(
+				'wppus_scheduled_check_remote_event',
+				$result,
+				$slug,
+				$timestamp,
+				0,
+				$hook,
+				$params
+			);
 		}
 	}
 
@@ -48,65 +115,53 @@ class WPPUS_Scheduler {
 		do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
 	}
 
-	public function register_remote_check_event( $slug, $frequency ) {
-		$hook = 'wppus_check_remote_' . $slug;
+	public function register_remote_check_scheduled_hooks() {
+		$result = false;
 
-		if ( ! wp_next_scheduled( $hook, array( $slug ) ) ) {
-			$params    = array( $slug );
-			$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
-			$timestamp = time();
-			$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+		if ( ! WPPUS_Update_API::is_doing_api_request() ) {
+			$slugs = $this->get_package_slugs();
 
-			do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, $frequency, $hook, $params );
-		}
-	}
+			if ( ! empty( $slugs ) ) {
+				$action_hook = array( 'WPPUS_Update_API', 'maybe_download_remote_update' );
 
-	public function register_remote_check_schedules() {
-
-		return $this->remote_check_schedules_alter( 'register' );
-	}
-
-	public function clear_remote_check_schedules() {
-
-		return $this->remote_check_schedules_alter( 'clear' );
-	}
-
-	public function reschedule_remote_check_events( $frequency ) {
-
-		if ( WPPUS_Update_API::is_doing_api_request() ) {
-
-			return false;
-		}
-
-		WP_Filesystem();
-
-		global $wp_filesystem;
-
-		if ( ! $wp_filesystem ) {
-
-			return;
-		}
-
-		$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
-
-		if ( $wp_filesystem->is_dir( $package_directory ) ) {
-			$package_paths = glob( trailingslashit( $package_directory ) . '*.zip' );
-
-			if ( ! empty( $package_paths ) ) {
-
-				foreach ( $package_paths as $package_path ) {
-					$package_path_parts = explode( '/', $package_path );
-					$safe_slug          = str_replace( '.zip', '', end( $package_path_parts ) );
-
-					$this->clear_remote_check_schedule( $safe_slug );
-					$this->register_remote_check_event( $safe_slug, $frequency );
+				foreach ( $slugs as $slug ) {
+					add_action( 'wppus_check_remote_' . $slug, $action_hook, 10, 1 );
+					do_action(
+						'wppus_registered_check_remote_schedule',
+						$slug,
+						'wppus_check_remote_' . $slug,
+						$action_hook
+					);
 				}
 
-				return true;
+				$result = true;
 			}
 		}
 
-		return false;
+		return $result;
+	}
+
+	public function clear_remote_check_scheduled_hooks() {
+		$result = false;
+
+		if ( ! WPPUS_Update_API::is_doing_api_request() ) {
+			$slugs = $this->get_package_slugs();
+
+			if ( ! empty( $slugs ) ) {
+
+				foreach ( $slugs as $slug ) {
+					$scheduled_hook = 'wppus_check_remote_' . $slug;
+					$params         = array( $slug );
+
+					wp_clear_scheduled_hook( $scheduled_hook, $params );
+					do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
+				}
+
+				$result = true;
+			}
+		}
+
+		return $result;
 	}
 
 	public function register_license_schedules() {
@@ -164,61 +219,49 @@ class WPPUS_Scheduler {
 				$timestamp = time();
 				$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
 
-				do_action( 'wppus_scheduled_cleanup_event', $result, $type, $timestamp, $frequency, $hook, $params );
+				do_action(
+					'wppus_scheduled_cleanup_event',
+					$result,
+					$type,
+					$timestamp,
+					$frequency,
+					$hook,
+					$params
+				);
 			}
 		}
 	}
 
-	protected function remote_check_schedules_alter( $action ) {
+	protected function get_package_slugs() {
+		$slugs = wp_cache_get( 'package_slugs', 'wppus' );
 
-		if ( WPPUS_Update_API::is_doing_api_request() ) {
+		if ( false === $slugs ) {
+			WP_Filesystem();
 
-			return false;
-		}
+			global $wp_filesystem;
 
-		WP_Filesystem();
+			$slugs = array();
 
-		global $wp_filesystem;
+			if ( $wp_filesystem ) {
+				$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
 
-		if ( ! $wp_filesystem ) {
+				if ( $wp_filesystem->is_dir( $package_directory ) ) {
+					$package_paths = glob( trailingslashit( $package_directory ) . '*.zip' );
 
-			return;
-		}
+					if ( ! empty( $package_paths ) ) {
 
-		$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
-
-		if ( $wp_filesystem->is_dir( $package_directory ) ) {
-			$package_paths = glob( trailingslashit( $package_directory ) . '*.zip' );
-
-			if ( ! empty( $package_paths ) ) {
-
-				foreach ( $package_paths as $package_path ) {
-					$package_path_parts = explode( '/', $package_path );
-					$slug               = str_replace( '.zip', '', end( $package_path_parts ) );
-
-					switch ( $action ) {
-						case 'register':
-							$action_hook    = array( 'WPPUS_Update_API', 'maybe_download_remote_update' );
-							$scheduled_hook = 'wppus_check_remote_' . $slug;
-
-							add_action( 'wppus_check_remote_' . $slug, $action_hook, 10, 1 );
-							do_action( 'wppus_registered_check_remote_schedule', $slug, $scheduled_hook, $action_hook );
-							break;
-						case 'clear':
-							$scheduled_hook = 'wppus_check_remote_' . $slug;
-							$params         = array( $slug );
-
-							wp_clear_scheduled_hook( $scheduled_hook, $params );
-							do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
-							break;
+						foreach ( $package_paths as $package_path ) {
+							$package_path_parts = explode( '/', $package_path );
+							$slugs[]            = str_replace( '.zip', '', end( $package_path_parts ) );
+						}
 					}
 				}
 
-				return true;
+				wp_cache_set( 'package_slugs', $slugs, 'wppus' );
 			}
 		}
 
-		return false;
+		return $slugs;
 	}
 
 	protected function cleanup_schedules_alter( $type, $action ) {
