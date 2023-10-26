@@ -64,7 +64,15 @@
 				<?php elseif ( 'col_file_size' === $column_name ) : ?>
 					<?php echo esc_html( size_format( $record[ $key ] ) ); ?>
 				<?php elseif ( 'col_file_last_modified' === $column_name ) : ?>
-					<?php echo esc_html( date_i18n( get_option( 'date_format' ) . ' - H:i:s', $record[ $key ] ) ); ?>
+					<?php
+					echo esc_html(
+						wp_date(
+							get_option( 'date_format' ) . ' - H:i:s',
+							$record[ $key ],
+							new DateTimeZone( wp_timezone_string() )
+						)
+					);
+					?>
 				<?php elseif ( 'col_use_license' === $column_name ) : ?>
 					<?php echo esc_html( $use_license_text ); ?>
 				<?php endif; ?>

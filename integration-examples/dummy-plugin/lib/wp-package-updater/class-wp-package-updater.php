@@ -430,7 +430,11 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 					$license_data->message = sprintf(
 						// translators: the license expiry date
 						__( 'The license expired on %s and needs to be renewed to be updated.', 'wp-package-updater' ),
-						date_i18n( get_option( 'date_format' ), strtotime( $license_data->date_expiry ) )
+						wp_date(
+							get_option( 'date_format' ),
+							strtotime( $license_data->date_expiry ),
+							new DateTimeZone( wp_timezone_string() )
+						)
 					);
 				} else {
 					$license_data->message = __( 'The license expired and needs to be renewed to be updated.', 'wp-package-updater' );

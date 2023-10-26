@@ -463,7 +463,7 @@ class WPPUS_Update_Manager {
 
 		$update_server = new WPPUS_Update_Server(
 			$config['use_remote_repository'],
-			home_url( '/wp-update-server/' ),
+			home_url( '/wppus-update-api/' ),
 			$this->scheduler,
 			$config['server_directory']
 		);

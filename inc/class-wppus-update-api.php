@@ -133,7 +133,7 @@ class WPPUS_Update_API {
 		$config        = self::get_config();
 		$update_server = new WPPUS_Update_Server(
 			$config['use_remote_repository'],
-			home_url( '/wp-update-server/' ),
+			home_url( '/wppus-update-api/' ),
 			new WPPUS_Scheduler(),
 			$config['server_directory'],
 			$config['repository_service_url'],
@@ -203,7 +203,7 @@ class WPPUS_Update_API {
 
 		$this->update_server = new $server_class_name(
 			$config['use_remote_repository'],
-			home_url( '/wp-update-server/' ),
+			home_url( '/wppus-update-api/' ),
 			$this->scheduler,
 			$config['server_directory'],
 			$config['repository_service_url'],
