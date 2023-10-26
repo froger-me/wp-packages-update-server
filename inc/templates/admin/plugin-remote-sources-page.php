@@ -46,13 +46,19 @@
 					<label for="wppus_use_remote_repository"><?php esc_html_e( 'Use remote repository service', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text" type="checkbox" id="wppus_use_remote_repository" name="wppus_use_remote_repository" value="1" <?php checked( get_option( 'wppus_use_remote_repository', 0 ), 1 ); ?>>
+					<input type="checkbox" id="wppus_use_remote_repository" name="wppus_use_remote_repository" value="1" <?php checked( get_option( 'wppus_use_remote_repository', 0 ), 1 ); ?>>
 					<p class="description">
 						<?php esc_html_e( 'Enables this server to download plugins and themes from a remote repository before delivering updates.', 'wppus' ); ?>
 						<br>
 						<?php esc_html_e( 'Supports Bitbucket, Github and Gitlab.', 'wppus' ); ?>
 						<br>
-						<?php echo sprintf( __( 'If left unchecked, zip packages need to be manually uploaded to <code>%s</code>.', 'wppus' ), WPPUS_Data_Manager::get_data_dir( 'packages' ) ); ?><?php // @codingStandardsIgnoreLine ?>
+						<?php
+						printf(
+							// translators: %s is the path where zip packages need to be uploaded
+							esc_html( 'If left unchecked, zip packages need to be manually uploaded to %s.', 'wppus' ),
+							'<code>' . esc_html( WPPUS_Data_Manager::get_data_dir( 'packages' ) ) . '</code>'
+						);
+						?>
 						<br>
 						<strong><?php esc_html_e( 'It affects all the packages delivered by this installation of WP Plugin Update Server if they have a corresponding repository in the remote repository service.', 'wppus' ); ?></strong>
 						<br>
@@ -69,9 +75,24 @@
 					<p class="description">
 						<?php esc_html_e( 'The URL of the remote repository service where packages are hosted.', 'wppus' ); ?>
 						<br>
-						<?php _e( 'Must follow the following pattern: <code>https://repository-service.tld/something/</code> where <code>something</code> is the user in case of Github and BitBucket, a group in case of Gitlab (no support for Gitlab subgroups), and where <code>https://repository-service.tld</code> may be a self-hosted instance of Gitlab.', 'wppus' ); ?><?php // @codingStandardsIgnoreLine ?>
+						<?php
+						printf(
+							// translators: %1$s is <code>https://repository-service.tld/something/</code>, %2$s is <code>something</code>, %3$s is <code>https://repository-service.tld</code>
+							esc_html( 'Must follow the following pattern: %1$s where %2$s is the user in case of Github and BitBucket, a group in case of Gitlab (no support for Gitlab subgroups), and where %3$s may be a self-hosted instance of Gitlab.', 'wppus' ),
+							'<code>https://repository-service.tld/something/</code>',
+							'<code>something</code>',
+							'<code>https://repository-service.tld</code>'
+						);
+						?>
 						<br>
-						<?php _e( 'Each package repository URL must follow the following pattern: <code>https://repository-service.tld/something/package-name/</code> ; the package files must be located at the root of the repository, and in the case of plugins the main plugin file must follow the pattern <code>package-name.php</code>.', 'wppus' ); ?><?php // @codingStandardsIgnoreLine ?>
+						<?php
+						printf(
+							// translators: %1$s is <code>https://repository-service.tld/something/package-name/</code>, %2$s is <code>something</code>
+							esc_html( 'Each package repository URL must follow the following pattern: %1$s ; the package files must be located at the root of the repository, and in the case of plugins the main plugin file must follow the pattern %2$s.', 'wppus' ),
+							'<code>https://repository-service.tld/something/package-name/</code>',
+							'<code>package-name.php</code>',
+						);
+						?>
 					</p>
 				</td>
 			</tr>
@@ -80,7 +101,7 @@
 					<label for="wppus_remote_repository_self_hosted"><?php esc_html_e( 'Self-hosted remote repository service', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text" type="checkbox" id="wppus_remote_repository_self_hosted" name="wppus_remote_repository_self_hosted" value="1" <?php checked( get_option( 'wppus_remote_repository_self_hosted', 0 ), 1 ); ?>>
+					<input type="checkbox" id="wppus_remote_repository_self_hosted" name="wppus_remote_repository_self_hosted" value="1" <?php checked( get_option( 'wppus_remote_repository_self_hosted', 0 ), 1 ); ?>>
 					<p class="description">
 						<?php esc_html_e( 'Check this only if the remote repository service is a self-hosted instance of Gitlab.', 'wppus' ); ?>
 					</p>
@@ -106,10 +127,23 @@
 					<p class="description">
 						<?php esc_html_e( 'Credentials for non-publicly accessible repositories.', 'wppus' ); ?>
 						<br>
-						<?php _e( 'In the case of Github and Gitlab, an access token (<code>token</code>).', 'wppus' ); ?><?php // @codingStandardsIgnoreLine ?>
+						<?php
+						printf(
+							// translators: %s is <code>token</code>
+							esc_html( 'In the case of Github and Gitlab, an access token (%s).', 'wppus' ),
+							'<code>token</code>'
+						);
+						?>
 						<br>
-						<?php _e( 'In the case of Bitbucket, the Consumer key and secret separated by a pipe (<code>consumer_key|consumer_secret</code>). IMPORTANT: when creating the consumer, "This is a private consumer" must be checked.', 'wppus' ); ?><?php // @codingStandardsIgnoreLine ?>
+						<?php
+						printf(
+							// translators: %s is <code>consumer_key|consumer_secret</code>
+							esc_html( 'In the case of Bitbucket, the Consumer key and secret separated by a pipe (%s). ', 'wppus' ),
+							'<code>consumer_key|consumer_secret</code>'
+						);
+						?>
 						<br>
+						<?php esc_html_e( 'IMPORTANT: when creating the consumer, "This is a private consumer" must be checked.', 'wppus' ); ?>
 					</p>
 				</td>
 			</tr>

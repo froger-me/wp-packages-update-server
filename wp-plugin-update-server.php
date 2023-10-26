@@ -63,6 +63,8 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 }
 
 function wppus_run() {
+	wp_cache_add_non_persistent_groups( 'wppus' );
+
 	require_once WPPUS_PLUGIN_PATH . 'functions.php';
 
 	$is_update_api_request  = WPPUS_Update_API::is_doing_api_request();

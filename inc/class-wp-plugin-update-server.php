@@ -40,15 +40,17 @@ class WP_Plugin_Update_Server {
 
 	public static function activate() {
 
-		if ( ! version_compare( phpversion(), '7.0', '>=' ) ) {
-			$error_message  = __( 'PHP version 7.0 or higher is required. Current version: ', 'wppus' );
+		if ( ! version_compare( phpversion(), '7.4', '>=' ) ) {
+			$error_message  = __( 'PHP version 7.4 or higher is required. Current version: ', 'wppus' );
 			$error_message .= phpversion();
 
 			die( $error_message ); // @codingStandardsIgnoreLine
 		}
 
 		if ( ! class_exists( 'ZipArchive' ) ) {
-			$error_message = __( 'The <a href="">zip</a> PHP extension is required by WP Plugin Update Server. Please check your server configuration.', 'wppus' );
+			$error_message = __( 'The zip PHP extension is required by WP Plugin Update Server. Please check your server configuration.', 'wppus' );
+
+			die( $error_message ); // @codingStandardsIgnoreLine
 		}
 
 		if ( ! get_option( 'wppus_plugin_version' ) ) {
@@ -63,11 +65,7 @@ class WP_Plugin_Update_Server {
 		$result = self::maybe_create_or_upgrade_db();
 
 		if ( ! $result ) {
-			// translators: %1$s is the path to the plugin's data directory
-			$error_message = sprintf(
-				__( 'Failed to create the necessary database table(s).', 'wppus' ),
-				WPPUS_Data_Manager::get_data_dir()
-			);
+			$error_message = __( 'Failed to create the necessary database table(s).', 'wppus' );
 
 			die( $error_message ); // @codingStandardsIgnoreLine
 		}
@@ -79,8 +77,8 @@ class WP_Plugin_Update_Server {
 		if ( ! $result ) {
 			$error_message = sprintf(
 				// translators: %1$s is the path to the plugin's data directory
-				__( 'Permission errors creating <code>%1$s</code> - could not setup the data directory. Please check the parent directory is writable.', 'wppus' ),
-				WPPUS_Data_Manager::get_data_dir()
+				__( 'Permission errors creating %1$s - could not setup the data directory. Please check the parent directory is writable.', 'wppus' ),
+				'<code>' . WPPUS_Data_Manager::get_data_dir() . '</code>'
 			);
 
 			die( $error_message ); // @codingStandardsIgnoreLine
