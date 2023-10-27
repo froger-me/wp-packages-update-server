@@ -160,7 +160,7 @@
 						<?php
 						printf(
 							// translators: %1$s is the webhook URL, %2$s is <code>package-type</code>, %3$s is <code>plugin</code>, %4$s is <code>theme</code>, %5$s is <code>package-name</code>
-							esc_html__( 'Webhook URL: %1$s - where %2$s is the package type ( %3$s or %4$s ) %5$s is the package needing updates.', 'wppus' ),
+							esc_html__( 'Webhook URL: %1$s - where %2$s is the package type ( %3$s or %4$s ) and %5$s is the package needing updates.', 'wppus' ),
 							'<code>' . esc_url( home_url( '/wppus-webhook/package-type/package-name' ) ) . '</code>',
 							'<code>package-type</code>',
 							'<code>plugin</code>',

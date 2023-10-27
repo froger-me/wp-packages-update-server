@@ -19,6 +19,7 @@ class WPPUS_Webhook_API {
 			}
 
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
+			add_action( 'wppus_webhook_invalid_request', array( $this, 'handle_unauthorized_request' ), 10, 0 );
 
 			add_filter( 'query_vars', array( $this, 'addquery_variables' ), -99, 1 );
 		}
@@ -94,14 +95,45 @@ class WPPUS_Webhook_API {
 		return $query_variables;
 	}
 
+	public function handle_unauthorized_request() {
+
+		if ( ! isset( $_SERVER['SERVER_PROTOCOL'] ) || '' === $_SERVER['SERVER_PROTOCOL'] ) {
+			$protocol = 'HTTP/1.1';
+		} else {
+			$protocol = $_SERVER['SERVER_PROTOCOL'];
+		}
+
+		header( $protocol . ' 401 Unauthorized' );
+
+		echo '
+			<html>
+				<head>
+					<title>401 Unauthorized</title>
+				</head>
+				<body>
+					<h1>401 Unauthorized</h1>
+					<p>Invalid signature</p>
+				</body>
+			</html>
+		';
+
+		exit( -1 );
+	}
+
 	protected function handle_api_request() {
 		global $wp, $wp_filesystem;
 
 		$config = self::get_config();
 
+		do_action( 'wppus_webhook_before_handling_request', $config );
+
 		if ( $this->validate_request( $config ) ) {
-			$package_id        = isset( $wp->query_vars['package_id'] ) ? trim( rawurldecode( $wp->query_vars['package_id'] ) ) : null;
-			$type              = isset( $wp->query_vars['type'] ) ? trim( rawurldecode( $wp->query_vars['type'] ) ) : null;
+			$package_id        = isset( $wp->query_vars['package_id'] ) ?
+				trim( rawurldecode( $wp->query_vars['package_id'] ) ) :
+				null;
+			$type              = isset( $wp->query_vars['type'] ) ?
+				trim( rawurldecode( $wp->query_vars['type'] ) ) :
+				null;
 			$delay             = $config['repository_check_delay'];
 			$scheduler         = new WPPUS_Scheduler();
 			$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
@@ -112,6 +144,15 @@ class WPPUS_Webhook_API {
 				$package_exists = $wp_filesystem->exists( $package_path );
 			}
 
+			do_action(
+				'wppus_webhook_before_processing_request',
+				$package_id,
+				$type,
+				$package_exists,
+				$config,
+				$scheduler
+			);
+
 			if ( $package_exists && $delay ) {
 				$scheduler->clear_remote_check_schedule( $package_id, $type, true );
 				$scheduler->register_remote_check_single_event( $package_id, $type, $delay );
@@ -119,21 +160,31 @@ class WPPUS_Webhook_API {
 				$scheduler->clear_remote_check_schedule( $package_id, $type, true );
 				WPPUS_Update_API::maybe_download_remote_update( $package_id, $type, true );
 			}
+
+			do_action(
+				'wppus_webhook_after_processing_request',
+				$package_id,
+				$type,
+				$package_exists,
+				$config,
+				$scheduler
+			);
 		} else {
 			error_log(  __METHOD__ . ' invalid request signature' ); // @codingStandardsIgnoreLine
+
+			do_action( 'wppus_webhook_invalid_request', $config );
 		}
+
+		do_action( 'wppus_webhook_after_handling_request', $config );
 	}
 
 	protected function validate_request( $config ) {
 		$valid  = false;
+		$sign   = false;
 		$secret = apply_filters( 'wppus_webhook_secret', $config['webhook_secret'], $config );
 
-		if (
-			0 === strpos( $config['repository_service_url'], 'https://gitlab.com' ) ||
-			get_option( 'wppus_remote_repository_self_hosted', false )
-		) {
-			$valid = isset( $_SERVER['HTTP_X_GITLAB_TOKEN'] ) &&
-				$_SERVER['HTTP_X_GITLAB_TOKEN'] === $secret;
+		if ( isset( $_SERVER['HTTP_X_GITLAB_TOKEN'] ) ) {
+			$valid = $_SERVER['HTTP_X_GITLAB_TOKEN'] === $secret;
 		} else {
 			global $wp_filesystem;
 
@@ -160,6 +211,6 @@ class WPPUS_Webhook_API {
 			}
 		}
 
-		return $valid;
+		return apply_filters( 'wppus_webhook_validate_request', $valid, $sign, $config );
 	}
 }
