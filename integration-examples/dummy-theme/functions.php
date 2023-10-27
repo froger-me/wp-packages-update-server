@@ -14,7 +14,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 * WARNING - READ FIRST:
 * Before deploying the plugin or theme, make sure to change the following value
 * - https://your-update-server.com  => The URL of the server where WP Plugin Update Server is installed
-* - Public API Authentication Key   => The Public API Authentication Key in the "Licenses" tab of WP Plugin Update Server
 * - $prefix_updater                 => Replace "prefix" in this variable's name with a unique theme prefix
 *
 * @see https://github.com/froger-me/wp-package-updater
