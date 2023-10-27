@@ -124,9 +124,10 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	}
 
 	public function set_type( $type ) {
+		$type = ucfirst( $type );
 
-		if ( 'Plugin' === ucfirst( $type ) || 'Theme' === ucfirst( $type ) ) {
-			$this->type = ucfirst( $type );
+		if ( 'Plugin' === $type || 'Theme' === $type ) {
+			$this->type = $type;
 		}
 	}
 
@@ -249,8 +250,12 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			}
 		}
 
-		if ( $this->use_remote_repository && $this->repository_service_url ) {
-			$this->scheduler->register_remote_check_event( $safe_slug, $this->repository_check_frequency );
+		if (
+			! get_option( 'wppus_remote_repository_use_webhooks', false ) &&
+			$this->use_remote_repository &&
+			$this->repository_service_url
+		) {
+			$this->scheduler->register_remote_check_recurring_event( $safe_slug, $this->repository_check_frequency );
 		}
 
 		return call_user_func( $this->package_file_loader, $filename, $slug, $this->cache );

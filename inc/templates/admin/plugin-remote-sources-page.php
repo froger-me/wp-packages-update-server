@@ -55,7 +55,7 @@
 						<?php
 						printf(
 							// translators: %s is the path where zip packages need to be uploaded
-							esc_html( 'If left unchecked, zip packages need to be manually uploaded to %s.', 'wppus' ),
+							esc_html__( 'If left unchecked, zip packages need to be manually uploaded to %s.', 'wppus' ),
 							'<code>' . esc_html( WPPUS_Data_Manager::get_data_dir( 'packages' ) ) . '</code>'
 						);
 						?>
@@ -78,7 +78,7 @@
 						<?php
 						printf(
 							// translators: %1$s is <code>https://repository-service.tld/something/</code>, %2$s is <code>something</code>, %3$s is <code>https://repository-service.tld</code>
-							esc_html( 'Must follow the following pattern: %1$s where %2$s is the user in case of Github and BitBucket, a group in case of Gitlab (no support for Gitlab subgroups), and where %3$s may be a self-hosted instance of Gitlab.', 'wppus' ),
+							esc_html__( 'Must follow the following pattern: %1$s where %2$s is the user in case of Github and BitBucket, a group in case of Gitlab (no support for Gitlab subgroups), and where %3$s may be a self-hosted instance of Gitlab.', 'wppus' ),
 							'<code>https://repository-service.tld/something/</code>',
 							'<code>something</code>',
 							'<code>https://repository-service.tld</code>'
@@ -88,7 +88,7 @@
 						<?php
 						printf(
 							// translators: %1$s is <code>https://repository-service.tld/something/package-name/</code>, %2$s is <code>something</code>
-							esc_html( 'Each package repository URL must follow the following pattern: %1$s ; the package files must be located at the root of the repository, and in the case of plugins the main plugin file must follow the pattern %2$s.', 'wppus' ),
+							esc_html__( 'Each package repository URL must follow the following pattern: %1$s ; the package files must be located at the root of the repository, and in the case of plugins the main plugin file must follow the pattern %2$s.', 'wppus' ),
 							'<code>https://repository-service.tld/something/package-name/</code>',
 							'<code>package-name.php</code>',
 						);
@@ -130,7 +130,7 @@
 						<?php
 						printf(
 							// translators: %s is <code>token</code>
-							esc_html( 'In the case of Github and Gitlab, an access token (%s).', 'wppus' ),
+							esc_html__( 'In the case of Github and Gitlab, an access token (%s).', 'wppus' ),
 							'<code>token</code>'
 						);
 						?>
@@ -138,7 +138,7 @@
 						<?php
 						printf(
 							// translators: %s is <code>consumer_key|consumer_secret</code>
-							esc_html( 'In the case of Bitbucket, the Consumer key and secret separated by a pipe (%s). ', 'wppus' ),
+							esc_html__( 'In the case of Bitbucket, the Consumer key and secret separated by a pipe (%s). ', 'wppus' ),
 							'<code>consumer_key|consumer_secret</code>'
 						);
 						?>
@@ -154,21 +154,28 @@
 				<td>
 					<input type="checkbox" id="wppus_remote_repository_use_webhooks" name="wppus_remote_repository_use_webhooks" value="1" <?php checked( $use_webhooks, 1 ); ?>>
 					<p class="description">
-						<?php esc_html_e( 'Check this if you wish each repository of the remote repository service to call a Webhook when updates are pushed.', 'wppus' ); ?><br>
-						<?php esc_html_e( 'When checked, WP Plugin Update Server will not regularly poll repositories for package updates, but relies event sent by the repositories to schedule package downloads.', 'wppus' ); ?><br/>
+						<?php esc_html_e( 'Check this if you wish for each repository of the remote repository service to call a Webhook when updates are pushed.', 'wppus' ); ?><br>
+						<?php esc_html_e( 'When checked, WP Plugin Update Server will not regularly poll repositories for package version changes, but relies on events sent by the repositories to schedule a package download.', 'wppus' ); ?>
+						<br/>
 						<?php
 						printf(
-							// translators: %s is the webhook URL
-							esc_html( 'Webhook URL: %s.', 'wppus' ),
-							'<code>' . esc_url( home_url( '/wppus-webhook/' ) ) . '</code>'
+							// translators: %1$s is the webhook URL, %2$s is <code>package-type</code>, %3$s is <code>plugin</code>, %4$s is <code>theme</code>, %5$s is <code>package-name</code>
+							esc_html__( 'Webhook URL: %1$s - where %2$s is the package type ( %3$s or %4$s ) %5$s is the package needing updates.', 'wppus' ),
+							'<code>' . esc_url( home_url( '/wppus-webhook/package-type/package-name' ) ) . '</code>',
+							'<code>package-type</code>',
+							'<code>plugin</code>',
+							'<code>theme</code>',
+							'<code>package-name</code>'
 						);
 						?>
+						<br>
+						<?php esc_html_e( 'Note that WP Plugin Update Server does not rely on the content of the payload to schedule a package download, so any type of event can be used to trigger the Webhook.', 'wppus' ); ?>
 					</p>
 				</td>
 			</tr>
 			<tr class="hide-if-no-webhooks <?php echo ( $use_webhooks ) ? '' : 'hidden'; ?>">
 				<th>
-					<label for="wppus_remote_repository_check_delay"><?php esc_html_e( 'Remote update schedule', 'wppus' ); ?></label>
+					<label for="wppus_remote_repository_check_delay"><?php esc_html_e( 'Remote download delay', 'wppus' ); ?></label>
 				</th>
 				<td>
 					<input type="number" min="0" id="wppus_remote_repository_check_delay" name="wppus_remote_repository_check_delay" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_check_delay', 0 ) ); ?>">

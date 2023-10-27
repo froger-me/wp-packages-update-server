@@ -70,11 +70,11 @@ class WPPUS_Update_API {
 		return apply_filters( 'wppus_update_api_config', $config );
 	}
 
-	public static function maybe_download_remote_update( $slug, $type = null ) {
+	public static function maybe_download_remote_update( $slug, $type = null, $force = false ) {
 		$result        = false;
 		$update_server = self::get_wppus_update_server( $slug, $type );
 
-		if ( self::check_remote_update( $slug, $type, $update_server ) ) {
+		if ( $force || self::check_remote_update( $slug, $type, $update_server ) ) {
 			$result = self::download_remote_update( $slug, $type, $update_server );
 		}
 

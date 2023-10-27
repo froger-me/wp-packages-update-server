@@ -11,7 +11,6 @@ class WPPUS_Webhook_API {
 	protected static $doing_update_api_request = null;
 
 	public function __construct( $init_hooks = false ) {
-		$this->scheduler = new WPPUS_Scheduler();
 
 		if ( $init_hooks && get_option( 'wppus_remote_repository_use_webhooks', false ) ) {
 
@@ -44,7 +43,7 @@ class WPPUS_Webhook_API {
 			'repository_branch'              => get_option( 'wppus_remote_repository_branch', 'master' ),
 			'repository_credentials'         => explode( '|', get_option( 'wppus_remote_repository_credentials' ) ),
 			'repository_service_self_hosted' => get_option( 'wppus_remote_repository_self_hosted', false ),
-			'repository_check_delay'         => get_option( 'repository_check_delay', 0 ),
+			'repository_check_delay'         => intval( get_option( 'wppus_remote_repository_check_delay', 0 ) ),
 			'webhook_secret'                 => get_option( 'wppus_remote_repository_webhook_secret' ),
 		);
 
@@ -57,10 +56,10 @@ class WPPUS_Webhook_API {
 			update_option( 'wppus_remote_repository_check_delay', 0 );
 		}
 
-		if ( empty( $config['repository_check_delay'] ) ) {
-			$config['repository_check_delay'] = bin2hex( openssl_random_pseudo_bytes( 16 ) );
+		if ( empty( $config['webhook_secret'] ) ) {
+			$config['webhook_secret'] = bin2hex( openssl_random_pseudo_bytes( 16 ) );
 
-			update_option( 'wppus_remote_repository_webhook_secret', $config['repository_check_delay'] );
+			update_option( 'wppus_remote_repository_webhook_secret', $config['webhook_secret'] );
 		}
 
 		if ( 1 < count( $config['repository_credentials'] ) ) {
@@ -76,7 +75,7 @@ class WPPUS_Webhook_API {
 	}
 
 	public function add_endpoints() {
-		add_rewrite_rule( '^wppus-webhook/*$', 'index.php?$matches[1]&__wppus_webhook=1&', 'top' );
+		add_rewrite_rule( '^wppus-webhook/(.+)/(.+)?$', 'index.php?type=$matches[1]&package_id=$matches[2]&__wppus_webhook=1&', 'top' );
 	}
 
 	public function parse_request() {
@@ -84,80 +83,83 @@ class WPPUS_Webhook_API {
 
 		if ( isset( $wp->query_vars['__wppus_webhook'] ) ) {
 			$this->handle_api_request();
+
+			die();
 		}
 	}
 
 	public function addquery_variables( $query_variables ) {
-		$query_variables = array_merge( $query_variables, array( '__wppus_webhook' ) );
+		$query_variables = array_merge( $query_variables, array( '__wppus_webhook', 'package_id', 'type' ) );
 
 		return $query_variables;
 	}
 
 	protected function handle_api_request() {
-		global $wp;
+		global $wp, $wp_filesystem;
 
-		$package_id        = isset( $wp->query_vars['package_id'] ) ? trim( rawurldecode( $wp->query_vars['package_id'] ) ) : null;
-		$type              = isset( $wp->query_vars['update_type'] ) ? trim( $wp->query_vars['update_type'] ) : null;
-		$action            = isset( $wp->query_vars['action'] ) ? trim( $wp->query_vars['action'] ) : null;
-		$token             = isset( $wp->query_vars['token'] ) ? trim( $wp->query_vars['token'] ) : null;
-		$secret_key        = isset( $wp->query_vars['update_secret_key'] ) ? trim( $wp->query_vars['update_secret_key'] ) : null;
-		$license_key       = isset( $wp->query_vars['update_license_key'] ) ? trim( $wp->query_vars['update_license_key'] ) : null;
-		$license_signature = isset( $wp->query_vars['update_license_signature'] ) ? trim( $wp->query_vars['update_license_signature'] ) : null;
-		$request_params    = apply_filters(
-			'wppus_handle_update_request_params',
-			array_merge(
-				$_GET, // @codingStandardsIgnoreLine
-				array(
-					'action'            => $action,
-					'token'             => $token,
-					'slug'              => $package_id,
-					'secret_key'        => $secret_key,
-					'license_key'       => $license_key,
-					'license_signature' => $license_signature,
-					'type'              => $type,
-				)
-			)
-		);
+		$config = self::get_config();
 
-		$this->init_server( $package_id );
-		do_action( 'wppus_before_handle_update_request', $request_params );
-		$this->update_server->handleRequest( $request_params );
+		if ( $this->validate_request( $config ) ) {
+			$package_id        = isset( $wp->query_vars['package_id'] ) ? trim( rawurldecode( $wp->query_vars['package_id'] ) ) : null;
+			$type              = isset( $wp->query_vars['type'] ) ? trim( rawurldecode( $wp->query_vars['type'] ) ) : null;
+			$delay             = $config['repository_check_delay'];
+			$scheduler         = new WPPUS_Scheduler();
+			$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
+			$package_exists    = false;
+
+			if ( $wp_filesystem->is_dir( $package_directory ) ) {
+				$package_path   = trailingslashit( $package_directory ) . $package_id . '.zip';
+				$package_exists = $wp_filesystem->exists( $package_path );
+			}
+
+			if ( $package_exists && $delay ) {
+				$scheduler->clear_remote_check_schedule( $package_id, $type, true );
+				$scheduler->register_remote_check_single_event( $package_id, $type, $delay );
+			} else {
+				$scheduler->clear_remote_check_schedule( $package_id, $type, true );
+				WPPUS_Update_API::maybe_download_remote_update( $package_id, $type, true );
+			}
+		} else {
+			error_log(  __METHOD__ . ' invalid request signature' ); // @codingStandardsIgnoreLine
+		}
 	}
 
-	protected function init_server( $slug ) {
-		$package_use_license = false;
-		$config              = self::get_config();
-		$server_class_name   = 'WPPUS_Update_Server';
+	protected function validate_request( $config ) {
+		$valid  = false;
+		$secret = apply_filters( 'wppus_webhook_secret', $config['webhook_secret'], $config );
 
-		if ( $config['use_licenses'] ) {
-			$licensed_package_slugs = apply_filters(
-				'wppus_licensed_package_slugs',
-				get_option( 'wppus_licensed_package_slugs', array() )
-			);
+		if (
+			0 === strpos( $config['repository_service_url'], 'https://gitlab.com' ) ||
+			get_option( 'wppus_remote_repository_self_hosted', false )
+		) {
+			$valid = isset( $_SERVER['HTTP_X_GITLAB_TOKEN'] ) &&
+				$_SERVER['HTTP_X_GITLAB_TOKEN'] === $secret;
+		} else {
+			global $wp_filesystem;
 
-			if ( in_array( $slug, $licensed_package_slugs, true ) ) {
-				$package_use_license = true;
+			if ( empty( $wp_filesystem ) ) {
+				require_once ABSPATH . '/wp-admin/includes/file.php';
+
+				WP_Filesystem();
+			}
+
+			if ( isset( $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ) ) {
+				$sign = $_SERVER['HTTP_X_HUB_SIGNATURE_256'];
+			} elseif ( isset( $_SERVER['HTTP_X_HUB_SIGNATURE'] ) ) {
+				$sign = $_SERVER['HTTP_X_HUB_SIGNATURE'];
+			}
+
+			$sign = apply_filters( 'wppus_webhook_signature', $sign, $config );
+
+			if ( $sign ) {
+				$sign_parts = explode( $sign, '=' );
+				$sign       = 2 === count( $sign_parts ) ? end( $sign_parts ) : false;
+				$algo       = ( $sign ) ? reset( $sign_parts ) : false;
+				$payload    = ( $sign ) ? $wp_filesystem->get_contents( 'php://input' ) : false;
+				$valid      = $sign && hash_equals( hash_hmac( $algo, $payload, $secret ), $sign );
 			}
 		}
 
-		if ( $package_use_license && $config['use_licenses'] ) {
-			require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-update-server.php';
-
-			$server_class_name = 'WPPUS_License_Update_Server';
-		}
-
-		$this->update_server = new $server_class_name(
-			$config['use_remote_repository'],
-			home_url( '/wppus-update-api/' ),
-			$this->scheduler,
-			$config['server_directory'],
-			$config['repository_service_url'],
-			$config['repository_branch'],
-			$config['repository_credentials'],
-			$config['repository_service_self_hosted'],
-			$config['repository_check_frequency']
-		);
-
-		$this->update_server = apply_filters( 'wppus_update_server', $this->update_server, $config, $slug, $package_use_license );
+		return $valid;
 	}
 }

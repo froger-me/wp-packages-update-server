@@ -310,7 +310,7 @@ class WPPUS_Remote_Sources_Manager {
 				),
 				'wppus_remote_repository_check_delay'     => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_check_delay', FILTER_UNSAFE_RAW ),
-					'display_name'            => __( 'Remote update schedule', 'wppus' ),
+					'display_name'            => __( 'Remote download delay', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid option', 'wppus' ),
 					'condition'               => 'positive number',
 				),

@@ -77,6 +77,7 @@ function wppus_run() {
 		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server/loader.php';
 		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server-extended/loader.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-server.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-api.php';
 	}
 
 	if ( ! $is_api_request ) {
@@ -92,6 +93,7 @@ function wppus_run() {
 	$objects = array(
 		'license_api'            => new WPPUS_License_API( true ),
 		'update_api'             => ( $is_license_api_request ) ? false : new WPPUS_Update_API( true ),
+		'webhook_api'            => ( $is_license_api_request ) ? false : new WPPUS_Webhook_API( true ),
 		'data_manager'           => ( $is_api_request ) ? false : new WPPUS_Data_Manager( true ),
 		'remote_sources_manager' => ( $is_api_request ) ? false : new WPPUS_Remote_Sources_Manager( true ),
 		'update_manager'         => ( $is_api_request ) ? false : new WPPUS_Update_Manager( true ),
