@@ -32,7 +32,6 @@ class WPPUS_Update_Manager {
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'plugin_options_menu_main' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'plugin_options_menu_help' ), 99, 0 );
-			add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 10, 1 );
 			add_action( 'wp_ajax_wppus_force_clean', array( $this, 'force_clean' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_prime_package_from_remote', array( $this, 'prime_package_from_remote' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_manual_package_upload', array( $this, 'manual_package_upload' ), 10, 0 );
@@ -112,51 +111,6 @@ class WPPUS_Update_Manager {
 		}
 	}
 
-	public function add_admin_scripts( $hook ) {
-		$debug = (bool) ( constant( 'WP_DEBUG' ) );
-
-		if ( false !== strpos( $hook, 'page_wppus' ) ) {
-			$js_ext = ( $debug ) ? '.js' : '.min.js';
-			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/main' . $js_ext );
-			$l10n   = array(
-				'invalidFileFormat'     => __( 'Error: invalid file format.', 'wppus' ),
-				'invalidFileSize'       => __( 'Error: invalid file size.', 'wppus' ),
-				'invalidFileName'       => __( 'Error: invalid file name.', 'wppus' ),
-				'invalidFile'           => __( 'Error: invalid file', 'wppus' ),
-				'deleteRecord'          => __( 'Are you sure you want to delete this record?', 'wppus' ),
-				'deleteLicensesConfirm' => __( "You are about to delete all the licenses from this server.\nAll the records will be permanently deleted.\nPackages requiring these licenses will not be able to get a successful response from this server.\n\nAre you sure you want to do this?", 'wppus' ),
-			);
-			$params = array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'debug'    => $debug,
-			);
-
-			if ( get_option( 'wppus_use_remote_repository' ) ) {
-				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a remote repository will be added again automatically whenever a client asks for updates.\nAll packages manually uploaded without counterpart in a remote repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
-			} else {
-				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nAll packages will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
-			}
-			wp_enqueue_script(
-				'wp-plugin-update-server-script',
-				WPPUS_PLUGIN_URL . 'js/admin/main' . $js_ext,
-				array( 'jquery' ),
-				$ver_js,
-				true
-			);
-			wp_localize_script( 'wp-plugin-update-server-script', 'Wppus_l10n', $l10n );
-			wp_add_inline_script(
-				'wp-plugin-update-server-script',
-				'var Wppus = ' . wp_json_encode( $params ),
-				'before'
-			);
-
-			$css_ext = ( $debug ) ? '.css' : '.min.css';
-			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/main' . $css_ext );
-
-			wp_enqueue_style( 'wppus-admin-main', WPPUS_PLUGIN_URL . 'css/admin/main' . $css_ext, array(), $ver_css );
-		}
-	}
-
 	public function add_action_links( $links ) {
 		$link = array(
 			'<a href="' . admin_url( 'admin.php?page=wppus-page' ) . '">' . __( 'Packages overview', 'wppus' ) . '</a>',
@@ -215,28 +169,27 @@ class WPPUS_Update_Manager {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
 		}
 
-		$updated              = $this->plugin_options_handler();
-		$action_error         = '';
-		$cache_size           = 0;
-		$logs_size            = 0;
-		$package_rows         = array();
-		$default_cache_size   = self::WPPUS_DEFAULT_LOGS_MAX_SIZE;
-		$default_logs_size    = self::WPPUS_DEFAULT_CACHE_MAX_SIZE;
-		$default_archive_size = self::WPPUS_DEFAULT_ARCHIVE_MAX_SIZE;
-		$packages_table       = $this->packages_table;
-		$cache_size           = self::get_dir_size_mb( 'cache' );
-		$logs_size            = self::get_dir_size_mb( 'logs' );
-		$package_rows         = $this->get_package_rows_data();
+		$package_rows = $this->get_package_rows_data();
 
-		$packages_table->set_rows( $package_rows );
-		$packages_table->prepare_items();
+		$this->packages_table->set_rows( $package_rows );
+		$this->packages_table->prepare_items();
 
-		ob_start();
-
-		require_once WPPUS_PLUGIN_PATH . 'inc/templates/admin/plugin-main-page.php';
-
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
-
+		wppus_get_admin_template(
+			'plugin-main-page.php',
+			array(
+				'updated'              => $this->plugin_options_handler(),
+				'action_error'         => '',
+				'cache_size'           => 0,
+				'logs_size'            => 0,
+				'default_cache_size'   => self::WPPUS_DEFAULT_LOGS_MAX_SIZE,
+				'default_logs_size'    => self::WPPUS_DEFAULT_CACHE_MAX_SIZE,
+				'default_archive_size' => self::WPPUS_DEFAULT_ARCHIVE_MAX_SIZE,
+				'packages_table'       => $this->packages_table,
+				'cache_size'           => self::get_dir_size_mb( 'cache' ),
+				'logs_size'            => self::get_dir_size_mb( 'logs' ),
+				'package_rows'         => $package_rows,
+			)
+		);
 	}
 
 	public function plugin_help_page() {
@@ -245,11 +198,7 @@ class WPPUS_Update_Manager {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
 		}
 
-		ob_start();
-
-		require_once WPPUS_PLUGIN_PATH . 'inc/templates/admin/plugin-help-page.php';
-
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		wppus_get_admin_template( 'plugin-help-page.php' );
 	}
 
 	public function force_clean() {

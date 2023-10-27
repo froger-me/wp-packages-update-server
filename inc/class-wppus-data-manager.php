@@ -60,7 +60,7 @@ class WPPUS_Data_Manager {
 		global $wp_filesystem;
 
 		if ( ! $wp_filesystem->is_dir( $root_dir ) ) {
-			$result = self::create_data_dir( 'wpppus', false, true );
+			$result = self::create_data_dir( 'wppus', false, true );
 		}
 
 		if ( $result ) {
@@ -77,29 +77,37 @@ class WPPUS_Data_Manager {
 	}
 
 	public static function get_data_dir( $dir = 'root' ) {
-		WP_Filesystem();
+		$data_dir = wp_cache_get( 'data_dir_' . $dir, 'wppus' );
 
-		global $wp_filesystem;
+		if ( false === $data_dir ) {
+			WP_Filesystem();
 
-		if ( ! $wp_filesystem ) {
-			wp_die( 'File system not available.', __METHOD__ );
-		}
+			global $wp_filesystem;
 
-		$data_dir = trailingslashit( $wp_filesystem->wp_content_dir() . self::$root_data_dirname );
-
-		if ( 'root' !== $dir ) {
-
-			if ( ! self::is_valid_data_dir( $dir ) ) {
-				// translators: %1$s is the path to the plugin's data directory
-				$error_message = sprintf( __( 'Directory <code>%1$s</code> is not a valid WPPUS data directory.', 'wppus' ), $dir );
-
-				wp_die( $error_message, __METHOD__ ); // @codingStandardsIgnoreLine
+			if ( ! $wp_filesystem ) {
+				wp_die( 'File system not available.', __METHOD__ );
 			}
 
-			$data_dir .= $dir;
+			$data_dir = trailingslashit( $wp_filesystem->wp_content_dir() . self::$root_data_dirname );
+
+			if ( 'root' !== $dir ) {
+
+				if ( ! self::is_valid_data_dir( $dir ) ) {
+					// translators: %1$s is the path to the plugin's data directory
+					$error_message = sprintf( __( 'Directory <code>%1$s</code> is not a valid WPPUS data directory.', 'wppus' ), $dir );
+
+					wp_die( $error_message, __METHOD__ ); // @codingStandardsIgnoreLine
+				}
+
+				$data_dir .= $dir;
+			}
+
+			$data_dir = trailingslashit( $data_dir );
+
+			wp_cache_set( 'data_dir_' . $dir, $data_dir, 'wppus' );
 		}
 
-		return trailingslashit( $data_dir );
+		return $data_dir;
 	}
 
 	public static function is_valid_data_dir( $dir, $require_persistent = false ) {

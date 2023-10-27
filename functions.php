@@ -201,3 +201,39 @@ if ( ! function_exists( 'wppus_deactivate_license' ) ) {
 		return WPPUS_License_API::local_request( 'deactivate', $license_data );
 	}
 }
+
+if ( ! function_exists( 'wppus_get_template' ) ) {
+	function wppus_get_template( $template_name, $args = array(), $load = true, $require_once = false ) {
+		$template_name = apply_filters( 'wppus_get_template_name', $template_name, $args );
+		$template_args = apply_filters( 'wppus_get_template_args', $args, $template_name );
+
+		if ( ! empty( $template_args ) ) {
+
+			foreach ( $template_args as $key => $arg ) {
+				$key = is_numeric( $key ) ? 'var_' . $key : $key;
+
+				set_query_var( $key, $arg );
+			}
+		}
+
+		return WP_Plugin_Update_Server::locate_template( $template_name, $load, $require_once );
+	}
+}
+
+if ( ! function_exists( 'wppus_get_admin_template' ) ) {
+	function wppus_get_admin_template( $template_name, $args = array(), $load = true, $require_once = false ) {
+		$template_name = apply_filters( 'wppus_get_admin_template_name', $template_name, $args );
+		$template_args = apply_filters( 'wppus_get_admin_template_args', $args, $template_name );
+
+		if ( ! empty( $template_args ) ) {
+
+			foreach ( $template_args as $key => $arg ) {
+				$key = is_numeric( $key ) ? 'var_' . $key : $key;
+
+				set_query_var( $key, $arg );
+			}
+		}
+
+		return WP_Plugin_Update_Server::locate_admin_template( $template_name, $load, $require_once );
+	}
+}

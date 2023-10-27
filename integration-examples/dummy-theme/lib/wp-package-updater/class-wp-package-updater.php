@@ -154,6 +154,21 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			}
 		}
 
+		public function locate_template( $template_name, $load = false, $require_once = true ) {
+			$template = apply_filters(
+				'wppu_' . $this->package_id . '_locate_template',
+				$this->package_path . 'lib/wp-package-updater/templates/' . $template_name,
+				$template_name,
+				str_replace( $template_name, '', $this->package_path . 'lib/wp-package-updater/templates/' )
+			);
+
+			if ( $load && '' !== $template ) {
+				load_template( $template, $require_once );
+			}
+
+			return $template;
+		}
+
 		public function wp_prepare_themes_for_js( $prepared_themes ) {
 
 			if ( isset( $prepared_themes[ $this->package_slug ] ) ) {
@@ -318,23 +333,27 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		public function print_license_form_theme_page() {
 			$theme = wp_get_theme();
 			$title = __( 'Theme License - ', 'wp-package-updater' ) . $theme->get( 'Name' );
-			$form  = $this->get_license_form();
 
-			ob_start();
-
-			require_once $this->package_path . 'lib/wp-package-updater/templates/theme-page-license.php';
-
-			echo ob_get_clean(); // @codingStandardsIgnoreLine
+			$this->locate_template(
+				'theme-page-license.php',
+				array(
+					'form'    => $this->get_license_form(),
+					'title  ' => $title,
+					'theme'   => $theme,
+				)
+			);
 		}
 
 		public function print_license_under_plugin( $plugin_file = null, $plugin_data = null, $status = null ) {
-			$form = $this->get_license_form();
-
-			ob_start();
-
-			require_once $this->package_path . 'lib/wp-package-updater/templates/plugin-page-license-row.php';
-
-			echo ob_get_clean(); // @codingStandardsIgnoreLine
+			$this->locate_template(
+				'plugin-page-license-row.php',
+				array(
+					'form'        => $this->get_license_form(),
+					'plugin_file' => $plugin_file,
+					'plugin_data' => $plugin_data,
+					'status'      => $status,
+				)
+			);
 		}
 
 		public function activate_license() {
@@ -531,16 +550,17 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		}
 
 		protected function get_license_form() {
-			$license      = get_option( 'license_key_' . $this->package_slug );
-			$package_id   = $this->package_id;
-			$package_slug = $this->package_slug;
-			$show_license = ( ! empty( $license ) );
+			$license = get_option( 'license_key_' . $this->package_slug );
 
-			ob_start();
-
-			require_once $this->package_path . 'lib/wp-package-updater/templates/license-form.php';
-
-			return ob_get_clean();
+			$this->locate_template(
+				'license-form.php',
+				array(
+					'license'      => $license,
+					'package_id'   => $this->package_id,
+					'package_slug' => $this->package_slug,
+					'show_license' => ( ! empty( $license ) ),
+				)
+			);
 		}
 
 		protected static function is_plugin_file( $absolute_path ) {

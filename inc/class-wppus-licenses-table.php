@@ -181,14 +181,20 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 		if ( ! empty( $records ) ) {
 
 			foreach ( $records as $record_key => $record ) {
-
 				$bulk_value = wp_json_encode( $record );
 
-				ob_start();
-
-				require WPPUS_PLUGIN_PATH . 'inc/templates/admin/licenses-table-row.php';
-
-				echo ob_get_clean(); // @codingStandardsIgnoreLine
+				wppus_get_admin_template(
+					'licenses-table-row.php',
+					array(
+						'bulk_value' => $bulk_value,
+						'table'      => $table,
+						'columns'    => $columns,
+						'hidden'     => $hidden,
+						'records'    => $records,
+						'record_key' => $record_key,
+						'record'     => $record,
+					)
+				);
 			}
 		}
 	}

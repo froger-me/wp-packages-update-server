@@ -61,11 +61,8 @@ class WPPUS_Remote_Sources_Manager {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
 		}
 
-		$updated              = $this->plugin_options_handler();
-		$action_error         = '';
 		$registered_schedules = wp_get_schedules();
 		$schedules            = array();
-		$use_webhooks         = get_option( 'wppus_remote_repository_use_webhooks', 0 );
 
 		foreach ( $registered_schedules as $key => $schedule ) {
 			$schedules[ $schedule['display'] ] = array(
@@ -73,11 +70,16 @@ class WPPUS_Remote_Sources_Manager {
 			);
 		}
 
-		ob_start();
-
-		require_once WPPUS_PLUGIN_PATH . 'inc/templates/admin/plugin-remote-sources-page.php';
-
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		wppus_get_admin_template(
+			'plugin-remote-sources-page.php',
+			array(
+				'updated'              => $this->plugin_options_handler(),
+				'action_error'         => '',
+				'registered_schedules' => $registered_schedules,
+				'schedules'            => $schedules,
+				'use_webhooks'         => get_option( 'wppus_remote_repository_use_webhooks' ),
+			)
+		);
 	}
 
 	public function force_register() {

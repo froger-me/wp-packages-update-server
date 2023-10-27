@@ -165,12 +165,13 @@ class WPPUS_License_Manager {
 		}
 
 		$licences_table->prepare_items();
-
-		ob_start();
-
-		require_once WPPUS_PLUGIN_PATH . 'inc/templates/admin/plugin-licenses-page.php';
-
-		echo ob_get_clean(); // @codingStandardsIgnoreLine
+		wppus_get_admin_template(
+			'plugin-licenses-page.php',
+			array(
+				'licences_table' => $licences_table,
+				'result'         => $result,
+			)
+		);
 	}
 
 	protected function plugin_options_handler() {

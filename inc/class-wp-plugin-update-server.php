@@ -16,26 +16,14 @@ class WP_Plugin_Update_Server {
 
 		if ( $init_hooks ) {
 
-			if ( ! self::is_doing_api_request() ) {
+			if ( ! self::is_doing_api_request() && ! wp_doing_ajax() ) {
 				add_action( 'init', array( $this, 'register_activation_notices' ), 99, 0 );
 				add_action( 'init', array( $this, 'maybe_flush' ), 99, 0 );
+				add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 10, 1 );
 			}
 
 			add_action( 'init', array( $this, 'load_textdomain' ), 10, 0 );
 		}
-	}
-
-	public static function uninstall() {
-		require_once WPPUS_PLUGIN_PATH . 'uninstall.php';
-	}
-
-	public static function deactivate() {
-		flush_rewrite_rules();
-
-		WPPUS_Update_Manager::clear_schedules();
-		WPPUS_Remote_Sources_Manager::clear_schedules();
-		WPPUS_License_Manager::clear_schedules();
-		WPPUS_Data_Manager::clear_schedules();
 	}
 
 	public static function activate() {
@@ -87,15 +75,71 @@ class WP_Plugin_Update_Server {
 		$result = self::maybe_setup_mu_plugin();
 
 		if ( $result ) {
-			set_transient( 'wppus_activated_mu_success', 1, 60 );
+			setcookie( 'wppus_activated_mu_success', '1', 60, '/', COOKIE_DOMAIN );
 		} else {
-			set_transient( 'wppus_activated_mu_failure', 1, 60 );
+			setcookie( 'wppus_activated_mu_failure', '1', 60, '/', COOKIE_DOMAIN );
 		}
 
 		WPPUS_Update_Manager::register_schedules();
 		WPPUS_Remote_Sources_Manager::register_schedules();
 		WPPUS_License_Manager::register_schedules();
 		WPPUS_Data_Manager::register_schedules();
+	}
+
+	public static function deactivate() {
+		flush_rewrite_rules();
+
+		WPPUS_Update_Manager::clear_schedules();
+		WPPUS_Remote_Sources_Manager::clear_schedules();
+		WPPUS_License_Manager::clear_schedules();
+		WPPUS_Data_Manager::clear_schedules();
+	}
+
+	public static function uninstall() {
+		require_once WPPUS_PLUGIN_PATH . 'uninstall.php';
+	}
+
+	public static function locate_template( $template_name, $load = false, $require_once = true ) {
+		$name     = str_replace( 'templates/', '', $template_name );
+		$paths    = array(
+			'plugins/wppus/templates/' . $name,
+			'plugins/wppus/' . $name,
+			'wppus/templates/' . $name,
+			'wppus/' . $name,
+		);
+		$template = locate_template( apply_filters( 'wppus_locate_template_paths', $paths ) );
+
+		if ( empty( $template ) ) {
+			$template = WPPUS_PLUGIN_PATH . 'inc/templates/' . $template_name;
+		}
+
+		$template = apply_filters(
+			'wppus_locate_template',
+			$template,
+			$template_name,
+			str_replace( $template_name, '', $template )
+		);
+
+		if ( $load && '' !== $template ) {
+			load_template( $template, $require_once );
+		}
+
+		return $template;
+	}
+
+	public static function locate_admin_template( $template_name, $load = false, $require_once = true ) {
+		$template = apply_filters(
+			'wppus_locate_admin_template',
+			WPPUS_PLUGIN_PATH . 'inc/templates/admin/' . $template_name,
+			$template_name,
+			str_replace( $template_name, '', WPPUS_PLUGIN_PATH . 'inc/templates/admin/' )
+		);
+
+		if ( $load && '' !== $template ) {
+			load_template( $template, $require_once );
+		}
+
+		return $template;
 	}
 
 	public static function is_doing_api_request( $type = false ) {
@@ -227,13 +271,13 @@ class WP_Plugin_Update_Server {
 
 	public function register_activation_notices() {
 
-		if ( get_transient( 'wppus_activated_mu_failure' ) ) {
-			delete_transient( 'wppus_activated_mu_failure' );
+		if ( filter_input( INPUT_COOKIE, 'wppus_activated_mu_failure', FILTER_UNSAFE_RAW ) ) {
+			setcookie( 'wppus_activated_mu_failure', '', time() - 3600, '/', COOKIE_DOMAIN );
 			add_action( 'admin_notices', array( 'WP_Plugin_Update_Server', 'setup_mu_plugin_failure_notice' ), 10, 0 );
 		}
 
-		if ( get_transient( 'wppus_activated_mu_success' ) ) {
-			delete_transient( 'wppus_activated_mu_success' );
+		if ( filter_input( INPUT_COOKIE, 'wppus_activated_mu_success', FILTER_UNSAFE_RAW ) ) {
+			setcookie( 'wppus_activated_mu_success', '', time() - 3600, '/', COOKIE_DOMAIN );
 			add_action( 'admin_notices', array( 'WP_Plugin_Update_Server', 'setup_mu_plugin_success_notice' ), 10, 0 );
 		}
 	}
@@ -248,6 +292,57 @@ class WP_Plugin_Update_Server {
 
 	public function load_textdomain() {
 		load_plugin_textdomain( 'wppus', false, 'wp-plugin-update-server/languages' );
+	}
+
+	public function add_admin_scripts( $hook ) {
+		$debug = (bool) ( constant( 'WP_DEBUG' ) );
+
+		if ( false !== strpos( $hook, 'page_wppus' ) ) {
+			$js_ext = ( $debug ) ? '.js' : '.min.js';
+			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/main' . $js_ext );
+			$l10n   = array(
+				'invalidFileFormat'     => __( 'Error: invalid file format.', 'wppus' ),
+				'invalidFileSize'       => __( 'Error: invalid file size.', 'wppus' ),
+				'invalidFileName'       => __( 'Error: invalid file name.', 'wppus' ),
+				'invalidFile'           => __( 'Error: invalid file', 'wppus' ),
+				'deleteRecord'          => __( 'Are you sure you want to delete this record?', 'wppus' ),
+				'deleteLicensesConfirm' => __( "You are about to delete all the licenses from this server.\nAll the records will be permanently deleted.\nPackages requiring these licenses will not be able to get a successful response from this server.\n\nAre you sure you want to do this?", 'wppus' ),
+			);
+			$params = array(
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'debug'    => $debug,
+			);
+
+			if (
+				get_option( 'wppus_remote_repository_use_webhooks' ) &&
+				get_option( 'wppus_use_remote_repository' )
+			) {
+				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a remote repository will be added again automatically whenever a client asks for updates, or when its Webhook is called.\nAll packages manually uploaded without counterpart in a remote repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
+			} elseif ( get_option( 'wppus_use_remote_repository' ) ) {
+				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a remote repository will be added again automatically whenever a client asks for updates.\nAll packages manually uploaded without counterpart in a remote repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
+			} else {
+				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nAll packages will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
+			}
+
+			wp_enqueue_script(
+				'wp-plugin-update-server-script',
+				WPPUS_PLUGIN_URL . 'js/admin/main' . $js_ext,
+				array( 'jquery' ),
+				$ver_js,
+				true
+			);
+			wp_localize_script( 'wp-plugin-update-server-script', 'Wppus_l10n', $l10n );
+			wp_add_inline_script(
+				'wp-plugin-update-server-script',
+				'var Wppus = ' . wp_json_encode( $params ),
+				'before'
+			);
+
+			$css_ext = ( $debug ) ? '.css' : '.min.css';
+			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/main' . $css_ext );
+
+			wp_enqueue_style( 'wppus-admin-main', WPPUS_PLUGIN_URL . 'css/admin/main' . $css_ext, array(), $ver_css );
+		}
 	}
 
 }

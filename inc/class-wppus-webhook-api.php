@@ -105,17 +105,14 @@ class WPPUS_Webhook_API {
 
 		header( $protocol . ' 401 Unauthorized' );
 
-		echo '
-			<html>
-				<head>
-					<title>401 Unauthorized</title>
-				</head>
-				<body>
-					<h1>401 Unauthorized</h1>
-					<p>Invalid signature</p>
-				</body>
-			</html>
-		';
+		wppus_get_template(
+			'error-page.php',
+			array(
+				'title'   => __( '401 Unauthorized', 'wppus' ),
+				'heading' => __( '401 Unauthorized', 'wppus' ),
+				'message' => __( 'Invalid signature', 'wppus' ),
+			)
+		);
 
 		exit( -1 );
 	}

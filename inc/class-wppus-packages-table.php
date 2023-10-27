@@ -144,11 +144,22 @@ class WPPUS_Packages_Table extends WP_List_Table {
 					$license_action_text = ( ! $use_license ) ? __( 'Require License', 'wppus' ) : __( 'Do not Require License', 'wppus' );
 				}
 
-				ob_start();
-
-				require WPPUS_PLUGIN_PATH . 'inc/templates/admin/packages-table-row.php';
-
-				echo ob_get_clean(); // @codingStandardsIgnoreLine
+				wppus_get_admin_template(
+					'packages-table-row.php',
+					array(
+						'table'               => $table,
+						'columns'             => $columns,
+						'hidden'              => $hidden,
+						'records'             => $records,
+						'record_key'          => $record_key,
+						'record'              => $record,
+						'show_license_info'   => $show_license_info,
+						'use_license'         => $use_license,
+						'use_license_text'    => $use_license_text,
+						'license_action'      => $license_action,
+						'license_action_text' => $license_action_text,
+					)
+				);
 			}
 		}
 	}
