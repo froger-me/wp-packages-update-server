@@ -258,7 +258,21 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			$this->scheduler->register_remote_check_recurring_event( $safe_slug, $this->repository_check_frequency );
 		}
 
-		return call_user_func( $this->package_file_loader, $filename, $slug, $this->cache );
+		$package = false;
+
+		try {
+			$package = call_user_func( $this->package_file_loader, $filename, $slug, $this->cache );
+		} catch ( Exception $e ) {
+			error_log( __METHOD__ . ' corrupt archive ' . $filename . ' ; will not be displayed or delivered'); // @codingStandardsIgnoreLine
+
+			$error_log  = 'Exception caught: ' . $e->getMessage() . "\n";
+			$error_log .= 'File: ' . $e->getFile() . "\n";
+			$error_log .= 'Line: ' . $e->getLine() . "\n";
+
+			error_log( $error_log ); // @codingStandardsIgnoreLine
+		}
+
+		return $package;
 	}
 
 	protected function actionGetMetadata( Wpup_Request $request ) {

@@ -731,30 +731,33 @@ class WPPUS_Update_Manager {
 
 				foreach ( $package_paths as $package_path ) {
 					$package = $this->get_package( $package_path );
-					$meta    = $package->getMetadata();
-					$include = true;
 
-					if ( $search ) {
+					if ( $package ) {
+						$meta    = $package->getMetadata();
+						$include = true;
 
-						if (
-							false === strpos( strtolower( $meta['name'] ), strtolower( $search ) ) ||
-							false === strpos( strtolower( $meta['slug'] ) . '.zip', strtolower( $search ) )
-						) {
-							$include = false;
+						if ( $search ) {
+
+							if (
+								false === strpos( strtolower( $meta['name'] ), strtolower( $search ) ) ||
+								false === strpos( strtolower( $meta['slug'] ) . '.zip', strtolower( $search ) )
+							) {
+								$include = false;
+							}
 						}
-					}
 
-					if ( $include ) {
-						$packages[ $meta['slug'] ] = array(
-							'name'               => $meta['name'],
-							'version'            => $meta['version'],
-							'type'               => isset( $meta['details_url'] ) ? __( 'Theme', 'wppus' ) : __( 'Plugin', 'wppus' ),
-							'last_updated'       => $meta['last_updated'],
-							'file_name'          => $meta['slug'] . '.zip',
-							'file_path'          => $package_path,
-							'file_size'          => $package->getFileSize(),
-							'file_last_modified' => $package->getLastModified(),
-						);
+						if ( $include ) {
+							$packages[ $meta['slug'] ] = array(
+								'name'               => $meta['name'],
+								'version'            => $meta['version'],
+								'type'               => isset( $meta['details_url'] ) ? __( 'Theme', 'wppus' ) : __( 'Plugin', 'wppus' ),
+								'last_updated'       => $meta['last_updated'],
+								'file_name'          => $meta['slug'] . '.zip',
+								'file_path'          => $package_path,
+								'file_size'          => $package->getFileSize(),
+								'file_last_modified' => $package->getLastModified(),
+							);
+						}
 					}
 				}
 			}
@@ -764,8 +767,21 @@ class WPPUS_Update_Manager {
 	}
 
 	protected function get_package( $path ) {
+		$package = false;
 
-		return Wpup_Package::fromArchive( $path, null, new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) ) );
+		try {
+			$package = Wpup_Package::fromArchive( $path, null, new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) ) );
+		} catch ( Exception $e ) {
+			error_log( __METHOD__ . ' corrupt archive ' . $path . ' ; will not be displayed or delivered'); // @codingStandardsIgnoreLine
+
+			$error_log  = 'Exception caught: ' . $e->getMessage() . "\n";
+			$error_log .= 'File: ' . $e->getFile() . "\n";
+			$error_log .= 'Line: ' . $e->getLine() . "\n";
+
+			error_log( $error_log ); // @codingStandardsIgnoreLine
+		}
+
+		return $package;
 	}
 
 }
