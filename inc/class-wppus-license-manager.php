@@ -78,7 +78,6 @@ class WPPUS_License_Manager {
 				}
 
 				if ( 'wppus-page-licenses' === $page ) {
-					$redirect = false;
 
 					if ( $license_data && in_array( $action, WPPUS_License_Server::$license_statuses, true ) ) {
 						$this->change_license_statuses_bulk( $action, $license_data );
