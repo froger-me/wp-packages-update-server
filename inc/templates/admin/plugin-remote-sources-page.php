@@ -180,7 +180,7 @@
 				<td>
 					<input type="number" min="0" id="wppus_remote_repository_check_delay" name="wppus_remote_repository_check_delay" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_check_delay', 0 ) ); ?>">
 					<p class="description">
-						<?php esc_html_e( 'Delay in seconds after which WP Plugin Update Server will poll the remote repository for package updates when the Webhook has been called.', 'wppus' ); ?><br>
+						<?php esc_html_e( 'Delay in minutes after which WP Plugin Update Server will poll the remote repository for package updates when the Webhook has been called.', 'wppus' ); ?><br>
 						<?php esc_html_e( 'Leave at 0 to schedule a package update during the cron run happening immediately after the Webhook was called.', 'wppus' ); ?>
 					</p>
 				</td>

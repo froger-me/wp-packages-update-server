@@ -105,7 +105,7 @@ class WPPUS_Scheduler {
 		if ( ! wp_next_scheduled( $hook, array( $slug ) ) ) {
 			$params    = array( $slug, $type, true );
 			$delay     = apply_filters( 'wppus_check_remote_delay', $delay, $slug );
-			$timestamp = time() + abs( intval( $delay ) );
+			$timestamp = time() + ( abs( intval( $delay ) ) * MINUTE_IN_SECONDS );
 			$result    = wp_schedule_single_event( $timestamp, $hook, $params );
 
 			do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, false, $hook, $params );
