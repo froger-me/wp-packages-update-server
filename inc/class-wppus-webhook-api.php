@@ -200,7 +200,7 @@ class WPPUS_Webhook_API {
 			$sign = apply_filters( 'wppus_webhook_signature', $sign, $config );
 
 			if ( $sign ) {
-				$sign_parts = explode( $sign, '=' );
+				$sign_parts = explode( '=', $sign );
 				$sign       = 2 === count( $sign_parts ) ? end( $sign_parts ) : false;
 				$algo       = ( $sign ) ? reset( $sign_parts ) : false;
 				$payload    = ( $sign ) ? $wp_filesystem->get_contents( 'php://input' ) : false;
