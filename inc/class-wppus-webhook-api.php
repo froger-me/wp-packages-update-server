@@ -19,9 +19,10 @@ class WPPUS_Webhook_API {
 			}
 
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
-			add_action( 'wppus_webhook_invalid_request', array( $this, 'handle_unauthorized_request' ), 10, 0 );
+			add_action( 'wppus_webhook_invalid_request', array( $this, 'wppus_webhook_invalid_request' ), 10, 0 );
 
 			add_filter( 'query_vars', array( $this, 'addquery_variables' ), -99, 1 );
+			add_filter( 'wppus_webhook_process_request', array( $this, 'wppus_webhook_process_request' ), 10, 2 );
 		}
 	}
 
@@ -95,7 +96,7 @@ class WPPUS_Webhook_API {
 		return $query_variables;
 	}
 
-	public function handle_unauthorized_request() {
+	public function wppus_webhook_invalid_request() {
 
 		if ( ! isset( $_SERVER['SERVER_PROTOCOL'] ) || '' === $_SERVER['SERVER_PROTOCOL'] ) {
 			$protocol = 'HTTP/1.1';
@@ -117,12 +118,42 @@ class WPPUS_Webhook_API {
 		exit( -1 );
 	}
 
+	public function wppus_webhook_process_request( $process, $payload ) {
+		$payload = json_decode( $payload, true );
+
+		if ( ! $payload ) {
+
+			return false;
+		}
+
+		$branch = false;
+		$config = $this->get_config();
+
+		if (
+			( isset( $payload['object_kind'] ) && 'push' === $payload['object_kind'] ) ||
+			( isset( $_SERVER['X_GITHUB_EVENT'] ) && 'push' === $_SERVER['X_GITHUB_EVENT'] )
+		) {
+			$branch = str_replace( 'refs/heads/', '', $payload['ref'] );
+		} elseif ( isset( $payload['push'], $payload['push']['changes'] ) ) {
+			$branch = str_replace(
+				'refs/heads/',
+				'',
+				$payload['push']['changes'][0]['new']['name']
+			);
+		}
+
+		$process = $branch === $config['repository_branch'];
+
+		return $process;
+	}
+
 	protected function handle_api_request() {
 		global $wp, $wp_filesystem;
 
 		$config = self::get_config();
 
 		do_action( 'wppus_webhook_before_handling_request', $config );
+		$this->init_filestystem();
 
 		if ( $this->validate_request( $config ) ) {
 			$package_id        = isset( $wp->query_vars['package_id'] ) ?
@@ -141,8 +172,10 @@ class WPPUS_Webhook_API {
 				$package_exists = $wp_filesystem->exists( $package_path );
 			}
 
-			do_action(
-				'wppus_webhook_before_processing_request',
+			$process = apply_filters(
+				'wppus_webhook_process_request',
+				true,
+				$wp_filesystem->get_contents( 'php://input' ),
 				$package_id,
 				$type,
 				$package_exists,
@@ -150,22 +183,33 @@ class WPPUS_Webhook_API {
 				$scheduler
 			);
 
-			if ( $package_exists && $delay ) {
-				$scheduler->clear_remote_check_schedule( $package_id, $type, true );
-				$scheduler->register_remote_check_single_event( $package_id, $type, $delay );
-			} else {
-				$scheduler->clear_remote_check_schedule( $package_id, $type, true );
-				WPPUS_Update_API::maybe_download_remote_update( $package_id, $type, true );
+			if ( $process ) {
+				do_action(
+					'wppus_webhook_before_processing_request',
+					$package_id,
+					$type,
+					$package_exists,
+					$config,
+					$scheduler
+				);
+
+				if ( $package_exists && $delay ) {
+					$scheduler->clear_remote_check_schedule( $package_id, $type, true );
+					$scheduler->register_remote_check_single_event( $package_id, $type, $delay );
+				} else {
+					$scheduler->clear_remote_check_schedule( $package_id, $type, true );
+					WPPUS_Update_API::maybe_download_remote_update( $package_id, $type, true );
+				}
+
+				do_action(
+					'wppus_webhook_after_processing_request',
+					$package_id,
+					$type,
+					$package_exists,
+					$config,
+					$scheduler
+				);
 			}
-
-			do_action(
-				'wppus_webhook_after_processing_request',
-				$package_id,
-				$type,
-				$package_exists,
-				$config,
-				$scheduler
-			);
 		} else {
 			error_log(  __METHOD__ . ' invalid request signature' ); // @codingStandardsIgnoreLine
 
@@ -185,12 +229,6 @@ class WPPUS_Webhook_API {
 		} else {
 			global $wp_filesystem;
 
-			if ( empty( $wp_filesystem ) ) {
-				require_once ABSPATH . '/wp-admin/includes/file.php';
-
-				WP_Filesystem();
-			}
-
 			if ( isset( $_SERVER['HTTP_X_HUB_SIGNATURE_256'] ) ) {
 				$sign = $_SERVER['HTTP_X_HUB_SIGNATURE_256'];
 			} elseif ( isset( $_SERVER['HTTP_X_HUB_SIGNATURE'] ) ) {
@@ -209,5 +247,15 @@ class WPPUS_Webhook_API {
 		}
 
 		return apply_filters( 'wppus_webhook_validate_request', $valid, $sign, $config );
+	}
+
+	protected function init_filestystem() {
+		global $wp_filesystem;
+
+		if ( empty( $wp_filesystem ) ) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+
+			WP_Filesystem();
+		}
 	}
 }
