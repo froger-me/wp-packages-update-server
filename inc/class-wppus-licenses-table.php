@@ -31,6 +31,7 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 
 		return array(
 			'cb'               => '<input type="checkbox" />',
+			'col_id'           => __( 'ID', 'wppus' ),
 			'col_license_key'  => __( 'License Key', 'wppus' ),
 			'col_email'        => __( 'Registered Email', 'wppus' ),
 			'col_status'       => __( 'Status', 'wppus' ),
@@ -38,7 +39,6 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 			'col_package_slug' => __( 'Package Slug', 'wppus' ),
 			'col_date_created' => __( 'Creation Date', 'wppus' ),
 			'col_date_expiry'  => __( 'Expiry Date', 'wppus' ),
-			'col_id'           => __( 'ID', 'wppus' ),
 		);
 	}
 
