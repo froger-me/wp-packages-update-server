@@ -168,10 +168,13 @@ class WPPUS_License_API {
 	public function add( $license_data, $key ) {
 
 		if ( $this->authorize( $key, 'private' ) ) {
-			$result          = $this->license_server->add_license( $license_data );
-			$result->result  = 'success';
-			$result->message = 'License successfully created';
-			$result->key     = $result->license_key;
+			$result = $this->license_server->add_license( $license_data );
+
+			if ( is_object( $result ) ) {
+				$result->result  = 'success';
+				$result->message = 'License successfully created';
+				$result->key     = $result->license_key;
+			}
 		} else {
 			$result = $this->get_unauthorized_access_response();
 		}
@@ -190,7 +193,7 @@ class WPPUS_License_API {
 		return $result;
 	}
 
-	public function check( $license_data, $key ) {
+	public function check( $license_data ) {
 		$license_data = apply_filters( 'wppus_check_license_dirty_payload', $license_data );
 
 		if ( isset( $license_data['id'] ) ) {
@@ -198,22 +201,21 @@ class WPPUS_License_API {
 		}
 
 		$result = $this->license_server->read_license( $license_data );
-
-		if ( is_object( $result ) ) {
-			$result = json_decode( wp_json_encode( $result ), true );
-		} else {
-			$result = array();
-		}
-
-		$result['license_key'] = isset( $license_data['license_key'] ) ? $license_data['license_key'] : false;
-		$result                = apply_filters( 'wppus_check_license_result', $result, $license_data );
+		$result = is_object( $result ) ?
+			$result :
+			array(
+				'license_key' => isset( $license_data['license_key'] ) ?
+					$license_data['license_key'] :
+					false,
+			);
+		$result = apply_filters( 'wppus_check_license_result', $result, $license_data );
 
 		do_action( 'wppus_did_check_license', $result );
 
 		return $result;
 	}
 
-	public function activate( $license_data, $key = null ) {
+	public function activate( $license_data ) {
 		$license      = null;
 		$license_data = apply_filters( 'wppus_activate_license_dirty_payload', $license_data );
 
@@ -265,7 +267,7 @@ class WPPUS_License_API {
 		return $result;
 	}
 
-	public function deactivate( $license_data, $key = null ) {
+	public function deactivate( $license_data ) {
 		$license      = null;
 		$license_data = apply_filters( 'wppus_deactivate_license_dirty_payload', $license_data );
 
