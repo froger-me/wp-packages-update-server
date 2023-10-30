@@ -189,21 +189,21 @@ class WP_Plugin_Update_Server {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		if ( ! get_option( 'wppus_license_private_api_auth_key' ) ) {
-			update_option( 'wppus_license_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 12 ) ) );
+			update_option( 'wppus_license_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
 		}
 
 		if ( ! get_option( 'wppus_license_hmac_key' ) ) {
-			update_option( 'wppus_license_hmac_key', bin2hex( openssl_random_pseudo_bytes( 8 ) ) );
+			update_option( 'wppus_license_hmac_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
 		}
 
 		if ( ! get_option( 'wppus_license_crypto_key' ) ) {
-			update_option( 'wppus_license_crypto_key', bin2hex( openssl_random_pseudo_bytes( 8 ) ) );
+			update_option( 'wppus_license_crypto_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
 		}
 
 		if ( ! get_option( 'wppus_package_download_url_token' ) ) {
 			update_option(
 				'wppus_package_download_url_token',
-				bin2hex( openssl_random_pseudo_bytes( 8 ) ),
+				bin2hex( openssl_random_pseudo_bytes( 16 ) ),
 				true
 			);
 		}

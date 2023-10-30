@@ -48,7 +48,7 @@
 							<tr valign="top">
 								<th scope="row"><?php esc_html_e( 'License Key ', 'wppus' ); ?><span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></span></th>
 								<td>
-									<input type="text" id="wppus_license_key" data-random_key="<?php echo esc_html( bin2hex( openssl_random_pseudo_bytes( 12 ) ) ); ?>" name="wppus_license_key" class="no-submit" value="" size="30">
+									<input type="text" id="wppus_license_key" data-random_key="<?php echo esc_html( bin2hex( openssl_random_pseudo_bytes( 16 ) ) ); ?>" name="wppus_license_key" class="no-submit" value="" size="30">
 									<p class="description">
 										<?php esc_html_e( 'The unique license key. This auto-generated value can be changed as long as it is unique in the database.', 'wppus' ); ?>
 									</p>

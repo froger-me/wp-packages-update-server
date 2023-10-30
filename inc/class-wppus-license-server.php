@@ -432,7 +432,7 @@ class WPPUS_License_Server {
 	protected function cleanup_license_payload( $payload ) {
 
 		if ( isset( $payload['license_key'] ) && empty( $payload['license_key'] ) ) {
-			$payload['license_key'] = bin2hex( openssl_random_pseudo_bytes( 12 ) );
+			$payload['license_key'] = bin2hex( openssl_random_pseudo_bytes( 16 ) );
 		}
 
 		if ( isset( $payload['date_created'] ) && empty( $payload['date_created'] ) ) {

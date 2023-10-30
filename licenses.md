@@ -137,7 +137,7 @@ if ( is_wp_error( $response ) ) {
 ___
 ### Public API
 
-The public API does not require an authentication key, because for each provided operation, the License Key **IS** the authentication key for the API: indeed, by default, keys are randomly generated using `bin2hex( openssl_random_pseudo_bytes( 12 ) )` which gives back an unguessable, random string of 24 characters. Even if the keys **CAN** be edited, it is highly recommended to use an unguessable, random string regardless.
+The public API does not require an authentication key, because for each provided operation, the License Key **IS** the authentication key for the API: indeed, by default, keys are randomly generated using `bin2hex( openssl_random_pseudo_bytes( 16 ) )` which gives back an unguessable, random string of 32 characters. Even if the keys **CAN** be edited, it is highly recommended to use an unguessable, random string regardless.
 
 It provides 3 simple operations: `check`, `activate` and `deactivate`.
 

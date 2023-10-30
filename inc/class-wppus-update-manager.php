@@ -55,7 +55,7 @@ class WPPUS_Update_Manager {
 	}
 
 	public static function renew_download_url_token() {
-		update_option( 'wppus_package_download_url_token', bin2hex( openssl_random_pseudo_bytes( 8 ) ), true );
+		update_option( 'wppus_package_download_url_token', bin2hex( openssl_random_pseudo_bytes( 16 ) ), true );
 	}
 
 	public function init_request() {
