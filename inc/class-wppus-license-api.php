@@ -10,9 +10,9 @@ class WPPUS_License_API {
 	protected $http_response_code = null;
 
 	protected static $doing_update_api_request = null;
-	protected static $static_license_server;
+	protected static $instance;
 
-	public function __construct( $init_hooks = false, $local_request = false ) {
+	public function __construct( $init_hooks = false, $local_request = true ) {
 
 		if ( get_option( 'wppus_use_licenses' ) ) {
 
@@ -57,17 +57,13 @@ class WPPUS_License_API {
 		return apply_filters( 'wppus_license_api_config', $config );
 	}
 
-	public static function local_request( $action, $payload ) {
-		$api    = new self( false, true );
-		$return = array();
+	public static function get_instance() {
 
-		if ( method_exists( $api, $action ) ) {
-			$return = $api->$action( $payload );
-		} else {
-			$return['message'] = __( 'License API action not found.', 'wppus' );
+		if ( ! self::$instance ) {
+			self::$instance = new self();
 		}
 
-		return $return;
+		return self::$instance;
 	}
 
 	public function add_endpoints() {

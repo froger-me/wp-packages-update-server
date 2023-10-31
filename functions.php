@@ -141,64 +141,72 @@ if ( ! function_exists( 'wppus_is_doing_license_api_request' ) ) {
 if ( ! function_exists( 'wppus_browse_licenses' ) ) {
 
 	function wppus_browse_licenses( $browse_query ) {
+		$api = WPPUS_License_API::get_instance();
 
-		return WPPUS_License_API::local_request( 'browse', wp_json_encode( $browse_query ) );
+		return $api->browse( $$browse_query );
 	}
 }
 
 if ( ! function_exists( 'wppus_read_license' ) ) {
 
 	function wppus_read_license( $license_data ) {
+		$api = WPPUS_License_API::get_instance();
 
-		return WPPUS_License_API::local_request( 'read', $license_data );
+		return $api->read( $license_data );
 	}
 }
 
 if ( ! function_exists( 'wppus_add_license' ) ) {
 
 	function wppus_add_license( $license_data ) {
+		$api = WPPUS_License_API::get_instance();
 
-		return WPPUS_License_API::local_request( 'add', $license_data );
+		return $api->add( $license_data );
 	}
 }
 
 if ( ! function_exists( 'wppus_edit_license' ) ) {
 
 	function wppus_edit_license( $license_data ) {
+		$api = WPPUS_License_API::get_instance();
 
-		return WPPUS_License_API::local_request( 'edit', $license_data );
+		return $api->edit( $license_data );
 	}
 }
 
 if ( ! function_exists( 'wppus_delete_license' ) ) {
 
 	function wppus_delete_license( $license_data ) {
+		$api = WPPUS_License_API::get_instance();
 
-		return WPPUS_License_API::local_request( 'delete', $license_data );
+		return $api->delete( $license_data );
 	}
 }
 
 if ( ! function_exists( 'wppus_check_license' ) ) {
 
 	function wppus_check_license( $license_data ) {
+		$api = WPPUS_License_API::get_instance();
 
-		return WPPUS_License_API::local_request( 'check', $license_data );
+		return $api->check( $license_data );
 	}
 }
 
 if ( ! function_exists( 'wppus_activate_license' ) ) {
 
 	function wppus_activate_license( $license_data ) {
+		$api = WPPUS_License_API::get_instance();
 
-		return WPPUS_License_API::local_request( 'activate', $license_data );
+		return $api->activate( $license_data );
 	}
 }
 
 if ( ! function_exists( 'wppus_deactivate_license' ) ) {
 
 	function wppus_deactivate_license( $license_data ) {
+		$api = WPPUS_License_API::get_instance();
 
-		return WPPUS_License_API::local_request( 'deactivate', $license_data );
+		return $api->deactivate( $license_data );
 	}
 }
 

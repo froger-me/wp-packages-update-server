@@ -91,7 +91,7 @@ function wppus_run() {
 	}
 
 	$objects = array(
-		'license_api'            => new WPPUS_License_API( true ),
+		'license_api'            => new WPPUS_License_API( true, false ),
 		'update_api'             => ( $is_license_api_request ) ? false : new WPPUS_Update_API( true ),
 		'webhook_api'            => ( $is_license_api_request ) ? false : new WPPUS_Webhook_API( true ),
 		'data_manager'           => ( $is_api_request ) ? false : new WPPUS_Data_Manager( true ),
