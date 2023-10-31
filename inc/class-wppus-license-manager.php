@@ -58,22 +58,36 @@ class WPPUS_License_Manager {
 
 		if ( is_admin() && ! wp_doing_ajax() && ! wp_doing_cron() ) {
 			$this->licences_table = new WPPUS_Licenses_Table();
-			$redirect             = false;
 
-			$condition = ( isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], $this->licences_table->nonce_action ) );
-			$condition = $condition || ( isset( $_REQUEST['linknonce'] ) && wp_verify_nonce( $_REQUEST['linknonce'], 'linknonce' ) );
-			$condition = $condition || ( isset( $_REQUEST['wppus_license_form_nonce'] ) && wp_verify_nonce( $_REQUEST['wppus_license_form_nonce'], 'wppus_license_form_nonce' ) );
-
-			if ( $condition ) {
+			if (
+				(
+					isset( $_REQUEST['_wpnonce'] ) &&
+					wp_verify_nonce( $_REQUEST['_wpnonce'], $this->licences_table->nonce_action )
+				) ||
+				(
+					isset( $_REQUEST['linknonce'] ) &&
+					wp_verify_nonce( $_REQUEST['linknonce'], 'linknonce' )
+				) ||
+				(
+					isset( $_REQUEST['wppus_license_form_nonce'] ) &&
+					wp_verify_nonce( $_REQUEST['wppus_license_form_nonce'], 'wppus_license_form_nonce' )
+				)
+			) {
 				$page                = isset( $_REQUEST['page'] ) ? $_REQUEST['page'] : false;
 				$license_data        = isset( $_REQUEST['license_data'] ) ? $_REQUEST['license_data'] : false;
 				$delete_all_licenses = isset( $_REQUEST['wppus_delete_all_licenses'] ) ? true : false;
 				$license_data        = isset( $_REQUEST['wppus_license_values'] ) ? $_REQUEST['wppus_license_values'] : $license_data;
 				$action              = isset( $_REQUEST['wppus_license_action'] ) ? $_REQUEST['wppus_license_action'] : false;
 
-				if ( isset( $_REQUEST['action'] ) && -1 != $_REQUEST['action'] ) {  // @codingStandardsIgnoreLine
+				if (
+					isset( $_REQUEST['action'] ) &&
+					-1 != $_REQUEST['action'] // @codingStandardsIgnoreLine
+				) {
 					$action = $_REQUEST['action'];
-				} elseif ( isset( $_REQUEST['action2'] ) && -1 != $_REQUEST['action2'] ) {  // @codingStandardsIgnoreLine
+				} elseif (
+					isset( $_REQUEST['action2'] ) &&
+					-1 != $_REQUEST['action2']  // @codingStandardsIgnoreLine
+				) {
 					$action = $_REQUEST['action2'];
 				}
 
@@ -149,7 +163,7 @@ class WPPUS_License_Manager {
 	public function plugin_page_license_settings() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
+			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.' ) );
 		}
 
 		$result         = $this->plugin_options_handler();

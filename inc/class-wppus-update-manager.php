@@ -236,12 +236,13 @@ class WPPUS_Update_Manager {
 			if ( $slug ) {
 				Wppus_Update_Server::unlock_update_from_remote( $slug );
 
-				$result = WPPUS_Update_API::download_remote_update( $slug, 'Theme' );
+				$api    = WPPUS_Update_API::get_instance();
+				$result = $api->download_remote_package( $slug, 'Theme', true );
 
 				if ( ! $result ) {
 					Wppus_Update_Server::unlock_update_from_remote( $slug );
 
-					$result = WPPUS_Update_API::download_remote_update( $slug, 'Plugin' );
+					$result = $api->download_remote_package( $slug, 'Plugin', true );
 				}
 			} else {
 				$error = new WP_Error(

@@ -9,6 +9,7 @@ class WPPUS_Update_API {
 	protected $scheduler;
 
 	protected static $doing_update_api_request = null;
+	protected static $instance;
 
 	public function __construct( $init_hooks = false ) {
 		$this->scheduler = new WPPUS_Scheduler();
@@ -70,33 +71,36 @@ class WPPUS_Update_API {
 		return apply_filters( 'wppus_update_api_config', $config );
 	}
 
-	public static function maybe_download_remote_update( $slug, $type = null, $force = false ) {
-		$result        = false;
-		$update_server = self::get_wppus_update_server( $type );
+	public static function get_instance() {
 
-		if ( $force || self::check_remote_update( $slug, $type, $update_server ) ) {
-			$result = self::download_remote_update( $slug, $type, $update_server );
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	public function check_remote_update( $slug, $type ) {
+
+		if ( ! $this->update_server instanceof WPPUS_Update_Server ) {
+			$this->init_server( $slug );
+			$this->update_server->set_type( $type );
+		}
+
+		return $this->update_server->check_remote_package_update( $slug );
+	}
+
+	public function download_remote_package( $slug, $type, $force = false ) {
+		$result = false;
+
+		$this->init_server( $slug );
+		$this->update_server->set_type( $type );
+
+		if ( $force || $this->check_remote_update( $slug, $type ) ) {
+			$result = $this->update_server->save_remote_package_to_local( $slug );
 		}
 
 		return $result;
-	}
-
-	public static function check_remote_update( $slug, $type, $update_server = null ) {
-
-		if ( ! $update_server instanceof WPPUS_Update_Server ) {
-			$update_server = self::get_wppus_update_server( $type );
-		}
-
-		return $update_server->check_remote_package_update( $slug );
-	}
-
-	public static function download_remote_update( $slug, $type, $update_server = null ) {
-
-		if ( ! $update_server instanceof WPPUS_Update_Server ) {
-			$update_server = self::get_wppus_update_server( $type );
-		}
-
-		return $update_server->save_remote_package_to_local( $slug );
 	}
 
 	public function add_endpoints() {
@@ -119,7 +123,6 @@ class WPPUS_Update_API {
 				'action',
 				'token',
 				'package_id',
-				'update_secret_key',
 				'update_license_key',
 				'update_license_signature',
 				'update_type',
@@ -129,48 +132,26 @@ class WPPUS_Update_API {
 		return $query_variables;
 	}
 
-	protected static function get_wppus_update_server( $type ) {
-		$config        = self::get_config();
-		$update_server = new WPPUS_Update_Server(
-			$config['use_remote_repository'],
-			home_url( '/wppus-update-api/' ),
-			new WPPUS_Scheduler(),
-			$config['server_directory'],
-			$config['repository_service_url'],
-			$config['repository_branch'],
-			$config['repository_credentials'],
-			$config['repository_service_self_hosted'],
-			$config['repository_check_frequency']
-		);
-
-		$update_server->set_type( $type );
-
-		return apply_filters( 'wppus_update_server', $update_server, $config, null );
-	}
-
 	protected function handle_api_request() {
 		global $wp;
 
-		$package_id        = isset( $wp->query_vars['package_id'] ) ? trim( rawurldecode( $wp->query_vars['package_id'] ) ) : null;
-		$type              = isset( $wp->query_vars['update_type'] ) ? trim( $wp->query_vars['update_type'] ) : null;
-		$action            = isset( $wp->query_vars['action'] ) ? trim( $wp->query_vars['action'] ) : null;
-		$token             = isset( $wp->query_vars['token'] ) ? trim( $wp->query_vars['token'] ) : null;
-		$secret_key        = isset( $wp->query_vars['update_secret_key'] ) ? trim( $wp->query_vars['update_secret_key'] ) : null;
-		$license_key       = isset( $wp->query_vars['update_license_key'] ) ? trim( $wp->query_vars['update_license_key'] ) : null;
-		$license_signature = isset( $wp->query_vars['update_license_signature'] ) ? trim( $wp->query_vars['update_license_signature'] ) : null;
-		$request_params    = apply_filters(
+		$vars           = $wp->query_vars;
+		$package_id     = isset( $vars['package_id'] ) ? trim( rawurldecode( $vars['package_id'] ) ) : null;
+		$request_params = array(
+			'action'            => isset( $vars['action'] ) ? trim( $vars['action'] ) : null,
+			'token'             => isset( $vars['token'] ) ? trim( $vars['token'] ) : null,
+			'slug'              => $package_id,
+			'license_key'       => isset( $vars['update_license_key'] ) ? trim( $vars['update_license_key'] ) : null,
+			'license_signature' => isset( $vars['update_license_signature'] ) ?
+				trim( $vars['update_license_signature'] ) :
+				null,
+			'type'              => isset( $vars['update_type'] ) ? trim( $vars['update_type'] ) : null,
+		);
+		$request_params = apply_filters(
 			'wppus_handle_update_request_params',
 			array_merge(
 				$_GET, // @codingStandardsIgnoreLine
-				array(
-					'action'            => $action,
-					'token'             => $token,
-					'slug'              => $package_id,
-					'secret_key'        => $secret_key,
-					'license_key'       => $license_key,
-					'license_signature' => $license_signature,
-					'type'              => $type,
-				)
+				$request_params
 			)
 		);
 

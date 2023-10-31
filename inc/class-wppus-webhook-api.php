@@ -5,9 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class WPPUS_Webhook_API {
-	protected $update_server;
-	protected $scheduler;
-
 	protected static $doing_update_api_request = null;
 
 	public function __construct( $init_hooks = false ) {
@@ -77,7 +74,7 @@ class WPPUS_Webhook_API {
 	}
 
 	public function add_endpoints() {
-		add_rewrite_rule( '^wppus-webhook/(.+)/(.+)?$', 'index.php?type=$matches[1]&package_id=$matches[2]&__wppus_webhook=1&', 'top' );
+		add_rewrite_rule( '^wppus-webhook/(plugin|theme)/(.+)?$', 'index.php?type=$matches[1]&package_id=$matches[2]&__wppus_webhook=1&', 'top' );
 	}
 
 	public function parse_request() {
@@ -91,7 +88,14 @@ class WPPUS_Webhook_API {
 	}
 
 	public function addquery_variables( $query_variables ) {
-		$query_variables = array_merge( $query_variables, array( '__wppus_webhook', 'package_id', 'type' ) );
+		$query_variables = array_merge(
+			$query_variables,
+			array(
+				'__wppus_webhook',
+				'package_id',
+				'type',
+			)
+		);
 
 		return $query_variables;
 	}
@@ -197,8 +201,10 @@ class WPPUS_Webhook_API {
 					$scheduler->clear_remote_check_schedule( $package_id, $type, true );
 					$scheduler->register_remote_check_single_event( $package_id, $type, $delay );
 				} else {
+					$api = WPPUS_Update_API::get_instance();
+
 					$scheduler->clear_remote_check_schedule( $package_id, $type, true );
-					WPPUS_Update_API::maybe_download_remote_update( $package_id, $type, true );
+					$api->download_remote_package( $package_id, $type, true );
 				}
 
 				do_action(

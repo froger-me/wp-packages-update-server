@@ -67,8 +67,8 @@ function wppus_run() {
 
 	require_once WPPUS_PLUGIN_PATH . 'functions.php';
 
-	$is_update_api_request  = WPPUS_Update_API::is_doing_api_request();
 	$is_license_api_request = WPPUS_License_API::is_doing_api_request();
+	$is_update_api_request  = WPPUS_Update_API::is_doing_api_request();
 	$is_api_request         = $is_license_api_request || $is_update_api_request;
 
 	if ( ! $is_license_api_request ) {

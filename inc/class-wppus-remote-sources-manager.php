@@ -37,8 +37,7 @@ class WPPUS_Remote_Sources_Manager {
 
 		if ( ! get_option( 'wppus_remote_repository_use_webhooks' ) ) {
 			$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
-
-			$scheduler->reschedule_remote_check_recurring_events( $frequency );
+			$result    = $scheduler->reschedule_remote_check_recurring_events( $frequency );
 		}
 
 		return $result;
@@ -229,39 +228,45 @@ class WPPUS_Remote_Sources_Manager {
 			$result = $errors;
 		}
 
-		$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
+		if ( ! get_option( 'wppus_remote_repository_use_webhooks' ) ) {
 
-		if (
-			! get_option( 'wppus_remote_repository_use_webhooks' ) &&
-			null !== $new_wppus_use_remote_repository &&
-			$new_wppus_use_remote_repository !== $original_wppus_use_remote_repository
-		) {
+			if (
+				null !== $new_wppus_use_remote_repository &&
+				$new_wppus_use_remote_repository !== $original_wppus_use_remote_repository
+			) {
 
-			if ( ! $original_wppus_use_remote_repository && $new_wppus_use_remote_repository ) {
-				$this->scheduler->reschedule_remote_check_recurring_events( $frequency );
-			} elseif ( $original_wppus_use_remote_repository && ! $new_wppus_use_remote_repository ) {
-				$this->scheduler->clear_remote_check_scheduled_hooks();
+				if ( ! $original_wppus_use_remote_repository && $new_wppus_use_remote_repository ) {
+					$this->scheduler->reschedule_remote_check_recurring_events(
+						get_option( 'wppus_remote_repository_check_frequency', 'daily' )
+					);
+				} elseif (
+					$original_wppus_use_remote_repository &&
+					! $new_wppus_use_remote_repository
+				) {
+					$this->scheduler->clear_remote_check_scheduled_hooks();
+				}
 			}
-		}
 
-		if (
-			! get_option( 'wppus_remote_repository_use_webhooks' ) &&
-			null !== $new_wppus_remote_repository_check_frequency &&
-			$new_wppus_remote_repository_check_frequency !== $original_wppus_remote_repository_check_frequency
-		) {
-			$this->scheduler->reschedule_remote_check_recurring_events(
-				$new_wppus_remote_repository_check_frequency
-			);
-		}
+			if (
+				null !== $new_wppus_remote_repository_check_frequency &&
+				$new_wppus_remote_repository_check_frequency !== $original_wppus_remote_repository_check_frequency
+			) {
+				$this->scheduler->reschedule_remote_check_recurring_events(
+					$new_wppus_remote_repository_check_frequency
+				);
+			}
 
-		if (
-			! get_option( 'wppus_remote_repository_use_webhooks' ) &&
-			null !== $new_wppus_remote_repository_use_webhooks &&
-			$new_wppus_remote_repository_use_webhooks !== $original_wppus_remote_repository_use_webhooks
-		) {
-			$this->scheduler->reschedule_remote_check_recurring_events(
-				$new_wppus_remote_repository_check_frequency
-			);
+			if (
+				null !== $new_wppus_remote_repository_use_webhooks &&
+				$new_wppus_remote_repository_use_webhooks !== $original_wppus_remote_repository_use_webhooks
+			) {
+				$this->scheduler->reschedule_remote_check_recurring_events(
+					$new_wppus_remote_repository_check_frequency
+				);
+			}
+		} else {
+			$this->scheduler->clear_remote_check_scheduled_hooks();
+			set_transient( 'wppus_flush', 1, 60 );
 		}
 
 		return $result;

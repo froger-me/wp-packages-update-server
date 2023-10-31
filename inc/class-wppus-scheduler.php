@@ -62,8 +62,8 @@ class WPPUS_Scheduler {
 
 				$this->clear_remote_check_schedule( $slug, null, false );
 
-				if ( ! wp_next_scheduled( $hook, array( $slug ) ) ) {
-					$params    = array( $slug );
+				if ( ! wp_next_scheduled( $hook, array( $slug, null, false ) ) ) {
+					$params    = array( $slug, null, false );
 					$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
 					$timestamp = time();
 					$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
@@ -89,7 +89,7 @@ class WPPUS_Scheduler {
 	public function register_remote_check_recurring_event( $slug, $frequency ) {
 		$hook = 'wppus_check_remote_' . $slug;
 
-		if ( ! wp_next_scheduled( $hook, array( $slug ) ) ) {
+		if ( ! wp_next_scheduled( $hook, array( $slug, null, false ) ) ) {
 			$params    = array( $slug, null, false );
 			$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
 			$timestamp = time();
@@ -102,7 +102,7 @@ class WPPUS_Scheduler {
 	public function register_remote_check_single_event( $slug, $type, $delay ) {
 		$hook = 'wppus_check_remote_' . $slug;
 
-		if ( ! wp_next_scheduled( $hook, array( $slug ) ) ) {
+		if ( ! wp_next_scheduled( $hook, array( $slug, $type, true ) ) ) {
 			$params    = array( $slug, $type, true );
 			$delay     = apply_filters( 'wppus_check_remote_delay', $delay, $slug );
 			$timestamp = time() + ( abs( intval( $delay ) ) * MINUTE_IN_SECONDS );
@@ -127,7 +127,8 @@ class WPPUS_Scheduler {
 			$slugs = $this->get_package_slugs();
 
 			if ( ! empty( $slugs ) ) {
-				$action_hook = array( 'WPPUS_Update_API', 'maybe_download_remote_update' );
+				$api         = WPPUS_Update_API::get_instance();
+				$action_hook = array( $api, 'download_remote_package' );
 
 				foreach ( $slugs as $slug ) {
 					add_action( 'wppus_check_remote_' . $slug, $action_hook, 10, 3 );

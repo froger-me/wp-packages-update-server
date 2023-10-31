@@ -47,12 +47,12 @@ class WPPUS_License_API {
 	}
 
 	public static function get_config() {
-		$config = array();
-
-		$config['private_api_auth_key']     = get_option( 'wppus_license_private_api_auth_key' );
-		$config['licenses_hmac_key']        = get_option( 'wppus_license_hmac_key', 'hmac' );
-		$config['licenses_crypto_key']      = get_option( 'wppus_license_crypto_key', 'crypto' );
-		$config['licenses_check_signature'] = get_option( 'wppus_license_check_signature', 1 );
+		$config = array(
+			'private_api_auth_key'     => get_option( 'wppus_license_private_api_auth_key' ),
+			'licenses_hmac_key'        => get_option( 'wppus_license_hmac_key', 'hmac' ),
+			'licenses_crypto_key'      => get_option( 'wppus_license_crypto_key', 'crypto' ),
+			'licenses_check_signature' => get_option( 'wppus_license_check_signature', 1 ),
+		);
 
 		return apply_filters( 'wppus_license_api_config', $config );
 	}
@@ -421,8 +421,7 @@ class WPPUS_License_API {
 							$response = $this->get_unauthorized_access_response();
 						}
 					} else {
-						$response                 = $this->action_not_found_response();
-						$this->http_response_code = 400;
+						$response = $this->action_not_found_response();
 					}
 				} else {
 					$response = $this->malformed_request_response();

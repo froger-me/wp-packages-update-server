@@ -223,7 +223,7 @@
 		</p>
 		<?php if ( get_option( 'wppus_use_remote_repository', false ) ) : ?>
 		<hr>
-		<table class="form-table package-source">
+		<table class="form-table package-source hide-if-webhooks <?php echo ( $use_webhooks ) ? 'hidden' : ''; ?>">
 			<tr>
 				<th>
 					<label for="wppus_remote_repository_force_remove_schedules"><?php esc_html_e( 'Clear scheduled remote updates', 'wppus' ); ?></label>
