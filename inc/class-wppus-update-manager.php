@@ -680,9 +680,7 @@ class WPPUS_Update_Manager {
 
 				if ( $package ) {
 					$package_info                       = $package->getMetadata();
-					$package_info['type']               = isset( $package_info['details_url'] ) ?
-						__( 'Theme', 'wppus' ) :
-						__( 'Plugin', 'wppus' );
+					$package_info['type']               = isset( $package_info['details_url'] ) ? 'theme' : 'plugin';
 					$package_info['file_name']          = $package_info['slug'] . '.zip';
 					$package_info['file_path']          = $package_directory . $slug . '.zip';
 					$package_info['file_size']          = $package->getFileSize();
