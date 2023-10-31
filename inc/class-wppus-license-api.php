@@ -373,6 +373,7 @@ class WPPUS_License_API {
 	}
 
 	protected function is_api_public( $method ) {
+		// @TODO doc
 		$public_api    = apply_filters(
 			'wppus_license_public_api_methods',
 			array(

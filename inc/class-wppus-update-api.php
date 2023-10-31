@@ -72,7 +72,7 @@ class WPPUS_Update_API {
 
 	public static function maybe_download_remote_update( $slug, $type = null, $force = false ) {
 		$result        = false;
-		$update_server = self::get_wppus_update_server( $slug, $type );
+		$update_server = self::get_wppus_update_server( $type );
 
 		if ( $force || self::check_remote_update( $slug, $type, $update_server ) ) {
 			$result = self::download_remote_update( $slug, $type, $update_server );
@@ -84,7 +84,7 @@ class WPPUS_Update_API {
 	public static function check_remote_update( $slug, $type, $update_server = null ) {
 
 		if ( ! $update_server instanceof WPPUS_Update_Server ) {
-			$update_server = self::get_wppus_update_server( $slug, $type );
+			$update_server = self::get_wppus_update_server( $type );
 		}
 
 		return $update_server->check_remote_package_update( $slug );
@@ -93,7 +93,7 @@ class WPPUS_Update_API {
 	public static function download_remote_update( $slug, $type, $update_server = null ) {
 
 		if ( ! $update_server instanceof WPPUS_Update_Server ) {
-			$update_server = self::get_wppus_update_server( $slug, $type );
+			$update_server = self::get_wppus_update_server( $type );
 		}
 
 		return $update_server->save_remote_package_to_local( $slug );
@@ -129,7 +129,7 @@ class WPPUS_Update_API {
 		return $query_variables;
 	}
 
-	protected static function get_wppus_update_server( $slug, $type ) {
+	protected static function get_wppus_update_server( $type ) {
 		$config        = self::get_config();
 		$update_server = new WPPUS_Update_Server(
 			$config['use_remote_repository'],
@@ -212,7 +212,12 @@ class WPPUS_Update_API {
 			$config['repository_service_self_hosted'],
 			$config['repository_check_frequency']
 		);
-
-		$this->update_server = apply_filters( 'wppus_update_server', $this->update_server, $config, $slug, $package_use_license );
+		$this->update_server = apply_filters(
+			'wppus_update_server',
+			$this->update_server,
+			$config,
+			$slug,
+			$package_use_license
+		);
 	}
 }

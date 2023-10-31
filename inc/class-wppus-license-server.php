@@ -56,8 +56,6 @@ class WPPUS_License_Server {
 		'expired',
 	);
 
-	protected $private_api_auth_key;
-
 	public function __construct() {}
 
 	public function build_license( $payload ) {
