@@ -142,7 +142,7 @@ if ( ! function_exists( 'wppus_browse_licenses' ) ) {
 
 	function wppus_browse_licenses( $browse_query ) {
 
-		return WPPUS_License_API::local_request( 'browse', $browse_query );
+		return WPPUS_License_API::local_request( 'browse', wp_json_encode( $browse_query ) );
 	}
 }
 

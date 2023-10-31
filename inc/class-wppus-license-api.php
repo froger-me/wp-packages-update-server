@@ -59,18 +59,12 @@ class WPPUS_License_API {
 
 	public static function local_request( $action, $payload ) {
 		$api    = new self( false, true );
-		$config = self::get_config();
-
-		if ( 'browse' === $action ) {
-			$payload = wp_json_encode( $payload );
-		}
+		$return = array();
 
 		if ( method_exists( $api, $action ) ) {
-			$return = $api->$action( $payload, $config['private_api_auth_key'] );
+			$return = $api->$action( $payload );
 		} else {
-			$return = array(
-				'message' => __( 'License API action not found.', 'wppus' ),
-			);
+			$return['message'] = __( 'License API action not found.', 'wppus' );
 		}
 
 		return $return;
@@ -104,90 +98,80 @@ class WPPUS_License_API {
 		return $query_variables;
 	}
 
-	public function browse( $browse_query, $key ) {
+	public function browse( $browse_query ) {
+		$payload = json_decode( wp_unslash( $browse_query ), true );
 
-		if ( $this->authorize( $key, 'private' ) ) {
-			$payload = json_decode( wp_unslash( $browse_query ), true );
+		switch ( json_last_error() ) {
+			case JSON_ERROR_NONE:
+				$result = $this->license_server->browse_licenses( $payload );
+				break;
+			case JSON_ERROR_DEPTH:
+				$result = 'JSON parse error - Maximum stack depth exceeded';
+				break;
+			case JSON_ERROR_STATE_MISMATCH:
+				$result = 'JSON parse error - Underflow or the modes mismatch';
+				break;
+			case JSON_ERROR_CTRL_CHAR:
+				$result = 'JSON parse error - Unexpected control character found';
+				break;
+			case JSON_ERROR_SYNTAX:
+				$result = 'JSON parse error - Syntax error, malformed JSON';
+				break;
+			case JSON_ERROR_UTF8:
+				$result = 'JSON parse error - Malformed UTF-8 characters, possibly incorrectly encoded';
+				break;
+			default:
+				$result = 'JSON parse error - Unknown error';
+				break;
+		}
 
-			switch ( json_last_error() ) {
-				case JSON_ERROR_NONE:
-					$result = $this->license_server->browse_licenses( $payload );
-					break;
-				case JSON_ERROR_DEPTH:
-					$result = 'JSON parse error - Maximum stack depth exceeded';
-					break;
-				case JSON_ERROR_STATE_MISMATCH:
-					$result = 'JSON parse error - Underflow or the modes mismatch';
-					break;
-				case JSON_ERROR_CTRL_CHAR:
-					$result = 'JSON parse error - Unexpected control character found';
-					break;
-				case JSON_ERROR_SYNTAX:
-					$result = 'JSON parse error - Syntax error, malformed JSON';
-					break;
-				case JSON_ERROR_UTF8:
-					$result = 'JSON parse error - Malformed UTF-8 characters, possibly incorrectly encoded';
-					break;
-				default:
-					$result = 'JSON parse error - Unknown error';
-					break;
-			}
-
-			if ( ! is_array( $result ) ) {
-				$result = array( $result );
-			}
-		} else {
-			$result = $this->get_unauthorized_access_response();
+		if ( ! is_array( $result ) ) {
+			$result                   = array( $result );
+			$this->http_response_code = 400;
 		}
 
 		return $result;
 	}
 
-	public function read( $license_data, $key ) {
+	public function read( $license_data ) {
+		$result = $this->license_server->read_license( $license_data );
 
-		if ( $this->authorize( $key, 'private' ) ) {
-			$result = $this->license_server->read_license( $license_data );
-		} else {
-			$result = $this->get_unauthorized_access_response();
+		if ( ! is_object( $result ) ) {
+			$this->http_response_code = 400;
 		}
 
 		return $result;
 	}
 
-	public function edit( $license_data, $key ) {
+	public function edit( $license_data ) {
+		$result = $this->license_server->edit_license( $license_data );
 
-		if ( $this->authorize( $key, 'private' ) ) {
-			$result = $this->license_server->edit_license( $license_data );
-		} else {
-			$result = $this->get_unauthorized_access_response();
+		if ( ! is_object( $result ) ) {
+			$this->http_response_code = 400;
 		}
 
 		return $result;
 	}
 
-	public function add( $license_data, $key ) {
+	public function add( $license_data ) {
+		$result = $this->license_server->add_license( $license_data );
 
-		if ( $this->authorize( $key, 'private' ) ) {
-			$result = $this->license_server->add_license( $license_data );
-
-			if ( is_object( $result ) ) {
-				$result->result  = 'success';
-				$result->message = 'License successfully created';
-				$result->key     = $result->license_key;
-			}
+		if ( is_object( $result ) ) {
+			$result->result  = 'success';
+			$result->message = 'License successfully created';
+			$result->key     = $result->license_key;
 		} else {
-			$result = $this->get_unauthorized_access_response();
+			$this->http_response_code = 400;
 		}
 
 		return $result;
 	}
 
-	public function delete( $license_data, $key ) {
+	public function delete( $license_data ) {
+		$result = $this->license_server->delete_license( $license_data );
 
-		if ( $this->authorize( $key, 'private' ) ) {
-			$result = $this->license_server->delete_license( $license_data );
-		} else {
-			$result = $this->get_unauthorized_access_response();
+		if ( ! is_object( $result ) ) {
+			$this->http_response_code = 400;
 		}
 
 		return $result;
@@ -211,6 +195,10 @@ class WPPUS_License_API {
 		$result = apply_filters( 'wppus_check_license_result', $result, $license_data );
 
 		do_action( 'wppus_did_check_license', $result );
+
+		if ( ! is_object( $result ) ) {
+			$this->http_response_code = 400;
+		}
 
 		return $result;
 	}
@@ -263,6 +251,10 @@ class WPPUS_License_API {
 		$result = apply_filters( 'wppus_activate_license_result', $result, $license_data, $license );
 
 		do_action( 'wppus_did_activate_license', $result );
+
+		if ( ! is_object( $result ) ) {
+			$this->http_response_code = 400;
+		}
 
 		return $result;
 	}
@@ -317,10 +309,33 @@ class WPPUS_License_API {
 
 		do_action( 'wppus_did_deactivate_license', $result );
 
+		if ( ! is_object( $result ) ) {
+			$this->http_response_code = 400;
+		}
+
 		return $result;
 	}
 
-	protected function authorize( $key ) {
+	protected function authorize() {
+		$key = false;
+
+		if (
+			isset( $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'] ) &&
+			! empty( $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'] )
+		) {
+			$key = $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'];
+		} else {
+			global $wp;
+
+			if (
+				isset( $wp->query_vars['api_auth_key'] ) &&
+				is_string( $wp->query_vars['api_auth_key'] ) &&
+				! empty( $wp->query_vars['api_auth_key'] )
+			) {
+				$key = $wp->query_vars['api_auth_key'];
+			}
+		}
+
 		$config  = self::get_config();
 		$is_auth = $config['private_api_auth_key'] === $key;
 
@@ -343,6 +358,14 @@ class WPPUS_License_API {
 		);
 	}
 
+	protected function unauthorized_method_response() {
+		$this->http_response_code = 405;
+
+		return array(
+			'message' => __( 'Unauthorized GET method.', 'wppus' ),
+		);
+	}
+
 	protected function get_unauthorized_access_response() {
 		$this->http_response_code = 403;
 
@@ -353,42 +376,60 @@ class WPPUS_License_API {
 		return $result;
 	}
 
+	protected function is_api_public( $method ) {
+		$public_api    = apply_filters(
+			'wppus_license_public_api_methods',
+			array(
+				'check',
+				'activate',
+				'deactivate',
+			)
+		);
+		$is_api_public = in_array( $method, $public_api, true );
+
+		return $is_api_public;
+	}
+
 	protected function handle_api_request() {
 		global $wp;
 
 		if ( isset( $wp->query_vars['action'] ) ) {
-			$malformed_request = false;
+			$method = $wp->query_vars['action'];
 
-			if ( 'browse' === $wp->query_vars['action'] ) {
+			$this->init_server();
 
-				if ( isset( $wp->query_vars['browse_query'] ) ) {
-					$payload = $wp->query_vars['browse_query'];
-				} else {
-					$malformed_request = true;
-				}
+			if ( filter_input( INPUT_GET, 'action' ) && ! $this->is_api_public( $method ) ) {
+				$response = $this->unauthorized_method_response();
 			} else {
-				$payload = $wp->query_vars;
-			}
+				$malformed_request = false;
 
-			if ( ! $malformed_request ) {
-				$key    = isset( $wp->query_vars['api_auth_key'] ) ? $wp->query_vars['api_auth_key'] : false;
-				$method = $wp->query_vars['action'];
+				if ( 'browse' === $wp->query_vars['action'] ) {
 
-				$this->init_server();
-
-				if ( method_exists( $this, $method ) ) {
-					$response = $this->$method( $payload, $key );
+					if ( isset( $wp->query_vars['browse_query'] ) ) {
+						$payload = $wp->query_vars['browse_query'];
+					} else {
+						$malformed_request = true;
+					}
 				} else {
-					$response = $this->action_not_found_response();
+					$payload = $wp->query_vars;
 				}
 
-				if ( 403 !== $this->http_response_code && ! is_object( $response ) ) {
-					$this->http_response_code = 400;
-				}
-			} else {
-				$this->http_response_code = 400;
+				if ( ! $malformed_request ) {
 
-				$response = $this->malformed_request_response();
+					if ( method_exists( $this, $method ) ) {
+
+						if ( $this->is_api_public( $method ) || $this->authorize() ) {
+							$response = $this->$method( $payload );
+						} else {
+							$response = $this->get_unauthorized_access_response();
+						}
+					} else {
+						$response                 = $this->action_not_found_response();
+						$this->http_response_code = 400;
+					}
+				} else {
+					$response = $this->malformed_request_response();
+				}
 			}
 
 			$this->license_server->dispatch( $response, $this->http_response_code );

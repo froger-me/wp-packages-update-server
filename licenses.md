@@ -97,7 +97,7 @@ NOTE: the field `allowed_domains` is a serialized array, therefore when used in 
 ___
 ## API
 
-The License API is accessible via POST and GET requests on the `/wppus-license-api/` endpoint and accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well.
+The License API is accessible via POST and GET requests on the `/wppus-license-api/` endpoint for both the Public and Private API, and via POST only for the Private API. It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well for the Public API.
 
 The description of the API further below is using the following code as reference, where `$params` are the parameters passed to the API (other parameters can be adjusted, they are just WordPress' default) and `$data` is the JSON response:
 
@@ -324,8 +324,11 @@ Response `$data` - **failure** (in case of already deactivated for `allowed_doma
 ___
 ### Private API
 
-The Private API necessitates extra authentication for all its actions, `browse`, `edit`, `add`, `delete`. The first action, `browse`, is particular in the sense that, unlike the other actions and aside from the Private API Authentication Key, it accepts a JSON License Query instead of the classic form-data payload.
-With the Private API, developers can perform any operation on the license records - be careful to keep the Private API Authentication Key an absolute secret!
+The Private API, only accessible via the POST method, necessitates extra authentication for all its actions - `browse`, `edit`, `add`, `delete`.  
+The first action, `browse`, is particular in the sense that, unlike the other actions and aside from the Private API Authentication Key, it accepts a JSON License Query instead of the classic form-data payload.  
+With the Private API, developers can perform any operation on the license records - **be careful to keep the Private API Authentication Key an absolute secret!**
+
+The Private API Authentication Key can be provided either via the `api_auth_key` parameter, or by passing a `X-WPPUS-Private-License-API-Key` header (recommended - it is then found in `$_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY']` in PHP). 
 
 In case the Private API Authentication Key is invalid, all the actions of the Private API will return the same response (message's language depending on availabe translations), with HTTP headers set to `403`:
 
@@ -345,7 +348,7 @@ See [The License Query](#user-content-the-license-query) for more information on
 $params = array(
     'action'       => 'browse',                         // Action to perform when calling the License API (required)
     'browse_query' => wp_json_encode( $license_query ), // A  JSON representation of a License Query (required)
-    'api_auth_key' => 'secret',                         // The Private API Authentication Key (required)
+    'api_auth_key' => 'secret',                         // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
@@ -387,7 +390,7 @@ $params = array(
     'action'       => 'read',         // Action to perform when calling the License API (required)
     'id'           => '99',           // The id of the license to read (optional if license_key is provided)
     'license_key'  => 'test-license', // The key of the license to read (optional if id is provided)
-    'api_auth_key' => 'secret',       // The Private API Authentication Key (required)
+    'api_auth_key' => 'secret',       // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
@@ -441,7 +444,7 @@ $params = array(
     'date_expiry'         => '3099-12-31',        // Expiry date of the license - YYY-MM-DD - if omitted, no expiry (optional)
     'package_slug'        => 'new-package',       // The package slug - only alphanumeric characters and dashes are allowed (required)
     'package_type'        => 'theme',             // Type of package the license is for - one of plugin, theme (required)
-    'api_auth_key'        => 'secret',            // The Private API Authentication Key (required)
+    'api_auth_key'        => 'secret',            // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
@@ -501,7 +504,7 @@ $params = array(
     'date_expiry'         => '2099-12-31',    // Expiry date of the license - YYY-MM-DD - if omitted, no expiry (optional)
     'package_slug'        => 'test-package',  // The package slug - only alphanumeric characters and dashes are allowed (required)
     'package_type'        => 'plugin',        // Type of package the license is for - one of plugin, theme (required)
-    'api_auth_key'        => 'secret',        // The Private API Authentication Key (required)
+    'api_auth_key'        => 'secret',        // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
@@ -546,7 +549,7 @@ $params = array(
     'action'       => 'delete',       // Action to perform when calling the License API (required)
     'id'           => '99',           // The id of the license to delete (optional if license_key is provided)
     'license_key'  => 'test-license', // The key of the license to delete (optional if id is provided)
-    'api_auth_key' => 'secret',       // The Private API Authentication Key (required)
+    'api_auth_key' => 'secret',       // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
