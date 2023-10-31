@@ -10,6 +10,7 @@ class WPPUS_Update_Manager {
 	const WPPUS_DEFAULT_CACHE_MAX_SIZE   = 100;
 	const WPPUS_DEFAULT_ARCHIVE_MAX_SIZE = 20;
 
+	protected static $instance;
 	public static $filesystem_clean_types = array(
 		'cache',
 		'logs',
@@ -56,6 +57,15 @@ class WPPUS_Update_Manager {
 
 	public static function renew_download_url_token() {
 		update_option( 'wppus_package_download_url_token', bin2hex( openssl_random_pseudo_bytes( 16 ) ), true );
+	}
+
+	public static function get_instance() {
+
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	public function init_request() {

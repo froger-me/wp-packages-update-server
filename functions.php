@@ -114,6 +114,15 @@ if ( ! function_exists( 'wppus_download_remote_package' ) ) {
 }
 
 // @TODO doc
+if ( ! function_exists( 'wppus_delete_package' ) ) {
+	function wppus_delete_package( $slug ) {
+		$api = WPPUS_Update_Manager::get_instance();
+
+		$api->delete_packages_bulk( array( $slug ) );
+	}
+}
+
+// @TODO doc
 if ( ! function_exists( 'wppus_get_package_info' ) ) {
 	function wppus_get_package_info( $package_slug, $json_encode = true ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
