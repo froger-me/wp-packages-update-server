@@ -149,6 +149,18 @@
 			</tr>
 			<tr>
 				<th>
+					<label for="wppus_package_private_api_auth_key"><?php esc_html_e( 'Private API Authentication Key', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input class="regular-text" type="text" id="wppus_package_private_api_auth_key" name="wppus_package_private_api_auth_key" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_auth_key', 'private_api_auth_key' ) ); ?>">
+					<p class="description"><?php esc_html_e( 'Ideally a random string - used to authenticate package administration requests (browse, read, edit, add, delete, generate download link, download).', 'wppus' ); ?>
+						<br>
+						<strong><?php esc_html_e( 'WARNING: Keep this key secret, do not share it with customers!', 'wppus' ); ?></strong>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<th>
 					<label for="wppus_remote_repository_use_webhooks"><?php esc_html_e( 'Use Webhooks', 'wppus' ); ?></label>
 				</th>
 				<td>
@@ -190,7 +202,7 @@
 					<label for="wppus_remote_repository_webhook_secret"><?php esc_html_e( 'Remote repository Webhook Secret', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text" type="text" id="wppus_remote_repository_webhook_secret" name="wppus_remote_repository_webhook_secret" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_webhook_secret', bin2hex( openssl_random_pseudo_bytes( 16 ) ) ) ); ?>">
+					<input class="regular-text" type="text" id="wppus_remote_repository_webhook_secret" name="wppus_remote_repository_webhook_secret" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_webhook_secret', 'repository_webhook_secret' ) ); ?>">
 					<p class="description">
 						<?php esc_html_e( 'Ideally a random string, the secret string included in the request by the repository service when calling the Webhook.', 'wppus' ); ?>
 						<br>
@@ -221,7 +233,7 @@
 		<p class="submit">
 			<input type="submit" name="wppus_options_save" value="<?php esc_attr_e( 'Save', 'wppus' ); ?>" class="button button-primary" />
 		</p>
-		<?php if ( get_option( 'wppus_use_remote_repository', false ) ) : ?>
+		<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 		<hr>
 		<table class="form-table package-source hide-if-webhooks <?php echo ( $use_webhooks ) ? 'hidden' : ''; ?>">
 			<tr>

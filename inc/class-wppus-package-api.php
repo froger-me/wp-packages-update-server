@@ -74,19 +74,24 @@ class WPPUS_Package_API {
 	}
 
 	public function create( $package_id, $type ) {
-		$result = wppus_get_package_info( $package_id, false );
+		$result = false;
+		$config = self::get_config();
 
-		if ( is_array( $result ) ) {
-			$result = false;
-		} else {
-			$result = wppus_download_remote_package( $package_id, $type );
-			$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
-		}
+		if ( $config['use_remote_repository'] ) {
+			$result = wppus_get_package_info( $package_id, false );
 
-		$result = apply_filters( 'wppus_package_create', $result, $package_id, $type );
+			if ( is_array( $result ) ) {
+				$result = false;
+			} else {
+				$result = wppus_download_remote_package( $package_id, $type );
+				$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
+			}
 
-		if ( $result ) {
-			do_action( 'wppus_did_create_package', $result );
+			$result = apply_filters( 'wppus_package_create', $result, $package_id, $type );
+
+			if ( $result ) {
+				do_action( 'wppus_did_create_package', $result );
+			}
 		}
 
 		if ( ! $result ) {
@@ -121,16 +126,21 @@ class WPPUS_Package_API {
 	}
 
 	public function update( $package_id, $type ) {
-		$result = wppus_download_remote_package( $package_id, $type );
-		$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
-		$result = apply_filters( 'wppus_package_update', $result, $package_id, $type );
+		$result = false;
+		$config = self::get_config();
 
-		if ( $result ) {
-			do_action( 'wppus_did_update_package', $result );
-		}
+		if ( $config['use_remote_repository'] ) {
+			$result = wppus_download_remote_package( $package_id, $type );
+			$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
+			$result = apply_filters( 'wppus_package_update', $result, $package_id, $type );
 
-		if ( ! $result ) {
-			$this->http_response_code = 400;
+			if ( $result ) {
+				do_action( 'wppus_did_update_package', $result );
+			}
+
+			if ( ! $result ) {
+				$this->http_response_code = 400;
+			}
 		}
 
 		return $result;
@@ -155,10 +165,7 @@ class WPPUS_Package_API {
 
 	protected function is_api_public( $method ) {
 		// @TODO doc
-		$public_api    = apply_filters(
-			'wppus_package_public_api_methods',
-			array( 'read' )
-		);
+		$public_api    = apply_filters( 'wppus_package_public_api_methods', array() );
 		$is_api_public = in_array( $method, $public_api, true );
 
 		return $is_api_public;

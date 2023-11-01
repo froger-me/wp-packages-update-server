@@ -310,6 +310,11 @@ class WPPUS_Remote_Sources_Manager {
 					'failure_display_message' => __( 'Not a valid option', 'wppus' ),
 					'condition'               => 'known frequency',
 				),
+				'wppus_package_private_api_auth_key'      => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_package_private_api_auth_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+				),
 				'wppus_remote_repository_use_webhooks'    => array(
 					'value'        => filter_input( INPUT_POST, 'wppus_remote_repository_use_webhooks', FILTER_VALIDATE_BOOLEAN ),
 					'display_name' => __( 'Use Webhooks', 'wppus' ),
