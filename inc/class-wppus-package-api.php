@@ -192,9 +192,32 @@ class WPPUS_Package_API {
 		return $result;
 	}
 
+	public function token( $payload ) {
+		$expiry     = isset( $payload['expiry'] ) ? $payload['expiry'] : false;
+		$expiry     = is_numeric( $expiry ) ? abs( intval( $expiry ) ) : WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH;
+		$single_use = isset( $payload['single_use'] );
+
+		wppus_init_nonce( $single_use, $expiry );
+
+		$nonce = wppus_create_nonce();
+
+		if ( ! $nonce ) {
+			$this->http_response_code = 400;
+		}
+
+		return $nonce;
+	}
+
 	protected function is_api_public( $method ) {
 		// @TODO doc
-		$public_api    = apply_filters( 'wppus_package_public_api_methods', array() );
+		$public_api    = apply_filters(
+			'wppus_package_public_api_methods',
+			array(
+				'browse',
+				'read',
+				'download',
+			)
+		);
 		$is_api_public = in_array( $method, $public_api, true );
 
 		return $is_api_public;
@@ -206,7 +229,10 @@ class WPPUS_Package_API {
 		if ( isset( $wp->query_vars['action'] ) ) {
 			$method = $wp->query_vars['action'];
 
-			if ( filter_input( INPUT_GET, 'action' ) && ! $this->is_api_public( $method ) ) {
+			if (
+				filter_input( INPUT_GET, 'action' ) &&
+				! $this->is_api_public( $method )
+			) {
 				$this->http_response_code = 405;
 				$response                 = array(
 					'message' => __( 'Unauthorized GET method.', 'wppus' ),
@@ -223,8 +249,17 @@ class WPPUS_Package_API {
 				}
 
 				if ( method_exists( $this, $method ) ) {
+					$authorized = apply_filters(
+						'wppus_package_api_request_authorized',
+						(
+							$this->is_api_public( $method ) && $this->authorize_public() ||
+							$this->authorize_private()
+						),
+						$method,
+						$payload
+					);
 
-					if ( $this->is_api_public( $method ) || $this->authorize() ) {
+					if ( $authorized ) {
 						$type       = isset( $payload['type'] ) ? $payload['type'] : null;
 						$package_id = isset( $payload['package_id'] ) ? $payload['package_id'] : null;
 
@@ -253,7 +288,13 @@ class WPPUS_Package_API {
 		}
 	}
 
-	protected function authorize() {
+	protected function authorize_public() {
+		$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
+
+		return wppus_validate_nonce( $nonce );
+	}
+
+	protected function authorize_private() {
 		$key = false;
 
 		if (

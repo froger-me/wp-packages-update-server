@@ -298,3 +298,59 @@ if ( ! function_exists( 'wppus_get_admin_template' ) ) {
 		return WP_Plugin_Update_Server::locate_admin_template( $template_name, $load, $require_once );
 	}
 }
+// @TODO doc
+if ( ! function_exists( 'wppus_init_nonce' ) ) {
+	function wppus_init_nonce( $true_nonce = true, $expiry_length = WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH ) {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+		return WPPUS_Nonce::init( $true_nonce, $expiry_length );
+	}
+}
+// @TODO doc
+if ( ! function_exists( 'wppus_create_nonce' ) ) {
+	function wppus_create_nonce( $include_expiry = false, $store = true, $delegate = false, $delegate_args = array() ) {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+		return WPPUS_Nonce::create_nonce( $include_expiry, $store, $delegate, $delegate_args );
+	}
+}
+// @TODO doc
+if ( ! function_exists( 'wppus_get_nonce_expiry' ) ) {
+	function wppus_get_nonce_expiry( $nonce ) {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+		return WPPUS_Nonce::get_nonce_expiry( $nonce );
+	}
+}
+// @TODO doc
+if ( ! function_exists( 'wppus_validate_nonce' ) ) {
+	function wppus_validate_nonce( $value ) {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+		return WPPUS_Nonce::validate_nonce( $value );
+	}
+}
+// @TODO doc
+if ( ! function_exists( 'wppus_store_nonce' ) ) {
+	function wppus_store_nonce( $nonce ) {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+		return WPPUS_Nonce::store_nonce( $nonce );
+	}
+}
+// @TODO doc
+if ( ! function_exists( 'wppus_delete_nonce' ) ) {
+	function wppus_delete_nonce( $value ) {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+		return WPPUS_Nonce::delete_nonce( $value );
+	}
+}
+// @TODO doc
+if ( ! function_exists( 'wppus_clear_nonces' ) ) {
+	function wppus_clear_nonces() {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+		return WPPUS_Nonce::clear_nonces();
+	}
+}

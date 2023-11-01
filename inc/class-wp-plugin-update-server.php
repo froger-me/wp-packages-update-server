@@ -255,6 +255,25 @@ class WP_Plugin_Update_Server {
 			return false;
 		}
 
+		$table = $wpdb->prefix . 'wppus_nonce';
+		$sql   =
+			'CREATE TABLE ' . $table . ' (
+				id int(12) NOT NULL auto_increment,
+				nonce varchar(255) NOT NULL,
+				expiry int(12) NOT NULL,
+				PRIMARY KEY (id),
+				KEY nonce (nonce)
+			)' . $charset_collate . ';';
+
+		dbDelta( $sql );
+
+		$table = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . 'wppus_nonce' . "'" ); // @codingStandardsIgnoreLine
+
+		if ( $wpdb->prefix . 'wppus_nonce' !== $table ) {
+
+			return false;
+		}
+
 		return true;
 	}
 

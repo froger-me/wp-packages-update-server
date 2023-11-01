@@ -79,6 +79,10 @@ function wppus_run() {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-server.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-api.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+		Wppus_Nonce::register();
+		Wppus_Nonce::init();
 
 		$is_webhook_api_request = WPPUS_Webhook_API::is_doing_api_request();
 		$is_package_api_request = WPPUS_Package_API::is_doing_api_request();
