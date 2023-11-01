@@ -34,15 +34,19 @@ class WPPUS_Package_API {
 
 	public static function get_config() {
 		$config = array(
-			'use_remote_repository'          => get_option( 'wppus_use_remote_repository', false ),
-			'repository_service_self_hosted' => get_option( 'wppus_remote_repository_self_hosted', false ),
+			'use_remote_repository' => get_option( 'wppus_use_remote_repository' ),
+			'private_api_auth_key'  => get_option( 'wppus_package_private_api_auth_key' ),
 		);
 
 		return apply_filters( 'wppus_package_api_config', $config );
 	}
 
 	public function add_endpoints() {
-		add_rewrite_rule( '^wppus-package-api/(plugin|theme)/(.+)/*?$', 'index.php?type=$matches[1]&package_id=$matches[2]&$matches[3]&__wppus_package_api=1&', 'top' );
+		add_rewrite_rule(
+			'^wppus-package-api/(plugin|theme)/(.+)/*?$',
+			'index.php?type=$matches[1]&package_id=$matches[2]&$matches[3]&__wppus_package_api=1&',
+			'top'
+		);
 	}
 
 	public function parse_request() {

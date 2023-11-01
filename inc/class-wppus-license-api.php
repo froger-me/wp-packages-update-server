@@ -48,10 +48,10 @@ class WPPUS_License_API {
 
 	public static function get_config() {
 		$config = array(
-			'private_api_auth_key'     => get_option( 'wppus_license_private_api_auth_key' ),
-			'licenses_hmac_key'        => get_option( 'wppus_license_hmac_key', 'hmac' ),
-			'licenses_crypto_key'      => get_option( 'wppus_license_crypto_key', 'crypto' ),
-			'licenses_check_signature' => get_option( 'wppus_license_check_signature', 1 ),
+			'private_api_auth_key' => get_option( 'wppus_license_private_api_auth_key' ),
+			'hmac_key'             => get_option( 'wppus_license_hmac_key', 'hmac' ),
+			'crypto_key'           => get_option( 'wppus_license_crypto_key', 'crypto' ),
+			'check_signature'      => get_option( 'wppus_license_check_signature', 1 ),
 		);
 
 		return apply_filters( 'wppus_license_api_config', $config );

@@ -43,17 +43,17 @@
 		<h3><?php esc_html_e( 'Packages', 'wppus' ); ?></h3>
 		<?php $packages_table->search_box( 'Search', 'wppus' ); ?>
 		<?php $packages_table->display(); ?>
-		<?php if ( get_option( 'wppus_use_remote_repository', false ) || get_option( 'wppus_use_licenses', false ) ) : ?>
+		<?php if ( get_option( 'wppus_use_remote_repository' ) || get_option( 'wppus_use_licenses' ) ) : ?>
 		<br/>
 		<p class="description">
 			<?php esc_html_e( 'Notes:', 'wppus' ); ?>
-			<?php if ( get_option( 'wppus_use_remote_repository', false ) ) : ?>
+			<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 			<br/>
 				<?php esc_html_e( '- It is not necessary to prime or upload packages linked to a remote repository for them to appear in this list: they will be automatically added whenever a client checks for updates.', 'wppus' ); ?>
 			<br/>
 				<?php esc_html_e( '- If packages linked to a remote repository are deleted using this interface, they will be added again to the list automatically whenever a client checks for updates.', 'wppus' ); ?>
 			<?php endif; ?>
-			<?php if ( get_option( 'wppus_use_licenses', false ) ) : ?>
+			<?php if ( get_option( 'wppus_use_licenses' ) ) : ?>
 			<br/>
 				<?php esc_html_e( '- All packages deleted from this interface will have their license status set to "Does not Require License" when added again.', 'wppus' ); ?>
 			<br/>
@@ -66,7 +66,7 @@
 	<hr>
 	<h3><?php esc_html_e( 'Add packages', 'wppus' ); ?></h3>
 	<table class="form-table wppus-add-packages">
-		<?php if ( get_option( 'wppus_use_remote_repository', false ) ) : ?>
+		<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 		<tr>
 			<th>
 				<label for="wppus_prime_package_slug"><?php esc_html_e( 'Prime a package using a remote repository (recommended)', 'wppus' ); ?></label>
@@ -86,7 +86,7 @@
 		<tr id="wppus_manual_package_upload_dropzone">
 			<th>
 				<label for="wppus_manual_package_upload"><?php esc_html_e( 'Upload a package', 'wppus' ); ?>
-				<?php if ( get_option( 'wppus_use_remote_repository', false ) ) : ?>
+				<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 					<?php esc_html_e( ' (discouraged)', 'wppus' ); ?>
 				<?php endif; ?>
 				</label>
@@ -97,7 +97,7 @@
 					<?php echo sprintf( __( 'Add a package zip archive to the <code>%s</code> directory. The archive needs to be a valid WordPress plugin or theme package.<br/>In the case of a plugin the main plugin file must have the same name as the zip archive - for example, the main plugin file in <code>package-name.zip</code> would be <code>package-name.php</code>.', 'wppus' ), WPPUS_Data_Manager::get_data_dir( 'packages' ) ); ?><?php // @codingStandardsIgnoreLine ?>
 					<br>
 					<?php esc_html_e( 'Using this method adds the package to the list if not present or overwrites the existing package.', 'wppus' ); ?>
-					<?php if ( get_option( 'wppus_use_remote_repository', false ) ) : ?>
+					<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 					<br>
 						<?php esc_html_e( 'Note: a manually uploaded package that does not have its counterpart in a remote repository will need to be re-uploaded manually to provide updates for each new release.', 'wppus' ); ?>
 					<?php endif; ?>

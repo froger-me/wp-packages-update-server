@@ -195,7 +195,7 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		if ( is_object( $license ) && ! is_wp_error( $license ) && 'activated' === $license->status ) {
 			$config = WPPUS_License_API::get_config();
 
-			if ( ! $config['licenses_check_signature'] ) {
+			if ( ! $config['check_signature'] ) {
 				$valid = $this->license_key === $license->license_key;
 			} else {
 				$license_server = new WPPUS_License_Server();

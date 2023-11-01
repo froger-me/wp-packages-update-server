@@ -117,7 +117,7 @@ class WPPUS_Update_Manager {
 			}
 
 			$this->packages_table->licensed_package_slugs = get_option( 'wppus_licensed_package_slugs', array() );
-			$this->packages_table->show_license_info      = get_option( 'wppus_use_licenses', false );
+			$this->packages_table->show_license_info      = get_option( 'wppus_use_licenses' );
 		}
 	}
 

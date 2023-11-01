@@ -9,7 +9,7 @@ class WPPUS_Webhook_API {
 
 	public function __construct( $init_hooks = false ) {
 
-		if ( $init_hooks && get_option( 'wppus_remote_repository_use_webhooks', false ) ) {
+		if ( $init_hooks && get_option( 'wppus_remote_repository_use_webhooks' ) ) {
 
 			if ( ! self::is_doing_api_request() ) {
 				add_action( 'init', array( $this, 'add_endpoints' ), 10, 0 );
@@ -34,14 +34,14 @@ class WPPUS_Webhook_API {
 
 	public static function get_config() {
 		$config = array(
-			'use_webhooks'                   => get_option( 'wppus_remote_repository_use_webhooks', false ),
-			'use_remote_repository'          => get_option( 'wppus_use_remote_repository', false ),
+			'use_webhooks'                   => get_option( 'wppus_remote_repository_use_webhooks' ),
+			'use_remote_repository'          => get_option( 'wppus_use_remote_repository' ),
 			'server_directory'               => WPPUS_Data_Manager::get_data_dir(),
-			'use_licenses'                   => get_option( 'wppus_use_licenses', false ),
+			'use_licenses'                   => get_option( 'wppus_use_licenses' ),
 			'repository_service_url'         => get_option( 'wppus_remote_repository_url' ),
 			'repository_branch'              => get_option( 'wppus_remote_repository_branch', 'master' ),
 			'repository_credentials'         => explode( '|', get_option( 'wppus_remote_repository_credentials' ) ),
-			'repository_service_self_hosted' => get_option( 'wppus_remote_repository_self_hosted', false ),
+			'repository_service_self_hosted' => get_option( 'wppus_remote_repository_self_hosted' ),
 			'repository_check_delay'         => intval( get_option( 'wppus_remote_repository_check_delay', 0 ) ),
 			'webhook_secret'                 => get_option( 'wppus_remote_repository_webhook_secret' ),
 		);

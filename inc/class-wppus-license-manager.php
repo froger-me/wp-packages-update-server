@@ -15,7 +15,7 @@ class WPPUS_License_Manager {
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
-			$use_licenses = get_option( 'wppus_use_licenses', false );
+			$use_licenses = get_option( 'wppus_use_licenses' );
 
 			$this->scheduler = new WPPUS_Scheduler();
 

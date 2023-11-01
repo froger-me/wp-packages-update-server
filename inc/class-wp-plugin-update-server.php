@@ -208,6 +208,14 @@ class WP_Plugin_Update_Server {
 			);
 		}
 
+		if ( ! get_option( 'wppus_package_private_api_auth_key' ) ) {
+			update_option( 'wppus_package_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
+		}
+
+		if ( ! get_option( 'wppus_remote_repository_webhook_secret' ) ) {
+			update_option( 'wppus_remote_repository_webhook_secret', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
+		}
+
 		$charset_collate = '';
 
 		if ( ! empty( $wpdb->charset ) ) {

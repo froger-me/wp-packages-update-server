@@ -255,8 +255,8 @@ class WPPUS_License_Server {
 
 	public function generate_license_signature( $license, $domain ) {
 		$config        = WPPUS_License_API::get_config();
-		$hmac_key      = $config['licenses_hmac_key'];
-		$crypto_key    = $config['licenses_crypto_key'];
+		$hmac_key      = $config['hmac_key'];
+		$crypto_key    = $config['crypto_key'];
 		$crypt_payload = array( $domain, $license->package_slug, $license->license_key, $license->id );
 		$signature     = WPPUS_Crypto::encrypt( implode( self::DATA_SEPARATOR, $crypt_payload ), $crypto_key, $hmac_key );
 
@@ -267,8 +267,8 @@ class WPPUS_License_Server {
 		$config     = WPPUS_License_API::get_config();
 		$valid      = false;
 		$crypt      = $license_signature;
-		$hmac_key   = $config['licenses_hmac_key'];
-		$crypto_key = $config['licenses_crypto_key'];
+		$hmac_key   = $config['hmac_key'];
+		$crypto_key = $config['crypto_key'];
 
 		if ( ! ( empty( $crypt ) ) ) {
 			$payload = null;
