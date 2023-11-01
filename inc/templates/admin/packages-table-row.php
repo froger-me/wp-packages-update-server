@@ -58,7 +58,7 @@
 				<?php elseif ( 'col_version' === $column_name ) : ?>
 					<?php echo esc_html( $record[ $key ] ); ?>
 				<?php elseif ( 'col_type' === $column_name ) : ?>
-					<?php echo esc_html( $record[ $key ] ); ?>
+					<?php echo 'theme' === $record[ $key ] ? esc_html__( 'Theme', 'wppus' ) : esc_html__( 'Plugin', 'wppus' ); ?>
 				<?php elseif ( 'col_file_name' === $column_name ) : ?>
 					<?php echo esc_html( $record[ $key ] ); ?>
 				<?php elseif ( 'col_file_size' === $column_name ) : ?>

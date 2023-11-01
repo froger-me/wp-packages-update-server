@@ -89,7 +89,7 @@ class WPPUS_Zip_Package_Manager {
 				trigger_error( $error_message, E_USER_WARNING ); // @codingStandardsIgnoreLine
 			}
 
-			error_log( $error_message ); // @codingStandardsIgnoreLine
+			php_log( $error_message );
 
 			$wp_filesystem->delete( $this->received_package_path, true );
 		}
@@ -163,7 +163,7 @@ class WPPUS_Zip_Package_Manager {
 				trigger_error( $error_message, E_USER_WARNING ); // @codingStandardsIgnoreLine
 			}
 
-			error_log( $error_message ); // @codingStandardsIgnoreLine
+			php_log( $error_message );
 		}
 
 		return $return;
@@ -201,11 +201,11 @@ class WPPUS_Zip_Package_Manager {
 			$it->rewind();
 
 			while ( $it->valid() ) {
-				$innerIt = $it->getInnerIterator();
+				$inner_it = $it->getInnerIterator();
 
-				if ( $innerIt instanceof RecursiveDirectoryIterator ) {
+				if ( $inner_it instanceof RecursiveDirectoryIterator ) {
 					$file      = str_replace( '\\', '/', $it->key() );
-					$file_name = $innerIt->getSubPathName();
+					$file_name = $inner_it->getSubPathName();
 
 					if ( true === $wp_filesystem->is_dir( $file ) ) {
 						$dir_name = $container_dir . trailingslashit( $file_name );

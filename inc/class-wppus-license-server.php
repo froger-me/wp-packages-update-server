@@ -177,7 +177,7 @@ class WPPUS_License_Server {
 			} else {
 				$return = array();
 
-				error_log( __METHOD__ . ': License update failed - database update error.' ); // @codingStandardsIgnoreLine
+				php_log( 'License update failed - database update error.' );
 			}
 		}
 
@@ -210,7 +210,7 @@ class WPPUS_License_Server {
 			} else {
 				$return = array();
 
-				error_log( __METHOD__ . ': License creation failed - database insertion error.' ); // @codingStandardsIgnoreLine
+				php_log( 'License creation failed - database insertion error.' );
 			}
 		}
 
@@ -244,7 +244,7 @@ class WPPUS_License_Server {
 			} else {
 				$return = array();
 
-				error_log( __METHOD__ . ': License removal failed - database deletion error.' ); // @codingStandardsIgnoreLine
+				php_log( 'License removal failed - database deletion error.' );
 			}
 		}
 

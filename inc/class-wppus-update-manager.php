@@ -780,13 +780,13 @@ class WPPUS_Update_Manager {
 		try {
 			$package = Wpup_Package::fromArchive( $path, null, new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) ) );
 		} catch ( Exception $e ) {
-			error_log( __METHOD__ . ' corrupt archive ' . $path . ' ; will not be displayed or delivered'); // @codingStandardsIgnoreLine
+			php_log( 'Corrupt archive ' . $path . ' ; will not be displayed or delivered' );
 
-			$error_log  = 'Exception caught: ' . $e->getMessage() . "\n";
-			$error_log .= 'File: ' . $e->getFile() . "\n";
-			$error_log .= 'Line: ' . $e->getLine() . "\n";
+			$log  = 'Exception caught: ' . $e->getMessage() . "\n";
+			$log .= 'File: ' . $e->getFile() . "\n";
+			$log .= 'Line: ' . $e->getLine() . "\n";
 
-			error_log( $error_log ); // @codingStandardsIgnoreLine
+			php_log( $log );
 		}
 
 		return $package;

@@ -108,7 +108,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 						do_action( 'wppus_saved_remote_package_to_local', $local_ready, $info['type'], $safe_slug );
 					} else {
-						error_log( __METHOD__ . ' invalid value for $info: ' . print_r( $info, true ) ); // @codingStandardsIgnoreLine
+						php_log( $info, 'Invalid value for $info' );
 					}
 				} catch ( Exception $e ) {
 					self::unlock_update_from_remote( $safe_slug );
@@ -155,7 +155,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 				if ( $remote_info && ! is_wp_error( $remote_info ) ) {
 					$has_update = version_compare( $remote_info['version'], $local_info['version'], '>' );
 				} else {
-					error_log(  __METHOD__ . ' invalid value for $remote_info: ' .  print_r( $remote_info, true ) ); // @codingStandardsIgnoreLine
+					php_log( $remote_info, 'Invalid value for $remote_info' );
 				}
 			}
 		}
@@ -263,13 +263,13 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		try {
 			$package = call_user_func( $this->package_file_loader, $filename, $slug, $this->cache );
 		} catch ( Exception $e ) {
-			error_log( __METHOD__ . ' corrupt archive ' . $filename . ' ; will not be displayed or delivered'); // @codingStandardsIgnoreLine
+			php_log( 'Corrupt archive ' . $filename . ' ; will not be displayed or delivered' );
 
-			$error_log  = 'Exception caught: ' . $e->getMessage() . "\n";
-			$error_log .= 'File: ' . $e->getFile() . "\n";
-			$error_log .= 'Line: ' . $e->getLine() . "\n";
+			$log  = 'Exception caught: ' . $e->getMessage() . "\n";
+			$log .= 'File: ' . $e->getFile() . "\n";
+			$log .= 'Line: ' . $e->getLine() . "\n";
 
-			error_log( $error_log ); // @codingStandardsIgnoreLine
+			php_log( $log );
 		}
 
 		return $package;
@@ -375,7 +375,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		if ( is_wp_error( $response ) ) {
 			unlink( $local_filename );
-			error_log(  __METHOD__ . ' invalid value for $response: ' .  print_r( $response, true ) ); // @codingStandardsIgnoreLine
+			php_log( $response, 'Invalid value for $response' );
 
 			return $response;
 		}
@@ -393,7 +393,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 			if ( is_wp_error( $md5_check ) ) {
 				unlink( $local_filename );
-				error_log(  __METHOD__ . ' invalid value for $md5_check: ' .  print_r( $md5_check, true ) ); // @codingStandardsIgnoreLine
+				php_log( $md5_check, 'Invalid value for $md5_check' );
 
 				return $md5_check;
 			}

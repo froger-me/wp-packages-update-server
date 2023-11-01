@@ -217,8 +217,7 @@ class WPPUS_Webhook_API {
 				);
 			}
 		} else {
-			error_log(  __METHOD__ . ' invalid request signature' ); // @codingStandardsIgnoreLine
-
+			php_log( 'Invalid request signature' );
 			do_action( 'wppus_webhook_invalid_request', $config );
 		}
 
