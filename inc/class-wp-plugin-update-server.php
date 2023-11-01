@@ -19,7 +19,7 @@ class WP_Plugin_Update_Server {
 			if ( ! self::is_doing_api_request() && ! wp_doing_ajax() ) {
 				add_action( 'init', array( $this, 'register_activation_notices' ), 99, 0 );
 				add_action( 'init', array( $this, 'maybe_flush' ), 99, 0 );
-				add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 10, 1 );
+				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 			}
 
 			add_action( 'init', array( $this, 'load_textdomain' ), 10, 0 );
@@ -322,7 +322,7 @@ class WP_Plugin_Update_Server {
 		load_plugin_textdomain( 'wppus', false, 'wp-plugin-update-server/languages' );
 	}
 
-	public function add_admin_scripts( $hook ) {
+	public function admin_enqueue_scripts( $hook ) {
 		$debug = (bool) ( constant( 'WP_DEBUG' ) );
 
 		if ( false !== strpos( $hook, 'page_wppus' ) ) {

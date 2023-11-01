@@ -18,7 +18,7 @@ class WPPUS_Webhook_API {
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
 			add_action( 'wppus_webhook_invalid_request', array( $this, 'wppus_webhook_invalid_request' ), 10, 0 );
 
-			add_filter( 'query_vars', array( $this, 'addquery_variables' ), -99, 1 );
+			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 			add_filter( 'wppus_webhook_process_request', array( $this, 'wppus_webhook_process_request' ), 10, 2 );
 		}
 	}
@@ -87,9 +87,9 @@ class WPPUS_Webhook_API {
 		}
 	}
 
-	public function addquery_variables( $query_variables ) {
-		$query_variables = array_merge(
-			$query_variables,
+	public function query_vars( $query_vars ) {
+		$query_vars = array_merge(
+			$query_vars,
 			array(
 				'__wppus_webhook',
 				'package_id',
@@ -97,7 +97,7 @@ class WPPUS_Webhook_API {
 			)
 		);
 
-		return $query_variables;
+		return $query_vars;
 	}
 
 	public function wppus_webhook_invalid_request() {

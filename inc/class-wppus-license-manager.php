@@ -28,7 +28,7 @@ class WPPUS_License_Manager {
 
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'plugin_options_menu' ), 11, 0 );
-			add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_scripts' ), 5, 1 );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 5, 1 );
 			add_action( 'load-wp-plugin-update-server_page_wppus-page-licenses', array( $this, 'add_page_options' ), 10, 0 );
 
 			add_filter( 'set-screen-option', array( $this, 'set_page_options' ), 10, 3 );
@@ -117,7 +117,7 @@ class WPPUS_License_Manager {
 		}
 	}
 
-	public function add_admin_scripts( $hook ) {
+	public function admin_enqueue_scripts( $hook ) {
 		$debug = (bool) ( constant( 'WP_DEBUG' ) );
 
 		if ( 'wp-plugin-update-server_page_wppus-page-licenses' === $hook ) {

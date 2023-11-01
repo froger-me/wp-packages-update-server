@@ -22,7 +22,7 @@ class WPPUS_Update_API {
 
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
 
-			add_filter( 'query_vars', array( $this, 'addquery_variables' ), -99, 1 );
+			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 		}
 	}
 
@@ -115,9 +115,9 @@ class WPPUS_Update_API {
 		}
 	}
 
-	public function addquery_variables( $query_variables ) {
-		$query_variables = array_merge(
-			$query_variables,
+	public function query_vars( $query_vars ) {
+		$query_vars = array_merge(
+			$query_vars,
 			array(
 				'__wppus_update_api',
 				'action',
@@ -129,7 +129,7 @@ class WPPUS_Update_API {
 			)
 		);
 
-		return $query_variables;
+		return $query_vars;
 	}
 
 	protected function handle_api_request() {

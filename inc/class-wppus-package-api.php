@@ -19,7 +19,7 @@ class WPPUS_Package_API {
 
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
 
-			add_filter( 'query_vars', array( $this, 'addquery_variables' ), -99, 1 );
+			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 		}
 	}
 
@@ -65,9 +65,9 @@ class WPPUS_Package_API {
 		}
 	}
 
-	public function addquery_variables( $query_variables ) {
-		$query_variables = array_merge(
-			$query_variables,
+	public function query_vars( $query_vars ) {
+		$query_vars = array_merge(
+			$query_vars,
 			array(
 				'__wppus_package_api',
 				'package_id',
@@ -77,7 +77,7 @@ class WPPUS_Package_API {
 			)
 		);
 
-		return $query_variables;
+		return $query_vars;
 	}
 
 	public function browse( $query ) {
@@ -205,8 +205,6 @@ class WPPUS_Package_API {
 
 		wppus_download_local_package( $package_id, $path, false );
 		do_action( 'wppus_did_download_package', $package_id );
-
-		php_log( $package_id );
 
 		exit;
 	}
