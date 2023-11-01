@@ -179,7 +179,7 @@ class WPPUS_Update_Manager {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
 		}
 
-		$package_rows = $this->get_package_rows_data();
+		$package_rows = $this->get_batch_package_info();
 
 		$this->packages_table->set_rows( $package_rows );
 		$this->packages_table->prepare_items();
@@ -701,10 +701,13 @@ class WPPUS_Update_Manager {
 			wp_cache_set( 'package_info_' . $slug, $package_info, 'wppus' );
 		}
 
+		// @todo doc
+		$package_info = apply_filters( 'wppus_package_info', $package_info, $slug );
+
 		return $package_info;
 	}
 
-	protected function get_package_rows_data() {
+	public function get_batch_package_info( $search = false ) {
 		$packages = wp_cache_get( 'packages', 'wppus' );
 
 		if ( false === $packages ) {
@@ -721,7 +724,11 @@ class WPPUS_Update_Manager {
 			$packages          = array();
 
 			if ( $wp_filesystem->is_dir( $package_directory ) ) {
-				$search        = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : false; // @codingStandardsIgnoreLine
+
+				if ( ! WPPUS_Package_API::is_doing_api_request() ) {
+					$search = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : $search; // @codingStandardsIgnoreLine
+				}
+
 				$package_paths = glob( trailingslashit( $package_directory ) . '*.zip' );
 
 				if ( ! empty( $package_paths ) ) {
@@ -743,17 +750,15 @@ class WPPUS_Update_Manager {
 								}
 							}
 
+							// @todo doc
+							$include = apply_filters( 'wppus_batch_package_info_include', $include, $meta, $search );
+
 							if ( $include ) {
-								$packages[ $meta['slug'] ] = array(
-									'name'               => $meta['name'],
-									'version'            => $meta['version'],
-									'type'               => isset( $meta['details_url'] ) ? __( 'Theme', 'wppus' ) : __( 'Plugin', 'wppus' ),
-									'last_updated'       => $meta['last_updated'],
-									'file_name'          => $meta['slug'] . '.zip',
-									'file_path'          => $package_path,
-									'file_size'          => $package->getFileSize(),
-									'file_last_modified' => $package->getLastModified(),
-								);
+								$packages[ $meta['slug'] ]                       = $meta;
+								$packages[ $meta['slug'] ]['type']               = isset( $meta['details_url'] ) ? 'theme' : 'plugin';
+								$packages[ $meta['slug'] ]['file_name']          = $meta['slug'] . '.zip';
+								$packages[ $meta['slug'] ]['file_size']          = $package->getFileSize();
+								$packages[ $meta['slug'] ]['file_last_modified'] = $package->getLastModified();
 							}
 						}
 					}
@@ -762,6 +767,9 @@ class WPPUS_Update_Manager {
 
 			wp_cache_set( 'packages', $packages, 'wppus' );
 		}
+
+		// @todo doc
+		$packages = apply_filters( 'wppus_batch_package_info', $packages );
 
 		return $packages;
 	}

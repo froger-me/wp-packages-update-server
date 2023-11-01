@@ -94,8 +94,8 @@ class WPPUS_License_API {
 		return $query_variables;
 	}
 
-	public function browse( $browse_query ) {
-		$payload = json_decode( wp_unslash( $browse_query ), true );
+	public function browse( $query ) {
+		$payload = json_decode( wp_unslash( $query ), true );
 
 		switch ( json_last_error() ) {
 			case JSON_ERROR_NONE:

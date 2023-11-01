@@ -47,6 +47,12 @@ class WPPUS_Package_API {
 			'index.php?type=$matches[1]&package_id=$matches[2]&$matches[3]&__wppus_package_api=1&',
 			'top'
 		);
+
+		add_rewrite_rule(
+			'^wppus-package-api/*?$',
+			'index.php?$matches[1]&__wppus_package_api=1&',
+			'top'
+		);
 	}
 
 	public function parse_request() {
@@ -67,35 +73,30 @@ class WPPUS_Package_API {
 				'package_id',
 				'type',
 				'action',
+				'browse_query',
 			)
 		);
 
 		return $query_variables;
 	}
 
-	public function create( $package_id, $type ) {
-		$result = false;
-		$config = self::get_config();
+	public function browse( $query ) {
+		$result          = false;
+		$query           = empty( $query ) || ! is_string( $query ) ? array() : json_decode( wp_unslash( $query ), true );
+		$query['search'] = isset( $query['search'] ) ? trim( esc_html( $query['search'] ) ) : false;
+		$result          = wppus_get_batch_package_info( $query['search'], false );
+		$result['count'] = is_array( $result ) ? count( $result ) : 0;
 
-		if ( $config['use_remote_repository'] ) {
-			$result = wppus_get_package_info( $package_id, false );
+		$result = apply_filters( 'wppus_package_browse', $result, $query );
 
-			if ( is_array( $result ) ) {
-				$result = false;
-			} else {
-				$result = wppus_download_remote_package( $package_id, $type );
-				$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
-			}
+		do_action( 'wppus_did_browse_package', $result );
 
-			$result = apply_filters( 'wppus_package_create', $result, $package_id, $type );
-
-			if ( $result ) {
-				do_action( 'wppus_did_create_package', $result );
-			}
+		if ( empty( $result ) ) {
+			$result = array( 'count' => 0 );
 		}
 
-		if ( ! $result ) {
-			$this->http_response_code = 409;
+		if ( isset( $result['count'] ) && 0 === $result['count'] ) {
+			$this->http_response_code = 404;
 		}
 
 		return $result;
@@ -125,7 +126,7 @@ class WPPUS_Package_API {
 		return $result;
 	}
 
-	public function update( $package_id, $type ) {
+	public function edit( $package_id, $type ) {
 		$result = false;
 		$config = self::get_config();
 
@@ -141,6 +142,34 @@ class WPPUS_Package_API {
 			if ( ! $result ) {
 				$this->http_response_code = 400;
 			}
+		}
+
+		return $result;
+	}
+
+	public function add( $package_id, $type ) {
+		$result = false;
+		$config = self::get_config();
+
+		if ( $config['use_remote_repository'] ) {
+			$result = wppus_get_package_info( $package_id, false );
+
+			if ( ! empty( $result ) ) {
+				$result = false;
+			} else {
+				$result = wppus_download_remote_package( $package_id, $type );
+				$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
+			}
+
+			$result = apply_filters( 'wppus_package_create', $result, $package_id, $type );
+
+			if ( $result ) {
+				do_action( 'wppus_did_create_package', $result );
+			}
+		}
+
+		if ( ! $result ) {
+			$this->http_response_code = 409;
 		}
 
 		return $result;
@@ -183,43 +212,37 @@ class WPPUS_Package_API {
 					'message' => __( 'Unauthorized GET method.', 'wppus' ),
 				);
 			} else {
-				$malformed_request = false;
 
-				if ( 'browse' === $wp->query_vars['action'] ) {
-
-					if ( isset( $wp->query_vars['browse_query'] ) ) {
-						$payload = $wp->query_vars['browse_query'];
-					} else {
-						$malformed_request = true;
-					}
+				if (
+					'browse' === $wp->query_vars['action'] &&
+					isset( $wp->query_vars['browse_query'] )
+				) {
+					$payload = $wp->query_vars['browse_query'];
 				} else {
 					$payload = $wp->query_vars;
 				}
 
-				if ( ! $malformed_request ) {
+				if ( method_exists( $this, $method ) ) {
 
-					if ( method_exists( $this, $method ) ) {
+					if ( $this->is_api_public( $method ) || $this->authorize() ) {
 						$type       = isset( $payload['type'] ) ? $payload['type'] : null;
 						$package_id = isset( $payload['package_id'] ) ? $payload['package_id'] : null;
 
-						if ( $this->is_api_public( $method ) || $this->authorize() ) {
+						if ( $type && $package_id ) {
 							$response = $this->$method( $package_id, $type );
 						} else {
-							$this->http_response_code = 403;
-							$response                 = array(
-								'message' => __( 'Unauthorized access - check the provided API key', 'wppus' ),
-							);
+							$response = $this->$method( $payload );
 						}
 					} else {
-						$this->http_response_code = 400;
+						$this->http_response_code = 403;
 						$response                 = array(
-							'message' => __( 'Package API action not found.', 'wppus' ),
+							'message' => __( 'Unauthorized access - check the provided API key', 'wppus' ),
 						);
 					}
 				} else {
 					$this->http_response_code = 400;
 					$response                 = array(
-						'message' => __( 'Malformed request.', 'wppus' ),
+						'message' => __( 'Package API action not found.', 'wppus' ),
 					);
 				}
 			}

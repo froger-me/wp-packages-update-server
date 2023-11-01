@@ -139,6 +139,23 @@ if ( ! function_exists( 'wppus_get_package_info' ) ) {
 	}
 }
 
+// @TODO doc
+if ( ! function_exists( 'wppus_get_batch_package_info' ) ) {
+	function wppus_get_batch_package_info( $search, $json_encode = true ) {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
+
+		$result         = $json_encode ? '{}' : array();
+		$update_manager = new WPPUS_Update_Manager();
+		$package_info   = $update_manager->get_batch_package_info( $search );
+
+		if ( $package_info ) {
+			$result = $json_encode ? wp_json_encode( $package_info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) : $package_info;
+		}
+
+		return $result;
+	}
+}
+
 if ( ! function_exists( 'wppus_download_local_package' ) ) {
 	function wppus_download_local_package( $package_slug, $package_path = null ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
