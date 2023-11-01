@@ -550,7 +550,7 @@ class WPPUS_Update_Manager {
 		return $result;
 	}
 
-	public function trigger_packages_download( $archive_name, $archive_path ) {
+	public function trigger_packages_download( $archive_name, $archive_path, $exit = true ) {
 		WP_Filesystem();
 
 		global $wp_filesystem;
@@ -570,7 +570,9 @@ class WPPUS_Update_Manager {
 
 			echo $wp_filesystem->get_contents( $archive_path ); // @codingStandardsIgnoreLine
 
-			exit;
+			if ( $exit ) {
+				exit;
+			}
 		}
 	}
 

@@ -192,20 +192,23 @@ class WPPUS_Package_API {
 		return $result;
 	}
 
-	public function token( $payload ) {
-		$expiry     = isset( $payload['expiry'] ) ? $payload['expiry'] : false;
-		$expiry     = is_numeric( $expiry ) ? abs( intval( $expiry ) ) : WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH;
-		$single_use = isset( $payload['single_use'] );
+	public function download( $package_id, $type ) {
+		$path = wppus_get_local_package_path( $package_id );
 
-		wppus_init_nonce( $single_use, $expiry );
+		if ( ! $path ) {
+			$this->http_response_code = 404;
 
-		$nonce = wppus_create_nonce();
-
-		if ( ! $nonce ) {
-			$this->http_response_code = 400;
+			return array(
+				'message' => __( 'Package not found.', 'wppus' ),
+			);
 		}
 
-		return $nonce;
+		wppus_download_local_package( $package_id, $path, false );
+		do_action( 'wppus_did_download_package', $package_id );
+
+		php_log( $package_id );
+
+		exit;
 	}
 
 	protected function is_api_public( $method ) {
@@ -289,7 +292,11 @@ class WPPUS_Package_API {
 	}
 
 	protected function authorize_public() {
-		$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
+		$nonce = filter_input( INPUT_GET, 'token', FILTER_UNSAFE_RAW );
+
+		if ( ! $nonce ) {
+			$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
+		}
 
 		return wppus_validate_nonce( $nonce );
 	}

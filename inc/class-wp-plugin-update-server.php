@@ -257,13 +257,14 @@ class WP_Plugin_Update_Server {
 
 		$table = $wpdb->prefix . 'wppus_nonce';
 		$sql   =
-			'CREATE TABLE ' . $table . ' (
+			'CREATE TABLE ' . $table . " (
 				id int(12) NOT NULL auto_increment,
 				nonce varchar(255) NOT NULL,
+				true_nonce tinyint(2) NOT NULL DEFAULT '1',
 				expiry int(12) NOT NULL,
 				PRIMARY KEY (id),
 				KEY nonce (nonce)
-			)' . $charset_collate . ';';
+			)" . $charset_collate . ';';
 
 		dbDelta( $sql );
 

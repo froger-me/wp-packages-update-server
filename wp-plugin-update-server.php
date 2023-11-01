@@ -81,9 +81,6 @@ function wppus_run() {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 
-		Wppus_Nonce::register();
-		Wppus_Nonce::init();
-
 		$is_webhook_api_request = WPPUS_Webhook_API::is_doing_api_request();
 		$is_package_api_request = WPPUS_Package_API::is_doing_api_request();
 		$is_api_request         = $is_api_request ||
@@ -111,6 +108,12 @@ function wppus_run() {
 		'update_manager'         => ( $is_api_request ) ? false : new WPPUS_Update_Manager( true ),
 		'license_manager'        => ( $is_api_request ) ? false : new WPPUS_License_Manager( true ),
 		'plugin'                 => ( $is_api_request ) ? false : new WP_Plugin_Update_Server( true ),
+	);
+
+	WPPUS_Nonce::register();
+	WPPUS_Nonce::init_auth(
+		get_option( 'wppus_package_private_api_auth_key' ),
+		'HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY'
 	);
 
 	do_action( 'wppus_ready', $objects );
