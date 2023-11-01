@@ -169,6 +169,22 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			return $template;
 		}
 
+		public function get_template( $template_name, $args = array(), $load = true, $require_once = false ) {
+			$template_name = apply_filters( 'wppu_' . $this->package_id . '_get_template_name', $template_name, $args );
+			$template_args = apply_filters( 'wppu_' . $this->package_id . '_get_template_args', $args, $template_name );
+
+			if ( ! empty( $template_args ) ) {
+
+				foreach ( $template_args as $key => $arg ) {
+					$key = is_numeric( $key ) ? 'var_' . $key : $key;
+
+					set_query_var( $key, $arg );
+				}
+			}
+
+			return $this->locate_template( $template_name, $load, $require_once );
+		}
+
 		public function wp_prepare_themes_for_js( $prepared_themes ) {
 
 			if ( isset( $prepared_themes[ $this->package_slug ] ) ) {
@@ -334,18 +350,18 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			$theme = wp_get_theme();
 			$title = __( 'Theme License - ', 'wp-package-updater' ) . $theme->get( 'Name' );
 
-			$this->locate_template(
+			$this->get_template(
 				'theme-page-license.php',
 				array(
-					'form'    => $this->get_license_form(),
-					'title  ' => $title,
-					'theme'   => $theme,
+					'form'  => $this->get_license_form(),
+					'title' => $title,
+					'theme' => $theme,
 				)
 			);
 		}
 
 		public function print_license_under_plugin( $plugin_file = null, $plugin_data = null, $status = null ) {
-			$this->locate_template(
+			$this->get_template(
 				'plugin-page-license-row.php',
 				array(
 					'form'        => $this->get_license_form(),
@@ -552,7 +568,9 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		protected function get_license_form() {
 			$license = get_option( 'license_key_' . $this->package_slug );
 
-			$this->locate_template(
+			ob_start();
+
+			$this->get_template(
 				'license-form.php',
 				array(
 					'license'      => $license,
@@ -561,6 +579,8 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 					'show_license' => ( ! empty( $license ) ),
 				)
 			);
+
+			return ob_get_clean();
 		}
 
 		protected static function is_plugin_file( $absolute_path ) {
