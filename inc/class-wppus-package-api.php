@@ -39,6 +39,17 @@ class WPPUS_Package_API {
 			'ip_whitelist'          => get_option( 'wppus_package_private_api_ip_whitelist' ),
 		);
 
+		if ( $config['ip_whitelist'] ) {
+			$config['ip_whitelist'] = array_filter( array_map( 'trim', explode( "\n", $config['ip_whitelist'] ) ) );
+			$config['ip_whitelist'] = array_map(
+				function ( $ip ) {
+
+					return preg_match( '/\//', $ip ) ? $ip : $ip . '/32';
+				},
+				$config['ip_whitelist']
+			);
+		}
+
 		return apply_filters( 'wppus_package_api_config', $config );
 	}
 
