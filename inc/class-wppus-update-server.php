@@ -221,6 +221,18 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		return self::addQueryArg( $query, $this->serverUrl ); // @codingStandardsIgnoreLine
 	}
 
+	protected function actionDownload( Wpup_Request $request ) {
+		// @todo doc
+		do_action( 'wppus_update_server_action_download', $request );
+
+		// @todo doc
+		$handled = apply_filters( 'wppus_update_server_action_download_handled', false, $request );
+
+		if ( ! $handled ) {
+			parent::actionDownload( $request );
+		}
+	}
+
 	protected function findPackage( $slug, $check_remote = true ) {
 		WP_Filesystem();
 
