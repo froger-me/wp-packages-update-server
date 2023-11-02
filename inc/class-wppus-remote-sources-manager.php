@@ -173,6 +173,22 @@ class WPPUS_Remote_Sources_Manager {
 						$condition = ! empty( $option_info['value'] );
 					}
 
+					if ( 'ip-list' === $option_info['condition'] ) {
+
+						if ( ! empty( $option_info['value'] ) ) {
+							$option_info['value'] = array_filter( array_map( 'trim', explode( "\n", $option_info['value'] ) ) );
+							$option_info['value'] = array_map(
+								function ( $ip ) {
+
+									return preg_match( '/\//', $ip ) ? $ip : $ip . '/32';
+								},
+								$option_info['value']
+							);
+						} else {
+							$option_info['value'] = array();
+						}
+					}
+
 					if ( 'positive number' === $option_info['condition'] ) {
 						$condition = is_numeric( $option_info['value'] ) && intval( $option_info['value'] ) >= 0;
 					}
@@ -314,6 +330,12 @@ class WPPUS_Remote_Sources_Manager {
 					'value'                   => filter_input( INPUT_POST, 'wppus_package_private_api_auth_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+				),
+				'wppus_package_private_api_ip_whitelist'  => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_package_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Private API IP Whitelist', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid list', 'wppus' ),
+					'condition'               => 'ip-list',
 				),
 				'wppus_remote_repository_use_webhooks'    => array(
 					'value'        => filter_input( INPUT_POST, 'wppus_remote_repository_use_webhooks', FILTER_VALIDATE_BOOLEAN ),

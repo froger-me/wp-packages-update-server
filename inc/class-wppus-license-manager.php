@@ -208,6 +208,22 @@ class WPPUS_License_Manager {
 						$condition            = true;
 						$option_info['value'] = ( $option_info['value'] );
 					}
+
+					if ( 'ip-list' === $option_info['condition'] ) {
+
+						if ( ! empty( $option_info['value'] ) ) {
+							$option_info['value'] = array_filter( array_map( 'trim', explode( "\n", $option_info['value'] ) ) );
+							$option_info['value'] = array_map(
+								function ( $ip ) {
+
+									return preg_match( '/\//', $ip ) ? $ip : $ip . '/32';
+								},
+								$option_info['value']
+							);
+						} else {
+							$option_info['value'] = array();
+						}
+					}
 				}
 
 				if ( $condition ) {
@@ -242,27 +258,33 @@ class WPPUS_License_Manager {
 		return apply_filters(
 			'wppus_submitted_licenses_config',
 			array(
-				'wppus_use_licenses'                 => array(
+				'wppus_use_licenses'                     => array(
 					'value'        => filter_input( INPUT_POST, 'wppus_use_licenses', FILTER_VALIDATE_BOOLEAN ),
 					'display_name' => __( 'Enable Package Licenses', 'wppus' ),
 					'condition'    => 'boolean',
 				),
-				'wppus_license_private_api_auth_key' => array(
+				'wppus_license_private_api_auth_key'     => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_auth_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 				),
-				'wppus_license_hmac_key'             => array(
+				'wppus_license_private_api_ip_whitelist' => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Private API IP Whitelist', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid list', 'wppus' ),
+					'condition'               => 'ip-list',
+				),
+				'wppus_license_hmac_key'                 => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_license_hmac_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Signatures HMAC Key', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 				),
-				'wppus_license_crypto_key'           => array(
+				'wppus_license_crypto_key'               => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_license_crypto_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Signatures Encryption Key', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 				),
-				'wppus_license_check_signature'      => array(
+				'wppus_license_check_signature'          => array(
 					'value'        => filter_input( INPUT_POST, 'wppus_license_check_signature', FILTER_VALIDATE_BOOLEAN ),
 					'display_name' => __( 'Check License signature?', 'wppus' ),
 					'condition'    => 'boolean',

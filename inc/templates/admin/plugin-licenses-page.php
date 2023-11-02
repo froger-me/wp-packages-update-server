@@ -227,6 +227,18 @@
 			</tr>
 			<tr>
 				<th>
+					<label for="wppus_license_private_api_ip_whitelist"><?php esc_html_e( 'Private API IP Whitelist', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<textarea id="wppus_package_private_api_ip_whitelist" name="wppus_license_private_api_ip_whitelist"><?php echo esc_html( implode( "\n", get_option( 'wppus_license_private_api_ip_whitelist', array() ) ) ); ?></textarea>
+					<p class="description">
+						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authorised to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
+						<?php esc_html_e( 'Leave blank to accept any IP address (not recommended).', 'wprus' ); ?>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<th>
 					<label for="wppus_license_hmac_key"><?php esc_html_e( 'Signatures HMAC Key', 'wppus' ); ?></label>
 				</th>
 				<td>
