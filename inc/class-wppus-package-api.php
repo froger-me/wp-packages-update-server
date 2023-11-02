@@ -36,6 +36,7 @@ class WPPUS_Package_API {
 		$config = array(
 			'use_remote_repository' => get_option( 'wppus_use_remote_repository' ),
 			'private_api_auth_key'  => get_option( 'wppus_package_private_api_auth_key' ),
+			'ip_whitelist'          => get_option( 'wppus_package_private_api_ip_whitelist' ),
 		);
 
 		return apply_filters( 'wppus_package_api_config', $config );
@@ -253,8 +254,14 @@ class WPPUS_Package_API {
 					$authorized = apply_filters(
 						'wppus_package_api_request_authorized',
 						(
-							$this->is_api_public( $method ) && $this->authorize_public() ||
-							$this->authorize_private()
+							(
+								$this->is_api_public( $method ) &&
+								$this->authorize_public()
+							) ||
+							(
+								$this->authorize_private() &&
+								$this->authorize_ip()
+							)
 						),
 						$method,
 						$payload
@@ -289,6 +296,27 @@ class WPPUS_Package_API {
 		}
 	}
 
+	protected function authorize_ip() {
+		$result = false;
+		$config = self::get_config();
+
+		if ( is_array( $config['ip_whitelist'] ) ) {
+
+			foreach ( $config['ip_whitelist'] as $range ) {
+
+				if ( cidr_match( $_SERVER['REMOTE_ADDR'], $range ) ) {
+					$result = true;
+
+					break;
+				}
+			}
+		} else {
+			$result = true;
+		}
+
+		return $result;
+	}
+
 	protected function authorize_public() {
 		$nonce = filter_input( INPUT_GET, 'token', FILTER_UNSAFE_RAW );
 
@@ -296,7 +324,46 @@ class WPPUS_Package_API {
 			$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
 		}
 
-		return wppus_validate_nonce( $nonce );
+		add_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_public' ), 10, 5 );
+
+		$result = wppus_validate_nonce( $nonce );
+
+		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_public' ), 10 );
+
+		return $result;
+	}
+
+	public function wppus_fetch_nonce_public( $nonce, $true_nonce, $expiry, $data, $row ) {
+
+		if (
+			isset( $data['action'] ) &&
+			is_array( $data['action'] ) &&
+			(
+				isset( $data['type'], $data['package_id'] ) ||
+				'browse' === $data['action']
+			)
+		) {
+			global $wp;
+
+			$current_action = $wp->query_vars['action'];
+
+			if ( ! in_array( $current_action, $data['action'], true ) ) {
+				$nonce = null;
+			}
+
+			if ( 'browse' !== $current_action ) {
+				$type       = isset( $wp->query_vars['type'] ) ? $wp->query_vars['type'] : null;
+				$package_id = isset( $wp->query_vars['package_id'] ) ? $wp->query_vars['package_id'] : null;
+
+				if ( $type !== $data['type'] || $package_id !== $data['package_id'] ) {
+					$nonce = null;
+				}
+			}
+		} else {
+			$nonce = null;
+		}
+
+		return $nonce;
 	}
 
 	protected function authorize_private() {

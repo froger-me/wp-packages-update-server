@@ -18,6 +18,24 @@ if ( ! function_exists( 'php_log' ) ) {
 	}
 }
 
+if ( ! function_exists( 'cidr_match' ) ) {
+	function cidr_match( $ip, $range ) {
+		list ( $subnet, $bits ) = explode( '/', $range );
+		$ip                     = ip2long( $ip );
+		$subnet                 = ip2long( $subnet );
+
+		if ( ! $ip || ! $subnet || ! $bits ) {
+
+			return false;
+		}
+
+		$mask    = -1 << ( 32 - $bits );
+		$subnet &= $mask; // in case the supplied subnet was not correctly aligned
+
+		return ( $ip & $mask ) === $subnet;
+	}
+}
+
 if ( ! function_exists( 'wppus_get_root_data_dir' ) ) {
 	function wppus_get_root_data_dir() {
 
@@ -310,8 +328,9 @@ if ( ! function_exists( 'wppus_init_nonce_auth' ) ) {
 if ( ! function_exists( 'wppus_create_nonce' ) ) {
 	function wppus_create_nonce(
 		$true_nonce = true,
-		$expiry_length = WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH,
-		$return_type = WPPUS_Nonce::NONCE_ONLY,
+		$expiry_length = self::DEFAULT_EXPIRY_LENGTH,
+		$data = array(),
+		$return_type = self::NONCE_ONLY,
 		$store = true,
 		$delegate = false,
 		$delegate_args = array()
@@ -322,6 +341,7 @@ if ( ! function_exists( 'wppus_create_nonce' ) ) {
 			$true_nonce,
 			$expiry_length,
 			$return_type,
+			$data,
 			$store,
 			$delegate,
 			$delegate_args
@@ -342,14 +362,6 @@ if ( ! function_exists( 'wppus_validate_nonce' ) ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 
 		return WPPUS_Nonce::validate_nonce( $value );
-	}
-}
-// @TODO doc
-if ( ! function_exists( 'wppus_store_nonce' ) ) {
-	function wppus_store_nonce( $nonce ) {
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
-
-		return WPPUS_Nonce::store_nonce( $nonce, $true_nonce, $expiry_length );
 	}
 }
 // @TODO doc

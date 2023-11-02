@@ -52,6 +52,7 @@ class WPPUS_License_API {
 			'hmac_key'             => get_option( 'wppus_license_hmac_key', 'hmac' ),
 			'crypto_key'           => get_option( 'wppus_license_crypto_key', 'crypto' ),
 			'check_signature'      => get_option( 'wppus_license_check_signature', 1 ),
+			'ip_whitelist'         => get_option( 'wppus_license_private_api_ip_whitelist' ),
 		);
 
 		return apply_filters( 'wppus_license_api_config', $config );
@@ -415,7 +416,13 @@ class WPPUS_License_API {
 
 					if ( method_exists( $this, $method ) ) {
 
-						if ( $this->is_api_public( $method ) || $this->authorize() ) {
+						if (
+							$this->is_api_public( $method ) ||
+							(
+								$this->authorize_ip() &&
+								$this->authorize()
+							)
+						) {
 							$response = $this->$method( $payload );
 						} else {
 							$response = $this->get_unauthorized_access_response();
@@ -430,6 +437,27 @@ class WPPUS_License_API {
 
 			$this->license_server->dispatch( $response, $this->http_response_code );
 		}
+	}
+
+	protected function authorize_ip() {
+		$result = false;
+		$config = self::get_config();
+
+		if ( is_array( $config['ip_whitelist'] ) ) {
+
+			foreach ( $config['ip_whitelist'] as $range ) {
+
+				if ( cidr_match( $_SERVER['REMOTE_ADDR'], $range ) ) {
+					$result = true;
+
+					break;
+				}
+			}
+		} else {
+			$result = true;
+		}
+
+		return $result;
 	}
 
 	protected function init_server() {

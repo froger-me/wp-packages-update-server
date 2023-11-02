@@ -15,6 +15,59 @@ class WPPUS_Nonce {
 	protected static $private_auth_key;
 	protected static $auth_header_name;
 
+	public static function activate() {
+		$result = self::maybe_create_or_upgrade_db();
+
+		if ( ! $result ) {
+			$error_message = __( 'Failed to create the necessary database table(s).', 'wppus' );
+
+			die( $error_message ); // @codingStandardsIgnoreLine
+		}
+	}
+
+	public static function deactivate() {}
+
+	public static function uninstall() {}
+
+	public static function maybe_create_or_upgrade_db() {
+		global $wpdb;
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$charset_collate = '';
+
+		if ( ! empty( $wpdb->charset ) ) {
+			$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
+		}
+
+		if ( ! empty( $wpdb->collate ) ) {
+			$charset_collate .= " COLLATE {$wpdb->collate}";
+		}
+
+		$table = $wpdb->prefix . 'wppus_nonce';
+		$sql   =
+			'CREATE TABLE ' . $table . " (
+				id int(12) NOT NULL auto_increment,
+				nonce varchar(255) NOT NULL,
+				true_nonce tinyint(2) NOT NULL DEFAULT '1',
+				expiry int(12) NOT NULL,
+				data longtext NOT NULL,
+				PRIMARY KEY (id),
+				KEY nonce (nonce)
+			)" . $charset_collate . ';';
+
+		dbDelta( $sql );
+
+		$table = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . 'wppus_nonce' . "'" ); // @codingStandardsIgnoreLine
+
+		if ( $wpdb->prefix . 'wppus_nonce' !== $table ) {
+
+			return false;
+		}
+
+		return true;
+	}
+
 	public static function register() {
 
 		if ( ! self::is_doing_api_request() ) {
@@ -34,9 +87,11 @@ class WPPUS_Nonce {
 	}
 
 	public static function register_nonce_cleanup() {
+		$d = new DateTime( 'now', new DateTimeZone( wp_timezone_string() ) );
 
 		if ( ! wp_next_scheduled( 'wppus_nonce_cleanup' ) ) {
-			wp_schedule_event( time(), 'daily', 'wppus_nonce_cleanup' );
+			$d->setTime( 0, 0, 0 );
+			wp_schedule_event( $d->getTimestamp(), 'daily', 'wppus_nonce_cleanup' );
 		}
 	}
 
@@ -71,7 +126,10 @@ class WPPUS_Nonce {
 			$response = 'Malformed request';
 			$code     = 400;
 
-			if ( isset( $wp->query_vars['action'] ) ) {
+			if ( ! self::authorize() ) {
+				$response = 'Forbidden';
+				$code     = 403;
+			} elseif ( isset( $wp->query_vars['action'] ) ) {
 				$method = $wp->query_vars['action'];
 
 				if (
@@ -91,8 +149,6 @@ class WPPUS_Nonce {
 			}
 
 			wp_send_json( $response, $code );
-
-			die();
 		}
 	}
 
@@ -104,6 +160,7 @@ class WPPUS_Nonce {
 				'api_auth_key',
 				'action',
 				'expiry_length',
+				'data',
 			)
 		);
 
@@ -113,6 +170,7 @@ class WPPUS_Nonce {
 	public static function create_nonce(
 		$true_nonce = true,
 		$expiry_length = self::DEFAULT_EXPIRY_LENGTH,
+		$data = array(),
 		$return_type = self::NONCE_ONLY,
 		$store = true,
 		$delegate = false,
@@ -128,13 +186,18 @@ class WPPUS_Nonce {
 			$nonce = md5( wp_salt( 'nonce' ) . $id . microtime( true ) );
 		}
 
+		$data   = is_array( $data ) ? filter_var_array( $data, FILTER_SANITIZE_FULL_SPECIAL_CHARS ) : false;
+		$expiry = isset( $data['permanent'] ) && $data['permanent'] ? 0 : time() + abs( intval( $expiry_length ) );
+		$data   = $data ? wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) : '{}';
+
 		if ( $store ) {
-			$result = self::store_nonce( $nonce, $true_nonce, $expiry_length );
+			$result = self::store_nonce( $nonce, $true_nonce, $expiry, $data );
 		} else {
 			$result = array(
 				'nonce'      => $nonce,
 				'true_nonce' => (bool) $true_nonce,
-				'expiry'     => time() + abs( intval( $expiry_length ) ),
+				'expiry'     => $expiry,
+				'data'       => $data,
 			);
 		}
 
@@ -180,24 +243,6 @@ class WPPUS_Nonce {
 		return $valid;
 	}
 
-	public static function store_nonce( $nonce, $true_nonce, $expiry_length ) {
-		global $wpdb;
-
-		$table  = $wpdb->prefix . 'wppus_nonce';
-		$data   = array(
-			'nonce'      => $nonce,
-			'true_nonce' => (bool) $true_nonce,
-			'expiry'     => time() + abs( intval( $expiry_length ) ),
-		);
-		$result = $wpdb->insert( $table, $data ); // @codingStandardsIgnoreLine
-
-		if ( (bool) $result ) {
-
-			return $data;
-		}
-
-		return false;
-	}
 
 	public static function delete_nonce( $value ) {
 		global $wpdb;
@@ -218,13 +263,23 @@ class WPPUS_Nonce {
 
 		global $wpdb;
 
-		$table  = $wpdb->prefix . 'wppus_nonce';
-		$result = $wpdb->query(
-			$wpdb->prepare(
-				"DELETE FROM {$table} WHERE expiry < %d;", // @codingStandardsIgnoreLine
-				time() - self::DEFAULT_EXPIRY_LENGTH
-			)
-		);
+		$sql      = "DELETE FROM {$wpdb->prefix}wppus_nonce
+			WHERE expiry < %d
+			AND (
+				JSON_VALID(`data`) = 1
+				AND (
+					JSON_EXTRACT(`data` , '$.permanent') IS NULL
+					OR JSON_EXTRACT(`data` , '$.permanent') = 0
+					OR JSON_EXTRACT(`data` , '$.permanent') = '0'
+					OR JSON_EXTRACT(`data` , '$.permanent') = false
+				)
+			) OR
+			JSON_VALID(`data`) = 0;";
+		$sql_args = array( time() - self::DEFAULT_EXPIRY_LENGTH );
+		// @todo doc
+		$sql      = apply_filters( 'wppus_clear_nonces_query', $sql, $sql_args );
+		$sql_args = apply_filters( 'wppus_clear_nonces_query_args', $sql_args, $sql );
+		$result   = $wpdb->query( $wpdb->prepare( $sql, $sql_args ) ); // @codingStandardsIgnoreLine
 
 		return (bool) $result;
 	}
@@ -235,6 +290,7 @@ class WPPUS_Nonce {
 			isset( $payload['expiry_length'] ) && is_numeric( $payload['expiry_length'] ) ?
 				$payload['expiry_length'] :
 				self::DEFAULT_EXPIRY_LENGTH,
+			isset( $payload['data'] ) ? $payload['data'] : array(),
 			self::NONCE_ONLY,
 		);
 
@@ -247,6 +303,7 @@ class WPPUS_Nonce {
 			isset( $payload['expiry_length'] ) && is_numeric( $payload['expiry_length'] ) ?
 				$payload['expiry_length'] :
 				self::DEFAULT_EXPIRY_LENGTH,
+			isset( $payload['data'] ) ? $payload['data'] : array(),
 			self::NONCE_ONLY,
 		);
 
@@ -255,6 +312,7 @@ class WPPUS_Nonce {
 
 	protected static function fetch_nonce( $value ) {
 		global $wpdb;
+
 		$table = $wpdb->prefix . 'wppus_nonce';
 		$row   = $wpdb->get_row(
 			$wpdb->prepare(
@@ -262,23 +320,79 @@ class WPPUS_Nonce {
 				$value
 			)
 		);
+		$nonce = null;
 
-		if ( ! $row ) {
-			$nonce = null;
-		} else {
-			$nonce         = $row->nonce;
-			$nonce_expires = $row->expiry;
+		if ( $row ) {
+			$data = is_string( $row->data ) ? json_decode( $row->data, true ) : array();
 
-			if ( $nonce_expires < time() ) {
-				$nonce = null;
+			if ( ! is_array( $data ) ) {
+				$data = array();
 			}
 
-			if ( $row->true_nonce || null === $nonce ) {
+			if (
+				$row->expiry < time() &&
+				! (
+					isset( $data['permanent'] ) &&
+					$data['permanent']
+				)
+			) {
+				// @todo doc
+				$row->nonce = apply_filters(
+					'wppus_expire_nonce',
+					null,
+					$row->nonce,
+					$row->true_nonce,
+					$row->expiry,
+					$data,
+					$row
+				);
+			}
+			// @todo doc
+			$delete_nonce = apply_filters(
+				'wppus_delete_nonce',
+				$row->true_nonce || null === $row->nonce,
+				$row->true_nonce,
+				$row->expiry,
+				$data,
+				$row
+			);
+
+			if ( $delete_nonce ) {
 				self::delete_nonce( $value );
 			}
+
+			// @todo doc
+			$nonce = apply_filters(
+				'wppus_fetch_nonce',
+				$row->nonce,
+				$row->true_nonce,
+				$row->expiry,
+				$data,
+				$row
+			);
 		}
 
 		return $nonce;
+	}
+
+	protected static function store_nonce( $nonce, $true_nonce, $expiry, $data ) {
+		global $wpdb;
+
+		$table  = $wpdb->prefix . 'wppus_nonce';
+		$data   = array(
+			'nonce'      => $nonce,
+			'true_nonce' => (bool) $true_nonce,
+			'expiry'     => $expiry,
+			'data'       => $data,
+		);
+		$result = $wpdb->insert( $table, $data ); // @codingStandardsIgnoreLine
+
+		if ( (bool) $result ) {
+
+			return $data;
+		}
+
+		return false;
 	}
 
 	protected static function generate_id() {
@@ -289,7 +403,7 @@ class WPPUS_Nonce {
 		return md5( $hasher->get_random_bytes( 100, false ) );
 	}
 
-	protected function authorize_private() {
+	protected static function authorize() {
 		$key = false;
 
 		if (
@@ -310,9 +424,7 @@ class WPPUS_Nonce {
 			}
 		}
 
-		$is_auth = self::$private_auth_key === $key;
-
-		return $is_auth;
+		return self::$private_auth_key === $key;
 	}
 
 }
