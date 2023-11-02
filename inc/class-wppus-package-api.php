@@ -217,15 +217,39 @@ class WPPUS_Package_API {
 		exit;
 	}
 
+	public function signed_url( $package_id, $type ) {
+		$package_id = filter_var( $package_id, FILTER_SANITIZE_URL );
+		$type       = filter_var( $type, FILTER_SANITIZE_URL );
+		$token      = apply_filters( 'wppus_package_api_signed_url', false, $package_id, $type );
+
+		if ( ! $token ) {
+			$token = wppus_create_nonce(
+				false,
+				HOUR_IN_SECONDS,
+				array(
+					'actions'    => array( 'download' ),
+					'type'       => $type,
+					'package_id' => $package_id,
+				),
+			);
+		}
+
+		$url = add_query_arg(
+			array(
+				'token'  => $token,
+				'action' => 'download',
+			),
+			home_url( 'wppus-package-api/' . $type . '/' . $package_id )
+		);
+
+		return $url;
+	}
+
 	protected function is_api_public( $method ) {
 		// @TODO doc
 		$public_api    = apply_filters(
 			'wppus_package_public_api_methods',
-			array(
-				'browse',
-				'read',
-				'download',
-			)
+			array( 'download' )
 		);
 		$is_api_public = in_array( $method, $public_api, true );
 
@@ -257,24 +281,25 @@ class WPPUS_Package_API {
 					$payload = $wp->query_vars;
 				}
 
-				if ( method_exists( $this, $method ) ) {
-					$authorized = apply_filters(
-						'wppus_package_api_request_authorized',
+				$authorized = apply_filters(
+					'wppus_package_api_request_authorized',
+					(
 						(
-							(
-								$this->is_api_public( $method ) &&
-								$this->authorize_public()
-							) ||
-							(
-								$this->authorize_private() &&
-								$this->authorize_ip()
-							)
-						),
-						$method,
-						$payload
-					);
+							$this->is_api_public( $method ) &&
+							$this->authorize_public()
+						) ||
+						(
+							$this->authorize_private() &&
+							$this->authorize_ip()
+						)
+					),
+					$method,
+					$payload
+				);
 
-					if ( $authorized ) {
+				if ( $authorized ) {
+
+					if ( method_exists( $this, $method ) ) {
 						$type       = isset( $payload['type'] ) ? $payload['type'] : null;
 						$package_id = isset( $payload['package_id'] ) ? $payload['package_id'] : null;
 
@@ -284,15 +309,28 @@ class WPPUS_Package_API {
 							$response = $this->$method( $payload );
 						}
 					} else {
-						$this->http_response_code = 403;
-						$response                 = array(
-							'message' => __( 'Unauthorized access - check the provided API key', 'wppus' ),
+						// @todo doc
+						do_action( 'wppus_package_api_request', $method, $payload );
+
+						// @todo doc
+						$handled = apply_filters(
+							'wppus_package_api_request_handled',
+							false,
+							$method,
+							$payload
 						);
+
+						if ( ! $handled ) {
+							$this->http_response_code = 400;
+							$response                 = array(
+								'message' => __( 'Package API action not found.', 'wppus' ),
+							);
+						}
 					}
 				} else {
-					$this->http_response_code = 400;
+					$this->http_response_code = 403;
 					$response                 = array(
-						'message' => __( 'Package API action not found.', 'wppus' ),
+						'message' => __( 'Unauthorized access', 'wppus' ),
 					);
 				}
 			}
@@ -346,12 +384,9 @@ class WPPUS_Package_API {
 		$data = isset( $wp->query_vars['data'] ) ? $wp->query_vars['data'] : array();
 
 		if (
-			isset( $data['action'] ) &&
-			is_array( $data['action'] ) &&
-			(
-				isset( $data['type'], $data['package_id'] ) ||
-				'browse' === $data['action']
-			)
+			isset( $data['actions'] ) &&
+			is_array( $data['actions'] ) &&
+			! empty( $data['actions'] )
 		) {
 			$authorized = $authorized && $this->authorize_ip();
 		} else {
@@ -362,24 +397,19 @@ class WPPUS_Package_API {
 	}
 
 	public function wppus_fetch_nonce_public( $nonce, $true_nonce, $expiry, $data, $row ) {
+		global $wp;
+
+		$current_action = $wp->query_vars['action'];
 
 		if (
-			isset( $data['action'] ) &&
-			is_array( $data['action'] ) &&
-			(
-				isset( $data['type'], $data['package_id'] ) ||
-				'browse' === $data['action']
-			)
+			isset( $data['actions'] ) &&
+			is_array( $data['actions'] ) &&
+			! empty( $data['actions'] )
 		) {
-			global $wp;
 
-			$current_action = $wp->query_vars['action'];
-
-			if ( ! in_array( $current_action, $data['action'], true ) ) {
+			if ( ! in_array( $current_action, $data['actions'], true ) ) {
 				$nonce = null;
-			}
-
-			if ( 'browse' !== $current_action ) {
+			} elseif ( isset( $data['type'], $data['package_id'] ) ) {
 				$type       = isset( $wp->query_vars['type'] ) ? $wp->query_vars['type'] : null;
 				$package_id = isset( $wp->query_vars['package_id'] ) ? $wp->query_vars['package_id'] : null;
 

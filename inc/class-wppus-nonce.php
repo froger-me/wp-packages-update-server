@@ -123,11 +123,11 @@ class WPPUS_Nonce {
 		global $wp;
 
 		if ( isset( $wp->query_vars['__wppus_nonce_api'] ) ) {
-			$response = 'Malformed request';
+			$response = __( 'Malformed request', 'wppus' );
 			$code     = 400;
 
 			if ( ! self::authorize() ) {
-				$response = 'Forbidden';
+				$response = __( 'Unauthorized access', 'wppus' );
 				$code     = 403;
 			} elseif ( isset( $wp->query_vars['action'] ) ) {
 				$method = $wp->query_vars['action'];
@@ -147,6 +147,10 @@ class WPPUS_Nonce {
 					$code     = 200;
 				}
 			}
+
+			// @todo doc
+			$code     = apply_filters( 'wppus_nonce_api_code', $code, $wp->query_vars );
+			$response = apply_filters( 'wppus_nonce_api_response', $response, $code, $wp->query_vars );
 
 			wp_send_json( $response, $code );
 		}

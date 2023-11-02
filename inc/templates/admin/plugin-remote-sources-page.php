@@ -154,9 +154,7 @@
 				<td>
 					<input class="regular-text" type="text" id="wppus_package_private_api_auth_key" name="wppus_package_private_api_auth_key" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_auth_key', 'private_api_auth_key' ) ); ?>">
 					<p class="description">
-						<?php esc_html_e( 'Ideally a random string - used to authenticate package administration requests (browse, read, edit, add, delete).', 'wppus' ); ?>
-						<br>
-						<?php esc_html_e( 'Also used to generate tokens for Public API URLs, such as package download links.', 'wppus' ); ?>
+						<?php esc_html_e( 'Ideally a random string - used to authenticate package administration requests (browse, read, edit, add, delete), requests for signed URLs of package, and requests for tokens & true nonces.', 'wppus' ); ?>
 						<br>
 						<strong><?php esc_html_e( 'WARNING: Keep this key secret, do not share it with customers!', 'wppus' ); ?></strong>
 					</p>

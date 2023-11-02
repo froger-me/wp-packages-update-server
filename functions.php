@@ -328,9 +328,9 @@ if ( ! function_exists( 'wppus_init_nonce_auth' ) ) {
 if ( ! function_exists( 'wppus_create_nonce' ) ) {
 	function wppus_create_nonce(
 		$true_nonce = true,
-		$expiry_length = self::DEFAULT_EXPIRY_LENGTH,
+		$expiry_length = WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH,
 		$data = array(),
-		$return_type = self::NONCE_ONLY,
+		$return_type = WPPUS_Nonce::NONCE_ONLY,
 		$store = true,
 		$delegate = false,
 		$delegate_args = array()
@@ -340,8 +340,8 @@ if ( ! function_exists( 'wppus_create_nonce' ) ) {
 		return WPPUS_Nonce::create_nonce(
 			$true_nonce,
 			$expiry_length,
-			$return_type,
 			$data,
+			$return_type,
 			$store,
 			$delegate,
 			$delegate_args

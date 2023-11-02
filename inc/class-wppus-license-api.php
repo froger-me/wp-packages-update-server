@@ -345,40 +345,6 @@ class WPPUS_License_API {
 		return $is_auth;
 	}
 
-	protected function action_not_found_response() {
-		$this->http_response_code = 400;
-
-		return array(
-			'message' => __( 'License API action not found.', 'wppus' ),
-		);
-	}
-
-	protected function malformed_request_response() {
-		$this->http_response_code = 400;
-
-		return array(
-			'message' => __( 'Malformed request.', 'wppus' ),
-		);
-	}
-
-	protected function unauthorized_method_response() {
-		$this->http_response_code = 405;
-
-		return array(
-			'message' => __( 'Unauthorized GET method.', 'wppus' ),
-		);
-	}
-
-	protected function get_unauthorized_access_response() {
-		$this->http_response_code = 403;
-
-		$result = array(
-			'message' => __( 'Unauthorized access - check the provided API key', 'wppus' ),
-		);
-
-		return $result;
-	}
-
 	protected function is_api_public( $method ) {
 		// @TODO doc
 		$public_api    = apply_filters(
@@ -403,7 +369,10 @@ class WPPUS_License_API {
 			$this->init_server();
 
 			if ( filter_input( INPUT_GET, 'action' ) && ! $this->is_api_public( $method ) ) {
-				$response = $this->unauthorized_method_response();
+				$this->http_response_code = 405;
+				$response                 = array(
+					'message' => __( 'Unauthorized GET method.', 'wppus' ),
+				);
 			} else {
 				$malformed_request = false;
 
@@ -420,24 +389,46 @@ class WPPUS_License_API {
 
 				if ( ! $malformed_request ) {
 
-					if ( method_exists( $this, $method ) ) {
+					if (
+						$this->is_api_public( $method ) ||
+						(
+							$this->authorize_ip() &&
+							$this->authorize()
+						)
+					) {
 
-						if (
-							$this->is_api_public( $method ) ||
-							(
-								$this->authorize_ip() &&
-								$this->authorize()
-							)
-						) {
+						if ( method_exists( $this, $method ) ) {
 							$response = $this->$method( $payload );
 						} else {
-							$response = $this->get_unauthorized_access_response();
+							// @todo doc
+							do_action( 'wppus_license_api_request', $method, $payload );
+
+							// @todo doc
+							$handled = apply_filters(
+								'wppus_license_api_request_handled',
+								false,
+								$method,
+								$payload
+							);
+
+							if ( ! $handled ) {
+								$this->http_response_code = 400;
+								$response                 = array(
+									'message' => __( 'License API action not found.', 'wppus' ),
+								);
+							}
 						}
 					} else {
-						$response = $this->action_not_found_response();
+						$this->http_response_code = 403;
+						$response                 = array(
+							'message' => __( 'Unauthorized access', 'wppus' ),
+						);
 					}
 				} else {
-					$response = $this->malformed_request_response();
+					$this->http_response_code = 400;
+					$response                 = array(
+						'message' => __( 'Malformed request.', 'wppus' ),
+					);
 				}
 			}
 
