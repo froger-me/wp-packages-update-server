@@ -21,6 +21,7 @@ class WPPUS_Package_API {
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
 
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
+			add_filter( 'wppus_nonce_authorize', array( $this, 'wppus_nonce_authorize' ), 10, 3 );
 		}
 	}
 
@@ -337,6 +338,27 @@ class WPPUS_Package_API {
 		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_public' ), 10 );
 
 		return $result;
+	}
+
+	public function wppus_nonce_authorize( $authorized, $provided_key, $key ) {
+		global $wp;
+
+		$data = isset( $wp->query_vars['data'] ) ? $wp->query_vars['data'] : array();
+
+		if (
+			isset( $data['action'] ) &&
+			is_array( $data['action'] ) &&
+			(
+				isset( $data['type'], $data['package_id'] ) ||
+				'browse' === $data['action']
+			)
+		) {
+			$authorized = $authorized && $this->authorize_ip();
+		} else {
+			$authorized = false;
+		}
+
+		return $authorized;
 	}
 
 	public function wppus_fetch_nonce_public( $nonce, $true_nonce, $expiry, $data, $row ) {

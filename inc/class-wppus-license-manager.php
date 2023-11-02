@@ -210,15 +210,18 @@ class WPPUS_License_Manager {
 					}
 
 					if ( 'ip-list' === $option_info['condition'] ) {
+						$condition = true;
 
 						if ( ! empty( $option_info['value'] ) ) {
 							$option_info['value'] = array_filter( array_map( 'trim', explode( "\n", $option_info['value'] ) ) );
-							$option_info['value'] = array_map(
-								function ( $ip ) {
+							$option_info['value'] = array_unique(
+								array_map(
+									function ( $ip ) {
 
-									return preg_match( '/\//', $ip ) ? $ip : $ip . '/32';
-								},
-								$option_info['value']
+										return preg_match( '/\//', $ip ) ? $ip : $ip . '/32';
+									},
+									$option_info['value']
+								)
 							);
 						} else {
 							$option_info['value'] = array();
@@ -269,10 +272,8 @@ class WPPUS_License_Manager {
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 				),
 				'wppus_license_private_api_ip_whitelist' => array(
-					'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'display_name'            => __( 'Private API IP Whitelist', 'wppus' ),
-					'failure_display_message' => __( 'Not a valid list', 'wppus' ),
-					'condition'               => 'ip-list',
+					'value'     => filter_input( INPUT_POST, 'wppus_license_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'condition' => 'ip-list',
 				),
 				'wppus_license_hmac_key'                 => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_license_hmac_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),

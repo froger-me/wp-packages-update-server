@@ -202,6 +202,11 @@ class WPPUS_Nonce {
 		}
 
 		if ( self::NONCE_INFO_ARRAY === $return_type ) {
+
+			if ( is_array( $result ) ) {
+				$result['data'] = json_decode( $result['data'], true );
+			}
+
 			$return = $result;
 		} else {
 			$return = ( $result ) ? $result['nonce'] : $result;
@@ -291,7 +296,7 @@ class WPPUS_Nonce {
 				$payload['expiry_length'] :
 				self::DEFAULT_EXPIRY_LENGTH,
 			isset( $payload['data'] ) ? $payload['data'] : array(),
-			self::NONCE_ONLY,
+			self::NONCE_INFO_ARRAY,
 		);
 
 		return $token;
@@ -304,7 +309,7 @@ class WPPUS_Nonce {
 				$payload['expiry_length'] :
 				self::DEFAULT_EXPIRY_LENGTH,
 			isset( $payload['data'] ) ? $payload['data'] : array(),
-			self::NONCE_ONLY,
+			self::NONCE_INFO_ARRAY,
 		);
 
 		return $nonce;
@@ -424,7 +429,12 @@ class WPPUS_Nonce {
 			}
 		}
 
-		return self::$private_auth_key === $key;
+		return apply_filters(
+			'wppus_nonce_authorize',
+			self::$private_auth_key === $key,
+			$key,
+			self::$private_auth_key
+		);
 	}
 
 }
