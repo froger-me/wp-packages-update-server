@@ -10,6 +10,7 @@ class WPPUS_Update_API {
 
 	protected static $doing_update_api_request = null;
 	protected static $instance;
+	protected static $config;
 
 	public function __construct( $init_hooks = false ) {
 		$this->scheduler = new WPPUS_Scheduler();
@@ -36,39 +37,44 @@ class WPPUS_Update_API {
 	}
 
 	public static function get_config() {
-		$config = array(
-			'use_remote_repository'          => get_option( 'wppus_use_remote_repository' ),
-			'server_directory'               => WPPUS_Data_Manager::get_data_dir(),
-			'use_licenses'                   => get_option( 'wppus_use_licenses' ),
-			'repository_service_url'         => get_option( 'wppus_remote_repository_url' ),
-			'repository_branch'              => get_option( 'wppus_remote_repository_branch', 'master' ),
-			'repository_credentials'         => explode( '|', get_option( 'wppus_remote_repository_credentials' ) ),
-			'repository_service_self_hosted' => get_option( 'wppus_remote_repository_self_hosted' ),
-			'repository_check_frequency'     => get_option( 'wppus_remote_repository_check_frequency', 'daily' ),
-		);
 
-		$is_valid_schedule = in_array(
-			strtolower( $config['repository_check_frequency'] ),
-			array_keys( wp_get_schedules() ),
-			true
-		);
-
-		if ( ! $is_valid_schedule ) {
-			$config['repository_check_frequency'] = 'daily';
-
-			update_option( 'wppus_remote_repository_check_frequency', 'daily' );
-		}
-
-		if ( 1 < count( $config['repository_credentials'] ) ) {
-			$config['repository_credentials'] = array(
-				'consumer_key'    => reset( $config['repository_credentials'] ),
-				'consumer_secret' => end( $config['repository_credentials'] ),
+		if ( ! self::$config ) {
+			$config = array(
+				'use_remote_repository'          => get_option( 'wppus_use_remote_repository' ),
+				'server_directory'               => WPPUS_Data_Manager::get_data_dir(),
+				'use_licenses'                   => get_option( 'wppus_use_licenses' ),
+				'repository_service_url'         => get_option( 'wppus_remote_repository_url' ),
+				'repository_branch'              => get_option( 'wppus_remote_repository_branch', 'master' ),
+				'repository_credentials'         => explode( '|', get_option( 'wppus_remote_repository_credentials' ) ),
+				'repository_service_self_hosted' => get_option( 'wppus_remote_repository_self_hosted' ),
+				'repository_check_frequency'     => get_option( 'wppus_remote_repository_check_frequency', 'daily' ),
 			);
-		} else {
-			$config['repository_credentials'] = reset( $config['repository_credentials'] );
+
+			$is_valid_schedule = in_array(
+				strtolower( $config['repository_check_frequency'] ),
+				array_keys( wp_get_schedules() ),
+				true
+			);
+
+			if ( ! $is_valid_schedule ) {
+				$config['repository_check_frequency'] = 'daily';
+
+				update_option( 'wppus_remote_repository_check_frequency', 'daily' );
+			}
+
+			if ( 1 < count( $config['repository_credentials'] ) ) {
+				$config['repository_credentials'] = array(
+					'consumer_key'    => reset( $config['repository_credentials'] ),
+					'consumer_secret' => end( $config['repository_credentials'] ),
+				);
+			} else {
+				$config['repository_credentials'] = reset( $config['repository_credentials'] );
+			}
+
+			self::$config = $config;
 		}
 
-		return apply_filters( 'wppus_update_api_config', $config );
+		return apply_filters( 'wppus_update_api_config', self::$config );
 	}
 
 	public static function get_instance() {

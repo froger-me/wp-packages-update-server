@@ -11,6 +11,7 @@ class WPPUS_License_API {
 
 	protected static $doing_update_api_request = null;
 	protected static $instance;
+	protected static $config;
 
 	public function __construct( $init_hooks = false, $local_request = true ) {
 
@@ -47,15 +48,20 @@ class WPPUS_License_API {
 	}
 
 	public static function get_config() {
-		$config = array(
-			'private_api_auth_key' => get_option( 'wppus_license_private_api_auth_key' ),
-			'hmac_key'             => get_option( 'wppus_license_hmac_key', 'hmac' ),
-			'crypto_key'           => get_option( 'wppus_license_crypto_key', 'crypto' ),
-			'check_signature'      => get_option( 'wppus_license_check_signature', 1 ),
-			'ip_whitelist'         => get_option( 'wppus_license_private_api_ip_whitelist' ),
-		);
 
-		return apply_filters( 'wppus_license_api_config', $config );
+		if ( ! self::$config ) {
+			$config = array(
+				'private_api_auth_key' => get_option( 'wppus_license_private_api_auth_key' ),
+				'hmac_key'             => get_option( 'wppus_license_hmac_key', 'hmac' ),
+				'crypto_key'           => get_option( 'wppus_license_crypto_key', 'crypto' ),
+				'check_signature'      => get_option( 'wppus_license_check_signature', 1 ),
+				'ip_whitelist'         => get_option( 'wppus_license_private_api_ip_whitelist' ),
+			);
+
+			self::$config = $config;
+		}
+
+		return apply_filters( 'wppus_license_api_config', self::$config );
 	}
 
 	public static function get_instance() {

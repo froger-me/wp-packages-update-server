@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WPPUS_Webhook_API {
 	protected static $doing_update_api_request = null;
+	protected static $config;
 
 	public function __construct( $init_hooks = false ) {
 
@@ -33,44 +34,34 @@ class WPPUS_Webhook_API {
 	}
 
 	public static function get_config() {
-		$config = array(
-			'use_webhooks'                   => get_option( 'wppus_remote_repository_use_webhooks' ),
-			'use_remote_repository'          => get_option( 'wppus_use_remote_repository' ),
-			'server_directory'               => WPPUS_Data_Manager::get_data_dir(),
-			'use_licenses'                   => get_option( 'wppus_use_licenses' ),
-			'repository_service_url'         => get_option( 'wppus_remote_repository_url' ),
-			'repository_branch'              => get_option( 'wppus_remote_repository_branch', 'master' ),
-			'repository_credentials'         => explode( '|', get_option( 'wppus_remote_repository_credentials' ) ),
-			'repository_service_self_hosted' => get_option( 'wppus_remote_repository_self_hosted' ),
-			'repository_check_delay'         => intval( get_option( 'wppus_remote_repository_check_delay', 0 ) ),
-			'webhook_secret'                 => get_option( 'wppus_remote_repository_webhook_secret' ),
-		);
 
-		if (
-			! is_numeric( $config['repository_check_delay'] ) &&
-			0 <= intval( $config['repository_check_delay'] )
-		) {
-			$config['repository_check_delay'] = 0;
-
-			update_option( 'wppus_remote_repository_check_delay', 0 );
-		}
-
-		if ( empty( $config['webhook_secret'] ) ) {
-			$config['webhook_secret'] = bin2hex( openssl_random_pseudo_bytes( 16 ) );
-
-			update_option( 'wppus_remote_repository_webhook_secret', $config['webhook_secret'] );
-		}
-
-		if ( 1 < count( $config['repository_credentials'] ) ) {
-			$config['repository_credentials'] = array(
-				'consumer_key'    => reset( $config['repository_credentials'] ),
-				'consumer_secret' => end( $config['repository_credentials'] ),
+		if ( ! self::$config ) {
+			$config = array(
+				'use_webhooks'           => get_option( 'wppus_remote_repository_use_webhooks' ),
+				'repository_branch'      => get_option( 'wppus_remote_repository_branch', 'master' ),
+				'repository_check_delay' => intval( get_option( 'wppus_remote_repository_check_delay', 0 ) ),
+				'webhook_secret'         => get_option( 'wppus_remote_repository_webhook_secret' ),
 			);
-		} else {
-			$config['repository_credentials'] = reset( $config['repository_credentials'] );
+
+			if (
+				! is_numeric( $config['repository_check_delay'] ) &&
+				0 <= intval( $config['repository_check_delay'] )
+			) {
+				$config['repository_check_delay'] = 0;
+
+				update_option( 'wppus_remote_repository_check_delay', 0 );
+			}
+
+			if ( empty( $config['webhook_secret'] ) ) {
+				$config['webhook_secret'] = bin2hex( openssl_random_pseudo_bytes( 16 ) );
+
+				update_option( 'wppus_remote_repository_webhook_secret', $config['webhook_secret'] );
+			}
+
+			self::$config = $config;
 		}
 
-		return apply_filters( 'wppus_webhook_config', $config );
+		return apply_filters( 'wppus_webhook_config', self::$config );
 	}
 
 	public function add_endpoints() {

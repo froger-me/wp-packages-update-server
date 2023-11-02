@@ -8,6 +8,7 @@ class WPPUS_Package_API {
 	protected $http_response_code = 200;
 
 	protected static $doing_update_api_request = null;
+	protected static $config;
 
 	public function __construct( $init_hooks = false ) {
 
@@ -33,13 +34,18 @@ class WPPUS_Package_API {
 	}
 
 	public static function get_config() {
-		$config = array(
-			'use_remote_repository' => get_option( 'wppus_use_remote_repository' ),
-			'private_api_auth_key'  => get_option( 'wppus_package_private_api_auth_key' ),
-			'ip_whitelist'          => get_option( 'wppus_package_private_api_ip_whitelist' ),
-		);
 
-		return apply_filters( 'wppus_package_api_config', $config );
+		if ( ! self::$config ) {
+			$config = array(
+				'use_remote_repository' => get_option( 'wppus_use_remote_repository' ),
+				'private_api_auth_key'  => get_option( 'wppus_package_private_api_auth_key' ),
+				'ip_whitelist'          => get_option( 'wppus_package_private_api_ip_whitelist' ),
+			);
+
+			self::$config = $config;
+		}
+
+		return apply_filters( 'wppus_package_api_config', self::$config );
 	}
 
 	public function add_endpoints() {
