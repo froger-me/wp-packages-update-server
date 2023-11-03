@@ -56,6 +56,8 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 				}
 			}
 
+			$assets = null;
+
 			//Main plugin file?
 			if ( empty($header) && ($extension === 'php') ){
 				$fileContents = substr($zip->getFileContents($info), 0, 8*1024);
