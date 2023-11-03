@@ -262,9 +262,12 @@ class WPPUS_Scheduler {
 						}
 					}
 				}
-
-				wp_cache_set( 'package_slugs', $slugs, 'wppus' );
 			}
+
+			// @todo doc
+			$slugs = apply_filters( 'wppus_scheduler_get_package_slugs', $slugs );
+
+			wp_cache_set( 'package_slugs', $slugs, 'wppus' );
 		}
 
 		return $slugs;

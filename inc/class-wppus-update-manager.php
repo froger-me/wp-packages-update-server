@@ -505,6 +505,9 @@ class WPPUS_Update_Manager {
 		$archive_name   = 'archive-' . time();
 		$archive_path   = trailingslashit( $temp_directory ) . $archive_name . '.zip';
 
+		// @todo doc
+		do_action( 'wppus_before_packages_download_repack', $archive_name, $archive_path, $package_slugs );
+
 		$zip = new ZipArchive();
 
 		if ( ! $zip->open( $archive_path, ZIPARCHIVE::CREATE ) ) {
@@ -555,6 +558,9 @@ class WPPUS_Update_Manager {
 
 		global $wp_filesystem;
 
+		// @todo doc
+		do_action( 'wppus_before_packages_download', $archive_name, $archive_path );
+
 		if ( ! empty( $archive_path ) && ! empty( $archive_name ) ) {
 
 			if ( ini_get( 'zlib.output_compression' ) ) {
@@ -566,13 +572,22 @@ class WPPUS_Update_Manager {
 			header( 'Content-Transfer-Encoding: binary' );
 			header( 'Content-Length: ' . filesize( $archive_path ) );
 
+			// @todo doc
 			do_action( 'wppus_triggered_packages_download', $archive_name, $archive_path );
 
 			echo $wp_filesystem->get_contents( $archive_path ); // @codingStandardsIgnoreLine
+		}
 
-			if ( $exit ) {
-				exit;
-			}
+		// @todo doc
+		do_action(
+			'wppus_after_packages_download',
+			$archive_name,
+			$archive_path,
+			! empty( $archive_path ) && ! empty( $archive_name )
+		);
+
+		if ( $exit ) {
+			exit;
 		}
 	}
 
@@ -687,8 +702,14 @@ class WPPUS_Update_Manager {
 
 			$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
 
+			// @todo doc
+			do_action( 'wppus_package_info', $package_info, $slug, $package_directory . $slug . '.zip' );
+
 			if ( $wp_filesystem->exists( $package_directory . $slug . '.zip' ) ) {
-				$package = $this->get_package( $package_directory . $slug . '.zip' );
+				$package = $this->get_package(
+					$package_directory . $slug . '.zip',
+					$slug
+				);
 
 				if ( $package ) {
 					$package_info                       = $package->getMetadata();
@@ -736,7 +757,14 @@ class WPPUS_Update_Manager {
 				if ( ! empty( $package_paths ) ) {
 
 					foreach ( $package_paths as $package_path ) {
-						$package = $this->get_package( $package_path );
+						$package = $this->get_package(
+							$package_path,
+							str_replace(
+								array( trailingslashit( $package_directory ), '.zip' ),
+								array( '', '' ),
+								$package_path
+							)
+						);
 
 						if ( $package ) {
 							$meta    = $package->getMetadata();
@@ -767,22 +795,32 @@ class WPPUS_Update_Manager {
 				}
 			}
 
+			// @todo doc
+			$packages = apply_filters( 'wppus_update_manager_batch_package_info', $packages, $search );
+
 			wp_cache_set( 'packages', $packages, 'wppus' );
 		}
-
-		// @todo doc
-		$packages = apply_filters( 'wppus_batch_package_info', $packages );
 
 		return $packages;
 	}
 
-	protected function get_package( $path ) {
+	protected function get_package( $filename, $slug ) {
 		$package = false;
+		$cache   = new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) );
 
 		try {
-			$package = Wpup_Package::fromArchive( $path, null, new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) ) );
+			$cache_key    = 'metadata-b64-' . $slug . '-'
+				. md5( $filename . '|' . filesize( $filename ) . '|' . filemtime( $filename ) );
+			$cached_value = $cache->get( $cache_key );
+
+			if ( ! $cached_value ) {
+				// @todo doc
+				do_action( 'wppus_find_package_no_cache', $slug, $filename );
+			}
+
+			$package = Wpup_Package::fromArchive( $filename, $slug, $cache );
 		} catch ( Exception $e ) {
-			php_log( 'Corrupt archive ' . $path . ' ; will not be displayed or delivered' );
+			php_log( 'Corrupt archive ' . $filename . ' ; will not be displayed or delivered' );
 
 			$log  = 'Exception caught: ' . $e->getMessage() . "\n";
 			$log .= 'File: ' . $e->getFile() . "\n";

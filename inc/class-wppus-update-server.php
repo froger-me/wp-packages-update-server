@@ -171,18 +171,17 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		global $wp_filesystem;
 
 		$package_path = trailingslashit( $this->packageDirectory ) . $slug . '.zip'; // @codingStandardsIgnoreLine
+		$result       = false;
 
 		if ( $wp_filesystem->is_file( $package_path ) ) {
 			$parsed_info = WshWordPressPackageParser::parsePackage( $package_path, true );
 			$type        = ucfirst( $parsed_info['type'] );
 			$result      = $wp_filesystem->delete( $package_path );
-
-			do_action( 'wppus_deleted_package', $result, $type, $slug );
-
-			return $result;
 		}
 
-		return false;
+		do_action( 'wppus_deleted_package', $result, $type, $slug );
+
+		return $result;
 	}
 
 	protected function initRequest( $query = null, $headers = null ) {
@@ -273,6 +272,19 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$package = false;
 
 		try {
+			$cached_value = null;
+
+			if ( $this->cache ) {
+				$cache_key    = 'metadata-b64-' . $safe_slug . '-'
+					. md5( $filename . '|' . filesize( $filename ) . '|' . filemtime( $filename ) );
+				$cached_value = $this->cache->get( $cache_key );
+			}
+
+			if ( ! $cached_value ) {
+				// @todo doc
+				do_action( 'wppus_find_package_no_cache', $safe_slug, $filename );
+			}
+
 			$package = call_user_func( $this->package_file_loader, $filename, $slug, $this->cache );
 		} catch ( Exception $e ) {
 			php_log( 'Corrupt archive ' . $filename . ' ; will not be displayed or delivered' );
