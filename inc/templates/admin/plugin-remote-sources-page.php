@@ -312,7 +312,7 @@
 			</tr>
 			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
 				<th>
-					<label for="wppus_cloud_storage_region"><?php esc_html_e( 'Cloud Storage Unit', 'wppus' ); ?></label>
+					<label for="wppus_cloud_storage_region"><?php esc_html_e( 'Cloud Storage Region', 'wppus' ); ?></label>
 				</th>
 				<td>
 					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_region" name="wppus_cloud_storage_region" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_region' ) ); ?>">
