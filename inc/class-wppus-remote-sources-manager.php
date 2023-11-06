@@ -174,7 +174,13 @@ class WPPUS_Remote_Sources_Manager {
 						if ( $options['wppus_use_cloud_storage']['value'] ) {
 							$condition = ! empty( $option_info['value'] );
 						} else {
-							$condition            = true;
+
+							if ( 'wppus_cloud_storage_endpoint' === $option_name ) {
+								$condition = filter_var( 'http://' . $option_info['value'], FILTER_SANITIZE_URL );
+							} else {
+								$condition = true;
+							}
+
 							$option_info['value'] = '';
 						}
 
@@ -220,7 +226,8 @@ class WPPUS_Remote_Sources_Manager {
 				}
 
 				if (
-					! $skip && isset( $option_info['dependency'] ) &&
+					! $skip &&
+					isset( $option_info['dependency'] ) &&
 					! $options[ $option_info['dependency'] ]['value']
 				) {
 					$skip      = true;
@@ -360,7 +367,7 @@ class WPPUS_Remote_Sources_Manager {
 					'condition'               => 'positive number',
 				),
 				'wppus_remote_repository_webhook_secret'  => array(
-					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_webhook_secret', FILTER_UNSAFE_RAW ),
+					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_webhook_secret', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Remote repository Webhook Secret', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 					'condition'               => 'non-empty',
@@ -391,6 +398,12 @@ class WPPUS_Remote_Sources_Manager {
 				'wppus_cloud_storage_unit'                => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_unit', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Cloud Storage Unit', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
+				'wppus_cloud_storage_region'              => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_region', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Region', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 					'condition'               => 'use-cloud-storage',
 				),

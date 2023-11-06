@@ -251,7 +251,7 @@
 						<?php
 						printf(
 							// translators: %1$s is the plugins folder, %2$s is the themes folder
-							esc_html__( 'If they do not exist, two folders %1$s and %2$s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
+							esc_html__( 'If they do not exist, two virtual folders %1$s and %2$s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
 							'<code>wppus-plugins</code>',
 							'<code>wppus-themes</code>',
 						);
@@ -312,6 +312,17 @@
 			</tr>
 			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
 				<th>
+					<label for="wppus_cloud_storage_region"><?php esc_html_e( 'Cloud Storage Unit', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_region" name="wppus_cloud_storage_region" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_region' ) ); ?>">
+					<p class="description">
+						<?php esc_html_e( 'The region of the Cloud Storage Unit, as indicated by the Cloud Storage service provider.', 'wppus' ); ?>
+					</p>
+				</td>
+			</tr>
+			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
+				<th>
 					<label for="wppus_cloud_storage_test"><?php esc_html_e( 'Test Cloud Storage Settings', 'wppus' ); ?></label>
 				</th>
 				<td>
@@ -319,7 +330,15 @@
 					<p class="description">
 						<?php esc_html_e( 'Send a test request to the Cloud Storage service provider.', 'wppus' ); ?>
 						<br/>
-						<?php esc_html_e( 'The request checks whether the provider is reachable and if the Storage Unit exists and is writable.', 'wppus' ); ?>
+						<?php esc_html_e( 'The request checks whether the provider is reachable and if the Storage Unit exists and is writable.', 'wppus' ); ?><br>
+						<?php
+						printf(
+							// translators: %1$s is the plugins folder, %2$s is the themes folder
+							esc_html__( 'If they do not exist, two virtual folders %1$s and %2$s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
+							'<code>wppus-plugins</code>',
+							'<code>wppus-themes</code>',
+						);
+						?>
 					</p>
 				</td>
 			</tr>

@@ -1,5 +1,10 @@
 /* global Wppus, console, Wppus_l10n */
-jQuery(document).ready(function($) {
+jQuery(document).ready(function ($) {
+
+	function htmlDecode(input) {
+		var doc = new DOMParser().parseFromString(input, "text/html");
+		return doc.documentElement.textContent;
+	}
 
 	if (-1 !== location.href.indexOf('action=')) {
 		var hrefParts = window.location.href.split('?');
@@ -84,11 +89,26 @@ jQuery(document).ready(function($) {
 
 					/* jshint ignore:start */
 					$.each(response.data, function(idx, value) {
-						message += value.message + "\n";
+						message += htmlDecode(value.message) + "\n";
 					});
 					/* jshint ignore:end */
 
 					window.alert(message);
+				} else if (response.data) {
+					var message = '';
+
+					/* jshint ignore:start */
+					$.each(response.data, function (idx, value) {
+
+						if ('btnVal' !== idx) {
+							message += htmlDecode(value) + "\n";
+						}
+					});
+					/* jshint ignore:end */
+
+					if (message.length) {
+						window.alert(message);
+					}
 				}
 
 				button.removeAttr('disabled');
