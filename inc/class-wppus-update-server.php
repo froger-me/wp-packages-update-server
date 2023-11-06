@@ -138,7 +138,27 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		if ( $local_package instanceof Wpup_Package ) {
 			$package_path = $local_package->getFileName();
 			$local_meta   = WshWordPressPackageParser::parsePackage( $package_path, true );
-			$local_info   = array(
+			// @todo doc
+			$local_meta = apply_filters(
+				'wppus_check_remote_package_update_local_meta',
+				$local_meta,
+				$local_package,
+				$slug
+			);
+
+			if ( ! $local_meta ) {
+				// @todo doc
+				$has_update = apply_filters(
+					'wppus_check_remote_package_update_no_local_meta',
+					$has_update,
+					$local_package,
+					$slug
+				);
+
+				return $has_update;
+			}
+
+			$local_info = array(
 				'type'         => $local_meta['type'],
 				'version'      => $local_meta['header']['Version'],
 				'main_file'    => $local_meta['pluginFile'],
@@ -155,7 +175,11 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 				if ( $remote_info && ! is_wp_error( $remote_info ) ) {
 					$has_update = version_compare( $remote_info['version'], $local_info['version'], '>' );
 				} else {
-					php_log( $remote_info, 'Invalid value for $remote_info' );
+					php_log(
+						$remote_info,
+						'Invalid value $remote_info for package of type '
+						. $this->type . ' and slug ' . $slug
+					);
 				}
 			}
 		}
@@ -244,7 +268,8 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			'wppus_save_remote_to_local',
 			! $wp_filesystem->is_file( $filename ) || ! $wp_filesystem->is_readable( $filename ),
 			$safe_slug,
-			$filename
+			$filename,
+			$check_remote
 		);
 
 		if ( $save_remote_to_local ) {

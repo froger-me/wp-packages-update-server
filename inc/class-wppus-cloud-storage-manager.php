@@ -36,10 +36,11 @@ class WPPUS_Cloud_Storage_Manager {
 				add_action( 'wppus_remote_sources_options_updated', array( $this, 'wppus_remote_sources_options_updated' ), 10, 0 );
 			}
 
-			// do_action( 'wppus_saved_remote_package_to_local', $local_ready, $info['type'], $safe_slug );
-			// do_action( 'wppus_checked_remote_package_update', $has_update, $this->type, $slug );
-			// $save = apply_filters( 'wppus_save_remote_to_local', $save, $slug, $filename );
-			// do_action( 'wppus_find_package_no_cache', $safe_slug, $filename );
+			add_action( 'wppus_saved_remote_package_to_local', array( $this, 'wppus_saved_remote_package_to_local' ), 10, 3 );
+			add_action( 'wppus_checked_remote_package_update', array( $this, 'wppus_checked_remote_package_update' ), 10, 3 );
+			add_action( 'wppus_find_package_no_cache', array( $this, 'wppus_find_package_no_cache' ), 10, 2 );
+
+			apply_filters( 'wppus_save_remote_to_local', array( $this, 'wppus_save_remote_to_local' ), 10, 4 );
 		}
 	}
 
@@ -96,10 +97,10 @@ class WPPUS_Cloud_Storage_Manager {
 							__( 'Error - Storage Unit not found', 'wppus' )
 						);
 					} else {
-						$to_create = array( 'plugins', 'themes' );
-						$result[]  = __( 'Cloud Storage service was reached sucessfully.', 'wppus' );
+						$vir_dirs = array( 'plugins', 'themes' );
+						$result[] = __( 'Cloud Storage service was reached sucessfully.', 'wppus' );
 
-						foreach ( $to_create as $vir_dir ) {
+						foreach ( $vir_dirs as $vir_dir ) {
 
 							if ( ! $this->virtual_folder_exists( 'wppus-' . $vir_dir ) ) {
 								$created  = $this->create_virtual_folder( 'wppus-' . $vir_dir );
@@ -156,9 +157,9 @@ class WPPUS_Cloud_Storage_Manager {
 		}
 
 		try {
-			$to_create = array( 'plugins', 'themes' );
+			$vir_dirs = array( 'plugins', 'themes' );
 
-			foreach ( $to_create as $vir_dir ) {
+			foreach ( $vir_dirs as $vir_dir ) {
 
 				if ( ! $this->virtual_folder_exists( 'wppus-' . $vir_dir ) ) {
 
@@ -176,6 +177,23 @@ class WPPUS_Cloud_Storage_Manager {
 		} catch ( PhpS3Exception $e ) {
 			php_log( $e );
 		}
+	}
+
+	public function wppus_saved_remote_package_to_local( $local_ready, $type, $slug ) {
+		// We want to upload the package, and delete it
+	}
+
+	public function wppus_checked_remote_package_update( $has_update, $type, $slug ) {
+
+	}
+
+	public function wppus_save_remote_to_local( $save, $slug, $filename, $check_remote ) {
+		// We want to set save to true if the package is not found in cloud storage
+		return $save;
+	}
+
+	public function wppus_find_package_no_cache( $slug, $filename ) {
+		// We want to create a local cache, using the file in cloud storage
 	}
 
 	protected function virtual_folder_exists( $name ) {
