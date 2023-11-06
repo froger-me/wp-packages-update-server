@@ -305,6 +305,9 @@ class WPPUS_Remote_Sources_Manager {
 			set_transient( 'wppus_flush', 1, 60 );
 		}
 
+		// @todo doc
+		do_action( 'wppus_remote_sources_options_updated', $errors );
+
 		return $result;
 	}
 

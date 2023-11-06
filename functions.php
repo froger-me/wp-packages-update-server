@@ -4,6 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+// @todo doc
 if ( ! function_exists( 'php_log' ) ) {
 	function php_log( $message = '', $prefix = '' ) {
 		$prefix   = $prefix ? $prefix : ' => ';
@@ -18,6 +19,7 @@ if ( ! function_exists( 'php_log' ) ) {
 	}
 }
 
+// @todo doc
 if ( ! function_exists( 'cidr_match' ) ) {
 	function cidr_match( $ip, $range ) {
 		list ( $subnet, $bits ) = explode( '/', $range );
@@ -50,6 +52,7 @@ if ( ! function_exists( 'wppus_is_doing_update_api_request' ) ) {
 	}
 }
 
+// @todo doc
 if ( ! function_exists( 'wppus_is_doing_webhook_api_request' ) ) {
 	function wppus_is_doing_webhook_api_request() {
 
@@ -57,6 +60,7 @@ if ( ! function_exists( 'wppus_is_doing_webhook_api_request' ) ) {
 	}
 }
 
+// @todo doc
 if ( ! function_exists( 'wppus_is_doing_package_api_request' ) ) {
 	function wppus_is_doing_package_api_request() {
 
@@ -64,6 +68,7 @@ if ( ! function_exists( 'wppus_is_doing_package_api_request' ) ) {
 	}
 }
 
+// @todo doc
 if ( ! function_exists( 'wppus_is_doing_api_request' ) ) {
 	function wppus_is_doing_api_request() {
 		$is_license_api_request = wppus_is_doing_license_api_request();

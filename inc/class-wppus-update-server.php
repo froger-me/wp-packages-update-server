@@ -239,8 +239,15 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		$safe_slug = preg_replace( '@[^a-z0-9\-_\.,+!]@i', '', $slug );
 		$filename  = trailingslashit( $this->packageDirectory ) . $safe_slug . '.zip'; // @codingStandardsIgnoreLine
+		// @todo doc
+		$save_remote_to_local = apply_filters(
+			'wppus_save_remote_to_local',
+			! $wp_filesystem->is_file( $filename ) || ! $wp_filesystem->is_readable( $filename ),
+			$safe_slug,
+			$filename
+		);
 
-		if ( ! $wp_filesystem->is_file( $filename ) || ! $wp_filesystem->is_readable( $filename ) ) {
+		if ( $save_remote_to_local ) {
 			$re_check_local = false;
 
 			if ( $this->use_remote_repository && $this->repository_service_url ) {
@@ -253,10 +260,8 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			}
 
 			if ( $re_check_local ) {
-
 				return $this->findPackage( $slug, false );
 			} else {
-
 				return null;
 			}
 		}
