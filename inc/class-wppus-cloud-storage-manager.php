@@ -33,7 +33,13 @@ class WPPUS_Cloud_Storage_Manager {
 
 			if ( ! wppus_is_doing_api_request() ) {
 				add_action( 'wp_ajax_wppus_cloud_storage_test', array( $this, 'cloud_storage_test' ), 10, 0 );
+				add_action( 'wppus_remote_sources_options_updated', array( $this, 'wppus_remote_sources_options_updated' ), 10, 0 );
 			}
+
+			// do_action( 'wppus_saved_remote_package_to_local', $local_ready, $info['type'], $safe_slug );
+			// do_action( 'wppus_checked_remote_package_update', $has_update, $this->type, $slug );
+			// $save = apply_filters( 'wppus_save_remote_to_local', $save, $slug, $filename );
+			// do_action( 'wppus_find_package_no_cache', $safe_slug, $filename );
 		}
 	}
 
@@ -41,11 +47,12 @@ class WPPUS_Cloud_Storage_Manager {
 
 		if ( ! self::$config ) {
 			$config = array(
-				'access_key'   => get_option( 'wppus_cloud_storage_access_key' ),
-				'secret_key'   => get_option( 'wppus_cloud_storage_secret_key' ),
-				'endpoint'     => get_option( 'wppus_cloud_storage_endpoint' ),
-				'storage_unit' => get_option( 'wppus_cloud_storage_unit' ),
-				'region'       => get_option( 'wppus_cloud_storage_region' ),
+				'use_cloud_storage' => get_option( 'wppus_use_cloud_storage' ),
+				'access_key'        => get_option( 'wppus_cloud_storage_access_key' ),
+				'secret_key'        => get_option( 'wppus_cloud_storage_secret_key' ),
+				'endpoint'          => get_option( 'wppus_cloud_storage_endpoint' ),
+				'storage_unit'      => get_option( 'wppus_cloud_storage_unit' ),
+				'region'            => get_option( 'wppus_cloud_storage_region' ),
 			);
 
 			self::$config = $config;
@@ -89,48 +96,31 @@ class WPPUS_Cloud_Storage_Manager {
 							__( 'Error - Storage Unit not found', 'wppus' )
 						);
 					} else {
-						$result[] = __( 'Cloud Storage service was reached sucessfully.', 'wppus' );
+						$to_create = array( 'plugins', 'themes' );
+						$result[]  = __( 'Cloud Storage service was reached sucessfully.', 'wppus' );
 
-						if ( ! $this->virtual_folder_exists( 'wppus-plugins' ) ) {
-							$created  = $this->create_virtual_folder( 'wppus-plugins' );
-							$result[] = $created ?
-								sprintf(
-									// translators: %s is the virtual folder
-									esc_html__( 'Virtual folder "%s" was created successfully.', 'wppus' ),
-									'wppus-themes',
-								) :
-								sprintf(
-									// translators: %s is the virtual folder
-									esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
-									'wppus-themes',
-								);
-						} else {
-							$result[] = sprintf(
-								// translators: %s is the virtual folder
-								esc_html__( 'Virtual folder "%s" found.', 'wppus' ),
-								'wppus-plugins',
-							);
-						}
+						foreach ( $to_create as $vir_dir ) {
 
-						if ( ! $this->virtual_folder_exists( 'wppus-themes' ) ) {
-							$created  = $this->create_virtual_folder( 'wppus-themes' );
-							$result[] = $created ?
-								sprintf(
+							if ( ! $this->virtual_folder_exists( 'wppus-' . $vir_dir ) ) {
+								$created  = $this->create_virtual_folder( 'wppus-' . $vir_dir );
+								$result[] = $created ?
+									sprintf(
+										// translators: %s is the virtual folder
+										esc_html__( 'Virtual folder "%s" was created successfully.', 'wppus' ),
+										'wppus-' . $vir_dir,
+									) :
+									sprintf(
+										// translators: %s is the virtual folder
+										esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
+										'wppus-' . $vir_dir,
+									);
+							} else {
+								$result[] = sprintf(
 									// translators: %s is the virtual folder
-									esc_html__( 'Virtual folder "%s" was created successfully.', 'wppus' ),
-									'wppus-themes',
-								) :
-								sprintf(
-									// translators: %s is the virtual folder
-									esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
-									'wppus-themes',
+									esc_html__( 'Virtual folder "%s" found.', 'wppus' ),
+									'wppus-' . $vir_dir,
 								);
-						} else {
-							$result[] = sprintf(
-								// translators: %s is the virtual folder
-								esc_html__( 'Virtual folder "%s" found.', 'wppus' ),
-								'wppus-themes',
-							);
+							}
 						}
 					}
 				} catch ( PhpS3Exception $e ) {
@@ -154,6 +144,37 @@ class WPPUS_Cloud_Storage_Manager {
 			wp_send_json_success( $result );
 		} else {
 			wp_send_json_error( $result );
+		}
+	}
+
+	public function wppus_remote_sources_options_updated() {
+		$config = self::get_config();
+
+		if ( ! $config['use_cloud_storage'] ) {
+
+			return;
+		}
+
+		try {
+			$to_create = array( 'plugins', 'themes' );
+
+			foreach ( $to_create as $vir_dir ) {
+
+				if ( ! $this->virtual_folder_exists( 'wppus-' . $vir_dir ) ) {
+
+					if ( ! $this->create_virtual_folder( 'wppus-' . $vir_dir ) ) {
+						php_log(
+							sprintf(
+								// translators: %s is the virtual folder
+								esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
+								'wppus-' . $vir_dir,
+							)
+						);
+					}
+				}
+			}
+		} catch ( PhpS3Exception $e ) {
+			php_log( $e );
 		}
 	}
 
