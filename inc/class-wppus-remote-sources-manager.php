@@ -77,6 +77,7 @@ class WPPUS_Remote_Sources_Manager {
 				'registered_schedules' => $registered_schedules,
 				'schedules'            => $schedules,
 				'use_webhooks'         => get_option( 'wppus_remote_repository_use_webhooks' ),
+				'use_cloud_storage'    => get_option( 'wppus_use_cloud_storage' ),
 			)
 		);
 	}
@@ -95,22 +96,20 @@ class WPPUS_Remote_Sources_Manager {
 
 		if ( $result && $type ) {
 			wp_send_json_success();
+		} elseif ( 'schedules' === $type ) {
+			$error = new WP_Error(
+				__METHOD__,
+				__( 'Error - check the packages directory is readable and not empty', 'wppus' )
+			);
+
+			wp_send_json_error( $error );
 		} else {
-			if ( 'schedules' === $type ) {
-				$error = new WP_Error(
-					__METHOD__,
-					__( 'Error - check the packages directory is readable and not empty', 'wppus' )
-				);
+			$error = new WP_Error(
+				__METHOD__,
+				__( 'Error - an unknown error has occured', 'wppus' ) . ': type = "' . $type . '" ; result = "' . $result . '"'
+			);
 
-				wp_send_json_error( $error );
-			} else {
-				$error = new WP_Error(
-					__METHOD__,
-					__( 'Error - an unknown error has occured', 'wppus' ) . ': type = "' . $type . '" ; result = "' . $result . '"'
-				);
-
-				wp_send_json_error( $error );
-			}
+			wp_send_json_error( $error );
 		}
 	}
 
@@ -128,16 +127,13 @@ class WPPUS_Remote_Sources_Manager {
 
 		if ( $result && $type ) {
 			wp_send_json_success();
-		} else {
+		} elseif ( 'schedules' === $type ) {
+			$error = new WP_Error(
+				__METHOD__,
+				__( 'Error - check the packages directory is readable and not empty', 'wppus' )
+			);
 
-			if ( 'schedules' === $type ) {
-				$error = new WP_Error(
-					__METHOD__,
-					__( 'Error - check the packages directory is readable and not empty', 'wppus' )
-				);
-
-				wp_send_json_error( $error );
-			}
+			wp_send_json_error( $error );
 		}
 	}
 
@@ -171,6 +167,20 @@ class WPPUS_Remote_Sources_Manager {
 
 					if ( 'non-empty' === $option_info['condition'] ) {
 						$condition = ! empty( $option_info['value'] );
+					}
+
+					if ( 'use-cloud-storage' === $option_info['condition'] ) {
+
+						if ( $options['wppus_use_cloud_storage']['value'] ) {
+							$condition = ! empty( $option_info['value'] );
+						} else {
+							$condition            = true;
+							$option_info['value'] = '';
+						}
+
+						if ( ! $condition ) {
+							update_option( 'wppus_use_cloud_storage', false );
+						}
 					}
 
 					if ( 'ip-list' === $option_info['condition'] ) {
@@ -355,8 +365,36 @@ class WPPUS_Remote_Sources_Manager {
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 					'condition'               => 'non-empty',
 				),
+				'wppus_use_cloud_storage'                 => array(
+					'value'        => filter_input( INPUT_POST, 'wppus_use_cloud_storage', FILTER_VALIDATE_BOOLEAN ),
+					'display_name' => __( 'Use Cloud Storage', 'wppus' ),
+					'condition'    => 'boolean',
+				),
+				'wppus_cloud_storage_access_key'          => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_access_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Access Key', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
+				'wppus_cloud_storage_secret_key'          => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_secret_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Secret Key', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
+				'wppus_cloud_storage_endpoint'            => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_endpoint', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Endpoint', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
+				'wppus_cloud_storage_unit'                => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_unit', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Unit', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
 			)
 		);
 	}
-
 }

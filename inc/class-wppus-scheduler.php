@@ -299,5 +299,4 @@ class WPPUS_Scheduler {
 				break;
 		}
 	}
-
 }

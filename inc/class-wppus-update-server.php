@@ -425,5 +425,4 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		return $local_filename;
 	}
-
 }

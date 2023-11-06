@@ -189,8 +189,6 @@ class WPPUS_Update_Manager {
 			array(
 				'updated'              => $this->plugin_options_handler(),
 				'action_error'         => '',
-				'cache_size'           => 0,
-				'logs_size'            => 0,
 				'default_cache_size'   => self::WPPUS_DEFAULT_LOGS_MAX_SIZE,
 				'default_logs_size'    => self::WPPUS_DEFAULT_CACHE_MAX_SIZE,
 				'default_archive_size' => self::WPPUS_DEFAULT_ARCHIVE_MAX_SIZE,
@@ -553,7 +551,7 @@ class WPPUS_Update_Manager {
 		return $result;
 	}
 
-	public function trigger_packages_download( $archive_name, $archive_path, $exit = true ) {
+	public function trigger_packages_download( $archive_name, $archive_path, $exit_or_die = true ) {
 		WP_Filesystem();
 
 		global $wp_filesystem;
@@ -586,7 +584,7 @@ class WPPUS_Update_Manager {
 			! empty( $archive_path ) && ! empty( $archive_name )
 		);
 
-		if ( $exit ) {
+		if ( $exit_or_die ) {
 			exit;
 		}
 	}
@@ -831,5 +829,4 @@ class WPPUS_Update_Manager {
 
 		return $package;
 	}
-
 }

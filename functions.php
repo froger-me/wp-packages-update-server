@@ -36,6 +36,52 @@ if ( ! function_exists( 'cidr_match' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wppus_is_doing_license_api_request' ) ) {
+	function wppus_is_doing_license_api_request() {
+
+		return WPPUS_License_API::is_doing_api_request();
+	}
+}
+
+if ( ! function_exists( 'wppus_is_doing_update_api_request' ) ) {
+	function wppus_is_doing_update_api_request() {
+
+		return WPPUS_Update_API::is_doing_api_request();
+	}
+}
+
+if ( ! function_exists( 'wppus_is_doing_webhook_api_request' ) ) {
+	function wppus_is_doing_webhook_api_request() {
+
+		return WPPUS_Webhook_API::is_doing_api_request();
+	}
+}
+
+if ( ! function_exists( 'wppus_is_doing_package_api_request' ) ) {
+	function wppus_is_doing_package_api_request() {
+
+		return WPPUS_Package_API::is_doing_api_request();
+	}
+}
+
+if ( ! function_exists( 'wppus_is_doing_api_request' ) ) {
+	function wppus_is_doing_api_request() {
+		$is_license_api_request = wppus_is_doing_license_api_request();
+		$is_update_api_request  = wppus_is_doing_update_api_request();
+		$is_api_request         = $is_license_api_request || $is_update_api_request;
+
+		if ( ! $is_license_api_request ) {
+			$is_webhook_api_request = wppus_is_doing_webhook_api_request();
+			$is_package_api_request = wppus_is_doing_package_api_request();
+			$is_api_request         = $is_api_request ||
+				$is_webhook_api_request ||
+				$is_package_api_request;
+		}
+
+		return $is_api_request;
+	}
+}
+
 if ( ! function_exists( 'wppus_get_root_data_dir' ) ) {
 	function wppus_get_root_data_dir() {
 
@@ -75,13 +121,6 @@ if ( ! function_exists( 'wppus_force_cleanup_tmp' ) ) {
 	function wppus_force_cleanup_tmp() {
 
 		return WPPUS_Data_Manager::maybe_cleanup( 'tmp', true );
-	}
-}
-
-if ( ! function_exists( 'wppus_is_doing_update_api_request' ) ) {
-	function wppus_is_doing_update_api_request() {
-
-		return WPPUS_Update_API::is_doing_api_request();
 	}
 }
 
@@ -175,7 +214,7 @@ if ( ! function_exists( 'wppus_get_batch_package_info' ) ) {
 }
 
 if ( ! function_exists( 'wppus_download_local_package' ) ) {
-	function wppus_download_local_package( $package_slug, $package_path = null, $exit = true ) {
+	function wppus_download_local_package( $package_slug, $package_path = null, $exit_or_die = true ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
 
 		$update_manager = new WPPUS_Update_Manager();
@@ -184,7 +223,7 @@ if ( ! function_exists( 'wppus_download_local_package' ) ) {
 			$package_path = wppus_get_local_package_path( $package_slug );
 		}
 
-		$update_manager->trigger_packages_download( $package_slug, $package_path, $exit );
+		$update_manager->trigger_packages_download( $package_slug, $package_path, $exit_or_die );
 	}
 }
 
@@ -207,13 +246,6 @@ if ( ! function_exists( 'wppus_get_local_package_path' ) ) {
 		}
 
 		return false;
-	}
-}
-
-if ( ! function_exists( 'wppus_is_doing_license_api_request' ) ) {
-	function wppus_is_doing_license_api_request() {
-
-		return WPPUS_License_API::is_doing_api_request();
 	}
 }
 
@@ -282,7 +314,7 @@ if ( ! function_exists( 'wppus_deactivate_license' ) ) {
 }
 
 if ( ! function_exists( 'wppus_get_template' ) ) {
-	function wppus_get_template( $template_name, $args = array(), $load = true, $require_once = false ) {
+	function wppus_get_template( $template_name, $args = array(), $load = true, $require_file = false ) {
 		$template_name = apply_filters( 'wppus_get_template_name', $template_name, $args );
 		$template_args = apply_filters( 'wppus_get_template_args', $args, $template_name );
 
@@ -295,12 +327,12 @@ if ( ! function_exists( 'wppus_get_template' ) ) {
 			}
 		}
 
-		return WP_Plugin_Update_Server::locate_template( $template_name, $load, $require_once );
+		return WP_Plugin_Update_Server::locate_template( $template_name, $load, $require_file );
 	}
 }
 
 if ( ! function_exists( 'wppus_get_admin_template' ) ) {
-	function wppus_get_admin_template( $template_name, $args = array(), $load = true, $require_once = false ) {
+	function wppus_get_admin_template( $template_name, $args = array(), $load = true, $require_file = false ) {
 		$template_name = apply_filters( 'wppus_get_admin_template_name', $template_name, $args );
 		$template_args = apply_filters( 'wppus_get_admin_template_args', $args, $template_name );
 
@@ -313,7 +345,7 @@ if ( ! function_exists( 'wppus_get_admin_template' ) ) {
 			}
 		}
 
-		return WP_Plugin_Update_Server::locate_admin_template( $template_name, $load, $require_once );
+		return WP_Plugin_Update_Server::locate_admin_template( $template_name, $load, $require_file );
 	}
 }
 // @TODO doc

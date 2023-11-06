@@ -42,7 +42,18 @@ jQuery(document).ready(function($) {
 			$('.hide-if-no-webhooks').addClass('hidden');
 			$('.hide-if-webhooks').removeClass('hidden');
 		}
-	})
+	});
+
+	$('#wppus_use_cloud_storage').on('change', function (e) {
+
+		if ($(this).prop('checked')) {
+			$('.hide-if-cloud-storage').addClass('hidden');
+			$('.hide-if-no-cloud-storage').removeClass('hidden');
+		} else {
+			$('.hide-if-no-cloud-storage').addClass('hidden');
+			$('.hide-if-cloud-storage').removeClass('hidden');
+		}
+	});
 
 	$('.ajax-trigger').on('click', function(e) {
 		e.preventDefault();
@@ -50,9 +61,14 @@ jQuery(document).ready(function($) {
 		var button = $(this),
 			type   = button.data('type'),
 			data   = {
-				type :   type,
-				nonce :  $('#wppus_plugin_options_handler_nonce').val(),
-				action : 'wppus_force_' + button.data('action'),
+				type: type,
+				nonce: $('#wppus_plugin_options_handler_nonce').val(),
+				action: 'wppus_' + button.data('action'),
+				data: button.data('selector') ? $(button.data('selector')).get().reduce(function (obj, el) {
+						obj[el.id] = el.value;
+
+						return obj;
+					}, {}) : {}
 			};
 
 		button.attr('disabled', 'disabled');

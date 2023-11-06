@@ -240,6 +240,89 @@
 					</p>
 				</td>
 			</tr>
+			<tr>
+				<th>
+					<label for="wppus_use_cloud_storage"><?php esc_html_e( 'Use Cloud Storage', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input type="checkbox" id="wppus_use_cloud_storage" name="wppus_use_cloud_storage" value="1" <?php checked( $use_cloud_storage, 1 ); ?>>
+					<p class="description">
+						<?php esc_html_e( 'Check this if you wish to use a Cloud Storage service - S3 Compatible.', 'wppus' ); ?><br>
+						<?php
+						printf(
+							// translators: %1$s is the plugins folder, %2$s is the themes folder
+							esc_html__( 'If they do not exist, two folders %1$s and %2$s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
+							'<code>wppus-plugins</code>',
+							'<code>wppus-themes</code>',
+						);
+						?>
+					</p>
+				</td>
+			</tr>
+			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
+				<th>
+					<label for="wppus_cloud_storage_access_key"><?php esc_html_e( 'Cloud Storage Access Key', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_access_key" name="wppus_cloud_storage_access_key" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_access_key' ) ); ?>">
+					<p class="description">
+						<?php esc_html_e( 'The Access Key provided by the Cloud Storage service.', 'wppus' ); ?>
+					</p>
+				</td>
+			</tr>
+			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
+				<th>
+					<label for="wppus_cloud_storage_secret_key"><?php esc_html_e( 'Cloud Storage Secret Key', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_secret_key" name="wppus_cloud_storage_secret_key" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_secret_key' ) ); ?>">
+					<p class="description">
+						<?php esc_html_e( 'The Secret Key provided by the Cloud Storage service.', 'wppus' ); ?>
+					</p>
+				</td>
+			</tr>
+			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
+				<th>
+					<label for="wppus_cloud_storage_endpoint"><?php esc_html_e( 'Cloud Storage Endpoint', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_endpoint" name="wppus_cloud_storage_endpoint" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_endpoint' ) ); ?>">
+					<p class="description">
+						<?php
+						printf(
+							// translators: %1$s is <code>http://</code>, %2$s is <code>https://</code>
+							esc_html__( 'The domain (without %1$s or %2$s) of the endpoint for the Cloud Storage service.', 'wppus' ),
+							'<code>http://</code>',
+							'<code>https://</code>',
+						);
+						?>
+					</p>
+				</td>
+			</tr>
+			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
+				<th>
+					<label for="wppus_cloud_storage_unit"><?php esc_html_e( 'Cloud Storage Unit', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_unit" name="wppus_cloud_storage_unit" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_unit' ) ); ?>">
+					<p class="description">
+						<?php esc_html_e( 'Usually known as a "bucket" or a "container" depending on the Cloud Storage service provider.', 'wppus' ); ?>
+					</p>
+				</td>
+			</tr>
+			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
+				<th>
+					<label for="wppus_cloud_storage_test"><?php esc_html_e( 'Test Cloud Storage Settings', 'wppus' ); ?></label>
+				</th>
+				<td>
+					<input type="button" value="<?php print esc_attr_e( 'Test Now', 'wppus' ); ?>" id="wppus_cloud_storage_test" class="button ajax-trigger" data-selector=".cloud-storage-setting" data-action="cloud_storage_test" data-type="none" />
+					<p class="description">
+						<?php esc_html_e( 'Send a test request to the Cloud Storage service provider.', 'wppus' ); ?>
+						<br/>
+						<?php esc_html_e( 'The request checks whether the provider is reachable and if the Storage Unit exists and is writable.', 'wppus' ); ?>
+					</p>
+				</td>
+			</tr>
 		</table>
 		<input type="hidden" name="wppus_settings_section" value="package-source">
 		<?php wp_nonce_field( 'wppus_plugin_options', 'wppus_plugin_options_handler_nonce' ); ?>
@@ -254,7 +337,7 @@
 					<label for="wppus_remote_repository_force_remove_schedules"><?php esc_html_e( 'Clear scheduled remote updates', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input type="button" value="<?php print esc_attr_e( 'Force Clear Schedules', 'wppus' ); ?>" id="wppus_remote_repository_force_remove_schedules" class="button ajax-trigger" data-action="clean" data-type="schedules" />
+					<input type="button" value="<?php print esc_attr_e( 'Force Clear Schedules', 'wppus' ); ?>" id="wppus_remote_repository_force_remove_schedules" class="button ajax-trigger" data-action="force_clean" data-type="schedules" />
 					<p class="description">
 						<?php esc_html_e( 'Clears all scheduled remote updates coming from the repository service.', 'wppus' ); ?>
 						<br/>
@@ -271,7 +354,7 @@
 					<label for="wppus_remote_repository_force_register_schedules"><?php esc_html_e( 'Reschedule remote updates', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input type="button" value="<?php print esc_attr_e( 'Force Register Schedules', 'wppus' ); ?>" id="wppus_remote_repository_force_register_schedules" class="button ajax-trigger" data-action="register" data-type="schedules" />
+					<input type="button" value="<?php print esc_attr_e( 'Force Register Schedules', 'wppus' ); ?>" id="wppus_remote_repository_force_register_schedules" class="button ajax-trigger" data-action="force_register" data-type="schedules" />
 					<p class="description">
 						<?php esc_html_e( 'Reschedules remote updates from the repository service for all the packages.', 'wppus' ); ?>
 						<br/>

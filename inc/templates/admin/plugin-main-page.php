@@ -125,7 +125,7 @@
 					<label for="wppus_cache_max_size"><?php esc_html_e( 'Cache max size (in MB)', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text" type="number" id="wppus_cache_max_size" name="wppus_cache_max_size" value="<?php echo esc_attr( get_option( 'wppus_cache_max_size', $default_cache_size ) ); ?>"> <input type="button" value="<?php print esc_attr_e( 'Force Clean', 'wppus' ); ?> (<?php print esc_attr( $cache_size ); ?>)" class="button ajax-trigger" data-action="clean" data-type="cache" />
+					<input class="regular-text" type="number" id="wppus_cache_max_size" name="wppus_cache_max_size" value="<?php echo esc_attr( get_option( 'wppus_cache_max_size', $default_cache_size ) ); ?>"> <input type="button" value="<?php print esc_attr_e( 'Force Clean', 'wppus' ); ?> (<?php print esc_attr( $cache_size ); ?>)" class="button ajax-trigger" data-action="force_clean" data-type="cache" />
 					<p class="description">
 						<?php echo sprintf( __( 'Maximum size in MB for the <code>%s</code> directory. If the size of the directory grows larger, its content will be deleted at next cron run (checked hourly). The size indicated in the "Force Clean" button is the real current size.', 'wppus' ), WPPUS_Data_Manager::get_data_dir( 'cache' ) ); ?><?php // @codingStandardsIgnoreLine ?>
 					</p>
@@ -136,7 +136,7 @@
 					<label for="wppus_logs_max_size"><?php esc_html_e( 'Logs max size (in MB)', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text" type="number" id="wppus_logs_max_size" name="wppus_logs_max_size" value="<?php echo esc_attr( get_option( 'wppus_logs_max_size', $default_logs_size ) ); ?>"> <input type="button" value="<?php print esc_attr_e( 'Force Clean', 'wppus' ); ?> (<?php print esc_attr( $logs_size ); ?>)" class="button ajax-trigger" data-action="clean" data-type="logs" />
+					<input class="regular-text" type="number" id="wppus_logs_max_size" name="wppus_logs_max_size" value="<?php echo esc_attr( get_option( 'wppus_logs_max_size', $default_logs_size ) ); ?>"> <input type="button" value="<?php print esc_attr_e( 'Force Clean', 'wppus' ); ?> (<?php print esc_attr( $logs_size ); ?>)" class="button ajax-trigger" data-action="force_clean" data-type="logs" />
 					<p class="description">
 						<?php echo sprintf( __( 'Maximum size in MB for the <code>%s</code> directory. If the size of the directory grows larger, its content will be deleted at next cron run (checked hourly). The size indicated in the "Force Clean" button is the real current size.', 'wppus' ), WPPUS_Data_Manager::get_data_dir( 'logs' ) ); ?><?php // @codingStandardsIgnoreLine ?>
 					</p>

@@ -57,6 +57,7 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-remote-sources-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-manager.php';
+	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-cloud-storage-manager.php';
 
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'activate' ) );
 	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'deactivate' ) );
@@ -71,8 +72,8 @@ function wppus_run() {
 
 	require_once WPPUS_PLUGIN_PATH . 'functions.php';
 
-	$is_license_api_request = WPPUS_License_API::is_doing_api_request();
-	$is_update_api_request  = WPPUS_Update_API::is_doing_api_request();
+	$is_license_api_request = wppus_is_doing_license_api_request();
+	$is_update_api_request  = wppus_is_doing_update_api_request();
 	$is_api_request         = $is_license_api_request || $is_update_api_request;
 
 	if ( ! $is_license_api_request ) {
@@ -84,8 +85,8 @@ function wppus_run() {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-api.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
 
-		$is_webhook_api_request = WPPUS_Webhook_API::is_doing_api_request();
-		$is_package_api_request = WPPUS_Package_API::is_doing_api_request();
+		$is_webhook_api_request = wppus_is_doing_webhook_api_request();
+		$is_package_api_request = wppus_is_doing_package_api_request();
 		$is_api_request         = $is_api_request ||
 			$is_webhook_api_request ||
 			$is_package_api_request;
@@ -106,6 +107,7 @@ function wppus_run() {
 		'update_api'             => ( $is_license_api_request ) ? false : new WPPUS_Update_API( true ),
 		'webhook_api'            => ( $is_license_api_request ) ? false : new WPPUS_Webhook_API( true ),
 		'package_api'            => ( $is_license_api_request ) ? false : new WPPUS_Package_API( true ),
+		'cloud_storage_manager'  => ( $is_license_api_request ) ? false : new WPPUS_Cloud_Storage_Manager( true ),
 		'data_manager'           => ( $is_api_request ) ? false : new WPPUS_Data_Manager( true ),
 		'remote_sources_manager' => ( $is_api_request ) ? false : new WPPUS_Remote_Sources_Manager( true ),
 		'update_manager'         => ( $is_api_request ) ? false : new WPPUS_Update_Manager( true ),
@@ -127,10 +129,9 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 	require_once plugin_dir_path( WPPUS_PLUGIN_FILE ) . 'lib/wp-update-migrate/class-wp-update-migrate.php';
 
 	if ( ! wp_doing_ajax() && is_admin() && ! wp_doing_cron() ) {
-
 		add_action(
 			'plugins_loaded',
-			function() {
+			function () {
 				$wppus_update_migrate = WP_Update_Migrate::get_instance( WPPUS_PLUGIN_FILE, 'wppus' );
 
 				if ( false === $wppus_update_migrate->get_result() && '1.2' !== get_option( 'wppus_plugin_version' ) ) {
@@ -139,7 +140,6 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 						remove_action( 'plugins_loaded', 'wppus_run', -99 );
 					}
 				}
-
 			},
 			PHP_INT_MIN
 		);
