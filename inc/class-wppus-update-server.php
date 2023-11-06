@@ -271,7 +271,10 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			$this->use_remote_repository &&
 			$this->repository_service_url
 		) {
-			$this->scheduler->register_remote_check_recurring_event( $safe_slug, $this->repository_check_frequency );
+			$this->scheduler->register_remote_check_recurring_event(
+				$safe_slug,
+				$this->repository_check_frequency
+			);
 		}
 
 		$package = false;
