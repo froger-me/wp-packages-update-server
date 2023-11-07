@@ -36,4 +36,19 @@ class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 		}
 	}
 
+	protected function generateCacheKey(){
+		$cache_key = 'metadata-b64-' . $this->slug . '-';
+
+		if (file_exists($this->filename)) {
+			$cache_key .= md5($this->filename . '|' . filesize($this->filename) . '|' . filemtime($this->filename));
+		}
+
+		return apply_filters(
+			'wpup_zip_metadata_parser_extended_cache_key',
+			$cache_key,
+			$this->slug,
+			$this->filename
+		);
+	}
+
 }
