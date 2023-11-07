@@ -226,7 +226,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		if (
 			'download' === $request->action &&
-			get_option( 'wppus_package_download_url_token' ) !== $request->token
+			! wppus_validate_nonce( $request->token )
 		) {
 			$message = __( 'The download URL token has expired.', 'wppus' );
 
@@ -237,7 +237,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	protected function generateDownloadUrl( Wpup_Package $package ) {
 		$query = array(
 			'action'     => 'download',
-			'token'      => get_option( 'wppus_package_download_url_token' ),
+			'token'      => wppus_create_nonce(),
 			'package_id' => $package->slug,
 		);
 

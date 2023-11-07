@@ -34,15 +34,11 @@ WP Plugin Update Server offers a series of functions, actions and filters for de
 	* [wppus_saved_remote_package_to_local](#user-content-wppus_saved_remote_package_to_local)
 	* [wppus_checked_remote_package_update](#user-content-wppus_checked_remote_package_update)
 	* [wppus_deleted_package](#user-content-wppus_deleted_package)
-	* [wppus_registered_renew_download_url_token_schedule](#user-content-wppus_registered_renew_download_url_token_schedule)
-	* [wppus_cleared_renew_download_url_token_schedule](#user-content-wppus_cleared_renew_download_url_token_schedule)
-	* [wppus_scheduled_renew_download_url_token_event](#user-content-wppus_scheduled_renew_download_url_token_event)
 	* [wppus_before_zip](#user-content-wppus_before_zip)
 * [Filters](#user-content-filters)
 	* [wppus_submitted_data_config](#user-content-wppus_submitted_data_config)
 	* [wppus_submitted_remote_sources_config](#user-content-wppus_submitted_remote_sources_config)
 	* [wppus_schedule_cleanup_frequency](#user-content-wppus_schedule_cleanup_frequency)
-	* [wppus_schedule_renew_download_url_token_frequency](#user-content-wppus_schedule_renew_download_url_token_frequency)
 	* [wppus_check_remote_frequency](#user-content-wppus_check_remote_frequency)
 	* [wppus_handle_update_request_params](#user-content-wppus_handle_update_request_params)
 	* [wppus_update_api_config](#user-content-wppus_update_api_config)
@@ -599,63 +595,6 @@ $slug
 > (string) slug of the deleted package  
 
 ___
-#### wppus_registered_renew_download_url_token_schedule
-
-
-```php
-do_action( 'wppus_registered_renew_download_url_token_schedule', array $scheduled_hook );
-```
-
-**Description**  
-Fired after the renew download url action has been registered.  
-
-**Parameters**  
-$scheduled_hook
-> (string) the renew dowload url token event hook that has been registered  
-
-___
-#### wppus_cleared_renew_download_url_token_schedule
-
-
-```php
-do_action( 'wppus_cleared_renew_download_url_token_schedule', array $scheduled_hook );
-```
-
-**Description**  
-Fired after the renew download url token event has been unscheduled.   
-
-**Parameters**  
-$scheduled_hook
-> (string) the renew dowload url token event hook that has been unscheduled  
-
-___
-#### wppus_scheduled_renew_download_url_token_event
-
-
-```php
-do_action( 'wppus_scheduled_renew_download_url_token_event', bool $result, int $timestamp, string $frequency, string $hook );
-```
-
-**Description**  
-Fired after the renew download url token event has been scheduled.  
-
-**Parameters**  
-$result  
-> (bool) true if the event was scheduled, false otherwise  
-
-$timestamp  
-> (int) timestamp for when to run the event the first time after it's been scheduled  
-
-$frequency  
-> (string) frequency at which the event would be ran  
-
-$hook  
-> (string) event hook to fire when the event is ran  
-
-$params  
-> (array) parameters passed to the actions registered to $hook when the event is ran  
-
-___
 #### wppus_before_zip
 
 
@@ -727,20 +666,6 @@ $frequency
 
 $type
 > (string) plugin data type to be clened up (`cache`, `logs`,or `tmp`)  
-
-___
-#### wppus_schedule_renew_download_url_token_frequency
-
-```php
-apply_filters( 'wppus_schedule_renew_download_url_token_frequency', string $frequency );
-```
-
-**Description**  
-Filter the renew download url token frequency. 
-
-**Parameters**  
-$frequency
-> (string) the frequency - default 'daily'  
 
 ___
 #### wppus_check_remote_frequency

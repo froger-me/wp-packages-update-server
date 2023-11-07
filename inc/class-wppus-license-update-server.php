@@ -107,7 +107,7 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 	protected function generateDownloadUrl( Wpup_Package $package ) {
 		$query = array(
 			'action'                   => 'download',
-			'token'                    => get_option( 'wppus_package_download_url_token' ),
+			'token'                    => wppus_create_nonce(),
 			'package_id'               => $package->slug,
 			'update_license_key'       => $this->license_key,
 			'update_license_signature' => $this->license_signature,

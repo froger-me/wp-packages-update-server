@@ -28,8 +28,6 @@ class WPPUS_Update_Manager {
 
 			$this->scheduler = new WPPUS_Scheduler();
 
-			add_action( 'init', array( $this->scheduler, 'register_renew_download_url_token_event' ), 10, 0 );
-			add_action( 'init', array( $this->scheduler, 'register_renew_download_url_token_schedule' ), 10, 0 );
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'plugin_options_menu_main' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'plugin_options_menu_help' ), 99, 0 );
@@ -41,22 +39,6 @@ class WPPUS_Update_Manager {
 			add_filter( 'set-screen-option', array( $this, 'set_page_options' ), 10, 3 );
 			add_filter( 'plugin_action_links_' . $plugin_id, array( $this, 'add_action_links' ), 10, 1 );
 		}
-	}
-
-	public static function clear_schedules() {
-		$scheduler = new WPPUS_Scheduler();
-
-		return $scheduler->clear_renew_download_url_token_schedule();
-	}
-
-	public static function register_schedules() {
-		$scheduler = new WPPUS_Scheduler();
-
-		return $scheduler->register_renew_download_url_token_schedule();
-	}
-
-	public static function renew_download_url_token() {
-		update_option( 'wppus_package_download_url_token', bin2hex( openssl_random_pseudo_bytes( 16 ) ), true );
 	}
 
 	public static function get_instance() {

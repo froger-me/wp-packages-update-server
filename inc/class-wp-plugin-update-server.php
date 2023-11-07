@@ -80,7 +80,6 @@ class WP_Plugin_Update_Server {
 			setcookie( 'wppus_activated_mu_failure', '1', 60, '/', COOKIE_DOMAIN );
 		}
 
-		WPPUS_Update_Manager::register_schedules();
 		WPPUS_Remote_Sources_Manager::register_schedules();
 		WPPUS_License_Manager::register_schedules();
 		WPPUS_Data_Manager::register_schedules();
@@ -89,7 +88,6 @@ class WP_Plugin_Update_Server {
 	public static function deactivate() {
 		flush_rewrite_rules();
 
-		WPPUS_Update_Manager::clear_schedules();
 		WPPUS_Remote_Sources_Manager::clear_schedules();
 		WPPUS_License_Manager::clear_schedules();
 		WPPUS_Data_Manager::clear_schedules();
@@ -198,14 +196,6 @@ class WP_Plugin_Update_Server {
 
 		if ( ! get_option( 'wppus_license_crypto_key' ) ) {
 			update_option( 'wppus_license_crypto_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
-		if ( ! get_option( 'wppus_package_download_url_token' ) ) {
-			update_option(
-				'wppus_package_download_url_token',
-				bin2hex( openssl_random_pseudo_bytes( 16 ) ),
-				true
-			);
 		}
 
 		if ( ! get_option( 'wppus_package_private_api_auth_key' ) ) {

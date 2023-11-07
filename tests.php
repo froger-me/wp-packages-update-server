@@ -113,9 +113,6 @@ $wppus_actions_to_test = array(
 	// 'wppus_triggered_package_download'                   => 2, // string $archive_name, string $archive_path
 	// 'wppus_before_handle_update_request'                 => 1, // array $request_params
 	// 'wppus_deleted_package'                              => 3, // bool $result, string $type, string $slug
-	// 'wppus_registered_renew_download_url_token_schedule' => 1, // array $scheduled_hook
-	// 'wppus_cleared_renew_download_url_token_schedule'    => 1, // array $scheduled_hook
-	// 'wppus_scheduled_renew_download_url_token_event'     => 4, // bool $result, int $timestamp, string $frequency, string $hook
 	// 'wppus_before_remote_package_zip'                    => 3, // string $package_slug, string $files_path, string $archive_path
 	// /** Licenses actions **/
 	// 'wppus_added_license_check'                          => 1, // string $package_slug
@@ -146,7 +143,6 @@ $wppus_filters_to_test = array(
 	// 'wppus_update_api_config'                           => 1, // array $config
 	// 'wppus_submitted_remote_sources_config'             => 1, // array $config
 	// 'wppus_check_remote_frequency'                      => 2, // string $frequency, string $slug
-	// 'wppus_schedule_renew_download_url_token_frequency' => 1, // string $frequency
 	// /** Licenses filters **/
 	// 'wppus_license_valid'                               => 2, // bool $isValid, mixed $license, string $license_signature
 	// 'wppus_license_server'                              => 1, // mixed $license_server

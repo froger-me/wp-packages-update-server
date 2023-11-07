@@ -14,38 +14,6 @@ class WPPUS_Scheduler {
 		$this->persistent_datatypes = $persistent_datatypes;
 	}
 
-	public function register_renew_download_url_token_schedule() {
-		$scheduled_hook = array( 'WPPUS_Update_Manager', 'renew_download_url_token' );
-
-		add_action( 'wppus_renew_download_url_token', $scheduled_hook, 10, 2 );
-		do_action( 'wppus_registered_renew_download_url_token_schedule', $scheduled_hook );
-	}
-
-	public function clear_renew_download_url_token_schedule() {
-		$scheduled_hook = array( 'WPPUS_Update_Manager', 'renew_download_url_token' );
-
-		wp_clear_scheduled_hook( 'wppus_renew_download_url_token' );
-		do_action( 'wppus_cleared_renew_download_url_token_schedule', $scheduled_hook );
-	}
-
-	public function register_renew_download_url_token_event() {
-		$hook = 'wppus_renew_download_url_token';
-
-		if ( ! wp_next_scheduled( $hook ) ) {
-			$frequency = apply_filters( 'wppus_schedule_renew_download_url_token_frequency', 'daily' );
-			$timestamp = strtotime( 'today midnight' );
-			$result    = wp_schedule_event( $timestamp, $frequency, $hook );
-
-			do_action(
-				'wppus_scheduled_renew_download_url_token_event',
-				$result,
-				$timestamp,
-				$frequency,
-				$hook
-			);
-		}
-	}
-
 	public function reschedule_remote_check_recurring_events( $frequency ) {
 
 		if ( WPPUS_Update_API::is_doing_api_request() ) {
