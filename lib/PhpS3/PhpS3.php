@@ -517,7 +517,7 @@ class PhpS3
         if ($detailed) {
             if (isset($rest->body->Owner, $rest->body->Owner->ID, $rest->body->Owner->DisplayName)) {
                 $results['owner'] = array(
-                    'id' => (string)$rest->body->Owner->ID, 'name' => (string)$rest->body->Owner->DisplayName
+                    'id' => (string) $rest->body->Owner->ID, 'name' => (string) $rest->body->Owner->DisplayName
                 );
             }
 
@@ -525,12 +525,12 @@ class PhpS3
 
             foreach ($rest->body->Buckets->Bucket as $b) {
                 $results['buckets'][] = array(
-                    'name' => (string)$b->Name, 'time' => strtotime((string)$b->CreationDate)
+                    'name' => (string) $b->Name, 'time' => strtotime((string) $b->CreationDate)
                 );
             }
         } else {
             foreach ($rest->body->Buckets->Bucket as $b) {
-                $results[] = (string)$b->Name;
+                $results[] = (string) $b->Name;
             }
         }
 
@@ -608,35 +608,35 @@ class PhpS3
 
         if (isset($response->body, $response->body->Contents)) {
             foreach ($response->body->Contents as $c) {
-                $results[(string)$c->Key] = array(
-                    'name' => (string)$c->Key,
-                    'time' => strtotime((string)$c->LastModified),
-                    'size' => (int)$c->Size,
-                    'hash' => substr((string)$c->ETag, 1, -1)
+                $results[(string) $c->Key] = array(
+                    'name' => (string) $c->Key,
+                    'time' => strtotime((string) $c->LastModified),
+                    'size' => (int) $c->Size,
+                    'hash' => substr((string) $c->ETag, 1, -1)
                 );
-                $nextMarker = (string)$c->Key;
+                $nextMarker = (string) $c->Key;
             }
         }
 
         if ($returnCommonPrefixes && isset($response->body, $response->body->CommonPrefixes)) {
             foreach ($response->body->CommonPrefixes as $c) {
-                $results[(string)$c->Prefix] = array('prefix' => (string)$c->Prefix);
+                $results[(string) $c->Prefix] = array('prefix' => (string) $c->Prefix);
             }
         }
 
         if (
             isset($response->body, $response->body->IsTruncated) &&
-            (string)$response->body->IsTruncated === 'false'
+            (string) $response->body->IsTruncated === 'false'
         ) {
             return $results;
         }
 
         if (isset($response->body, $response->body->NextMarker)) {
-            $nextMarker = (string)$response->body->NextMarker;
+            $nextMarker = (string) $response->body->NextMarker;
         }
 
         // Loop through truncated results if maxKeys isn't specified
-        if ($maxKeys === null && $nextMarker !== null && (string)$response->body->IsTruncated === 'true') {
+        if ($maxKeys === null && $nextMarker !== null && (string) $response->body->IsTruncated === 'true') {
             do {
                 $rest = new PhpS3Request('GET', $bucket, '', self::$endpoint);
 
@@ -656,26 +656,26 @@ class PhpS3
 
                 if (isset($response->body, $response->body->Contents)) {
                     foreach ($response->body->Contents as $c) {
-                        $results[(string)$c->Key] = array(
-                            'name' => (string)$c->Key,
-                            'time' => strtotime((string)$c->LastModified),
-                            'size' => (int)$c->Size,
-                            'hash' => substr((string)$c->ETag, 1, -1)
+                        $results[(string) $c->Key] = array(
+                            'name' => (string) $c->Key,
+                            'time' => strtotime((string) $c->LastModified),
+                            'size' => (int) $c->Size,
+                            'hash' => substr((string) $c->ETag, 1, -1)
                         );
-                        $nextMarker = (string)$c->Key;
+                        $nextMarker = (string) $c->Key;
                     }
                 }
 
                 if ($returnCommonPrefixes && isset($response->body, $response->body->CommonPrefixes)) {
                     foreach ($response->body->CommonPrefixes as $c) {
-                        $results[(string)$c->Prefix] = array('prefix' => (string)$c->Prefix);
+                        $results[(string) $c->Prefix] = array('prefix' => (string) $c->Prefix);
                     }
                 }
 
                 if (isset($response->body, $response->body->NextMarker)) {
-                    $nextMarker = (string)$response->body->NextMarker;
+                    $nextMarker = (string) $response->body->NextMarker;
                 }
-            } while ($response !== false && (string)$response->body->IsTruncated === 'true');
+            } while ($response !== false && (string) $response->body->IsTruncated === 'true');
         }
 
         return $results;
@@ -822,7 +822,7 @@ class PhpS3
     */
     public static function inputResource(&$resource, $bufferSize = false, $md5sum = '')
     {
-        if (!is_resource($resource) || (int)$bufferSize < 0) {
+        if (!is_resource($resource) || (int) $bufferSize < 0) {
             self::__triggerError(
                 'S3::inputResource(): Invalid resource or buffer size',
                 __FILE__,
@@ -1203,8 +1203,8 @@ class PhpS3
 
         return isset($rest->body->LastModified, $rest->body->ETag) ?
             array(
-                'time' => strtotime((string)$rest->body->LastModified),
-                'hash' => substr((string)$rest->body->ETag, 1, -1)
+                'time' => strtotime((string) $rest->body->LastModified),
+                'hash' => substr((string) $rest->body->ETag, 1, -1)
             ) :
             false;
     }
@@ -1420,8 +1420,8 @@ class PhpS3
         }
 
         return array(
-            'targetBucket' => (string)$rest->body->LoggingEnabled->TargetBucket,
-            'targetPrefix' => (string)$rest->body->LoggingEnabled->TargetPrefix,
+            'targetBucket' => (string) $rest->body->LoggingEnabled->TargetBucket,
+            'targetPrefix' => (string) $rest->body->LoggingEnabled->TargetPrefix,
         );
     }
 
@@ -1473,7 +1473,7 @@ class PhpS3
             return false;
         }
 
-        return (isset($rest->body[0]) && (string)$rest->body[0] !== '') ? (string)$rest->body[0] : 'US';
+        return (isset($rest->body[0]) && (string) $rest->body[0] !== '') ? (string) $rest->body[0] : 'US';
     }
 
 
@@ -1603,8 +1603,8 @@ class PhpS3
 
         if (isset($rest->body->Owner, $rest->body->Owner->ID, $rest->body->Owner->DisplayName)) {
             $acp['owner'] = array(
-                'id' => (string)$rest->body->Owner->ID,
-                'name' => (string)$rest->body->Owner->DisplayName
+                'id' => (string) $rest->body->Owner->ID,
+                'name' => (string) $rest->body->Owner->DisplayName
             );
         }
 
@@ -1616,21 +1616,21 @@ class PhpS3
                     if (isset($grantee->ID, $grantee->DisplayName)) { // CanonicalUser
                         $acp['acl'][] = array(
                             'type' => 'CanonicalUser',
-                            'id' => (string)$grantee->ID,
-                            'name' => (string)$grantee->DisplayName,
-                            'permission' => (string)$grant->Permission
+                            'id' => (string) $grantee->ID,
+                            'name' => (string) $grantee->DisplayName,
+                            'permission' => (string) $grant->Permission
                         );
                     } elseif (isset($grantee->EmailAddress)) { // AmazonCustomerByEmail
                         $acp['acl'][] = array(
                             'type' => 'AmazonCustomerByEmail',
-                            'email' => (string)$grantee->EmailAddress,
-                            'permission' => (string)$grant->Permission
+                            'email' => (string) $grantee->EmailAddress,
+                            'permission' => (string) $grant->Permission
                         );
                     } elseif (isset($grantee->URI)) { // Group
                         $acp['acl'][] = array(
                             'type' => 'Group',
-                            'uri' => (string)$grantee->URI,
-                            'permission' => (string)$grant->Permission
+                            'uri' => (string) $grantee->URI,
+                            'permission' => (string) $grant->Permission
                         );
                     } else {
                         continue;
@@ -1680,7 +1680,7 @@ class PhpS3
     }
 
 
-    /**
+   /**
     * Get a query string authenticated URL
     *
     * @param string $bucket Bucket name
@@ -1688,8 +1688,6 @@ class PhpS3
     * @param integer $lifetime Lifetime in seconds
     * @param boolean $hostBucket Use the bucket name as the hostname
     * @param boolean $https Use HTTPS ($hostBucket should be false for SSL verification)
-    * @param array $headers custom headers such as
-    * 'response-content-disposition', 'response-cache-control', and 'response-content-type'.
     * @return string
     */
     public static function getAuthenticatedURL(
@@ -1697,36 +1695,38 @@ class PhpS3
         $uri,
         $lifetime,
         $hostBucket = false,
-        $https = false,
-        $headers = array()
+        $https = true,
+        $headers = false
     ) {
-
         $expires = self::__getTime() + $lifetime;
         $uri = str_replace(array('%2F', '%2B'), array('/', '+'), rawurlencode($uri));
-        $finalUrl = sprintf(
-            ($https ? 'https' : 'http') . '://%s/%s?',
-            $hostBucket ? $bucket : $bucket . '.s3.amazonaws.com',
-            $uri
+        $args = array(
+            $hostBucket ? $bucket : $bucket . '.' . self::$endpoint,
+            $uri,
         );
-        $requestToSign = "GET\n\n\n{$expires}\n/{$bucket}/{$uri}";
+        $urlFormat = ($https ? 'https' : 'http') . '://%s/%s?';
+        $request   = "GET\n\n\n{$expires}\n/{$bucket}/{$uri}";
 
         if (is_array($headers)) {
             ksort($headers);
 
-            $appendString = '?';
+            $params = array();
 
             foreach ($headers as $header => $value) {
-                $finalUrl .= $header . '=' . urlencode($value) . '&';
-                $requestToSign .= $appendString . $header . '=' . $value;
-                $appendString = '&';
+                $urlFormat .= '%s=%s&';
+
+                array_push($args, $header, urlencode($value));
+                array_push($params, $header, $value);
             }
+
+            $request .= '?' . implode('&', $params);
         }
 
-        $finalUrl .= 'AWSAccessKeyId=' . self::$accessKey
-            . '&Expires=' . $expires
-            . '&Signature=' . urlencode(self::__getHash($requestToSign));
+        $urlFormat .= 'AWSAccessKeyId=%s&Expires=%u&Signature=%s';
 
-        return $finalUrl;
+        array_push($args, self::$accessKey, $expires, urlencode(self::__getHash($request)));
+
+        return vsprintf($urlFormat, $args);
     }
 
 
@@ -1771,8 +1771,8 @@ class PhpS3
 
         $obj = new \stdClass(); // 200 for non-redirect uploads
 
-        if (is_numeric($successRedirect) && in_array((int)$successRedirect, array(200, 201))) {
-            $obj->success_action_status = (string)$successRedirect;
+        if (is_numeric($successRedirect) && in_array((int) $successRedirect, array(200, 201))) {
+            $obj->success_action_status = (string) $successRedirect;
         } else { // URL
             $obj->success_action_redirect = $successRedirect;
         }
@@ -1795,7 +1795,8 @@ class PhpS3
 
         foreach ($amzHeaders as $headerKey => $headerVal) {
             $obj = new \stdClass();
-            $obj->{$headerKey} = (string)$headerVal;
+            $obj->{$headerKey} = (string) $headerVal;
+
             array_push($policy->conditions, $obj);
         }
 
@@ -1814,18 +1815,18 @@ class PhpS3
 
         $params->signature = self::__getHash($params->policy);
 
-        if (is_numeric($successRedirect) && in_array((int)$successRedirect, array(200, 201))) {
-            $params->success_action_status = (string)$successRedirect;
+        if (is_numeric($successRedirect) && in_array((int) $successRedirect, array(200, 201))) {
+            $params->success_action_status = (string) $successRedirect;
         } else {
             $params->success_action_redirect = $successRedirect;
         }
 
         foreach ($headers as $headerKey => $headerVal) {
-            $params->{$headerKey} = (string)$headerVal;
+            $params->{$headerKey} = (string) $headerVal;
         }
 
         foreach ($amzHeaders as $headerKey => $headerVal) {
-            $params->{$headerKey} = (string)$headerVal;
+            $params->{$headerKey} = (string) $headerVal;
         }
 
         return $params;
@@ -1930,7 +1931,7 @@ class PhpS3
         $rest->data = self::__getCloudFrontDistributionConfigXML(
             $bucket . '.s3.amazonaws.com',
             $enabled,
-            (string)$comment,
+            (string) $comment,
             (string)microtime(true),
             $cnames,
             $defaultRootObject,
@@ -2221,7 +2222,7 @@ class PhpS3
             $list = array();
 
             foreach ($rest->body->DistributionSummary as $summary) {
-                $list[(string)$summary->Id] = self::__parseCloudFrontDistributionConfig($summary);
+                $list[(string) $summary->Id] = self::__parseCloudFrontDistributionConfig($summary);
             }
 
             return $list;
@@ -2449,7 +2450,7 @@ class PhpS3
             $list = array();
 
             foreach ($rest->body->InvalidationSummary as $summary) {
-                $list[(string)$summary->Id] = (string)$summary->Status;
+                $list[(string) $summary->Id] = (string) $summary->Status;
             }
 
             return $list;
@@ -2551,35 +2552,35 @@ class PhpS3
         $dist = array();
 
         if (isset($node->Id, $node->Status, $node->LastModifiedTime, $node->DomainName)) {
-            $dist['id'] = (string)$node->Id;
-            $dist['status'] = (string)$node->Status;
-            $dist['time'] = strtotime((string)$node->LastModifiedTime);
-            $dist['domain'] = (string)$node->DomainName;
+            $dist['id'] = (string) $node->Id;
+            $dist['status'] = (string) $node->Status;
+            $dist['time'] = strtotime((string) $node->LastModifiedTime);
+            $dist['domain'] = (string) $node->DomainName;
         }
 
         if (isset($node->CallerReference)) {
-            $dist['callerReference'] = (string)$node->CallerReference;
+            $dist['callerReference'] = (string) $node->CallerReference;
         }
 
         if (isset($node->Enabled)) {
-            $dist['enabled'] = (string)$node->Enabled === 'true' ? true : false;
+            $dist['enabled'] = (string) $node->Enabled === 'true' ? true : false;
         }
 
         if (isset($node->S3Origin)) {
             if (isset($node->S3Origin->DNSName)) {
-                $dist['origin'] = (string)$node->S3Origin->DNSName;
+                $dist['origin'] = (string) $node->S3Origin->DNSName;
             }
 
             $dist['originAccessIdentity'] = isset($node->S3Origin->OriginAccessIdentity) ?
-            (string)$node->S3Origin->OriginAccessIdentity : null;
+            (string) $node->S3Origin->OriginAccessIdentity : null;
         }
 
-        $dist['defaultRootObject'] = isset($node->DefaultRootObject) ? (string)$node->DefaultRootObject : null;
+        $dist['defaultRootObject'] = isset($node->DefaultRootObject) ? (string) $node->DefaultRootObject : null;
         $dist['cnames'] = array();
 
         if (isset($node->CNAME)) {
             foreach ($node->CNAME as $cname) {
-                $dist['cnames'][(string)$cname] = (string)$cname;
+                $dist['cnames'][(string) $cname] = (string) $cname;
             }
         }
 
@@ -2590,14 +2591,14 @@ class PhpS3
                 if (isset($signer->Self)) {
                     $dist['trustedSigners'][''] = 'Self';
                 } elseif (isset($signer->KeyPairId)) {
-                    $dist['trustedSigners'][(string)$signer->KeyPairId] = 'KeyPairId';
+                    $dist['trustedSigners'][(string) $signer->KeyPairId] = 'KeyPairId';
                 } elseif (isset($signer->AwsAccountNumber)) {
-                    $dist['trustedSigners'][(string)$signer->AwsAccountNumber] = 'AwsAccountNumber';
+                    $dist['trustedSigners'][(string) $signer->AwsAccountNumber] = 'AwsAccountNumber';
                 }
             }
         }
 
-        $dist['comment'] = isset($node->Comment) ? (string)$node->Comment : null;
+        $dist['comment'] = isset($node->Comment) ? (string) $node->Comment : null;
 
         return $dist;
     }
@@ -2630,8 +2631,8 @@ class PhpS3
                 )
             ) {
                 $rest->response->error = array(
-                    'code' => (string)$rest->response->body->Error->Code,
-                    'message' => (string)$rest->response->body->Error->Message
+                    'code' => (string) $rest->response->body->Error->Code,
+                    'message' => (string) $rest->response->body->Error->Message
                 );
 
                 unset($rest->response->body);
@@ -3266,12 +3267,12 @@ final class PhpS3Request // @codingStandardsIgnoreLine
                 isset($this->response->body->Code, $this->response->body->Message)
             ) {
                 $this->response->error = array(
-                    'code' => (string)$this->response->body->Code,
-                    'message' => (string)$this->response->body->Message
+                    'code' => (string) $this->response->body->Code,
+                    'message' => (string) $this->response->body->Message
                 );
 
                 if (isset($this->response->body->Resource)) {
-                    $this->response->error['resource'] = (string)$this->response->body->Resource;
+                    $this->response->error['resource'] = (string) $this->response->body->Resource;
                 }
 
                 unset($this->response->body);
@@ -3369,7 +3370,7 @@ final class PhpS3Request // @codingStandardsIgnoreLine
             } elseif ($header === 'date') {
                 $this->response->headers['date'] = strtotime($value);
             } elseif ($header === 'content-length') {
-                $this->response->headers['size'] = (int)$value;
+                $this->response->headers['size'] = (int) $value;
             } elseif ($header === 'content-type') {
                 $this->response->headers['type'] = $value;
             } elseif ($header === 'etag') {
