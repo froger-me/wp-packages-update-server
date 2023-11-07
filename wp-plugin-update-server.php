@@ -60,8 +60,6 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-manager.php';
 
-	// @todo doc
-	do_action( 'wppus_no_update_no_license_api_includes' );
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'activate' ) );
 	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'deactivate' ) );
 	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'uninstall' ) );
@@ -78,10 +76,11 @@ function wppus_run() {
 
 	require_once WPPUS_PLUGIN_PATH . 'functions.php';
 
-	$is_license_api_request = wppus_is_doing_license_api_request();
-	$is_api_request         = $is_license_api_request;
+	$license_api_request  = wppus_is_doing_license_api_request();
+	$priority_api_request = apply_filters( 'wppus_is_priority_api_request', $license_api_request );
+	$is_api_request       = $priority_api_request;
 
-	if ( ! $is_license_api_request ) {
+	if ( ! $priority_api_request ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server/loader.php';
@@ -100,6 +99,9 @@ function wppus_run() {
 		);
 	}
 
+	// @todo doc
+	$is_api_request = apply_filters( 'wppus_is_api_request', $is_api_request );
+
 	if ( ! $is_api_request ) {
 
 		if ( ! class_exists( 'WP_List_Table' ) ) {
@@ -113,19 +115,59 @@ function wppus_run() {
 		do_action( 'wppus_no_api_includes' );
 	}
 
-	$objects = array(
-		'license_api'            => new WPPUS_License_API( true, false ),
-		'update_api'             => ( $is_license_api_request ) ? false : new WPPUS_Update_API( true ),
-		'webhook_api'            => ( $is_license_api_request ) ? false : new WPPUS_Webhook_API( true ),
-		'package_api'            => ( $is_license_api_request ) ? false : new WPPUS_Package_API( true ),
-		'cloud_storage_manager'  => ( $is_license_api_request ) ? false : new WPPUS_Cloud_Storage_Manager( true ),
-		'data_manager'           => ( $is_api_request ) ? false : new WPPUS_Data_Manager( true ),
-		'remote_sources_manager' => ( $is_api_request ) ? false : new WPPUS_Remote_Sources_Manager( true ),
-		'webhook_manager'        => ( $is_api_request ) ? false : new WPPUS_Webhook_Manager( true ),
-		'update_manager'         => ( $is_api_request ) ? false : new WPPUS_Update_Manager( true ),
-		'license_manager'        => ( $is_api_request ) ? false : new WPPUS_License_Manager( true ),
-		'plugin'                 => ( $is_api_request ) ? false : new WP_Plugin_Update_Server( true ),
-	);
+	// @todo doc
+	$objects = apply_filters( 'wppus_objects', array() );
+
+	if ( ! isset( $objects['license_api'] ) ) {
+		$objects['license_api'] = new WPPUS_License_API( true, false );
+	}
+
+	if ( ! $priority_api_request ) {
+
+		if ( ! isset( $objects['update_api'] ) ) {
+			 $objects['update_api'] = new WPPUS_Update_API( true );
+		}
+
+		if ( ! isset( $objects['webhook_api'] ) ) {
+			 $objects['webhook_api'] = new WPPUS_Webhook_API( true );
+		}
+
+		if ( ! isset( $objects['package_api'] ) ) {
+			 $objects['package_api'] = new WPPUS_Package_API( true );
+		}
+
+		if ( ! isset( $objects['cloud_storage_manager'] ) ) {
+			 $objects['cloud_storage_manager'] = new WPPUS_Cloud_Storage_Manager( true );
+		}
+	}
+
+	if ( ! $is_api_request ) {
+
+		if ( ! isset( $objects['data_manager'] ) ) {
+			$objects['data_manager'] = new WPPUS_Data_Manager( true );
+		}
+
+		if ( ! isset( $objects['remote_sources_manager'] ) ) {
+			$objects['remote_sources_manager'] = new WPPUS_Remote_Sources_Manager( true );
+		}
+
+		if ( ! isset( $objects['webhook_manager'] ) ) {
+			$objects['webhook_manager'] = new WPPUS_Webhook_Manager( true );
+		}
+
+		if ( ! isset( $objects['update_manager'] ) ) {
+			$objects['update_manager'] = new WPPUS_Update_Manager( true );
+		}
+
+		if ( ! isset( $objects['license_manager'] ) ) {
+			$objects['license_manager'] = new WPPUS_License_Manager( true );
+		}
+
+		if ( ! isset( $objects['plugin'] ) ) {
+			$objects['plugin'] = new WP_Plugin_Update_Server( true );
+		}
+
+	}
 
 	WPPUS_Nonce::register();
 	WPPUS_Nonce::init_auth(

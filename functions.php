@@ -78,7 +78,6 @@ if ( ! function_exists( 'wppus_is_doing_api_request' ) ) {
 			wppus_is_doing_package_api_request()
 		);
 
-		// @todo doc
 		return apply_filters( 'wppus_is_api_request', $is_api_request );
 	}
 }
