@@ -22,6 +22,7 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 		$pluginFile = null;
 		$stylesheet = null;
 		$type = null;
+		$assets = null;
 
 		$entries = $zip->listEntries();
 		for ( $fileIndex = 0; ($fileIndex < count($entries)) && (empty($readme) || empty($header)); $fileIndex++ ){
@@ -55,8 +56,6 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 					$type = 'theme';
 				}
 			}
-
-			$assets = null;
 
 			//Main plugin file?
 			if ( empty($header) && ($extension === 'php') ){
