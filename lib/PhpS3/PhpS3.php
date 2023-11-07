@@ -2680,13 +2680,13 @@ class PhpS3
         }
 
         // Use fileinfo if available
-        $finfo = finfo_open(FILEINFO_MIME, $_ENV['MAGIC']);
-
         if (
             extension_loaded('fileinfo') &&
             isset($_ENV['MAGIC']) &&
-            $finfo !== false
+            class_exists('finfo')
         ) {
+            $finfo = new \finfo(FILEINFO_MIME, $_ENV['MAGIC']);
+
             if (($type = finfo_file($finfo, $file)) !== false) {
                 // Remove the charset and grab the last content-type
                 $type = explode(' ', str_replace('; charset=', ';charset=', $type));
@@ -2970,7 +2970,7 @@ final class PhpS3Request // @codingStandardsIgnoreLine
     /**
      * PUT post fields
      *
-     * @var array
+     * @var array|bool|string
      * @access public
      */
     public $data = false;
