@@ -292,7 +292,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		}
 
 		if (
-			! get_option( 'wppus_remote_repository_use_webhooks' ) &&
+			apply_filters( 'wppus_use_recurring_schedule', true ) &&
 			$this->use_remote_repository &&
 			$this->repository_service_url
 		) {

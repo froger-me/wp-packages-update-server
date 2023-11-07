@@ -122,7 +122,7 @@ class WPPUS_Webhook_API {
 		}
 
 		$branch = false;
-		$config = $this->get_config();
+		$config = self::get_config();
 
 		if (
 			( isset( $payload['object_kind'] ) && 'push' === $payload['object_kind'] ) ||

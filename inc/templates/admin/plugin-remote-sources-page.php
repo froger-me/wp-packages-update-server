@@ -172,60 +172,8 @@
 					</p>
 				</td>
 			</tr>
-			<tr>
-				<th>
-					<label for="wppus_remote_repository_use_webhooks"><?php esc_html_e( 'Use Webhooks', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input type="checkbox" id="wppus_remote_repository_use_webhooks" name="wppus_remote_repository_use_webhooks" value="1" <?php checked( $use_webhooks, 1 ); ?>>
-					<p class="description">
-						<?php esc_html_e( 'Check this if you wish for each repository of the remote repository service to call a Webhook when updates are pushed.', 'wppus' ); ?><br>
-						<?php esc_html_e( 'When checked, WP Plugin Update Server will not regularly poll repositories for package version changes, but relies on events sent by the repositories to schedule a package download.', 'wppus' ); ?>
-						<br/>
-						<?php
-						printf(
-							// translators: %1$s is the webhook URL, %2$s is <code>package-type</code>, %3$s is <code>plugin</code>, %4$s is <code>theme</code>, %5$s is <code>package-name</code>
-							esc_html__( 'Webhook URL: %1$s - where %2$s is the package type ( %3$s or %4$s ) and %5$s is the package needing updates.', 'wppus' ),
-							'<code>' . esc_url( home_url( '/wppus-webhook/package-type/package-name' ) ) . '</code>',
-							'<code>package-type</code>',
-							'<code>plugin</code>',
-							'<code>theme</code>',
-							'<code>package-name</code>'
-						);
-						?>
-						<br>
-						<?php esc_html_e( 'Note that WP Plugin Update Server does not rely on the content of the payload to schedule a package download, so any type of event can be used to trigger the Webhook.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr class="hide-if-no-webhooks <?php echo ( $use_webhooks ) ? '' : 'hidden'; ?>">
-				<th>
-					<label for="wppus_remote_repository_check_delay"><?php esc_html_e( 'Remote download delay', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input type="number" min="0" id="wppus_remote_repository_check_delay" name="wppus_remote_repository_check_delay" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_check_delay', 0 ) ); ?>">
-					<p class="description">
-						<?php esc_html_e( 'Delay in minutes after which WP Plugin Update Server will poll the remote repository for package updates when the Webhook has been called.', 'wppus' ); ?><br>
-						<?php esc_html_e( 'Leave at 0 to schedule a package update during the cron run happening immediately after the Webhook was called.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr class="hide-if-no-webhooks <?php echo ( $use_webhooks ) ? '' : 'hidden'; ?>">
-				<th>
-					<label for="wppus_remote_repository_webhook_secret"><?php esc_html_e( 'Remote repository Webhook Secret', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text" type="text" id="wppus_remote_repository_webhook_secret" name="wppus_remote_repository_webhook_secret" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_webhook_secret', 'repository_webhook_secret' ) ); ?>">
-					<p class="description">
-						<?php esc_html_e( 'Ideally a random string, the secret string included in the request by the repository service when calling the Webhook.', 'wppus' ); ?>
-						<br>
-						<strong><?php esc_html_e( 'WARNING: Changing this value will invalidate all the existing Webhooks set up on all package repositories.', 'wppus' ); ?></strong>
-						<br>
-						<?php esc_html_e( 'After changing this setting, make sure to update the Webhooks secrets in the repository service.', 'wppus' ); ?></strong>
-					</p>
-				</td>
-			</tr>
-			<tr class="hide-if-webhooks <?php echo ( $use_webhooks ) ? 'hidden' : ''; ?>">
+			<?php do_action( 'wppus_template_remote_source_manager_option_before_recurring_check' ); ?>
+			<tr class="check-frequency <?php echo ( $hide_check_frequency ) ? 'hidden' : ''; ?>">
 				<th>
 					<label for="wppus_remote_repository_check_frequency"><?php esc_html_e( 'Remote update check frequency', 'wppus' ); ?></label>
 				</th>
@@ -240,106 +188,7 @@
 					</p>
 				</td>
 			</tr>
-			<tr>
-				<th>
-					<label for="wppus_use_cloud_storage"><?php esc_html_e( 'Use Cloud Storage', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input type="checkbox" id="wppus_use_cloud_storage" name="wppus_use_cloud_storage" value="1" <?php checked( $use_cloud_storage, 1 ); ?>>
-					<p class="description">
-						<?php esc_html_e( 'Check this if you wish to use a Cloud Storage service - S3 Compatible.', 'wppus' ); ?><br>
-						<?php
-						printf(
-							// translators: %s is the packages folder
-							esc_html__( 'If it does not exist, a virtual folders %s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
-							'<code>wppus-packages</code>',
-						);
-						?>
-					</p>
-				</td>
-			</tr>
-			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
-				<th>
-					<label for="wppus_cloud_storage_access_key"><?php esc_html_e( 'Cloud Storage Access Key', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_access_key" name="wppus_cloud_storage_access_key" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_access_key' ) ); ?>">
-					<p class="description">
-						<?php esc_html_e( 'The Access Key provided by the Cloud Storage service.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
-				<th>
-					<label for="wppus_cloud_storage_secret_key"><?php esc_html_e( 'Cloud Storage Secret Key', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_secret_key" name="wppus_cloud_storage_secret_key" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_secret_key' ) ); ?>">
-					<p class="description">
-						<?php esc_html_e( 'The Secret Key provided by the Cloud Storage service.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
-				<th>
-					<label for="wppus_cloud_storage_endpoint"><?php esc_html_e( 'Cloud Storage Endpoint', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_endpoint" name="wppus_cloud_storage_endpoint" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_endpoint' ) ); ?>">
-					<p class="description">
-						<?php
-						printf(
-							// translators: %1$s is <code>http://</code>, %2$s is <code>https://</code>
-							esc_html__( 'The domain (without %1$s or %2$s) of the endpoint for the Cloud Storage service.', 'wppus' ),
-							'<code>http://</code>',
-							'<code>https://</code>',
-						);
-						?>
-					</p>
-				</td>
-			</tr>
-			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
-				<th>
-					<label for="wppus_cloud_storage_unit"><?php esc_html_e( 'Cloud Storage Unit', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_unit" name="wppus_cloud_storage_unit" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_unit' ) ); ?>">
-					<p class="description">
-						<?php esc_html_e( 'Usually known as a "bucket" or a "container" depending on the Cloud Storage service provider.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
-				<th>
-					<label for="wppus_cloud_storage_region"><?php esc_html_e( 'Cloud Storage Region', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_region" name="wppus_cloud_storage_region" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_region' ) ); ?>">
-					<p class="description">
-						<?php esc_html_e( 'The region of the Cloud Storage Unit, as indicated by the Cloud Storage service provider.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr class="hide-if-no-cloud-storage <?php echo ( $use_cloud_storage ) ? '' : 'hidden'; ?>">
-				<th>
-					<label for="wppus_cloud_storage_test"><?php esc_html_e( 'Test Cloud Storage Settings', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input type="button" value="<?php print esc_attr_e( 'Test Now', 'wppus' ); ?>" id="wppus_cloud_storage_test" class="button ajax-trigger" data-selector=".cloud-storage-setting" data-action="cloud_storage_test" data-type="none" />
-					<p class="description">
-						<?php esc_html_e( 'Send a test request to the Cloud Storage service provider.', 'wppus' ); ?>
-						<br/>
-						<?php esc_html_e( 'The request checks whether the provider is reachable and if the Storage Unit exists and is writable.', 'wppus' ); ?><br>
-						<?php
-						printf(
-							// translators: %s is the packages folder
-							esc_html__( 'If it does not exist, a virtual folders %s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
-							'<code>wppus-packages</code>',
-						);
-						?>
-					</p>
-				</td>
-			</tr>
+			<?php do_action( 'wppus_template_remote_source_manager_option_after_recurring_check' ); ?>
 		</table>
 		<input type="hidden" name="wppus_settings_section" value="package-source">
 		<?php wp_nonce_field( 'wppus_plugin_options', 'wppus_plugin_options_handler_nonce' ); ?>
@@ -348,7 +197,7 @@
 		</p>
 		<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 		<hr>
-		<table class="form-table package-source hide-if-webhooks <?php echo ( $use_webhooks ) ? 'hidden' : ''; ?>">
+		<table class="form-table package-source check-frequency <?php echo ( $hide_check_frequency ) ? 'hidden' : ''; ?>">
 			<tr>
 				<th>
 					<label for="wppus_remote_repository_force_remove_schedules"><?php esc_html_e( 'Clear scheduled remote updates', 'wppus' ); ?></label>

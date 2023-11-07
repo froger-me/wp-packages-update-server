@@ -212,10 +212,6 @@ class WP_Plugin_Update_Server {
 			update_option( 'wppus_package_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
 		}
 
-		if ( ! get_option( 'wppus_remote_repository_webhook_secret' ) ) {
-			update_option( 'wppus_remote_repository_webhook_secret', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
 		$charset_collate = '';
 
 		if ( ! empty( $wpdb->charset ) ) {
@@ -321,16 +317,14 @@ class WP_Plugin_Update_Server {
 				'debug'    => $debug,
 			);
 
-			if (
-				get_option( 'wppus_remote_repository_use_webhooks' ) &&
-				get_option( 'wppus_use_remote_repository' )
-			) {
-				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a remote repository will be added again automatically whenever a client asks for updates, or when its Webhook is called.\nAll packages manually uploaded without counterpart in a remote repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
-			} elseif ( get_option( 'wppus_use_remote_repository' ) ) {
+			if ( get_option( 'wppus_use_remote_repository' ) ) {
 				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a remote repository will be added again automatically whenever a client asks for updates.\nAll packages manually uploaded without counterpart in a remote repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
 			} else {
 				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nAll packages will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
 			}
+
+			// @todo doc
+			$l10n = apply_filters( 'wppus_page_wppus_scripts_l10n', $l10n );
 
 			wp_enqueue_script(
 				'wp-plugin-update-server-script',

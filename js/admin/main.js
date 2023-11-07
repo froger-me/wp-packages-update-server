@@ -38,28 +38,6 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-	$('#wppus_remote_repository_use_webhooks').on('change', function (e) {
-
-		if ($(this).prop('checked')) {
-			$('.hide-if-webhooks').addClass('hidden');
-			$('.hide-if-no-webhooks').removeClass('hidden');
-		} else {
-			$('.hide-if-no-webhooks').addClass('hidden');
-			$('.hide-if-webhooks').removeClass('hidden');
-		}
-	});
-
-	$('#wppus_use_cloud_storage').on('change', function (e) {
-
-		if ($(this).prop('checked')) {
-			$('.hide-if-cloud-storage').addClass('hidden');
-			$('.hide-if-no-cloud-storage').removeClass('hidden');
-		} else {
-			$('.hide-if-no-cloud-storage').addClass('hidden');
-			$('.hide-if-cloud-storage').removeClass('hidden');
-		}
-	});
-
 	$('.ajax-trigger').on('click', function(e) {
 		e.preventDefault();
 

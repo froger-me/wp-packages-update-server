@@ -56,15 +56,21 @@ require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-api.php';
 if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing_api_request() ) {
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wp-plugin-update-server.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-remote-sources-manager.php';
+	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-manager.php';
 
+	// @todo doc
+	do_action( 'wppus_no_update_no_license_api_includes' );
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'activate' ) );
 	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'deactivate' ) );
 	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'uninstall' ) );
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'activate' ) );
 	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'deactivate' ) );
 	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'uninstall' ) );
+	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Webhook_manager', 'activate' ) );
+	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Webhook_manager', 'deactivate' ) );
+	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Webhook_manager', 'uninstall' ) );
 }
 
 function wppus_run() {
@@ -73,8 +79,7 @@ function wppus_run() {
 	require_once WPPUS_PLUGIN_PATH . 'functions.php';
 
 	$is_license_api_request = wppus_is_doing_license_api_request();
-	$is_update_api_request  = wppus_is_doing_update_api_request();
-	$is_api_request         = $is_license_api_request || $is_update_api_request;
+	$is_api_request         = $is_license_api_request;
 
 	if ( ! $is_license_api_request ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -85,11 +90,14 @@ function wppus_run() {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-api.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
 
-		$is_webhook_api_request = wppus_is_doing_webhook_api_request();
-		$is_package_api_request = wppus_is_doing_package_api_request();
-		$is_api_request         = $is_api_request ||
-			$is_webhook_api_request ||
-			$is_package_api_request;
+		// @todo doc
+		do_action( 'wppus_no_license_api_includes' );
+
+		$is_api_request = (
+			wppus_is_doing_update_api_request() ||
+			wppus_is_doing_webhook_api_request() ||
+			wppus_is_doing_package_api_request()
+		);
 	}
 
 	if ( ! $is_api_request ) {
@@ -100,6 +108,9 @@ function wppus_run() {
 
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-packages-table.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-licenses-table.php';
+
+		// @todo doc
+		do_action( 'wppus_no_api_includes' );
 	}
 
 	$objects = array(
@@ -110,6 +121,7 @@ function wppus_run() {
 		'cloud_storage_manager'  => ( $is_license_api_request ) ? false : new WPPUS_Cloud_Storage_Manager( true ),
 		'data_manager'           => ( $is_api_request ) ? false : new WPPUS_Data_Manager( true ),
 		'remote_sources_manager' => ( $is_api_request ) ? false : new WPPUS_Remote_Sources_Manager( true ),
+		'webhook_manager'        => ( $is_api_request ) ? false : new WPPUS_Webhook_Manager( true ),
 		'update_manager'         => ( $is_api_request ) ? false : new WPPUS_Update_Manager( true ),
 		'license_manager'        => ( $is_api_request ) ? false : new WPPUS_License_Manager( true ),
 		'plugin'                 => ( $is_api_request ) ? false : new WP_Plugin_Update_Server( true ),

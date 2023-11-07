@@ -71,19 +71,15 @@ if ( ! function_exists( 'wppus_is_doing_package_api_request' ) ) {
 // @todo doc
 if ( ! function_exists( 'wppus_is_doing_api_request' ) ) {
 	function wppus_is_doing_api_request() {
-		$is_license_api_request = wppus_is_doing_license_api_request();
-		$is_update_api_request  = wppus_is_doing_update_api_request();
-		$is_api_request         = $is_license_api_request || $is_update_api_request;
+		$is_api_request = (
+			wppus_is_doing_license_api_request() ||
+			wppus_is_doing_update_api_request() ||
+			wppus_is_doing_webhook_api_request() ||
+			wppus_is_doing_package_api_request()
+		);
 
-		if ( ! $is_license_api_request ) {
-			$is_webhook_api_request = wppus_is_doing_webhook_api_request();
-			$is_package_api_request = wppus_is_doing_package_api_request();
-			$is_api_request         = $is_api_request ||
-				$is_webhook_api_request ||
-				$is_package_api_request;
-		}
-
-		return $is_api_request;
+		// @todo doc
+		return apply_filters( 'wppus_is_api_request', $is_api_request );
 	}
 }
 

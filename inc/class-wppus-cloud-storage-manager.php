@@ -41,9 +41,11 @@ class WPPUS_Cloud_Storage_Manager {
 			}
 
 			if ( get_option( 'wppus_use_cloud_storage' ) ) {
+				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 				add_action( 'wppus_saved_remote_package_to_local', array( $this, 'wppus_saved_remote_package_to_local' ), 10, 3 );
 				add_action( 'wppus_find_package_no_cache', array( $this, 'wppus_find_package_no_cache' ), 10, 3 );
 				add_action( 'wppus_update_server_action_download', array( $this, 'wppus_update_server_action_download' ), 10, 1 );
+				add_action( 'wppus_template_remote_source_manager_option_after_recurring_check', array( $this, 'wppus_template_remote_source_manager_option_after_recurring_check' ), 10, 0 );
 
 				// do_action( 'wppus_before_packages_download', $archive_name, $archive_path, $package_slugs );
 				// do_action( 'wppus_before_packages_download_repack', $archive_name, $archive_path, $package_slugs );
@@ -61,6 +63,8 @@ class WPPUS_Cloud_Storage_Manager {
 				add_filter( 'wppus_update_manager_batch_package_info', array( $this, 'wppus_update_manager_batch_package_info' ), 10, 2 );
 				add_filter( 'wppus_package_info', array( $this, 'wppus_package_info' ), 10, 2 );
 				add_filter( 'wppus_update_server_action_download_handled', array( $this, 'wppus_update_server_action_download_handled' ), 10, 2 );
+				add_filter( 'wppus_submitted_remote_sources_config', array( $this, 'wppus_submitted_remote_sources_config' ), 10, 1 );
+				add_filter( 'wppus_remote_source_option_update', array( $this, 'wppus_remote_source_option_update' ), 10, 4 );
 			}
 		}
 	}
@@ -90,6 +94,102 @@ class WPPUS_Cloud_Storage_Manager {
 		}
 
 		return self::$instance;
+	}
+
+	public function admin_enqueue_scripts( $hook ) {
+		$debug = (bool) ( constant( 'WP_DEBUG' ) );
+
+		if ( false !== strpos( $hook, 'page_wppus' ) ) {
+			$js_ext = ( $debug ) ? '.js' : '.min.js';
+			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/cloud-storage' . $js_ext );
+
+			wp_enqueue_script(
+				'wppus-cloud-storage-script',
+				WPPUS_PLUGIN_URL . 'js/admin/cloud-storage' . $js_ext,
+				array( 'jquery' ),
+				$ver_js,
+				true
+			);
+		}
+	}
+
+	public function wppus_submitted_remote_sources_config( $config ) {
+		$config = array_merge(
+			$config,
+			array(
+				'wppus_use_cloud_storage'                 => array(
+					'value'        => filter_input( INPUT_POST, 'wppus_use_cloud_storage', FILTER_VALIDATE_BOOLEAN ),
+					'display_name' => __( 'Use Cloud Storage', 'wppus' ),
+					'condition'    => 'boolean',
+				),
+				'wppus_cloud_storage_access_key'          => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_access_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Access Key', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
+				'wppus_cloud_storage_secret_key'          => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_secret_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Secret Key', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
+				'wppus_cloud_storage_endpoint'            => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_endpoint', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Endpoint', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
+				'wppus_cloud_storage_unit'                => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_unit', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Unit', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
+				'wppus_cloud_storage_region'              => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_region', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
+					'display_name'            => __( 'Cloud Storage Region', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
+					'condition'               => 'use-cloud-storage',
+				),
+			)
+		);
+
+		return $config;
+	}
+
+	public function wppus_remote_source_option_update( $condition, $option_name, $option_info, $options ) {
+
+		if ( 'use-cloud-storage' === $option_info['condition'] ) {
+
+			if ( $options['wppus_use_cloud_storage']['value'] ) {
+				$condition = ! empty( $option_info['value'] );
+			} else {
+
+				if ( 'wppus_cloud_storage_endpoint' === $option_name ) {
+					$condition = filter_var( 'http://' . $option_info['value'], FILTER_SANITIZE_URL );
+				} else {
+					$condition = true;
+				}
+
+				$option_info['value'] = '';
+			}
+
+			if ( ! $condition ) {
+				update_option( 'wppus_use_cloud_storage', false );
+			}
+		}
+
+		return $condition;
+	}
+
+	public function wppus_template_remote_source_manager_option_after_recurring_check() {
+		wppus_get_admin_template(
+			'cloud-storage-options.php',
+			array(
+				'use_cloud_storage' => get_option( 'wppus_use_cloud_storage' ),
+			)
+		);
 	}
 
 	public function cloud_storage_test() {
