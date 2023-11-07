@@ -36,11 +36,26 @@ class WPPUS_Cloud_Storage_Manager {
 				add_action( 'wppus_remote_sources_options_updated', array( $this, 'wppus_remote_sources_options_updated' ), 10, 0 );
 			}
 
-			add_action( 'wppus_saved_remote_package_to_local', array( $this, 'wppus_saved_remote_package_to_local' ), 10, 3 );
-			add_action( 'wppus_checked_remote_package_update', array( $this, 'wppus_checked_remote_package_update' ), 10, 3 );
-			add_action( 'wppus_find_package_no_cache', array( $this, 'wppus_find_package_no_cache' ), 10, 2 );
+			if ( get_option( 'wppus_use_cloud_storage' ) ) {
+				add_action( 'wppus_saved_remote_package_to_local', array( $this, 'wppus_saved_remote_package_to_local' ), 10, 3 );
+				add_action( 'wppus_find_package_no_cache', array( $this, 'wppus_find_package_no_cache' ), 10, 3 );
 
-			apply_filters( 'wppus_save_remote_to_local', array( $this, 'wppus_save_remote_to_local' ), 10, 4 );
+				// do_action( 'wppus_before_packages_download', $archive_name, $archive_path, $package_slugs );
+				// do_action( 'wppus_before_packages_download_repack', $archive_name, $archive_path, $package_slugs );
+		 		//	do_action(
+				// 	'wppus_after_packages_download',
+				// 	$archive_name,
+				// 	$archive_path,
+				// 	! empty( $archive_path ) && ! empty( $archive_name )
+				// );
+				// do_action( 'wppus_deleted_package', $result, $type, $slug );
+
+				add_filter( 'wppus_save_remote_to_local', array( $this, 'wppus_save_remote_to_local' ), 10, 4 );
+				add_filter( 'wppus_check_remote_package_update_local_meta', array( $this, 'wppus_check_remote_package_update_local_meta' ), 10, 3 );
+				add_filter( 'wpup_zip_metadata_parser_extended_cache_key', array( $this, 'wpup_zip_metadata_parser_extended_cache_key' ), 10, 3 );
+				add_filter( 'wppus_update_manager_batch_package_info', array( $this, 'wppus_update_manager_batch_package_info' ), 10, 2 );
+				add_filter( 'wppus_package_info', array( $this, 'wppus_package_info' ), 10, 2 );
+			}
 		}
 	}
 
@@ -97,31 +112,27 @@ class WPPUS_Cloud_Storage_Manager {
 							__( 'Error - Storage Unit not found', 'wppus' )
 						);
 					} else {
-						$vir_dirs = array( 'plugins', 'themes' );
 						$result[] = __( 'Cloud Storage service was reached sucessfully.', 'wppus' );
 
-						foreach ( $vir_dirs as $vir_dir ) {
-
-							if ( ! $this->virtual_folder_exists( 'wppus-' . $vir_dir ) ) {
-								$created  = $this->create_virtual_folder( 'wppus-' . $vir_dir );
-								$result[] = $created ?
-									sprintf(
-										// translators: %s is the virtual folder
-										esc_html__( 'Virtual folder "%s" was created successfully.', 'wppus' ),
-										'wppus-' . $vir_dir,
-									) :
-									sprintf(
-										// translators: %s is the virtual folder
-										esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
-										'wppus-' . $vir_dir,
-									);
-							} else {
-								$result[] = sprintf(
+						if ( ! $this->virtual_folder_exists( 'wppus-packages' ) ) {
+							$created  = $this->create_virtual_folder( 'wppus-packages' );
+							$result[] = $created ?
+								sprintf(
 									// translators: %s is the virtual folder
-									esc_html__( 'Virtual folder "%s" found.', 'wppus' ),
-									'wppus-' . $vir_dir,
+									esc_html__( 'Virtual folder "%s" was created successfully.', 'wppus' ),
+									'wppus-packages',
+								) :
+								sprintf(
+									// translators: %s is the virtual folder
+									esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
+									'wppus-packages',
 								);
-							}
+						} else {
+							$result[] = sprintf(
+								// translators: %s is the virtual folder
+								esc_html__( 'Virtual folder "%s" found.', 'wppus' ),
+								'wppus-packages',
+							);
 						}
 					}
 				} catch ( PhpS3Exception $e ) {
@@ -157,21 +168,16 @@ class WPPUS_Cloud_Storage_Manager {
 		}
 
 		try {
-			$vir_dirs = array( 'plugins', 'themes' );
+			if ( ! $this->virtual_folder_exists( 'wppus-packages' ) ) {
 
-			foreach ( $vir_dirs as $vir_dir ) {
-
-				if ( ! $this->virtual_folder_exists( 'wppus-' . $vir_dir ) ) {
-
-					if ( ! $this->create_virtual_folder( 'wppus-' . $vir_dir ) ) {
-						php_log(
-							sprintf(
-								// translators: %s is the virtual folder
-								esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
-								'wppus-' . $vir_dir,
-							)
-						);
-					}
+				if ( ! $this->create_virtual_folder( 'wppus-packages' ) ) {
+					php_log(
+						sprintf(
+							// translators: %s is the virtual folder
+							esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
+							'wppus-packages',
+						)
+					);
 				}
 			}
 		} catch ( PhpS3Exception $e ) {
@@ -179,21 +185,287 @@ class WPPUS_Cloud_Storage_Manager {
 		}
 	}
 
-	public function wppus_saved_remote_package_to_local( $local_ready, $type, $slug ) {
-		// We want to upload the package, and delete it
+	public function wppus_check_remote_package_update_local_meta( $local_meta, $local_package, $slug ) {
+		// If we do not have local_meta, we want to download the package, get the local_meta, then delete it in any case
+		WP_Filesystem();
+
+		global $wp_filesystem;
+
+		if ( ! $local_meta ) {
+			$config = self::get_config();
+
+			try {
+				$filename = $local_package->getFileName();
+				$result   = self::$cloud_storage->getObject(
+					$config['storage_unit'],
+					'wppus-packages/' . $slug . '.zip',
+					$local_package->getFileName()
+				);
+
+				if (
+					$result &&
+					$wp_filesystem->is_file( $filename ) &&
+					$wp_filesystem->is_readable( $filename )
+				) {
+					$local_meta = WshWordPressPackageParser::parsePackage( $filename, true );
+				}
+			} catch ( PhpS3Exception $e ) {
+				php_log( $e );
+			}
+		}
+
+		if ( $wp_filesystem->is_file( $local_package->getFileName() ) ) {
+			wp_delete_file( $local_package->getFileName() );
+		}
+
+		return $local_meta;
 	}
 
-	public function wppus_checked_remote_package_update( $has_update, $type, $slug ) {
+	public function wppus_saved_remote_package_to_local( $local_ready, $type, $slug ) {
+		// We want to upload the package, and delete it
+		WP_Filesystem();
 
+		global $wp_filesystem;
+
+		$config            = self::get_config();
+		$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
+		$filename          = trailingslashit( $package_directory ) . $slug . '.zip';
+
+		try {
+
+			if ( $local_ready ) {
+				self::$cloud_storage->putObjectFile(
+					$filename,
+					$config['storage_unit'],
+					'wppus-packages/' . $slug . '.zip'
+				);
+			}
+		} catch ( PhpS3Exception $e ) {
+			php_log( $e );
+		}
+
+		if ( $wp_filesystem->is_file( $filename ) ) {
+			wp_delete_file( $filename );
+		}
 	}
 
 	public function wppus_save_remote_to_local( $save, $slug, $filename, $check_remote ) {
 		// We want to set save to true if the package is not found in cloud storage
+		$config = self::get_config();
+
+		try {
+
+			if ( $check_remote ) {
+				$info = wp_cache_get( $slug . '-getObjectInfo', 'wppus' );
+
+				if ( false === $info ) {
+					$info = self::$cloud_storage->getObjectInfo(
+						$config['storage_unit'],
+						'wppus-packages/' . $slug . '.zip',
+					);
+
+					wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
+				}
+
+				$save = false === $info;
+			}
+		} catch ( PhpS3Exception $e ) {
+			php_log( $e );
+		}
+
 		return $save;
 	}
 
-	public function wppus_find_package_no_cache( $slug, $filename ) {
-		// We want to create a local cache, using the file in cloud storage
+	public function wppus_find_package_no_cache( $slug, $filename, $cache ) {
+		// We want to create a local cache, using the file in cloud storage, so we need to download it
+		WP_Filesystem();
+
+		global $wp_filesystem;
+
+		$config = self::get_config();
+
+		try {
+			$info = wp_cache_get( $slug . '-getObjectInfo', 'wppus' );
+
+			if ( false === $info ) {
+				$info = self::$cloud_storage->getObjectInfo(
+					$config['storage_unit'],
+					'wppus-packages/' . $slug . '.zip',
+				);
+
+				wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
+			}
+
+			if ( $info ) {
+				$cache_key = 'metadata-b64-' . $slug . '-'
+						. md5( $filename . '|' . $info['size'] . '|' . $info['time'] );
+
+				if ( ! $cache->get( $cache_key ) ) {
+					$result = self::$cloud_storage->getObject(
+						$config['storage_unit'],
+						'wppus-packages/' . $slug . '.zip',
+						$filename
+					);
+
+					if ( $result ) {
+						$package     = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
+						$cache_value = $package->getMetadata();
+
+						$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime );
+					}
+				}
+			}
+		} catch ( PhpS3Exception $e ) {
+			php_log( $e );
+		}
+
+		if ( $wp_filesystem->is_file( $filename ) ) {
+			wp_delete_file( $filename );
+		}
+	}
+
+	public function wpup_zip_metadata_parser_extended_cache_key( $cache_key, $slug, $filename ) {
+		$config = self::get_config();
+		$info   = wp_cache_get( $slug . '-getObjectInfo', 'wppus' );
+
+		if ( false === $info ) {
+			$info = self::$cloud_storage->getObjectInfo(
+				$config['storage_unit'],
+				'wppus-packages/' . $slug . '.zip',
+			);
+
+			wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
+		}
+
+		if ( $info ) {
+			$cache_key = 'metadata-b64-' . $slug . '-'
+						. md5( $filename . '|' . $info['size'] . '|' . $info['time'] );
+		}
+
+		return $cache_key;
+	}
+
+	public function wppus_package_info( $package_info, $slug ) {
+
+		if ( ! $package_info ) {
+			WP_Filesystem();
+
+			global $wp_filesystem;
+
+			$cache             = new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) );
+			$config            = self::get_config();
+			$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
+			$filename          = $package_directory . $slug . '.zip';
+
+			try {
+				$info = wp_cache_get( $slug . '-getObjectInfo', 'wppus' );
+
+				if ( false === $info ) {
+					$info = self::$cloud_storage->getObjectInfo(
+						$config['storage_unit'],
+						'wppus-packages/' . $slug . '.zip',
+					);
+
+					wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
+				}
+
+				if ( $info ) {
+					$cache_key = 'metadata-b64-' . $slug . '-'
+							. md5( $filename . '|' . $info['size'] . '|' . $info['time'] );
+
+					if ( ! $cache->get( $cache_key ) ) {
+						$result = self::$cloud_storage->getObject(
+							$config['storage_unit'],
+							'wppus-packages/' . $slug . '.zip',
+							$filename
+						);
+
+						if ( $result ) {
+							$package     = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
+							$cache_value = $package->getMetadata();
+
+							$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime );
+
+							if ( $package ) {
+								$package_info = $cache_value;
+							}
+						}
+					} else {
+						$package_info = $cache->get( $cache_key );
+					}
+
+					if ( $package_info ) {
+						$package_info['type']               = isset( $package_info['details_url'] ) ? 'theme' : 'plugin';
+						$package_info['file_name']          = $package_info['slug'] . '.zip';
+						$package_info['file_path']          = $package_directory . $slug . '.zip';
+						$package_info['file_size']          = $info['size'];
+						$package_info['file_last_modified'] = $info['time'];
+					}
+				}
+			} catch ( PhpS3Exception $e ) {
+
+				if ( $e instanceof PhpS3Exception ) {
+					php_log( $e );
+				} else {
+					php_log( 'Corrupt archive ' . $filename . ' ; will not be displayed or delivered' );
+
+					$log  = 'Exception caught: ' . $e->getMessage() . "\n";
+					$log .= 'File: ' . $e->getFile() . "\n";
+					$log .= 'Line: ' . $e->getLine() . "\n";
+
+					php_log( $log );
+				}
+			}
+
+			if ( $wp_filesystem->is_file( $filename ) ) {
+				wp_delete_file( $filename );
+			}
+		}
+
+		return $package_info;
+	}
+
+	public function wppus_update_manager_batch_package_info( $packages, $search ) {
+		$config = self::get_config();
+
+		try {
+			$contents = self::$cloud_storage->getBucket( $config['storage_unit'], 'wppus-packages/' );
+
+			unset( $contents['wppus-packages/'] );
+
+			if ( ! empty( $contents ) ) {
+				$update_manager = WPPUS_Update_Manager::get_instance();
+
+				foreach( $contents as $item ) {
+					$slug = str_replace( array( 'wppus-packages/', '.zip' ), array( '', '' ), $item['name'] );
+					$info = $update_manager->get_package_info( $slug );
+
+					if ( $info ) {
+						$include = true;
+
+						if ( $search ) {
+
+							if (
+								false === strpos( strtolower( $info['name'] ), strtolower( $search ) ) ||
+								false === strpos( strtolower( $info['slug'] ) . '.zip', strtolower( $search ) )
+							) {
+								$include = false;
+							}
+						}
+
+						$include = apply_filters( 'wppus_batch_package_info_include', $include, $info, $search );
+
+						if ( $include ) {
+							$packages[ $info['slug'] ] = $info;
+						}
+					}
+				}
+			}
+		} catch ( PhpS3Exception $e ) {
+			php_log( $e );
+		}
+
+		return $packages;
 	}
 
 	protected function virtual_folder_exists( $name ) {

@@ -250,10 +250,9 @@
 						<?php esc_html_e( 'Check this if you wish to use a Cloud Storage service - S3 Compatible.', 'wppus' ); ?><br>
 						<?php
 						printf(
-							// translators: %1$s is the plugins folder, %2$s is the themes folder
-							esc_html__( 'If they do not exist, two virtual folders %1$s and %2$s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
-							'<code>wppus-plugins</code>',
-							'<code>wppus-themes</code>',
+							// translators: %s is the packages folder
+							esc_html__( 'If it does not exist, a virtual folders %s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
+							'<code>wppus-packages</code>',
 						);
 						?>
 					</p>
@@ -333,10 +332,9 @@
 						<?php esc_html_e( 'The request checks whether the provider is reachable and if the Storage Unit exists and is writable.', 'wppus' ); ?><br>
 						<?php
 						printf(
-							// translators: %1$s is the plugins folder, %2$s is the themes folder
-							esc_html__( 'If they do not exist, two virtual folders %1$s and %2$s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
-							'<code>wppus-plugins</code>',
-							'<code>wppus-themes</code>',
+							// translators: %s is the packages folder
+							esc_html__( 'If it does not exist, a virtual folders %s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
+							'<code>wppus-packages</code>',
 						);
 						?>
 					</p>
