@@ -3290,13 +3290,13 @@ final class PhpS3Request // @codingStandardsIgnoreLine
     /**
     * CURL write callback
     *
-    * @param resource &$curl CURL resource
-    * @param string &$data Data
+    * @param resource $curl CURL resource
+    * @param string $data Data
     * @return integer
     */
     private function __responseWriteCallback($curl, $data)
     {
-        if (in_array($this->response->code, array(200, 206)) && $this->fp !== false) {
+        if (! $this->response->error && $this->fp !== false) {
             return fwrite($this->fp, $data);
         } else {
             $this->response->body .= $data;
