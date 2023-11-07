@@ -168,6 +168,7 @@ class WPPUS_Cloud_Storage_Manager {
 		}
 
 		try {
+
 			if ( ! $this->virtual_folder_exists( 'wppus-packages' ) ) {
 
 				if ( ! $this->create_virtual_folder( 'wppus-packages' ) ) {
@@ -311,7 +312,7 @@ class WPPUS_Cloud_Storage_Manager {
 						$package     = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
 						$cache_value = $package->getMetadata();
 
-						$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime );
+						$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime ); // @codingStandardsIgnoreLine
 					}
 				}
 			}
@@ -384,7 +385,7 @@ class WPPUS_Cloud_Storage_Manager {
 							$package     = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
 							$cache_value = $package->getMetadata();
 
-							$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime );
+							$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime ); // @codingStandardsIgnoreLine
 
 							if ( $package ) {
 								$package_info = $cache_value;
@@ -436,7 +437,7 @@ class WPPUS_Cloud_Storage_Manager {
 			if ( ! empty( $contents ) ) {
 				$update_manager = WPPUS_Update_Manager::get_instance();
 
-				foreach( $contents as $item ) {
+				foreach ( $contents as $item ) {
 					$slug = str_replace( array( 'wppus-packages/', '.zip' ), array( '', '' ), $item['name'] );
 					$info = $update_manager->get_package_info( $slug );
 
