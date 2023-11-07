@@ -1048,7 +1048,8 @@ class PhpS3
             if (is_resource($saveTo)) {
                 $rest->fp =& $saveTo;
             } else {
-                if (($rest->fp = @fopen($saveTo, 'wb')) !== false) {
+                $rest->fp = @fopen($saveTo, 'wb');
+                if ($rest->fp !== false) {
                     $rest->file = realpath($saveTo);
                 } else {
                     $rest->response->error = array(
