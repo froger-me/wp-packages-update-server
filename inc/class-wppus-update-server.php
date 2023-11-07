@@ -20,7 +20,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	protected $repository_check_frequency;
 	protected $update_checker;
 	protected $type;
-	protected $package_file_loader = array( 'Wpup_Package_Extended', 'fromArchive' );
 	protected $scheduler;
 
 	public function __construct(
@@ -196,6 +195,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		$package_path = trailingslashit( $this->packageDirectory ) . $slug . '.zip'; // @codingStandardsIgnoreLine
 		$result       = false;
+		$type         = false;
 
 		if ( $wp_filesystem->is_file( $package_path ) ) {
 			$parsed_info = WshWordPressPackageParser::parsePackage( $package_path, true );
@@ -308,17 +308,22 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			$cached_value = null;
 
 			if ( $this->cache ) {
-				$cache_key    = 'metadata-b64-' . $safe_slug . '-'
-					. md5( $filename . '|' . filesize( $filename ) . '|' . filemtime( $filename ) );
-				$cached_value = $this->cache->get( $cache_key );
+
+				if ( $wp_filesystem->is_file( $filename ) && $wp_filesystem->is_readable( $filename ) ) {
+					$cache_key    = 'metadata-b64-' . $safe_slug . '-'
+						. md5( $filename . '|' . filesize( $filename ) . '|' . filemtime( $filename ) );
+					$cached_value = $this->cache->get( $cache_key );
+				}
+			} else {
+				$this->cache = new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) );
 			}
 
-			if ( ! $cached_value ) {
+			if ( $this->cache && ! $cached_value ) {
 				// @todo doc
-				do_action( 'wppus_find_package_no_cache', $safe_slug, $filename );
+				do_action( 'wppus_find_package_no_cache', $safe_slug, $filename, $this->cache );
 			}
 
-			$package = call_user_func( $this->package_file_loader, $filename, $slug, $this->cache );
+			$package = Wpup_Package_Extended::fromArchive( $filename, $safe_slug, $this->cache );
 		} catch ( Exception $e ) {
 			php_log( 'Corrupt archive ' . $filename . ' ; will not be displayed or delivered' );
 
@@ -431,14 +436,14 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$response = wp_safe_remote_get( $url, $params );
 
 		if ( is_wp_error( $response ) ) {
-			unlink( $local_filename );
+			wp_delete_file( $local_filename );
 			php_log( $response, 'Invalid value for $response' );
 
 			return $response;
 		}
 
 		if ( 200 !== absint( wp_remote_retrieve_response_code( $response ) ) ) {
-			unlink( $local_filename );
+			wp_delete_file( $local_filename );
 
 			return new WP_Error( 'http_404', trim( wp_remote_retrieve_response_message( $response ) ) );
 		}
@@ -449,7 +454,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			$md5_check = verify_file_md5( $local_filename, $content_md5 );
 
 			if ( is_wp_error( $md5_check ) ) {
-				unlink( $local_filename );
+				wp_delete_file( $local_filename );
 				php_log( $md5_check, 'Invalid value for $md5_check' );
 
 				return $md5_check;

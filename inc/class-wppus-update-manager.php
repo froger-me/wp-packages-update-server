@@ -701,7 +701,7 @@ class WPPUS_Update_Manager {
 			$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
 
 			// @todo doc
-			do_action( 'wppus_package_info', $package_info, $slug, $package_directory . $slug . '.zip' );
+			do_action( 'wppus_get_package_info', $package_info, $slug, $package_directory . $slug . '.zip' );
 
 			if ( $wp_filesystem->exists( $package_directory . $slug . '.zip' ) ) {
 				$package = $this->get_package(
@@ -803,20 +803,27 @@ class WPPUS_Update_Manager {
 	}
 
 	protected function get_package( $filename, $slug ) {
+		WP_Filesystem();
+
+		global $wp_filesystem;
+
 		$package = false;
 		$cache   = new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) );
 
 		try {
-			$cache_key    = 'metadata-b64-' . $slug . '-'
-				. md5( $filename . '|' . filesize( $filename ) . '|' . filemtime( $filename ) );
-			$cached_value = $cache->get( $cache_key );
+
+			if ( $wp_filesystem->is_file( $filename ) && $wp_filesystem->is_readable( $filename ) ) {
+				$cache_key    = 'metadata-b64-' . $slug . '-'
+					. md5( $filename . '|' . filesize( $filename ) . '|' . filemtime( $filename ) );
+				$cached_value = $cache->get( $cache_key );
+			}
 
 			if ( ! $cached_value ) {
 				// @todo doc
-				do_action( 'wppus_find_package_no_cache', $slug, $filename );
+				do_action( 'wppus_find_package_no_cache', $slug, $filename, $cache );
 			}
 
-			$package = Wpup_Package::fromArchive( $filename, $slug, $cache );
+			$package = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
 		} catch ( Exception $e ) {
 			php_log( 'Corrupt archive ' . $filename . ' ; will not be displayed or delivered' );
 
