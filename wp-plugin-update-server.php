@@ -48,6 +48,7 @@ if ( ! defined( 'WPPUS_DEFAULT_CACHE_MAX_SIZE' ) ) {
 
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-data-manager.php';
+require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-cloud-storage-manager.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-scheduler.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-api.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-api.php';
@@ -57,7 +58,6 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-remote-sources-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-manager.php';
-	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-cloud-storage-manager.php';
 
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'activate' ) );
 	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'deactivate' ) );
