@@ -12,6 +12,10 @@ class WPPUS_Cloud_Storage_Manager {
 	protected static $config;
 	protected static $cloud_storage;
 
+	protected $doing_redirect = false;
+
+	public const DOWNLOAD_URL_LIFETIME = MINUTE_IN_SECONDS;
+
 	public function __construct( $init_hooks = false ) {
 		require_once WPPUS_PLUGIN_PATH . 'lib/PhpS3/PhpS3.php';
 
@@ -39,10 +43,11 @@ class WPPUS_Cloud_Storage_Manager {
 			if ( get_option( 'wppus_use_cloud_storage' ) ) {
 				add_action( 'wppus_saved_remote_package_to_local', array( $this, 'wppus_saved_remote_package_to_local' ), 10, 3 );
 				add_action( 'wppus_find_package_no_cache', array( $this, 'wppus_find_package_no_cache' ), 10, 3 );
+				add_action( 'wppus_update_server_action_download', array( $this, 'wppus_update_server_action_download' ), 10, 1 );
 
 				// do_action( 'wppus_before_packages_download', $archive_name, $archive_path, $package_slugs );
 				// do_action( 'wppus_before_packages_download_repack', $archive_name, $archive_path, $package_slugs );
-		 		//	do_action(
+				//	do_action(
 				// 	'wppus_after_packages_download',
 				// 	$archive_name,
 				// 	$archive_path,
@@ -55,6 +60,7 @@ class WPPUS_Cloud_Storage_Manager {
 				add_filter( 'wpup_zip_metadata_parser_extended_cache_key', array( $this, 'wpup_zip_metadata_parser_extended_cache_key' ), 10, 3 );
 				add_filter( 'wppus_update_manager_batch_package_info', array( $this, 'wppus_update_manager_batch_package_info' ), 10, 2 );
 				add_filter( 'wppus_package_info', array( $this, 'wppus_package_info' ), 10, 2 );
+				add_filter( 'wppus_update_server_action_download_handled', array( $this, 'wppus_update_server_action_download_handled' ), 10, 2 );
 			}
 		}
 	}
@@ -467,6 +473,21 @@ class WPPUS_Cloud_Storage_Manager {
 		}
 
 		return $packages;
+	}
+
+	public function wppus_update_server_action_download( $request ) {
+		$config = self::get_config();
+		$url    = self::$cloud_storage->getAuthenticatedURL(
+			$config['storage_unit'],
+			'wppus-packages/' . $request->slug . '.zip',
+			self::DOWNLOAD_URL_LIFETIME,
+		);
+
+		$this->doing_redirect = wp_redirect( $url );
+	}
+
+	public function wppus_update_server_action_download_handled( $handled, $request ) {
+		return $this->doing_redirect;
 	}
 
 	protected function virtual_folder_exists( $name ) {
