@@ -396,27 +396,16 @@ class WPPUS_License_API {
 							$this->authorize()
 						)
 					) {
+						// @todo doc
+						do_action( 'wppus_license_api_request', $method, $payload );
 
 						if ( method_exists( $this, $method ) ) {
 							$response = $this->$method( $payload );
 						} else {
-							// @todo doc
-							do_action( 'wppus_license_api_request', $method, $payload );
-
-							// @todo doc
-							$handled = apply_filters(
-								'wppus_license_api_request_handled',
-								false,
-								$method,
-								$payload
+							$this->http_response_code = 400;
+							$response                 = array(
+								'message' => __( 'License API action not found.', 'wppus' ),
 							);
-
-							if ( ! $handled ) {
-								$this->http_response_code = 400;
-								$response                 = array(
-									'message' => __( 'License API action not found.', 'wppus' ),
-								);
-							}
 						}
 					} else {
 						$this->http_response_code = 403;

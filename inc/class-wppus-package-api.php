@@ -227,11 +227,11 @@ class WPPUS_Package_API {
 		exit;
 	}
 
-	public function sign_url( $package_id, $type ) {
+	public function signed_url( $package_id, $type ) {
 		$package_id = filter_var( $package_id, FILTER_SANITIZE_URL );
 		$type       = filter_var( $type, FILTER_SANITIZE_URL );
 		//@todo doc
-		$token = apply_filters( 'wppus_package_sign_url_token', false, $package_id, $type );
+		$token = apply_filters( 'wppus_package_signed_url_token', false, $package_id, $type );
 
 		if ( ! $token ) {
 			$token = wppus_create_nonce(
@@ -247,7 +247,7 @@ class WPPUS_Package_API {
 
 		//@todo doc
 		$result = apply_filters(
-			'wppus_package_sign_url',
+			'wppus_package_signed_url',
 			array(
 				'url'    => add_query_arg(
 					array(
@@ -265,7 +265,7 @@ class WPPUS_Package_API {
 
 		if ( $result ) {
 			//@todo doc
-			do_action( 'wppus_did_sign_url_package', $result );
+			do_action( 'wppus_did_signed_url_package', $result );
 		} else {
 			$this->http_response_code = 404;
 		}
@@ -325,8 +325,13 @@ class WPPUS_Package_API {
 					$method,
 					$payload
 				);
+				$response   = array(
+					'message' => 'OK',
+				);
 
 				if ( $authorized ) {
+					// @todo doc
+					do_action( 'wppus_package_api_request', $method, $payload );
 
 					if ( method_exists( $this, $method ) ) {
 						$type       = isset( $payload['type'] ) ? $payload['type'] : null;
@@ -338,23 +343,10 @@ class WPPUS_Package_API {
 							$response = $this->$method( $payload );
 						}
 					} else {
-						// @todo doc
-						do_action( 'wppus_package_api_request', $method, $payload );
-
-						// @todo doc
-						$handled = apply_filters(
-							'wppus_package_api_request_handled',
-							false,
-							$method,
-							$payload
+						$this->http_response_code = 400;
+						$response                 = array(
+							'message' => __( 'Package API action not found.', 'wppus' ),
 						);
-
-						if ( ! $handled ) {
-							$this->http_response_code = 400;
-							$response                 = array(
-								'message' => __( 'Package API action not found.', 'wppus' ),
-							);
-						}
 					}
 				} else {
 					$this->http_response_code = 403;
@@ -366,7 +358,7 @@ class WPPUS_Package_API {
 
 			wp_send_json( $response, $this->http_response_code );
 
-			exit();
+			exit;
 		}
 	}
 

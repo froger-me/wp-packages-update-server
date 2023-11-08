@@ -50,6 +50,7 @@ class WPPUS_Cloud_Storage_Manager {
 				add_action( 'wppus_before_packages_download_repack', array( $this, 'wppus_before_packages_download_repack' ), 10, 3 );
 				add_action( 'wppus_before_packages_download', array( $this, 'wppus_before_packages_download' ), 10, 3 );
 				add_action( 'wppus_did_manual_upload_package', array( $this, 'wppus_did_manual_upload_package' ), 10, 3 );
+				add_action( 'wppus_package_api_request', array( $this, 'wppus_package_api_request' ), 10, 2 );
 
 				add_filter( 'wppus_save_remote_to_local', array( $this, 'wppus_save_remote_to_local' ), 10, 4 );
 				add_filter( 'wppus_check_remote_package_update_local_meta', array( $this, 'wppus_check_remote_package_update_local_meta' ), 10, 3 );
@@ -526,6 +527,45 @@ class WPPUS_Cloud_Storage_Manager {
 
 		if ( $wp_filesystem->is_file( $archive_path ) ) {
 			wp_delete_file( $archive_path );
+		}
+	}
+
+	public function wppus_package_api_request( $method, $payload ) {
+		$config = self::get_config();
+
+		if ( 'download' === $method ) {
+			$package_id = isset( $payload['package_id'] ) ? $payload['package_id'] : null;
+			$info       = wp_cache_get( $package_id . '-getObjectInfo', 'wppus' );
+
+			if ( false === $info ) {
+				$info = self::$cloud_storage->getObjectInfo(
+					$config['storage_unit'],
+					'wppus-packages/' . $package_id . '.zip',
+				);
+
+				wp_cache_set( $package_id . '-getObjectInfo', $info, 'wppus' );
+			}
+
+			if ( ! $info ) {
+				wp_send_json( array( 'message' => __( 'Package not found.', 'wppus' ) ), 404 );
+			} else {
+				$nonce = filter_input( INPUT_GET, 'token', FILTER_UNSAFE_RAW );
+
+				if ( ! $nonce ) {
+					$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
+				}
+
+				$url                  = self::$cloud_storage->getAuthenticatedURLV4(
+					$config['storage_unit'],
+					'wppus-packages/' . $package_id . '.zip',
+					abs( intval( wppus_get_nonce_expiry( $nonce ) ) ) - time(),
+				);
+				$this->doing_redirect = wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+
+				do_action( 'wppus_did_download_package', $package_id );
+			}
+
+			exit;
 		}
 	}
 
