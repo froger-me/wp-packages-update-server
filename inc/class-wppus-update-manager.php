@@ -55,10 +55,16 @@ class WPPUS_Update_Manager {
 		if ( is_admin() && ! wp_doing_ajax() && ! wp_doing_cron() ) {
 			$this->packages_table = new WPPUS_Packages_Table( $this );
 
-			$condition = ( isset( $_REQUEST['_wpnonce'] ) && wp_verify_nonce( $_REQUEST['_wpnonce'], $this->packages_table->nonce_action ) );
-			$condition = $condition || ( isset( $_REQUEST['linknonce'] ) && wp_verify_nonce( $_REQUEST['linknonce'], 'linknonce' ) );
-
-			if ( $condition ) {
+			if (
+				(
+					isset( $_REQUEST['_wpnonce'] ) &&
+					wp_verify_nonce( $_REQUEST['_wpnonce'], $this->packages_table->nonce_action )
+				) ||
+				(
+					isset( $_REQUEST['linknonce'] ) &&
+					wp_verify_nonce( $_REQUEST['linknonce'], 'linknonce' )
+				)
+			) {
 				$page                = isset( $_REQUEST['page'] ) ? $_REQUEST['page'] : false;
 				$packages            = isset( $_REQUEST['packages'] ) ? $_REQUEST['packages'] : false;
 				$delete_all_packages = isset( $_REQUEST['wppus_delete_all_packages'] ) ? true : false;
@@ -339,7 +345,7 @@ class WPPUS_Update_Manager {
 			}
 
 			if ( $valid ) {
-				$parsed_info = WshWordPressPackageParser::parsePackage( $package_info['tmp_name'], true );
+				$parsed_info = WshWordPressPackageParser_Extended::parsePackage( $package_info['tmp_name'], true );
 			}
 
 			if ( $valid && ! $parsed_info ) {
@@ -349,11 +355,12 @@ class WPPUS_Update_Manager {
 
 			if ( $valid ) {
 				$source      = $package_info['tmp_name'];
-				$slug        = $package_info['name'];
+				$filename    = $package_info['name'];
+				$slug        = str_replace( '.zip', '', $filename );
 				$type        = ucfirst( $parsed_info['type'] );
-				$destination = WPPUS_Data_Manager::get_data_dir( 'packages' ) . $slug;
+				$destination = WPPUS_Data_Manager::get_data_dir( 'packages' ) . $filename;
 
-				Wppus_Update_Server::unlock_update_from_remote( $slug );
+				Wppus_Update_Server::unlock_update_from_remote( $filename );
 
 				$result = $wp_filesystem->move( $source, $destination, true );
 			} else {
@@ -384,6 +391,8 @@ class WPPUS_Update_Manager {
 		$package_names         = array();
 		$deleted_package_slugs = array();
 		$delete_all            = false;
+		// @todo doc
+		$package_paths = apply_filters( 'wppus_delete_packages_bulk_paths', $package_paths, $package_slugs );
 
 		if ( ! empty( $package_paths ) ) {
 
@@ -461,21 +470,22 @@ class WPPUS_Update_Manager {
 		$max_archive_size  = get_option( 'wppus_archive_max_size', self::WPPUS_DEFAULT_ARCHIVE_MAX_SIZE );
 		$package_slugs     = is_array( $package_slugs ) ? $package_slugs : array( $package_slugs );
 
-		foreach ( $package_slugs as $package_slug ) {
-			$total_size += filesize( trailingslashit( $package_directory ) . $package_slug . '.zip' );
-		}
-
-		if ( $max_archive_size < ( (float) ( $total_size / WPPUS_MB_TO_B ) ) ) {
-			$this->packages_table->bulk_action_error = 'max_file_size_exceeded';
-
-			return;
-		}
-
 		if ( 1 === count( $package_slugs ) ) {
 			$archive_name = reset( $package_slugs );
 			$archive_path = trailingslashit( $package_directory ) . $archive_name . '.zip';
 
 			do_action( 'wppus_before_packages_download', $archive_name, $archive_path, $package_slugs );
+
+			foreach ( $package_slugs as $package_slug ) {
+				$total_size += filesize( trailingslashit( $package_directory ) . $package_slug . '.zip' );
+			}
+
+			if ( $max_archive_size < ( (float) ( $total_size / WPPUS_MB_TO_B ) ) ) {
+				$this->packages_table->bulk_action_error = 'max_file_size_exceeded';
+
+				return;
+			}
+
 			$this->trigger_packages_download( $archive_name, $archive_path );
 
 			return;
@@ -487,6 +497,16 @@ class WPPUS_Update_Manager {
 
 		// @todo doc
 		do_action( 'wppus_before_packages_download_repack', $archive_name, $archive_path, $package_slugs );
+
+		foreach ( $package_slugs as $package_slug ) {
+			$total_size += filesize( trailingslashit( $package_directory ) . $package_slug . '.zip' );
+		}
+
+		if ( $max_archive_size < ( (float) ( $total_size / WPPUS_MB_TO_B ) ) ) {
+			$this->packages_table->bulk_action_error = 'max_file_size_exceeded';
+
+			return;
+		}
 
 		$zip = new ZipArchive();
 
@@ -539,9 +559,6 @@ class WPPUS_Update_Manager {
 		WP_Filesystem();
 
 		global $wp_filesystem;
-
-		// @todo doc
-		do_action( 'wppus_before_packages_download', $archive_name, $archive_path );
 
 		if ( ! empty( $archive_path ) && ! empty( $archive_name ) ) {
 

@@ -7,7 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // @todo doc
 if ( ! function_exists( 'php_log' ) ) {
 	function php_log( $message = '', $prefix = '' ) {
-		$prefix   = $prefix ? $prefix : ' => ';
+		$prefix   = $prefix ? ' ' . $prefix . ' => ' : ' => ';
 		$trace    = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 2 ); // @codingStandardsIgnoreLine
 		$caller   = end( $trace );
 		$class    = isset( $caller['class'] ) ? $caller['class'] : '';

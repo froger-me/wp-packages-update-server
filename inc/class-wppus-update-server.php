@@ -203,6 +203,9 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			$result      = $wp_filesystem->delete( $package_path );
 		}
 
+		// @todo doc
+		$result = apply_filters( 'wppus_delete_package_result', $result, $type, $slug );
+
 		do_action( 'wppus_deleted_package', $result, $type, $slug );
 
 		return $result;
