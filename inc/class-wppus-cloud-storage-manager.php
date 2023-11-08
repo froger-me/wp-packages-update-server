@@ -117,36 +117,36 @@ class WPPUS_Cloud_Storage_Manager {
 		$config = array_merge(
 			$config,
 			array(
-				'wppus_use_cloud_storage'                 => array(
+				'wppus_use_cloud_storage'        => array(
 					'value'        => filter_input( INPUT_POST, 'wppus_use_cloud_storage', FILTER_VALIDATE_BOOLEAN ),
 					'display_name' => __( 'Use Cloud Storage', 'wppus' ),
 					'condition'    => 'boolean',
 				),
-				'wppus_cloud_storage_access_key'          => array(
+				'wppus_cloud_storage_access_key' => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_access_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Cloud Storage Access Key', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 					'condition'               => 'use-cloud-storage',
 				),
-				'wppus_cloud_storage_secret_key'          => array(
+				'wppus_cloud_storage_secret_key' => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_secret_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Cloud Storage Secret Key', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 					'condition'               => 'use-cloud-storage',
 				),
-				'wppus_cloud_storage_endpoint'            => array(
+				'wppus_cloud_storage_endpoint'   => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_endpoint', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Cloud Storage Endpoint', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 					'condition'               => 'use-cloud-storage',
 				),
-				'wppus_cloud_storage_unit'                => array(
+				'wppus_cloud_storage_unit'       => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_unit', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Cloud Storage Unit', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 					'condition'               => 'use-cloud-storage',
 				),
-				'wppus_cloud_storage_region'              => array(
+				'wppus_cloud_storage_region'     => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_region', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'display_name'            => __( 'Cloud Storage Region', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
@@ -329,7 +329,6 @@ class WPPUS_Cloud_Storage_Manager {
 	}
 
 	public function wppus_saved_remote_package_to_local( $local_ready, $type, $slug ) {
-		// We want to upload the package, and delete it
 		WP_Filesystem();
 
 		global $wp_filesystem;
@@ -533,43 +532,49 @@ class WPPUS_Cloud_Storage_Manager {
 	}
 
 	public function wppus_update_manager_batch_package_info( $packages, $search ) {
-		$config = self::get_config();
+		$config   = self::get_config();
+		$contents = wp_cache_get( 'wppus-getBucket', 'wppus' );
 
-		try {
-			$contents = self::$cloud_storage->getBucket( $config['storage_unit'], 'wppus-packages/' );
+		if ( false === $contents ) {
 
-			unset( $contents['wppus-packages/'] );
+			try {
+				$contents = self::$cloud_storage->getBucket( $config['storage_unit'], 'wppus-packages/' );
 
-			if ( ! empty( $contents ) ) {
-				$update_manager = WPPUS_Update_Manager::get_instance();
+				unset( $contents['wppus-packages/'] );
 
-				foreach ( $contents as $item ) {
-					$slug = str_replace( array( 'wppus-packages/', '.zip' ), array( '', '' ), $item['name'] );
-					$info = $update_manager->get_package_info( $slug );
+				if ( ! empty( $contents ) ) {
+					$update_manager = WPPUS_Update_Manager::get_instance();
 
-					if ( $info ) {
-						$include = true;
+					foreach ( $contents as $item ) {
+						$slug = str_replace( array( 'wppus-packages/', '.zip' ), array( '', '' ), $item['name'] );
+						$info = $update_manager->get_package_info( $slug );
 
-						if ( $search ) {
+						if ( $info ) {
+							$include = true;
 
-							if (
-								false === strpos( strtolower( $info['name'] ), strtolower( $search ) ) ||
-								false === strpos( strtolower( $info['slug'] ) . '.zip', strtolower( $search ) )
-							) {
-								$include = false;
+							if ( $search ) {
+
+								if (
+									false === strpos( strtolower( $info['name'] ), strtolower( $search ) ) ||
+									false === strpos( strtolower( $info['slug'] ) . '.zip', strtolower( $search ) )
+								) {
+									$include = false;
+								}
 							}
-						}
 
-						$include = apply_filters( 'wppus_batch_package_info_include', $include, $info, $search );
+							$include = apply_filters( 'wppus_batch_package_info_include', $include, $info, $search );
 
-						if ( $include ) {
-							$packages[ $info['slug'] ] = $info;
+							if ( $include ) {
+								$packages[ $info['slug'] ] = $info;
+							}
 						}
 					}
 				}
+			} catch ( PhpS3Exception $e ) {
+				php_log( $e );
 			}
-		} catch ( PhpS3Exception $e ) {
-			php_log( $e );
+
+			wp_cache_set( 'wppus-getBucket', $contents, 'wppus' );
 		}
 
 		return $packages;
@@ -583,10 +588,10 @@ class WPPUS_Cloud_Storage_Manager {
 			self::DOWNLOAD_URL_LIFETIME,
 		);
 
-		$this->doing_redirect = wp_redirect( $url );
+		$this->doing_redirect = wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 	}
 
-	public function wppus_update_server_action_download_handled( $handled, $request ) {
+	public function wppus_update_server_action_download_handled() {
 		return $this->doing_redirect;
 	}
 
