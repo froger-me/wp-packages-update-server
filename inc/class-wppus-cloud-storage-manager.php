@@ -555,10 +555,10 @@ class WPPUS_Cloud_Storage_Manager {
 					$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
 				}
 
-				$url                  = self::$cloud_storage->getAuthenticatedURLV4(
+				$url                  = self::$cloud_storage->getAuthenticatedV4URL(
 					$config['storage_unit'],
 					'wppus-packages/' . $package_id . '.zip',
-					abs( intval( wppus_get_nonce_expiry( $nonce ) ) ) - time(),
+					array( 'lifetime' => abs( intval( wppus_get_nonce_expiry( $nonce ) ) ) - time() ),
 				);
 				$this->doing_redirect = wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 
