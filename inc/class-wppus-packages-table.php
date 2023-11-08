@@ -72,8 +72,8 @@ class WPPUS_Packages_Table extends WP_List_Table {
 	}
 
 	public function uasort_reorder( $a, $b ) {
-		$orderby = ( ! empty( $_GET['orderby'] ) ) ? $_GET['orderby'] : 'name'; // @codingStandardsIgnoreLine
-		$order   = ( ! empty( $_GET['order'] ) ) ? $_GET['order'] : 'asc'; // @codingStandardsIgnoreLine
+		$orderby = ( ! empty( $_GET['orderby'] ) ) ? $_GET['orderby'] : 'name'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$order   = ( ! empty( $_GET['order'] ) ) ? $_GET['order'] : 'asc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$result  = 0;
 
 		if ( 'version' === $orderby ) {

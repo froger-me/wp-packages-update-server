@@ -21,7 +21,7 @@ class WPPUS_Nonce {
 		if ( ! $result ) {
 			$error_message = __( 'Failed to create the necessary database table(s).', 'wppus' );
 
-			die( $error_message ); // @codingStandardsIgnoreLine
+			die( $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 
@@ -58,7 +58,7 @@ class WPPUS_Nonce {
 
 		dbDelta( $sql );
 
-		$table = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . 'wppus_nonce' . "'" ); // @codingStandardsIgnoreLine
+		$table = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . 'wppus_nonce' . "'" );
 
 		if ( $wpdb->prefix . 'wppus_nonce' !== $table ) {
 
@@ -225,7 +225,7 @@ class WPPUS_Nonce {
 		$table = $wpdb->prefix . 'wppus_nonce';
 		$row   = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM {$table} WHERE nonce = %s;", // @codingStandardsIgnoreLine
+				"SELECT * FROM {$table} WHERE nonce = %s;", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$nonce
 			)
 		);
@@ -258,7 +258,7 @@ class WPPUS_Nonce {
 
 		$table  = $wpdb->prefix . 'wppus_nonce';
 		$where  = array( 'nonce' => $value );
-		$result = $wpdb->delete( $table, $where ); // @codingStandardsIgnoreLine
+		$result = $wpdb->delete( $table, $where );
 
 		return (bool) $result;
 	}
@@ -288,7 +288,7 @@ class WPPUS_Nonce {
 		// @todo doc
 		$sql      = apply_filters( 'wppus_clear_nonces_query', $sql, $sql_args );
 		$sql_args = apply_filters( 'wppus_clear_nonces_query_args', $sql_args, $sql );
-		$result   = $wpdb->query( $wpdb->prepare( $sql, $sql_args ) ); // @codingStandardsIgnoreLine
+		$result   = $wpdb->query( $wpdb->prepare( $sql, $sql_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return (bool) $result;
 	}
@@ -325,7 +325,7 @@ class WPPUS_Nonce {
 		$table = $wpdb->prefix . 'wppus_nonce';
 		$row   = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM {$table} WHERE nonce = %s;", // @codingStandardsIgnoreLine
+				"SELECT * FROM {$table} WHERE nonce = %s;", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 				$value
 			)
 		);
@@ -394,7 +394,7 @@ class WPPUS_Nonce {
 			'expiry'     => $expiry,
 			'data'       => $data,
 		);
-		$result = $wpdb->insert( $table, $data ); // @codingStandardsIgnoreLine
+		$result = $wpdb->insert( $table, $data );
 
 		if ( (bool) $result ) {
 

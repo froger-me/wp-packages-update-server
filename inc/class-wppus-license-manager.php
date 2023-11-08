@@ -79,15 +79,9 @@ class WPPUS_License_Manager {
 				$license_data        = isset( $_REQUEST['wppus_license_values'] ) ? $_REQUEST['wppus_license_values'] : $license_data;
 				$action              = isset( $_REQUEST['wppus_license_action'] ) ? $_REQUEST['wppus_license_action'] : false;
 
-				if (
-					isset( $_REQUEST['action'] ) &&
-					-1 != $_REQUEST['action'] // @codingStandardsIgnoreLine
-				) {
+				if ( isset( $_REQUEST['action'] ) && -1 != $_REQUEST['action'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual
 					$action = $_REQUEST['action'];
-				} elseif (
-					isset( $_REQUEST['action2'] ) &&
-					-1 != $_REQUEST['action2']  // @codingStandardsIgnoreLine
-				) {
+				} elseif ( isset( $_REQUEST['action2'] ) && -1 != $_REQUEST['action2'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual
 					$action = $_REQUEST['action2'];
 				}
 

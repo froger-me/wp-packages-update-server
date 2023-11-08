@@ -96,7 +96,7 @@ class WPPUS_Data_Manager {
 					// translators: %1$s is the path to the plugin's data directory
 					$error_message = sprintf( __( 'Directory <code>%1$s</code> is not a valid WPPUS data directory.', 'wppus' ), $dir );
 
-					wp_die( $error_message, __METHOD__ ); // @codingStandardsIgnoreLine
+					wp_die( $error_message, __METHOD__ ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				}
 
 				$data_dir .= $dir;
@@ -174,7 +174,7 @@ class WPPUS_Data_Manager {
 
 	public static function maybe_cleanup( $type, $force = false ) {
 
-		if ( in_array( $type, self::$transient_data_db ) ) { // @codingStandardsIgnoreLine
+		if ( in_array( $type, self::$transient_data_db, true ) ) {
 			$method_name = 'maybe_cleanup_' . $type;
 
 			if ( method_exists( get_called_class(), $method_name ) && ! $force ) {

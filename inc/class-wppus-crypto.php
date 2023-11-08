@@ -97,11 +97,11 @@ class WPPUS_Crypto {
 
 	public static function base64url_encode( $s ) {
 
-		return str_replace( '/', self::SLASH_REPLACE, base64_encode( $s ) ); // @codingStandardsIgnoreLine
+		return str_replace( '/', self::SLASH_REPLACE, base64_encode( $s ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
 	public static function base64url_decode( $s ) {
 
-		return base64_decode( str_replace( self::SLASH_REPLACE, '/', $s ) ); // @codingStandardsIgnoreLine
+		return base64_decode( str_replace( self::SLASH_REPLACE, '/', $s ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 	}
 }

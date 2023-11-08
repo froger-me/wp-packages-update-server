@@ -159,7 +159,7 @@ class WPPUS_Update_API {
 		$request_params = apply_filters(
 			'wppus_handle_update_request_params',
 			array_merge(
-				$_GET, // @codingStandardsIgnoreLine
+				$_GET, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$request_params
 			)
 		);

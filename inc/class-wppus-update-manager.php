@@ -64,9 +64,9 @@ class WPPUS_Update_Manager {
 				$delete_all_packages = isset( $_REQUEST['wppus_delete_all_packages'] ) ? true : false;
 				$action              = false;
 
-				if ( isset( $_REQUEST['action'] ) && -1 != $_REQUEST['action'] ) {  // @codingStandardsIgnoreLine
+				if ( isset( $_REQUEST['action'] ) && -1 != $_REQUEST['action'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual
 					$action = $_REQUEST['action'];
-				} elseif ( isset( $_REQUEST['action2'] ) && -1 != $_REQUEST['action2'] ) {  // @codingStandardsIgnoreLine
+				} elseif ( isset( $_REQUEST['action2'] ) && -1 != $_REQUEST['action2'] ) { // phpcs:ignore Universal.Operators.StrictComparisons.LooseNotEqual
 					$action = $_REQUEST['action2'];
 				}
 
@@ -158,7 +158,7 @@ class WPPUS_Update_Manager {
 	public function plugin_main_page() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
+			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		$package_rows = $this->get_batch_package_info();
@@ -185,7 +185,7 @@ class WPPUS_Update_Manager {
 	public function plugin_help_page() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
+			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		wppus_get_admin_template( 'plugin-help-page.php' );
@@ -198,14 +198,14 @@ class WPPUS_Update_Manager {
 		if ( isset( $_REQUEST['nonce'] ) && wp_verify_nonce( $_REQUEST['nonce'], 'wppus_plugin_options' ) ) {
 			$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
-			if ( in_array( $type, self::$filesystem_clean_types ) ) { // @codingStandardsIgnoreLine
+			if ( in_array( $type, self::$filesystem_clean_types, true ) ) {
 				$result = WPPUS_Data_Manager::maybe_cleanup( $type, true );
 			}
 		}
 
 		if ( $result && $type ) {
 			wp_send_json_success( array( 'btnVal' => __( 'Force Clean', 'wppus' ) . ' (' . self::get_dir_size_mb( $type ) . ')' ) );
-		} elseif ( in_array( $type, self::$filesystem_clean_types ) ) { // @codingStandardsIgnoreLine
+		} elseif ( in_array( $type, self::$filesystem_clean_types, true ) ) {
 			$error = new WP_Error(
 				__METHOD__,
 				__( 'Error - check the directory is writable', 'wppus' )
@@ -294,7 +294,7 @@ class WPPUS_Update_Manager {
 				'application/x-zip-compressed',
 			);
 
-			if ( $valid && ! in_array( $package_info['type'], $valid_archive_formats ) ) { // @codingStandardsIgnoreLine
+			if ( $valid && ! in_array( $package_info['type'], $valid_archive_formats, true ) ) {
 				$valid      = false;
 				$error_text = __( 'Make sure the uploaded file is a zip archive.', 'wppus' );
 			}
@@ -498,7 +498,9 @@ class WPPUS_Update_Manager {
 		foreach ( $package_slugs as $package_slug ) {
 			$file = trailingslashit( $package_directory ) . $package_slug . '.zip';
 
-			$zip->addFromString( $package_slug . '.zip', $wp_filesystem->get_contents( $file ) );
+			if ( $wp_filesystem->is_file( $file ) ) {
+				$zip->addFromString( $package_slug . '.zip', $wp_filesystem->get_contents( $file ) );
+			}
 		}
 
 		$zip->close();
@@ -544,7 +546,7 @@ class WPPUS_Update_Manager {
 		if ( ! empty( $archive_path ) && ! empty( $archive_name ) ) {
 
 			if ( ini_get( 'zlib.output_compression' ) ) {
-				@ini_set( 'zlib.output_compression', 'Off' ); // @codingStandardsIgnoreLine
+				@ini_set( 'zlib.output_compression', 'Off' ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.PHP.IniSet.Risky
 			}
 
 			header( 'Content-Type: application/zip' );
@@ -555,16 +557,11 @@ class WPPUS_Update_Manager {
 			// @todo doc
 			do_action( 'wppus_triggered_packages_download', $archive_name, $archive_path );
 
-			echo $wp_filesystem->get_contents( $archive_path ); // @codingStandardsIgnoreLine
+			echo $wp_filesystem->get_contents( $archive_path ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		// @todo doc
-		do_action(
-			'wppus_after_packages_download',
-			$archive_name,
-			$archive_path,
-			! empty( $archive_path ) && ! empty( $archive_name )
-		);
+		do_action( 'wppus_after_packages_download', $archive_name, $archive_path );
 
 		if ( $exit_or_die ) {
 			exit;
@@ -729,7 +726,7 @@ class WPPUS_Update_Manager {
 			if ( $wp_filesystem->is_dir( $package_directory ) ) {
 
 				if ( ! WPPUS_Package_API::is_doing_api_request() ) {
-					$search = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : $search; // @codingStandardsIgnoreLine
+					$search = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : $search; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				}
 
 				$package_paths = glob( trailingslashit( $package_directory ) . '*.zip' );

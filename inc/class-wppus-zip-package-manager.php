@@ -51,7 +51,7 @@ class WPPUS_Zip_Package_Manager {
 
 				if ( ! $repack_result ) {
 					$return         = false;
-					$error_message .= sprintf( // @codingStandardsIgnoreLine
+					$error_message .= sprintf(
 						'Could not repack %s.',
 						esc_html( $destination )
 					);
@@ -60,7 +60,7 @@ class WPPUS_Zip_Package_Manager {
 				}
 			} else {
 				$return         = false;
-				$error_message .= sprintf( // @codingStandardsIgnoreLine
+				$error_message .= sprintf(
 					'Could not move %s to %s.',
 					esc_html( $source ),
 					esc_html( $destination )
@@ -70,12 +70,12 @@ class WPPUS_Zip_Package_Manager {
 
 		if ( $return ) {
 			$source      = $this->tmp_dir . $this->package_slug . '.zip';
-			$destination = trailingslashit( $this->packages_dir ) . $this->package_slug . '.zip'; // @codingStandardsIgnoreLine
+			$destination = trailingslashit( $this->packages_dir ) . $this->package_slug . '.zip';
 			$result      = $wp_filesystem->move( $source, $destination, true );
 
 			if ( ! $result ) {
 				$return         = false;
-				$error_message .= sprintf( // @codingStandardsIgnoreLine
+				$error_message .= sprintf(
 					'Could not move %s to %s.',
 					esc_html( $source ),
 					esc_html( $destination )
@@ -86,7 +86,7 @@ class WPPUS_Zip_Package_Manager {
 		if ( ! $return ) {
 
 			if ( (bool) ( constant( 'WP_DEBUG' ) ) ) {
-				trigger_error( $error_message, E_USER_WARNING ); // @codingStandardsIgnoreLine
+				trigger_error( $error_message, E_USER_WARNING ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 			}
 
 			php_log( $error_message );
@@ -118,7 +118,7 @@ class WPPUS_Zip_Package_Manager {
 
 		if ( ! $unzipped ) {
 			$return         = false;
-			$error_message .= sprintf( // @codingStandardsIgnoreLine
+			$error_message .= sprintf(
 				'Could not unzip %s.',
 				esc_html( $archive_path )
 			);
@@ -160,7 +160,7 @@ class WPPUS_Zip_Package_Manager {
 		if ( ! $return ) {
 
 			if ( (bool) ( constant( 'WP_DEBUG' ) ) ) {
-				trigger_error( $error_message, E_USER_WARNING ); // @codingStandardsIgnoreLine
+				trigger_error( $error_message, E_USER_WARNING ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
 			}
 
 			php_log( $error_message );

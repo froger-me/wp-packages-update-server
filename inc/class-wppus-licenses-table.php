@@ -63,7 +63,7 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 	public function prepare_items() {
 		global $wpdb;
 
-		$search     = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : false; // @codingStandardsIgnoreLine
+		$search     = isset( $_REQUEST['s'] ) ? wp_unslash( trim( $_REQUEST['s'] ) ) : false; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$where      = false;
 		$where_args = false;
 
@@ -97,9 +97,9 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 
 		if ( $search ) {
 			$sql        .= $where;
-			$total_items = $wpdb->get_var( $wpdb->prepare( $sql, $where_args ) ); // @codingStandardsIgnoreLine
+			$total_items = $wpdb->get_var( $wpdb->prepare( $sql, $where_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		} else {
-			$total_items = $wpdb->get_var( $sql ); // @codingStandardsIgnoreLine
+			$total_items = $wpdb->get_var( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		}
 
 		$offset   = 0;
@@ -108,17 +108,17 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 		$order_by = 'date_created';
 		$order    = 'desc';
 
-		if ( isset( $_REQUEST['orderby'] ) ) { // @codingStandardsIgnoreLine
+		if ( isset( $_REQUEST['orderby'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			if ( in_array( 'col_' . $_REQUEST['orderby'], array_keys( $this->get_sortable_columns() ), true ) ) { // @codingStandardsIgnoreLine
-				$order_by = $_REQUEST['orderby']; // @codingStandardsIgnoreLine
+			if ( in_array( 'col_' . $_REQUEST['orderby'], array_keys( $this->get_sortable_columns() ), true ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$order_by = $_REQUEST['orderby']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 		}
 
-		if ( isset( $_REQUEST['order'] ) ) { // @codingStandardsIgnoreLine
+		if ( isset( $_REQUEST['order'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-			if ( in_array( $_REQUEST['order'], array( 'asc', 'desc' ), true ) ) { // @codingStandardsIgnoreLine
-				$order = $_REQUEST['order']; // @codingStandardsIgnoreLine
+			if ( in_array( $_REQUEST['order'], array( 'asc', 'desc' ), true ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$order = $_REQUEST['order']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			}
 		}
 
@@ -162,8 +162,8 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 		}
 
 		$sql  .= " ORDER BY $order_by $order LIMIT %d OFFSET %d";
-		$query = $wpdb->prepare( $sql, $args ); // @codingStandardsIgnoreLine
-		$items = $wpdb->get_results( $query, ARRAY_A ); // @codingStandardsIgnoreLine
+		$query = $wpdb->prepare( $sql, $args ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$items = $wpdb->get_results( $query, ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		foreach ( $items as $index => $item ) {
 			$items[ $index ]['allowed_domains'] = maybe_unserialize( $item['allowed_domains'] );

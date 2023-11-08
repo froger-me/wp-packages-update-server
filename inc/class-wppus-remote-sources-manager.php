@@ -58,7 +58,7 @@ class WPPUS_Remote_Sources_Manager {
 	public function plugin_packages_remote_source_page() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
+			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		$registered_schedules = wp_get_schedules();

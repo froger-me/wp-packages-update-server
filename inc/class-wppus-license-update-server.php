@@ -113,7 +113,7 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 			'update_license_signature' => $this->license_signature,
 		);
 
-		return self::addQueryArg( $query, $this->serverUrl ); // @codingStandardsIgnoreLine
+		return self::addQueryArg( $query, $this->serverUrl ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
 	protected function get_license_error_message( $license ) {

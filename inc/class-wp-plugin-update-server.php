@@ -32,13 +32,13 @@ class WP_Plugin_Update_Server {
 			$error_message  = __( 'PHP version 7.4 or higher is required. Current version: ', 'wppus' );
 			$error_message .= phpversion();
 
-			die( $error_message ); // @codingStandardsIgnoreLine
+			die( $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( ! class_exists( 'ZipArchive' ) ) {
 			$error_message = __( 'The zip PHP extension is required by WP Plugin Update Server. Please check your server configuration.', 'wppus' );
 
-			die( $error_message ); // @codingStandardsIgnoreLine
+			die( $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		if ( ! get_option( 'wppus_plugin_version' ) ) {
@@ -55,7 +55,7 @@ class WP_Plugin_Update_Server {
 		if ( ! $result ) {
 			$error_message = __( 'Failed to create the necessary database table(s).', 'wppus' );
 
-			die( $error_message ); // @codingStandardsIgnoreLine
+			die( $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		set_transient( 'wppus_flush', 1, 60 );
@@ -69,7 +69,7 @@ class WP_Plugin_Update_Server {
 				'<code>' . WPPUS_Data_Manager::get_data_dir() . '</code>'
 			);
 
-			die( $error_message ); // @codingStandardsIgnoreLine
+			die( $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		$result = self::maybe_setup_mu_plugin();
@@ -167,7 +167,7 @@ class WP_Plugin_Update_Server {
 			wp_normalize_path( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimizer.php' )
 		);
 
-		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // @codingStandardsIgnoreLine
+		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public static function setup_mu_plugin_success_notice() {
@@ -178,7 +178,7 @@ class WP_Plugin_Update_Server {
 			trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ) . 'wppus-endpoint-optimizer.php'
 		);
 
-		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // @codingStandardsIgnoreLine
+		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	public static function maybe_create_or_upgrade_db() {

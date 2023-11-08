@@ -106,7 +106,7 @@ class WPPUS_License_Server {
 		$prepare_args[] = $browsing_query['limit'];
 		$prepare_args[] = $browsing_query['offset'];
 
-		$licenses = $wpdb->get_results( $wpdb->prepare( $sql, $prepare_args ) ); // @codingStandardsIgnoreLine
+		$licenses = $wpdb->get_results( $wpdb->prepare( $sql, $prepare_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! empty( $licenses ) ) {
 
@@ -135,7 +135,7 @@ class WPPUS_License_Server {
 			$payload     = $this->sanitize_license( $payload );
 
 			$sql     = "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE {$where_field} = %s;";
-			$license = $wpdb->get_row( $wpdb->prepare( $sql, $where_value ) ); // @codingStandardsIgnoreLine
+			$license = $wpdb->get_row( $wpdb->prepare( $sql, $where_value ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			if ( is_object( $license ) ) {
 				$license->allowed_domains = maybe_unserialize( $license->allowed_domains );
@@ -305,7 +305,7 @@ class WPPUS_License_Server {
 				AND status != 'blocked'
 				AND date_expiry != '0000-00-00'";
 
-		$wpdb->query( $wpdb->prepare( $sql, mysql2date( 'Y-m-d', current_time( 'mysql' ), false ) ) ); // @codingStandardsIgnoreLine
+		$wpdb->query( $wpdb->prepare( $sql, mysql2date( 'Y-m-d', current_time( 'mysql' ), false ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public function update_licenses_status( $status, $license_ids = array() ) {
@@ -319,7 +319,7 @@ class WPPUS_License_Server {
 
 		$sql = "UPDATE {$wpdb->prefix}wppus_licenses SET status = %s WHERE 1=1" . $where;
 
-		$wpdb->query( $wpdb->prepare( $sql, $status ) ); // @codingStandardsIgnoreLine
+		$wpdb->query( $wpdb->prepare( $sql, $status ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public function purge_licenses( $license_ids = array() ) {
@@ -333,7 +333,7 @@ class WPPUS_License_Server {
 
 		$sql = "DELETE FROM {$wpdb->prefix}wppus_licenses WHERE 1=1" . $where;
 
-		$wpdb->query( $sql ); // @codingStandardsIgnoreLine
+		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public function dispatch( $response, $response_status_code ) {
@@ -510,7 +510,7 @@ class WPPUS_License_Server {
 						$errors[] = __( 'The license key is required and must be a string.', 'wppus' );
 					} else {
 						$sql    = "SELECT COUNT(*) FROM {$wpdb->prefix}wppus_licenses WHERE id = %s;";
-						$exists = ( '1' === $wpdb->get_var( $wpdb->prepare( $sql, $license['id'] ) ) ); // @codingStandardsIgnoreLine
+						$exists = ( '1' === $wpdb->get_var( $wpdb->prepare( $sql, $license['id'] ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 						if ( ! $exists ) {
 							$errors[] = __( 'The license cannot be found.', 'wppus' );
@@ -518,7 +518,7 @@ class WPPUS_License_Server {
 					}
 				} else {
 					$sql    = "SELECT COUNT(*) FROM {$wpdb->prefix}wppus_licenses WHERE license_key = %s;";
-					$exists = ( '1' === $wpdb->get_var( $wpdb->prepare( $sql, $license['license_key'] ) ) ); // @codingStandardsIgnoreLine
+					$exists = ( '1' === $wpdb->get_var( $wpdb->prepare( $sql, $license['license_key'] ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 					if ( ! $exists ) {
 						$errors[] = __( 'The license cannot be found.', 'wppus' );
@@ -537,7 +537,7 @@ class WPPUS_License_Server {
 				$errors[] = __( 'The license key is required and must be a string.', 'wppus' );
 			} elseif ( ! $partial && isset( $license['license_key'] ) ) {
 				$sql    = "SELECT COUNT(*) FROM {$wpdb->prefix}wppus_licenses WHERE license_key = %s;";
-				$exists = ( '0' !== $wpdb->get_var( $wpdb->prepare( $sql, $license['license_key'] ) ) ); // @codingStandardsIgnoreLine
+				$exists = ( '0' !== $wpdb->get_var( $wpdb->prepare( $sql, $license['license_key'] ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 				if ( $exists ) {
 					$errors[] = __( 'A value already exists for the given license key. Each key must be unique.', 'wppus' );
