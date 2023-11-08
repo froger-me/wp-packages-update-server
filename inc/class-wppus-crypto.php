@@ -67,21 +67,21 @@ class WPPUS_Crypto {
 		return $signature;
 	}
 
-	public static function hmac_verify( $original, $new ) {
+	public static function hmac_verify( $original_val, $new_val ) {
 
 		if ( function_exists( 'hash_equals' ) ) {
 
-			return hash_equals( $original, $new );
+			return hash_equals( $original_val, $new_val );
 		}
 
-		if ( ! is_string( $original ) || ! is_string( $new ) ) {
+		if ( ! is_string( $original_val ) || ! is_string( $new_val ) ) {
 
 			return false;
 		}
 
-		$original_length = mb_strlen( $original );
+		$original_length = mb_strlen( $original_val );
 
-		if ( mb_strlen( $new ) !== $original_length ) {
+		if ( mb_strlen( $new_val ) !== $original_length ) {
 
 			return false;
 		}
@@ -89,7 +89,7 @@ class WPPUS_Crypto {
 		$result = 0;
 
 		for ( $i = 0; $i < $original_length; ++$i ) {
-			$result |= ord( $original[ $i ] ) ^ ord( $new[ $i ] );
+			$result |= ord( $original_val[ $i ] ) ^ ord( $new_val[ $i ] );
 		}
 
 		return 0 === $result;

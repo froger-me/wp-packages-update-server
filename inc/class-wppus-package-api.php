@@ -21,7 +21,7 @@ class WPPUS_Package_API {
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
 
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
-			add_filter( 'wppus_nonce_authorize', array( $this, 'wppus_nonce_authorize' ), 10, 3 );
+			add_filter( 'wppus_nonce_authorize', array( $this, 'wppus_nonce_authorize' ), 10, 1 );
 		}
 	}
 
@@ -209,7 +209,7 @@ class WPPUS_Package_API {
 		return $result;
 	}
 
-	public function download( $package_id, $type ) {
+	public function download( $package_id, $type ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$path = wppus_get_local_package_path( $package_id );
 
 		if ( ! $path ) {
@@ -398,7 +398,7 @@ class WPPUS_Package_API {
 			$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
 		}
 
-		add_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_public' ), 10, 5 );
+		add_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_public' ), 10, 4 );
 
 		$result = wppus_validate_nonce( $nonce );
 
@@ -407,7 +407,7 @@ class WPPUS_Package_API {
 		return $result;
 	}
 
-	public function wppus_nonce_authorize( $authorized, $provided_key, $key ) {
+	public function wppus_nonce_authorize( $authorized ) {
 		global $wp;
 
 		$data = isset( $wp->query_vars['data'] ) ? $wp->query_vars['data'] : array();
@@ -425,7 +425,7 @@ class WPPUS_Package_API {
 		return $authorized;
 	}
 
-	public function wppus_fetch_nonce_public( $nonce, $true_nonce, $expiry, $data, $row ) {
+	public function wppus_fetch_nonce_public( $nonce, $true_nonce, $expiry, $data ) {
 		global $wp;
 
 		$current_action = $wp->query_vars['action'];

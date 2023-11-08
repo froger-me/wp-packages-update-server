@@ -97,7 +97,7 @@ class WP_Plugin_Update_Server {
 		require_once WPPUS_PLUGIN_PATH . 'uninstall.php';
 	}
 
-	public static function locate_template( $template_name, $load = false, $require_once = true ) {
+	public static function locate_template( $template_name, $load = false, $required_once = true ) {
 		$name     = str_replace( 'templates/', '', $template_name );
 		$paths    = array(
 			'plugins/wppus/templates/' . $name,
@@ -119,13 +119,13 @@ class WP_Plugin_Update_Server {
 		);
 
 		if ( $load && '' !== $template ) {
-			load_template( $template, $require_once );
+			load_template( $template, $required_once );
 		}
 
 		return $template;
 	}
 
-	public static function locate_admin_template( $template_name, $load = false, $require_once = true ) {
+	public static function locate_admin_template( $template_name, $load = false, $required_once = true ) {
 		$template = apply_filters(
 			'wppus_locate_admin_template',
 			WPPUS_PLUGIN_PATH . 'inc/templates/admin/' . $template_name,
@@ -134,7 +134,7 @@ class WP_Plugin_Update_Server {
 		);
 
 		if ( $load && '' !== $template ) {
-			load_template( $template, $require_once );
+			load_template( $template, $required_once );
 		}
 
 		return $template;
@@ -336,5 +336,4 @@ class WP_Plugin_Update_Server {
 			wp_enqueue_style( 'wppus-admin-main', WPPUS_PLUGIN_URL . 'css/admin/main' . $css_ext, array(), $ver_css );
 		}
 	}
-
 }

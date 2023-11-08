@@ -394,5 +394,4 @@ class WPPUS_License_Manager {
 
 		$this->message = __( 'All the licenses have been deleted.', 'wppus' );
 	}
-
 }

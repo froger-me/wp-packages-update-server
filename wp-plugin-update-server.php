@@ -125,19 +125,19 @@ function wppus_run() {
 	if ( ! $priority_api_request ) {
 
 		if ( ! isset( $objects['update_api'] ) ) {
-			 $objects['update_api'] = new WPPUS_Update_API( true );
+			$objects['update_api'] = new WPPUS_Update_API( true );
 		}
 
 		if ( ! isset( $objects['webhook_api'] ) ) {
-			 $objects['webhook_api'] = new WPPUS_Webhook_API( true );
+			$objects['webhook_api'] = new WPPUS_Webhook_API( true );
 		}
 
 		if ( ! isset( $objects['package_api'] ) ) {
-			 $objects['package_api'] = new WPPUS_Package_API( true );
+			$objects['package_api'] = new WPPUS_Package_API( true );
 		}
 
 		if ( ! isset( $objects['cloud_storage_manager'] ) ) {
-			 $objects['cloud_storage_manager'] = new WPPUS_Cloud_Storage_Manager( true );
+			$objects['cloud_storage_manager'] = new WPPUS_Cloud_Storage_Manager( true );
 		}
 	}
 
@@ -166,7 +166,6 @@ function wppus_run() {
 		if ( ! isset( $objects['plugin'] ) ) {
 			$objects['plugin'] = new WP_Plugin_Update_Server( true );
 		}
-
 	}
 
 	WPPUS_Nonce::register();

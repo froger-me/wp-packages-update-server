@@ -440,5 +440,4 @@ class WPPUS_Nonce {
 			self::$private_auth_key
 		);
 	}
-
 }

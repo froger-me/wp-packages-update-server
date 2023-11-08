@@ -252,5 +252,4 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 
 		return $actions;
 	}
-
 }

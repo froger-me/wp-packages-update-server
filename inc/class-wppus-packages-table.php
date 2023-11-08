@@ -201,5 +201,4 @@ class WPPUS_Packages_Table extends WP_List_Table {
 
 		return $actions;
 	}
-
 }

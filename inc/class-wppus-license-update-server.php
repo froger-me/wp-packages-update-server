@@ -19,7 +19,7 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		$repository_credentials,
 		$repository_service_self_hosted,
 		$repository_check_frequency
-		) {
+	) {
 		parent::__construct(
 			$use_remote_repository,
 			$server_url,
@@ -206,5 +206,4 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 
 		return $valid;
 	}
-
 }
