@@ -1716,7 +1716,7 @@ class PhpS3
         $url = (self::$useSSL ? 'https://' : 'http://') . $hostname . $uri;
 
         if (self::hasAuth()) {
-            $parameters['lifetime'] = $lifetime;
+            $parameters['expires'] = $lifetime;
 
             foreach ($amzHeaders as $header => $value) {
                 if (strlen($value) > 0) {
@@ -2100,7 +2100,7 @@ class PhpS3
             $parameters['X-Amz-Expires'] = isset($parameters['expires']) ? $parameters['expires'] : 3600;
             $parameters['X-Amz-SignedHeaders'] = implode(';', array_keys($combinedHeaders));
 
-            unset($parameters['lifetime']);
+            unset($parameters['expires']);
         }
 
         // Convert null query string parameters to strings and sort

@@ -558,7 +558,7 @@ class WPPUS_Cloud_Storage_Manager {
 				$url                  = self::$cloud_storage->getAuthenticatedUrlV4(
 					$config['storage_unit'],
 					'wppus-packages/' . $package_id . '.zip',
-					array( 'lifetime' => abs( intval( wppus_get_nonce_expiry( $nonce ) ) ) - time() ),
+					abs( intval( wppus_get_nonce_expiry( $nonce ) ) ) - time(),
 				);
 				$this->doing_redirect = wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 
