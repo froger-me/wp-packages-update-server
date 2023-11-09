@@ -36,16 +36,20 @@ class WPPUS_Cloud_Storage_Manager {
 		if ( $init_hooks ) {
 
 			if ( ! wppus_is_doing_api_request() ) {
+				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 				add_action( 'wp_ajax_wppus_cloud_storage_test', array( $this, 'cloud_storage_test' ), 10, 0 );
 				add_action( 'wppus_remote_sources_options_updated', array( $this, 'wppus_remote_sources_options_updated' ), 10, 0 );
+				add_action( 'wppus_template_remote_source_manager_option_after_recurring_check', array( $this, 'wppus_template_remote_source_manager_option_after_recurring_check' ), 10, 0 );
+
+				add_filter( 'wppus_get_admin_template_args', array( $this, 'wppus_get_admin_template_args' ), 10, 2 );
+				add_filter( 'wppus_submitted_remote_sources_config', array( $this, 'wppus_submitted_remote_sources_config' ), 10, 1 );
+				add_filter( 'wppus_remote_source_option_update', array( $this, 'wppus_remote_source_option_update' ), 10, 4 );
 			}
 
 			if ( get_option( 'wppus_use_cloud_storage' ) ) {
-				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 				add_action( 'wppus_saved_remote_package_to_local', array( $this, 'wppus_saved_remote_package_to_local' ), 10, 3 );
 				add_action( 'wppus_find_package_no_cache', array( $this, 'wppus_find_package_no_cache' ), 10, 3 );
 				add_action( 'wppus_update_server_action_download', array( $this, 'wppus_update_server_action_download' ), 10, 1 );
-				add_action( 'wppus_template_remote_source_manager_option_after_recurring_check', array( $this, 'wppus_template_remote_source_manager_option_after_recurring_check' ), 10, 0 );
 				add_action( 'wppus_after_packages_download', array( $this, 'wppus_after_packages_download' ), 10, 2 );
 				add_action( 'wppus_before_packages_download_repack', array( $this, 'wppus_before_packages_download_repack' ), 10, 3 );
 				add_action( 'wppus_before_packages_download', array( $this, 'wppus_before_packages_download' ), 10, 3 );
@@ -58,12 +62,9 @@ class WPPUS_Cloud_Storage_Manager {
 				add_filter( 'wppus_update_manager_batch_package_info', array( $this, 'wppus_update_manager_batch_package_info' ), 10, 2 );
 				add_filter( 'wppus_package_info', array( $this, 'wppus_package_info' ), 10, 2 );
 				add_filter( 'wppus_update_server_action_download_handled', array( $this, 'wppus_update_server_action_download_handled' ), 10 );
-				add_filter( 'wppus_submitted_remote_sources_config', array( $this, 'wppus_submitted_remote_sources_config' ), 10, 1 );
-				add_filter( 'wppus_remote_source_option_update', array( $this, 'wppus_remote_source_option_update' ), 10, 4 );
 				add_filter( 'wppus_scheduler_get_package_slugs', array( $this, 'wppus_scheduler_get_package_slugs' ), 10, 4 );
 				add_filter( 'wppus_delete_package_result', array( $this, 'wppus_delete_package_result' ), 10, 3 );
 				add_filter( 'wppus_delete_packages_bulk_paths', array( $this, 'wppus_delete_packages_bulk_paths' ), 10, 1 );
-				add_filter( 'wppus_get_admin_template_args', array( $this, 'wppus_get_admin_template_args' ), 10, 2 );
 			}
 		}
 	}
@@ -161,7 +162,12 @@ class WPPUS_Cloud_Storage_Manager {
 
 		if ( 'use-cloud-storage' === $option_info['condition'] ) {
 
-			if ( $options['wppus_use_cloud_storage']['value'] ) {
+			if (
+				'wppus_cloud_storage_region' === $option_name &&
+				empty( $option_info['value'] )
+			) {
+				$condition = true;
+			} elseif ( $options['wppus_use_cloud_storage']['value'] ) {
 				$condition = ! empty( $option_info['value'] );
 			} else {
 
