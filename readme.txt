@@ -13,7 +13,7 @@ Run your own update server for plugins and themes.
 == Description ==
 
 WP Plugin Update Server allows developers to provide updates for plugins and themes packages not hosted on wordpress.org. It is useful to provide updates for plugins or themes not compliant with the GPLv2 (or later).
-Packages may be either uploaded directly, or hosted in a remote repository, public or private. It supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
+Packages may be either uploaded directly, or hosted in a Remote Repository, public or private. It supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
 Package updates may require a license, and licenses can be managed through an API or a user interface within WP Plugin Update Server.
 
 == Important notes ==
@@ -32,14 +32,14 @@ This plugin adds the following major features to WordPress:
 
 * **WP Plugin Update Server admin page:** to manage the list of packages and configure the plugin.
 * **Package management:** to manage update packages, showing a listing with Package Name, Version, Type, File Name, Size, Last Modified and License Status ; includes bulk operations to delete, download and change the license status, and the ability to delete all the packages.
-* **Add Packages:** Upload update packages from a local machine to the server, or download them to the server from a remote repository.
+* **Add Packages:** Upload update packages from a local machine to the server, or download them to the server from a Remote Repository.
 * **General settings:** for archive files download size, cache, and logs, with force clean.
 * **Packages licensing:** Prevent plugins and themes installed on remote WordPress installation from being updated without a valid license. Licenses are generated automatically by default and the values are unguessable (it is recommended to keep the default). When checking the validity of licenses an extra license signature is also checked to prevent the use of a license on more than the configured allowed domains.
-* **Packages remote source:** WP Plugin Update Server can act as a proxy and will help you to connect your clients with your plugins and themes kept on a remote repository, so that they are always up to date. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab. Packages will not be installed on your server, only transferred to the clients whenever they request them.
+* **Packages remote source:** WP Plugin Update Server can act as a proxy and will help you to connect your clients with your plugins and themes kept on a Remote Repository, so that they are always up to date. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab. Packages will not be installed on your server, only transferred to the clients whenever they request them.
 
 To connect their plugins or themes and WP Plugin Update Server, developers can find integration examples in the `wp-plugin-update-server/integration-examples` directory, or check the [documentation of the WP Package Updater](https://github.com/froger-me/wp-package-updater/blob/master/README.md).
 
-In addition, a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) developers can add to the WordPress installation running WP Plugin Update Server is available in `wp-plugin-update-server/optimisation/wppus-endpoint-optimizer.php`.  
+In addition, a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) developers can add to the WordPress installation running WP Plugin Update Server is available in `wp-plugin-update-server/optimisation/wppus-endpoint-optimizer.php`.
 
 == Upgrade Information ==
 
@@ -58,7 +58,7 @@ Aside from minor version updates (bugfixes, interface improvements and simple ne
 
 == Special Thanks ==
 
-A warm thank you to [Yahnis Elsts](https://github.com/YahnisElsts), the author of [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker) and [WP Update Server](https://github.com/YahnisElsts/wp-update-server) libraries, without whom the creation of this plugin would not have been possible.  
+A warm thank you to [Yahnis Elsts](https://github.com/YahnisElsts), the author of [Plugin Update Checker](https://github.com/YahnisElsts/plugin-update-checker) and [WP Update Server](https://github.com/YahnisElsts/wp-update-server) libraries, without whom the creation of this plugin would not have been possible.
 Authorisation to use these libraries freely provided relevant licenses are included has been graciously granted [here](https://github.com/YahnisElsts/wp-update-server/issues/37#issuecomment-386814776).
 
 == Installation ==
@@ -194,7 +194,7 @@ This section describes how to install the plugin and get it working.
 = 1.0.4 =
 * More zip MIME types supported - frontend
 * Cleanup Dummy Theme
-* Clarification of help tab - description of remote repository structure
+* Clarification of help tab - description of Remote Repository structure
 * Add warning to readme.txt
 
 = 1.0.3 =

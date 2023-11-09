@@ -308,7 +308,7 @@ class WP_Plugin_Update_Server {
 			);
 
 			if ( get_option( 'wppus_use_remote_repository' ) ) {
-				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a remote repository will be added again automatically whenever a client asks for updates.\nAll packages manually uploaded without counterpart in a remote repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
+				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a Remote Repository will be added again automatically whenever a client asks for updates.\nAll packages manually uploaded without counterpart in a Remote Repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
 			} else {
 				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nAll packages will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
 			}

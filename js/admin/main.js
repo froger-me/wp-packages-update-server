@@ -48,10 +48,10 @@ jQuery(document).ready(function ($) {
 				nonce: $('#wppus_plugin_options_handler_nonce').val(),
 				action: 'wppus_' + button.data('action'),
 				data: button.data('selector') ? $(button.data('selector')).get().reduce(function (obj, el) {
-						obj[el.id] = el.value;
+					obj[el.id] = el.type === 'checkbox' || el.type === 'radio' ? el.checked : el.value;
 
-						return obj;
-					}, {}) : {}
+					return obj;
+				}, {}) : {}
 			};
 
 		button.attr('disabled', 'disabled');

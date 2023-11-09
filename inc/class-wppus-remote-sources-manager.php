@@ -21,6 +21,7 @@ class WPPUS_Remote_Sources_Manager {
 
 			add_action( 'wp_ajax_wppus_force_clean', array( $this, 'force_clean' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_force_register', array( $this, 'force_register' ), 10, 0 );
+			add_action( 'wp_ajax_wppus_remote_repository_test', array( $this, 'remote_repository_test' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'plugin_options_menu' ), 11, 0 );
 		}
 	}
@@ -81,6 +82,7 @@ class WPPUS_Remote_Sources_Manager {
 					'wppus_use_recurring_schedule',
 					true
 				),
+				'packages_dir'         => WPPUS_Data_Manager::get_data_dir( 'packages' ),
 			)
 		);
 	}
@@ -137,6 +139,116 @@ class WPPUS_Remote_Sources_Manager {
 			);
 
 			wp_send_json_error( $error );
+		}
+	}
+
+	public function remote_repository_test() {
+		$result = array();
+
+		if ( isset( $_REQUEST['nonce'] ) && wp_verify_nonce( $_REQUEST['nonce'], 'wppus_plugin_options' ) ) {
+			$data = filter_input( INPUT_POST, 'data', FILTER_SANITIZE_FULL_SPECIAL_CHARS, FILTER_REQUIRE_ARRAY );
+
+			if ( $data ) {
+				$url         = $data['wppus_remote_repository_url'];
+				$self_hosted = $data['wppus_remote_repository_self_hosted'];
+				$credentials = $data['wppus_remote_repository_credentials'];
+				$options     = array();
+				$service     = false;
+				$host        = wp_parse_url( $url, PHP_URL_HOST );
+				$path        = wp_parse_url( $url, PHP_URL_PATH );
+				$user_name   = false;
+
+				if ( 'true' === $self_hosted ) {
+					$service = 'GitLab';
+				} else {
+					$services = array(
+						'github.com'    => 'GitHub',
+						'bitbucket.org' => 'BitBucket',
+						'gitlab.com'    => 'GitLab',
+					);
+
+					if ( isset( $services[ $host ] ) ) {
+						$service = $services[ $host ];
+					}
+				}
+
+				if ( preg_match( '@^/?(?P<username>[^/]+?)/?$@', $path, $matches ) ) {
+					$user_name = $matches['username'];
+
+					if ( 'GitHub' === $service ) {
+						$url                = 'https://api.github.com/user';
+						$options            = array( 'timeout' => 3 );
+						$options['headers'] = array(
+							'Authorization' => 'Basic '
+								. base64_encode( $user_name . ':' . $credentials ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+						);
+					}
+
+					if ( 'GitLab' === $service ) {
+						$options = array( 'timeout' => 3 );
+						$scheme  = wp_parse_url( $url, PHP_URL_SCHEME );
+						$url     = sprintf(
+							'%1$s://%2$s/api/v4/groups/%3$s/?private_token=%4$s',
+							$scheme,
+							$host,
+							$user_name,
+							$credentials
+						);
+					}
+				}
+
+				$response = wp_remote_get( $url, $options );
+
+				if ( is_wp_error( $response ) ) {
+					$result = $response;
+				} else {
+					$code = wp_remote_retrieve_response_code( $response );
+					$body = wp_remote_retrieve_body( $response );
+
+					if ( 200 === $code ) {
+						$condition = false;
+
+						if ( 'GitHub' === $service ) {
+							$body      = json_decode( $body, true );
+							$condition = trailingslashit(
+								$data['wppus_remote_repository_url']
+							) === trailingslashit(
+								$body['html_url']
+							);
+						}
+
+						if ( 'GitLab' === $service ) {
+							$body      = json_decode( $body, true );
+							$condition = $user_name === $body['path'];
+						}
+
+						if ( $condition ) {
+							$result[] = __( 'Remote Repository Service was reached sucessfully.', 'wppus' );
+						} else {
+							$result = new WP_Error(
+								__METHOD__,
+								__( 'Error - Please check the provided Remote Repository Service URL.', 'wppus' )
+							);
+						}
+					} else {
+						$result = new WP_Error(
+							__METHOD__,
+							__( 'Error - Please check the provided Remote Repository Service Credentials.', 'wppus' )
+						);
+					}
+				}
+			} else {
+				$result = new WP_Error(
+					__METHOD__,
+					__( 'Error - Received invalid data ; please reload the page and try again.', 'wppus' )
+				);
+			}
+		}
+
+		if ( ! is_wp_error( $result ) ) {
+			wp_send_json_success( $result );
+		} else {
+			wp_send_json_error( $result );
 		}
 	}
 
@@ -291,34 +403,34 @@ class WPPUS_Remote_Sources_Manager {
 			array(
 				'wppus_use_remote_repository'             => array(
 					'value'        => filter_input( INPUT_POST, 'wppus_use_remote_repository', FILTER_VALIDATE_BOOLEAN ),
-					'display_name' => __( 'Use remote repository service', 'wppus' ),
+					'display_name' => __( 'Use a Remote Repository Service', 'wppus' ),
 					'condition'    => 'boolean',
 				),
 				'wppus_remote_repository_url'             => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_url', FILTER_VALIDATE_URL ),
-					'display_name'            => __( 'Remote repository service URL', 'wppus' ),
+					'display_name'            => __( 'Remote Repository Service URL', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid URL', 'wppus' ),
 					'dependency'              => 'wppus_use_remote_repository',
 					'condition'               => 'service_url',
 				),
 				'wppus_remote_repository_self_hosted'     => array(
 					'value'        => filter_input( INPUT_POST, 'wppus_remote_repository_self_hosted', FILTER_VALIDATE_BOOLEAN ),
-					'display_name' => __( 'Self-hosted remote repository service', 'wppus' ),
+					'display_name' => __( 'Self-hosted Remote Repository Service', 'wppus' ),
 					'condition'    => 'boolean',
 				),
 				'wppus_remote_repository_branch'          => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_branch', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'display_name'            => __( 'Packages branch name', 'wppus' ),
+					'display_name'            => __( 'Packages Branch Name', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 				),
 				'wppus_remote_repository_credentials'     => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_credentials', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'display_name'            => __( 'Remote repository service credentials', 'wppus' ),
+					'display_name'            => __( 'Remote Repository Service Credentials', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 				),
 				'wppus_remote_repository_check_frequency' => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_remote_repository_check_frequency', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'display_name'            => __( 'Remote update check frequency', 'wppus' ),
+					'display_name'            => __( 'Remote Update Check Frequency', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid option', 'wppus' ),
 					'condition'               => 'known frequency',
 				),

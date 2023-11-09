@@ -25,7 +25,7 @@
 		<?php echo sprintf( __( 'See <code>%s</code> for an example of plugin, and <code>%s</code> for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.', 'wppus' ), WPPUS_PLUGIN_PATH . 'integration-examples/dummy-plugin', WPPUS_PLUGIN_PATH . 'integration-examples/dummy-theme' ); ?><?php // @codingStandardsIgnoreLine ?>
 	</p>
 	<p>
-		<?php echo sprintf( __( 'Unless "Use remote repository service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in <code>%s</code>. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in <code>package-name.zip</code> would be <code>package-name.php</code>.', 'wppus' ), WPPUS_Data_Manager::get_data_dir( 'packages' ) ); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php echo sprintf( __( 'Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in <code>%s</code>. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in <code>package-name.zip</code> would be <code>package-name.php</code>.', 'wppus' ), $packages_dir ); ?><?php // @codingStandardsIgnoreLine ?>
 	</p>
 	<hr>
 	<h2><?php esc_html_e( 'Requests optimisation', 'wppus' ); ?></h2>

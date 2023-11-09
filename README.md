@@ -33,7 +33,7 @@ Developer documentation:
 ## General Description
 
 WP Update Plugin Server allows developers to provide updates for plugins and themes packages not hosted on wordpress.org, and possibly control the updates with the application of a license on the client packages. It is also useful to provide updates for plugins or themes not compliant with the GPLv2 (or later).
-Packages may be either uploaded directly, or hosted in a remote repository, public or private. It supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
+Packages may be either uploaded directly, or hosted in a Remote Repository, public or private. It supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
 
 To install, clone this repository and copy the "wp-plugin-update-server" directory into your plugin folder.
 
@@ -43,10 +43,10 @@ This plugin adds the following major features to WordPress:
 
 * **WP Update Plugin Server admin page:** to manage the list of packages and configure the plugin.
 * **Package management:** to manage update packages, showing a listing with Package Name, Version, Type, File Name, Size, Last Modified and License Status ; includes bulk operations to delete, download and change the license status, and the ability to delete all the packages.
-* **Add Packages:** Upload update packages from your local machine to the server, or download them to the server from a remote repository.
+* **Add Packages:** Upload update packages from your local machine to the server, or download them to the server from a Remote Repository.
 * **General settings:** for archive files download size, cache, and logs, with force clean.
 * **Packages licensing:** Prevent plugins and themes installed on remote WordPress installation from being updated without a valid license. Licenses are generated automatically by default and the values are unguessable (it is recommended to keep the default). When checking the validity of licenses an extra license signature is also checked to prevent the use of a license on more than the configured allowed domains.
-* **Packages remote source:** host the packages on a remote repository. WP Plugin Update Server acts as a proxy and checks for packages updates regulary and downloads them automatically when a new version is available. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
+* **Packages remote source:** host the packages on a Remote Repository. WP Plugin Update Server acts as a proxy and checks for packages updates regulary and downloads them automatically when a new version is available. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
 
 To connect their plugins or themes and WP Plugin Update Server, developers can find integration examples in `wp-plugin-update-server/integration-examples`:
 * **Dummy Plugin:** a folder `dummy-plugin` with a simple, empty plugin that includes the necessary code in the `dummy-plugin.php` main plugin file and the necessary libraries in a `lib` folder.
@@ -109,7 +109,7 @@ This tab allows administrators to:
 - Toggle between "Require License" and "Do not Require License" for a package when "Enable Package Licenses" is checked under the "License" tab
 - Delete a package
 - Apply bulk actions on the list of packages (download, delete, change license status of the package if licenses are enabled)
-- Add a package (either by uploading it directly, or by priming it by pulling it from a configured remote repository)
+- Add a package (either by uploading it directly, or by priming it by pulling it from a configured Remote Repository)
 
 In addition, the following settings are available:
 
@@ -130,12 +130,12 @@ In addition, the following settings are available:
 
 Name                                  | Type      | Description                                                                                                                                                                                                                    
 ------------------------------------- |:---------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Use remote repository service         | checkbox  | Enables this server to download plugins and themes from a remote repository before delivering updates.<br/>Supports Bitbucket, Github and Gitlab.<br/>If left unchecked, zip packages need to be manually uploaded to `wp-content/plugins/wp-plugin-update-server/packages`.<br/>**It affects all the packages delivered by this installation of WP Plugin Update Server if they have a corresponding repository in the remote repository service.**<br/>**Settings of the "Packages remote source" section will be saved only if this option is checked.**
-Remote repository service URL         | text      | The URL of the remote repository service where packages are hosted.<br/>Must follow the following pattern: `https://repository-service.tld/username` where `https://repository-service.tld` may be a self-hosted instance of Gitlab.<br/>Each package repository URL must follow the following pattern: `https://repository-service.tld/username/package-name/` ; the package files must be located at the root of the repository, and in the case of plugins the main plugin file must follow the pattern `package-name.php`.
-Self-hosted remote repository service | checkbox  | Check this only if the remote repository service is a self-hosted instance of Gitlab.
-Packages branch name                  | text      | The branch to download when getting remote packages from the remote repository service.
-Remote repository service credentials | text      | Credentials for non-publicly accessible repositories.<br/>In the case of Github and Gitlab, an access token (`token`).<br/>In the case of Bitbucket, the Consumer key and secret separated by a pipe (`consumer_key|consumer_secret`). IMPORTANT: when creating the consumer, "This is a private consumer" must be checked.	
-Remote update check frequency         | select    | How often WP Plugin Update Server will poll each remote repository for package updates - checking too often may slow down the server (recommended "Once Daily").
+Use Remote Repository Service         | checkbox  | Enables this server to download plugins and themes from a Remote Repository before delivering updates.<br/>Supports Bitbucket, Github and Gitlab.<br/>If left unchecked, zip packages need to be manually uploaded to `wp-content/plugins/wp-plugin-update-server/packages`.<br/>**It affects all the packages delivered by this installation of WP Plugin Update Server if they have a corresponding repository in the Remote Repository Service.**<br/>**Settings of the "Packages remote source" section will be saved only if this option is checked.**
+Remote Repository Service URL         | text      | The URL of the Remote Repository Service where packages are hosted.<br/>Must follow the following pattern: `https://repository-service.tld/username` where `https://repository-service.tld` may be a self-hosted instance of Gitlab.<br/>Each package repository URL must follow the following pattern: `https://repository-service.tld/username/package-name/` ; the package files must be located at the root of the repository, and in the case of plugins the main plugin file must follow the pattern `package-name.php`.
+Self-hosted Remote Repository Service | checkbox  | Check this only if the Remote Repository Service is a self-hosted instance of Gitlab.
+Packages branch name                  | text      | The branch to download when getting remote packages from the Remote Repository Service.
+Remote Repository Service credentials | text      | Credentials for non-publicly accessible repositories.<br/>In the case of Github and Gitlab, an access token (`token`).<br/>In the case of Bitbucket, the Consumer key and secret separated by a pipe (`consumer_key|consumer_secret`). IMPORTANT: when creating the consumer, "This is a private consumer" must be checked.	
+Remote update check frequency         | select    | How often WP Plugin Update Server will poll each Remote Repository for package updates - checking too often may slow down the server (recommended "Once Daily").
 
 ### Licenses Tab
 
@@ -286,7 +286,7 @@ To link your packages to WP Plugin Update Server, and maybe to prevent webmaster
 
 See `wp-content/plugins/wp-plugin-update-server/integration-examples/dummy-plugin` for an example of plugin, and  `wp-content/plugins/wp-plugin-update-server/integration-examples/dummy-theme` for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.  
 
-Unless "Use remote repository service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in `wp-content/wppus/packages`. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in `package-name.zip` would be `package-name.php`.  
+Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in `wp-content/wppus/packages`. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in `package-name.zip` would be `package-name.php`.  
 
 ### Requests optimisation
 

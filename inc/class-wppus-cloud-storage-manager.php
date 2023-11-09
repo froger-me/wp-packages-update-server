@@ -63,6 +63,7 @@ class WPPUS_Cloud_Storage_Manager {
 				add_filter( 'wppus_scheduler_get_package_slugs', array( $this, 'wppus_scheduler_get_package_slugs' ), 10, 4 );
 				add_filter( 'wppus_delete_package_result', array( $this, 'wppus_delete_package_result' ), 10, 3 );
 				add_filter( 'wppus_delete_packages_bulk_paths', array( $this, 'wppus_delete_packages_bulk_paths' ), 10, 1 );
+				add_filter( 'wppus_get_admin_template_args', array( $this, 'wppus_get_admin_template_args' ), 10, 2 );
 			}
 		}
 	}
@@ -249,6 +250,16 @@ class WPPUS_Cloud_Storage_Manager {
 		return $result;
 	}
 
+	public function wppus_get_admin_template_args( $args, $template_name ) {
+		$template_names = array( 'plugin-main-page.php', 'plugin-help-page.php', 'plugin-remote-sources-page.php' );
+
+		if ( in_array( $template_name, $template_names, true ) ) {
+			$args['packages_dir'] = 'CloudStorageUnit://wppus-packages/';
+		}
+
+		return $args;
+	}
+
 	public function cloud_storage_test() {
 		$result = array();
 
@@ -275,7 +286,7 @@ class WPPUS_Cloud_Storage_Manager {
 							__( 'Error - Storage Unit not found', 'wppus' )
 						);
 					} else {
-						$result[] = __( 'Cloud Storage service was reached sucessfully.', 'wppus' );
+						$result[] = __( 'Cloud Storage Service was reached sucessfully.', 'wppus' );
 
 						if ( ! $this->virtual_folder_exists( 'wppus-packages' ) ) {
 							$created  = $this->create_virtual_folder( 'wppus-packages' );
@@ -305,7 +316,7 @@ class WPPUS_Cloud_Storage_Manager {
 					);
 
 					$result->add( __METHOD__ . ' => LF', '' );
-					$result->add( __METHOD__, __( 'An error occured when attempting to communicate with the Cloud Storage service provider. Please check all the settings and try again.', 'wppus' ) );
+					$result->add( __METHOD__, __( 'An error occured when attempting to communicate with the Cloud Storage Service. Please check all the settings and try again.', 'wppus' ) );
 				}
 			} else {
 				$result = new WP_Error(

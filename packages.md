@@ -151,7 +151,7 @@ wppus_download_remote_plugin_to_local( string $package_slug );
 ```
 
 **Description**  
-Download a plugin package from the remote repository down to the package directory on the WordPress file system.
+Download a plugin package from the Remote Repository down to the package directory on the WordPress file system.
 
 **Parameters**  
 $package_slug
@@ -169,7 +169,7 @@ wppus_download_remote_theme_to_local( string $package_slug );
 ```
 
 **Description**  
-Download a theme package from the remote repository down to the package directory on the WordPress file system.
+Download a theme package from the Remote Repository down to the package directory on the WordPress file system.
 
 **Parameters**  
 $package_slug
@@ -270,7 +270,7 @@ do_action( 'wppus_primed_package_from_remote', bool $result, string $slug );
 ```
 
 **Description**  
-Fired after an attempt to prime a package from a remote repository has been performed.  
+Fired after an attempt to prime a package from a Remote Repository has been performed.  
 
 **Parameters**  
 $result  
@@ -518,7 +518,7 @@ do_action( 'wppus_downloaded_remote_package', mixed $package, string $type, stri
 ```
 
 **Description**  
-Fired after an attempt to download a package from the remote repository service down to the WordPress file system has been performed.  
+Fired after an attempt to download a package from the Remote Repository Service down to the WordPress file system has been performed.  
 Fired during client update API request.  
 
 **Parameters**  
@@ -560,12 +560,12 @@ do_action( 'wppus_checked_remote_package_update', bool $has_update, string $type
 ```
 
 **Description**  
-Fired after an update check on the remote repository has been performed for a package.  
+Fired after an update check on the Remote Repository has been performed for a package.  
 Fired during client update API request.  
 
 **Parameters**  
 $has_update
-> (bool) true is the package has updates on the remote repository, false otherwise  
+> (bool) true is the package has updates on the Remote Repository, false otherwise  
 
 $type
 > (string) type of the package checked - "Plugin" or "Theme"  
@@ -603,7 +603,7 @@ do_action( 'wppus_before_remote_package_zip', (string) $package_slug, (string) $
 ```
 
 **Description**  
-Fired before packing the files received from the remote repository. Can be used for extra files manipulation.  
+Fired before packing the files received from the Remote Repository. Can be used for extra files manipulation.  
 Fired during client update API request.  
 
 **Parameters**  
@@ -771,10 +771,10 @@ $repository_service_url
 > (string) URL of the repository service where the remote packages are located  
 
 $repository_branch
-> (string) the branch of the remote repository where the packages are located  
+> (string) the branch of the Remote Repository where the packages are located  
 
 $repository_credentials
-> (mixed) the credentials to access the remote repository where the packages are located  
+> (mixed) the credentials to access the Remote Repository where the packages are located  
 
 $repository_service_self_hosted
-> (bool) true if the remote repository is on a self-hosted repository service, false otherwiseark  
+> (bool) true if the Remote Repository is on a self-hosted repository service, false otherwiseark  

@@ -184,6 +184,7 @@ class WPPUS_Update_Manager {
 				'cache_size'           => self::get_dir_size_mb( 'cache' ),
 				'logs_size'            => self::get_dir_size_mb( 'logs' ),
 				'package_rows'         => $package_rows,
+				'packages_dir'         => WPPUS_Data_Manager::get_data_dir( 'packages' ),
 			)
 		);
 	}
@@ -194,7 +195,12 @@ class WPPUS_Update_Manager {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
-		wppus_get_admin_template( 'plugin-help-page.php' );
+		wppus_get_admin_template(
+			'plugin-help-page.php',
+			array(
+				'packages_dir' => WPPUS_Data_Manager::get_data_dir( 'packages' ),
+			)
+		);
 	}
 
 	public function force_clean() {

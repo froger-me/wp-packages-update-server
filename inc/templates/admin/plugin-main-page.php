@@ -49,9 +49,9 @@
 			<?php esc_html_e( 'Notes:', 'wppus' ); ?>
 			<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 			<br/>
-				<?php esc_html_e( '- It is not necessary to prime or upload packages linked to a remote repository for them to appear in this list: they will be automatically added whenever a client checks for updates.', 'wppus' ); ?>
+				<?php esc_html_e( '- It is not necessary to prime or upload packages linked to a Remote Repository for them to appear in this list: they will be automatically added whenever a client checks for updates.', 'wppus' ); ?>
 			<br/>
-				<?php esc_html_e( '- If packages linked to a remote repository are deleted using this interface, they will be added again to the list automatically whenever a client checks for updates.', 'wppus' ); ?>
+				<?php esc_html_e( '- If packages linked to a Remote Repository are deleted using this interface, they will be added again to the list automatically whenever a client checks for updates.', 'wppus' ); ?>
 			<?php endif; ?>
 			<?php if ( get_option( 'wppus_use_licenses' ) ) : ?>
 			<br/>
@@ -69,16 +69,16 @@
 		<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 		<tr>
 			<th>
-				<label for="wppus_prime_package_slug"><?php esc_html_e( 'Prime a package using a remote repository (recommended)', 'wppus' ); ?></label>
+				<label for="wppus_prime_package_slug"><?php esc_html_e( 'Prime a package using a Remote Repository (recommended)', 'wppus' ); ?></label>
 			</th>
 			<td>
 				<input class="regular-text" type="text" id="wppus_prime_package_slug" placeholder="<?php esc_attr_e( 'repository-name-aka-theme-or-plugin-slug' ); ?>" name="wppus_prime_package_slug" value=""> <input type="button" id="wppus_prime_package_trigger" value="<?php print esc_attr_e( 'Get remote package', 'wppus' ); ?>" class="button button-primary" disabled /><div class="spinner"></div>
 				<p class="description">
-					<?php echo sprintf( __( 'Get an archive of a package from a remote repository in the <code>%s</code> directory by entering the package slug.<br/>The repository name should be <code>repository-name-aka-plugin-slug</code> and all the files should be located at the root of the repository.<br/>In the case of a plugin the main plugin file must have the same name as the repository name - for example, the main plugin file in <code>repository-name-aka-theme-or-plugin-slug</code> repository would be <code>repository-name-aka-theme-or-plugin-slug.php</code>.', 'wppus' ), WPPUS_Data_Manager::get_data_dir( 'packages' ) ); ?><?php // @codingStandardsIgnoreLine ?>
+					<?php echo sprintf( __( 'Get an archive of a package from a Remote Repository in the <code>%s</code> directory by entering the package slug.<br/>The repository name should be <code>repository-name-aka-plugin-slug</code> and all the files should be located at the root of the repository.<br/>In the case of a plugin the main plugin file must have the same name as the repository name - for example, the main plugin file in <code>repository-name-aka-theme-or-plugin-slug</code> repository would be <code>repository-name-aka-theme-or-plugin-slug.php</code>.', 'wppus' ), $packages_dir ); ?><?php // @codingStandardsIgnoreLine ?>
 					<br>
-					<?php esc_html_e( 'Using this method adds the package to the list if not present or forcefully downloads its latest version from the remote repository and overwrites the existing package.', 'wppus' ); ?>
+					<?php esc_html_e( 'Using this method adds the package to the list if not present or forcefully downloads its latest version from the Remote Repository and overwrites the existing package.', 'wppus' ); ?>
 					<br>
-					<?php esc_html_e( 'Note: packages will be overwritten automatically regularly with their counterpart from the remote repository if a newer version exists.', 'wppus' ); ?>
+					<?php esc_html_e( 'Note: packages will be overwritten automatically regularly with their counterpart from the Remote Repository if a newer version exists.', 'wppus' ); ?>
 				</p>
 			</td>
 		</tr>
@@ -94,12 +94,12 @@
 			<td>
 				<input class="input-file hidden" type="file" id="wppus_manual_package_upload" name="wppus_manual_package_upload" value=""><label for="wppus_manual_package_upload" class="button"><?php esc_html_e( 'Choose package archive', 'wppus' ); ?></label> <input type="text" id="wppus_manual_package_upload_filename" placeholder="package-name.zip" value="" disabled> <input type="button" value="<?php print esc_attr_e( 'Upload package', 'wppus' ); ?>" class="button button-primary manual-package-upload-trigger" id="wppus_manual_package_upload_trigger" disabled /><div class="spinner"></div>
 				<p class="description">
-					<?php echo sprintf( __( 'Add a package zip archive to the <code>%s</code> directory. The archive needs to be a valid WordPress plugin or theme package.<br/>In the case of a plugin the main plugin file must have the same name as the zip archive - for example, the main plugin file in <code>package-name.zip</code> would be <code>package-name.php</code>.', 'wppus' ), WPPUS_Data_Manager::get_data_dir( 'packages' ) ); ?><?php // @codingStandardsIgnoreLine ?>
+					<?php echo sprintf( __( 'Add a package zip archive to the <code>%s</code> directory. The archive needs to be a valid WordPress plugin or theme package.<br/>In the case of a plugin the main plugin file must have the same name as the zip archive - for example, the main plugin file in <code>package-name.zip</code> would be <code>package-name.php</code>.', 'wppus' ), $packages_dir ); ?><?php // @codingStandardsIgnoreLine ?>
 					<br>
 					<?php esc_html_e( 'Using this method adds the package to the list if not present or overwrites the existing package.', 'wppus' ); ?>
 					<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 					<br>
-						<?php esc_html_e( 'Note: a manually uploaded package that does not have its counterpart in a remote repository will need to be re-uploaded manually to provide updates for each new release.', 'wppus' ); ?>
+						<?php esc_html_e( 'Note: a manually uploaded package that does not have its counterpart in a Remote Repository will need to be re-uploaded manually to provide updates for each new release.', 'wppus' ); ?>
 					<?php endif; ?>
 				</p>
 			</td>
