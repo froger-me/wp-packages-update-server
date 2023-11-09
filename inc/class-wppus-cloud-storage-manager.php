@@ -555,7 +555,7 @@ class WPPUS_Cloud_Storage_Manager {
 					$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
 				}
 
-				$url                  = self::$cloud_storage->getAuthenticatedV4URL(
+				$url                  = self::$cloud_storage->getAuthenticatedUrlV4(
 					$config['storage_unit'],
 					'wppus-packages/' . $package_id . '.zip',
 					array( 'lifetime' => abs( intval( wppus_get_nonce_expiry( $nonce ) ) ) - time() ),

@@ -50,6 +50,9 @@ class PhpS3
     public const STORAGE_CLASS_STANDARD_IA = 'STANDARD_IA';
     public const SSE_NONE = '';
     public const SSE_AES256 = 'AES256';
+    public const V4_SIGNATURE_ALGORITHM = 'AWS4-HMAC-SHA256';
+    public const V4_REQUEST_TYPE = 'aws4_request';
+    public const V4_SERVICE = 's3';
 
     private const ACL_LOG_DELIVERY_URL = 'http://acs.amazonaws.com/groups/s3/LogDelivery';
     private const ACL_LOG_DELIVERY_XMLNS = 'http://s3.amazonaws.com/doc/2006-03-01/';
@@ -1680,7 +1683,61 @@ class PhpS3
     }
 
 
-   /**
+        /**
+    * Get a query string authenticated URL - V4 signed
+    *
+    * @param string $bucket Bucket name
+    * @param string $uri Object URI
+    * @param integer $lifetime Lifetime in seconds
+    * @param array $parameters Extra parameters
+    * @param array $headers Array of request headers
+    * @param array $amzHeaders Array of extra x-amz-* request headers
+    * @param boolean $hostBucket Use the bucket name as the hostname
+    * @return string
+    */
+    public function getAuthenticatedUrlV4(
+        $bucket,
+        $uri,
+        $lifetime = 3600,
+        $parameters = array(),
+        $headers = array(),
+        $amzHeaders = array(),
+        $hostBucket = false
+    ) {
+        $hostname = $hostBucket ? $bucket : $bucket . '.' . self::$endpoint;
+        $headers = array_merge($headers, array('Host' => $hostname));
+        $amzHeaders = array_merge(
+            $amzHeaders,
+            array(
+                'x-amz-date' => gmdate('Ymd\THis\Z'),
+            )
+        );
+        $uri = '/' . str_replace(array('%2F', '%2B'), array('/', '+'), rawurlencode($uri));
+        $url = (self::$useSSL ? 'https://' : 'http://') . $hostname . $uri;
+
+        if (self::hasAuth()) {
+            $parameters['lifetime'] = $lifetime;
+
+            foreach ($amzHeaders as $header => $value) {
+                if (strlen($value) > 0) {
+                    $httpHeaders[] = $header . ': ' . $value;
+                }
+            }
+
+            foreach ($headers as $header => $value) {
+                if (strlen($value) > 0) {
+                    $httpHeaders[] = $header . ': ' . $value;
+                }
+            }
+
+            $url .= PhpS3::getSignatureV4($amzHeaders, $headers, 'GET', $uri, $parameters, true);
+        }
+
+        return $url;
+    }
+
+
+/**
     * Get a query string authenticated URL
     *
     * @param string $bucket Bucket name
@@ -1690,10 +1747,10 @@ class PhpS3
     * @param boolean $https Use HTTPS ($hostBucket should be false for SSL verification)
     * @return string
     */
-    public static function getAuthenticatedURL(
+    public static function getAuthenticatedUrl(
         $bucket,
         $uri,
-        $lifetime,
+        $lifetime = 3600,
         $hostBucket = false,
         $https = true,
         $headers = false
@@ -1741,7 +1798,6 @@ class PhpS3
     * @param string $successRedirect Redirect URL or 200 / 201 status code
     * @param array $amzHeaders Array of x-amz-meta-* headers
     * @param array $headers Array of request headers or content type as a string
-    * @param boolean $flashVars Includes additional "Filename" variable posted by Flash
     * @return object
     */
     public static function getHttpUploadPostParams(
@@ -1752,8 +1808,7 @@ class PhpS3
         $maxFileSize = 5242880,
         $successRedirect = '201',
         $amzHeaders = array(),
-        $headers = array(),
-        $flashVars = false
+        $headers = array()
     ) {
         // Create policy object
         $policy = new \stdClass();
@@ -1785,10 +1840,6 @@ class PhpS3
 
         array_push($policy->conditions, array('starts-with', '$key', $uriPrefix));
 
-        if ($flashVars) {
-            array_push($policy->conditions, array('starts-with', '$Filename', ''));
-        }
-
         foreach (array_keys($headers) as $headerKey) {
             array_push($policy->conditions, array('starts-with', '$' . $headerKey, ''));
         }
@@ -1800,7 +1851,7 @@ class PhpS3
             array_push($policy->conditions, $obj);
         }
 
-        array_push($policy->conditions, array('content-length-range', 0, $maxFileSize));
+        array_push($policy->conditions, array('content-length-range', 1, $maxFileSize));
 
         $policy = base64_encode(str_replace('\/', '/', json_encode($policy)));
 
@@ -1830,6 +1881,285 @@ class PhpS3
         }
 
         return $params;
+    }
+
+
+    /**
+    * Get upload POST parameters for form uploads
+    *
+    * @param string $bucket Bucket name
+    * @param constant $acl ACL constant
+    * @param array $extraParameters Array of post parameters to add or use to override default
+    * @param array $extraPolicyConditions Array of policy conditions to add or use to override default
+    * @return object
+    */
+    public static function getHttpUploadPostParamsV4(
+        $bucket,
+        $extraParameters = array(),
+        $extraPolicyConditions = array(),
+        $acl = self::ACL_PRIVATE
+    ) {
+        $date = gmdate('Ymd\THis\Z');
+        $shortDate = gmdate('Ymd');
+        $credentials = implode(
+            '/',
+            array( self::$accessKey, $shortDate, self::getRegion(), self::V4_SERVICE, self::V4_REQUEST_TYPE)
+        );
+        $parameters = array();
+        $policy = array(
+            'expiration' => gmdate('Y-m-d\TG:i:s\Z', strtotime('+6 hours')),
+            'conditions' => array(
+                array('bucket' => $bucket),
+                array('acl' => $acl),
+                array('starts-with', '$Content-Length', ''),
+                array('x-amz-credential' => $credentials),
+                array('x-amz-algorithm' => self::V4_SIGNATURE_ALGORITHM),
+                array('x-amz-date' => $date),
+            )
+        );
+        $defaults = array(
+            'Content-Type' => array(
+                'condition' => array('Content-Type' => 'application/octet-stream'),
+                'parameter' => 'application/octet-stream',
+            ),
+            'Content-Disposition' => array(
+                'condition' => array('Content-Disposition' => 'attachment; filename=${filename}'),
+                'parameter' => 'attachment; filename=${filename}',
+            ),
+            'key' => array(
+                'condition' => array('starts-with', '$key', ''),
+                'parameter' => '${filename}',
+            ),
+            'Content-Length' => array(
+                'condition' => array("content-length-range", 1, 5242880),
+                'parameter' => '',
+            ),
+            'x-amz-expires' => array(
+                'condition' => array('x-amz-expires' => '3600'),
+                'parameter' => '3600',
+            ),
+            'Cache-Control' => array(
+                'condition' => array('starts-with', '$Cache-Control', ''),
+                'parameter' => '',
+            ),
+            'Content-Encoding' => array(
+                'condition' => array('starts-with', '$Content-Encoding', ''),
+                'parameter' => '',
+            ),
+            'Expires' => array(
+                'condition' => array('starts-with', '$Expires', ''),
+                'parameter' => '',
+            ),
+            'success_action_redirect' => array(
+                'condition' => null,
+                'parameter' => null,
+            ),
+            'success_action_status' => array(
+                'condition' => array('success_action_status' => '204'),
+                'parameter' => '204',
+            ),
+        );
+
+        foreach ($defaults as $defaultKey => $default) {
+            $addDefaultCondition = isset($default['condition']) && null !== $default['condition'];
+            $addDefaultParameter = isset($default['parameter']) && null !== $default['parameter'];
+
+            if (!empty($extraPolicyConditions)) {
+                foreach ($extraPolicyConditions as $conditionKey => $condition) {
+                    if (
+                        (isset($condition[1]) && '$' . $defaultKey === $condition[1]) ||
+                        isset($condition[$defaultKey])
+                    ) {
+                        $policy['conditions'][] = $condition;
+                        $addDefaultCondition = false;
+
+                        unset($extraPolicyConditions[$conditionKey]);
+
+                        break;
+                    }
+                }
+            }
+
+            if ($addDefaultCondition) {
+                $policy['conditions'][] = $default['condition'];
+            }
+
+            if (!empty($extraParameters)) {
+                foreach ($extraParameters as $parameterKey => $parameter) {
+                    if ($parameterKey === $defaultKey) {
+                        $parameters[$parameterKey] = $parameter;
+                        $addDefaultParameter = false;
+
+                        unset($extraParameters[$parameterKey]);
+
+                        break;
+                    }
+                }
+            }
+
+            if ($addDefaultParameter) {
+                $parameters[$defaultKey] = $default['parameter'];
+            }
+        }
+
+        if (!empty($extraPolicyConditions)) {
+            foreach ($extraPolicyConditions as $conditionKey => $condition) {
+                $policy['conditions'][] = $condition;
+            }
+        }
+
+        if (!empty($extraParameters)) {
+            foreach ($extraParameters as $parameterKey => $parameter) {
+                $parameters[$parameterKey] = $parameter;
+            }
+        }
+
+        $base64Policy = base64_encode(json_encode($policy));
+        $dateKey = hash_hmac('sha256', $shortDate, 'AWS4' . self::$secretKey, true);
+        $dateRegionKey = hash_hmac('sha256', self::getRegion(), $dateKey, true);
+        $dateRegionServiceKey = hash_hmac('sha256', self::V4_SERVICE, $dateRegionKey, true);
+        $signingKey = hash_hmac('sha256', self::V4_REQUEST_TYPE, $dateRegionServiceKey, true);
+        $signature = hash_hmac('sha256', $base64Policy, $signingKey);
+        $parameters = array_merge(
+            $parameters,
+            array(
+                'acl' => $acl,
+                'policy' => $base64Policy,
+                'X-amz-credential' => $credentials,
+                'X-amz-algorithm' => self::V4_SIGNATURE_ALGORITHM,
+                'X-amz-date' => $date,
+                'X-amz-signature' => $signature
+            )
+        );
+
+        return $parameters;
+    }
+
+
+    /**
+    * Generate the auth string: "AWS AccessKey:Signature"
+    *
+    * @internal Used by S3Request::getResponse()
+    * @param string $string String to sign
+    * @return string
+    */
+    public static function getSignature($string)
+    {
+        return 'AWS ' . self::$accessKey . ':' . self::__getHash($string);
+    }
+
+
+    /**
+    * Generate the headers for AWS Signature V4
+    *
+    * @internal Used by S3Request::getResponse()
+    * @param array $amzHeaders The x-amx-* headers
+    * @param array $headers The canonical headers
+    * @param string $method The request method aka verb
+    * @param string $uri The object URI
+    * @param array $parameters Query string parameters ; if $returnQuery string is true, do not include x-amz-* values
+    * @param bool $returnQueryString Whether to return the query string ; returns authorization header by default
+    * @return array
+    */
+    public static function getSignatureV4(
+        $amzHeaders,
+        $headers,
+        $method,
+        $uri,
+        $parameters,
+        $returnQueryString = false
+    ) {
+        $combinedHeaders = array();
+        $amzDate = $amzHeaders['x-amz-date'];
+        $amzDateStamp = substr($amzDate, 0, 8);
+
+        if ($returnQueryString) {
+            unset($amzHeaders['x-amz-date']);
+        }
+
+        // CanonicalHeaders
+        foreach ($headers as $k => $v) {
+            if (!empty($v)) {
+                $combinedHeaders[strtolower($k)] = trim($v);
+            }
+        }
+
+        foreach ($amzHeaders as $k => $v) {
+            $combinedHeaders[strtolower($k)] = trim($v);
+        }
+
+        uksort($combinedHeaders, array('self', '__sortMetaHeadersCmp'));
+
+        // CredentialScope
+        $credentialScope = array($amzDateStamp, self::getRegion(''), self::V4_SERVICE, self::V4_REQUEST_TYPE);
+
+        if ($returnQueryString) {
+            $parameters['X-Amz-Algorithm'] = self::V4_SIGNATURE_ALGORITHM;
+            $parameters['X-Amz-Credential'] = self::$accessKey . '/' . implode('/', $credentialScope);
+            $parameters['X-Amz-Date'] = $amzDate;
+            $parameters['X-Amz-Expires'] = isset($parameters['expires']) ? $parameters['expires'] : 3600;
+            $parameters['X-Amz-SignedHeaders'] = implode(';', array_keys($combinedHeaders));
+
+            unset($parameters['lifetime']);
+        }
+
+        // Convert null query string parameters to strings and sort
+        $parameters = array_map('strval', $parameters);
+
+        uksort($parameters, array('self', '__sortMetaHeadersCmp'));
+
+        $queryString = http_build_query($parameters, '', '&', PHP_QUERY_RFC3986);
+
+        // Payload
+        $amzPayload = array($method);
+        $qsPos = strpos($uri, '?');
+        $amzPayload[] = ($qsPos === false ? $uri : substr($uri, 0, $qsPos));
+        $amzPayload[] = $queryString;
+
+        // add header as string to requests
+        foreach ($combinedHeaders as $k => $v) {
+            $amzPayload[] = $k . ':' . $v;
+        }
+
+        // add a blank entry so we end up with an extra line break
+        $amzPayload[] = '';
+        // SignedHeaders
+        $amzPayload[] = implode(';', array_keys($combinedHeaders));
+        // payload hash
+        $amzPayload[] = isset($amzHeaders['x-amz-content-sha256']) ?
+            $amzHeaders['x-amz-content-sha256'] :
+            'UNSIGNED-PAYLOAD' ;
+        // request as string
+        $amzPayloadStr = implode("\n", $amzPayload);
+        // stringToSign
+        $stringToSignStr = implode(
+            "\n",
+            array(
+                self::V4_SIGNATURE_ALGORITHM,
+                $amzDate,
+                implode('/', $credentialScope), hash('sha256', $amzPayloadStr)
+            )
+        );
+
+        // Make Signature
+        $kSecret = 'AWS4' . self::$secretKey;
+        $kDate = hash_hmac('sha256', $amzDateStamp, $kSecret, true);
+        $kRegion = hash_hmac('sha256', self::getRegion(''), $kDate, true);
+        $kService = hash_hmac('sha256', self::V4_SERVICE, $kRegion, true);
+        $kSigning = hash_hmac('sha256', self::V4_REQUEST_TYPE, $kService, true);
+        $signature = hash_hmac('sha256', $stringToSignStr, $kSigning);
+
+        if ($returnQueryString) {
+            $return = '?' . $queryString . '&X-Amz-Signature=' . $signature;
+        } else {
+            $return = self::V4_SIGNATURE_ALGORITHM . ' ' . implode(',', array(
+                'Credential=' . self::$accessKey . '/' . implode('/', $credentialScope),
+                'SignedHeaders=' . implode(';', array_keys($combinedHeaders)),
+                'Signature=' . $signature,
+            ));
+        }
+
+        return $return;
     }
 
 
@@ -2713,22 +3043,9 @@ class PhpS3
     * @internal Used to apply offsets to sytem time
     * @return integer
     */
-    public static function __getTime()
+    private static function __getTime()
     {
         return time() + self::$timeOffset;
-    }
-
-
-    /**
-    * Generate the auth string: "AWS AccessKey:Signature"
-    *
-    * @internal Used by S3Request::getResponse()
-    * @param string $string String to sign
-    * @return string
-    */
-    public static function __getSignature($string)
-    {
-        return 'AWS ' . self::$accessKey . ':' . self::__getHash($string);
     }
 
 
@@ -2737,7 +3054,7 @@ class PhpS3
     *
     * This uses the hash extension if loaded
     *
-    * @internal Used by __getSignature()
+    * @internal Used by getSignature()
     * @param string $string String to sign
     * @return string
     */
@@ -2767,160 +3084,6 @@ class PhpS3
         }
 
         return base64_encode($hash);
-    }
-
-    public function getAuthenticatedV4URL(
-        $bucket,
-        $uri,
-        $parameters = array('lifetime' => 60),
-        $headers = array(),
-        $amzHeaders = array(),
-        $hostBucket = false
-    ) {
-        $hostname = $hostBucket ? $bucket : $bucket . '.' . self::$endpoint;
-        $headers = array_merge($headers, array('Host' => $hostname));
-        $amzHeaders = array_merge(
-            $amzHeaders,
-            array(
-                'x-amz-date' => gmdate('Ymd\THis\Z'),
-            )
-        );
-        $uri = '/' . str_replace(array('%2F', '%2B'), array('/', '+'), rawurlencode($uri));
-        $url = (self::$useSSL ? 'https://' : 'http://') . $hostname . $uri;
-
-        if (self::hasAuth()) {
-            foreach ($amzHeaders as $header => $value) {
-                if (strlen($value) > 0) {
-                    $httpHeaders[] = $header . ': ' . $value;
-                }
-            }
-
-            foreach ($headers as $header => $value) {
-                if (strlen($value) > 0) {
-                    $httpHeaders[] = $header . ': ' . $value;
-                }
-            }
-
-            $url .= PhpS3::__getSignatureV4($amzHeaders, $headers, 'GET', $uri, $parameters, true);
-        }
-
-        return $url;
-    }
-
-
-    /**
-    * Generate the headers for AWS Signature V4
-    *
-    * @internal Used by S3Request::getResponse()
-    * @param array $amzHeaders
-    * @param array $headers
-    * @param string $method
-    * @param string $uri
-    * @param array $parameters
-    * @return array
-    */
-    public static function __getSignatureV4(
-        $amzHeaders,
-        $headers,
-        $method,
-        $uri,
-        $parameters,
-        $returnQueryString = false
-    ) {
-        $service = 's3';
-        $region = self::getRegion('');
-        $algorithm = 'AWS4-HMAC-SHA256';
-        $combinedHeaders = array();
-        $amzDate = $amzHeaders['x-amz-date'];
-        $amzDateStamp = substr($amzDate, 0, 8);
-
-        if ($returnQueryString) {
-            unset($amzHeaders['x-amz-date']);
-        }
-
-        // CanonicalHeaders
-        foreach ($headers as $k => $v) {
-            if (!empty($v)) {
-                $combinedHeaders[strtolower($k)] = trim($v);
-            }
-        }
-
-        foreach ($amzHeaders as $k => $v) {
-            $combinedHeaders[strtolower($k)] = trim($v);
-        }
-
-        uksort($combinedHeaders, array('self', '__sortMetaHeadersCmp'));
-
-        // CredentialScope
-        $credentialScope = array($amzDateStamp, $region, $service, 'aws4_request');
-
-        if ($returnQueryString) {
-            $parameters['X-Amz-Algorithm'] = $algorithm;
-            $parameters['X-Amz-Credential'] = self::$accessKey . '/' . implode('/', $credentialScope);
-            $parameters['X-Amz-Date'] = $amzDate;
-            $parameters['X-Amz-Expires'] = isset($parameters['expires']) ? $parameters['expires'] : 3600;
-            $parameters['X-Amz-SignedHeaders'] = implode(';', array_keys($combinedHeaders));
-
-            unset($parameters['lifetime']);
-        }
-
-        // Convert null query string parameters to strings and sort
-        $parameters = array_map('strval', $parameters);
-
-        uksort($parameters, array('self', '__sortMetaHeadersCmp'));
-
-        $queryString = http_build_query($parameters, '', '&', PHP_QUERY_RFC3986);
-
-        // Payload
-        $amzPayload = array($method);
-        $qsPos = strpos($uri, '?');
-        $amzPayload[] = ($qsPos === false ? $uri : substr($uri, 0, $qsPos));
-        $amzPayload[] = $queryString;
-
-        // add header as string to requests
-        foreach ($combinedHeaders as $k => $v) {
-            $amzPayload[] = $k . ':' . $v;
-        }
-
-        // add a blank entry so we end up with an extra line break
-        $amzPayload[] = '';
-        // SignedHeaders
-        $amzPayload[] = implode(';', array_keys($combinedHeaders));
-        // payload hash
-        $amzPayload[] = isset($amzHeaders['x-amz-content-sha256']) ?
-            $amzHeaders['x-amz-content-sha256'] :
-            'UNSIGNED-PAYLOAD' ;
-        // request as string
-        $amzPayloadStr = implode("\n", $amzPayload);
-        // stringToSign
-        $stringToSignStr = implode(
-            "\n",
-            array(
-                $algorithm,
-                $amzDate,
-                implode('/', $credentialScope), hash('sha256', $amzPayloadStr)
-            )
-        );
-
-        // Make Signature
-        $kSecret = 'AWS4' . self::$secretKey;
-        $kDate = hash_hmac('sha256', $amzDateStamp, $kSecret, true);
-        $kRegion = hash_hmac('sha256', $region, $kDate, true);
-        $kService = hash_hmac('sha256', $service, $kRegion, true);
-        $kSigning = hash_hmac('sha256', 'aws4_request', $kService, true);
-        $signature = hash_hmac('sha256', $stringToSignStr, $kSigning);
-
-        if ($returnQueryString) {
-            $return = '?' . $queryString . '&X-Amz-Signature=' . $signature;
-        } else {
-            $return = $algorithm . ' ' . implode(',', array(
-                'Credential=' . self::$accessKey . '/' . implode('/', $credentialScope),
-                'SignedHeaders=' . implode(';', array_keys($combinedHeaders)),
-                'Signature=' . $signature,
-            ));
-        }
-
-        return $return;
     }
 
 
@@ -3233,7 +3396,7 @@ final class PhpS3Request // @codingStandardsIgnoreLine
                     }
                 }
 
-                $httpHeaders[] = 'Authorization: ' . PhpS3::__getSignature($this->headers['Date']);
+                $httpHeaders[] = 'Authorization: ' . PhpS3::getSignature($this->headers['Date']);
             } else {
                 $this->amzHeaders['x-amz-date'] = gmdate('Ymd\THis\Z');
 
@@ -3255,7 +3418,7 @@ final class PhpS3Request // @codingStandardsIgnoreLine
                     }
                 }
 
-                $httpHeaders[] = 'Authorization: ' . PhpS3::__getSignatureV4(
+                $httpHeaders[] = 'Authorization: ' . PhpS3::getSignatureV4(
                     $this->amzHeaders,
                     $this->headers,
                     $this->verb,
