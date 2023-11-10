@@ -157,6 +157,8 @@
 						<?php esc_html_e( 'Send a test request to the Remote Repository Service.', 'wppus' ); ?>
 						<br/>
 						<?php esc_html_e( 'The request checks whether the service is reachable and if the request can be authenticated.', 'wppus' ); ?>
+						<br/>
+						<strong><?php esc_html_e( 'Tests are not supported for Bitbucket ; if you use this Remote Repository Serice, save your settings and try to prime a package in the Overview page.', 'wppus' ); ?></strong>
 					</p>
 				</td>
 			</tr>

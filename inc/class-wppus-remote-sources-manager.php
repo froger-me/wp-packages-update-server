@@ -1,5 +1,7 @@
 <?php
 
+use YahnisElsts\PluginUpdateChecker\v5p1\OAuthSignature;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -172,6 +174,14 @@ class WPPUS_Remote_Sources_Manager {
 					}
 				}
 
+				if ( 'BitBucket' === $service ) {
+					wp_send_json_error( new WP_Error(
+							__METHOD__,
+							__( 'Error - Test Remote Repository Access is not supported for Bitbucket. Please save your settings and try to prime a package in the Overview page.', 'wppus' )
+						)
+					);
+				}
+
 				if ( preg_match( '@^/?(?P<username>[^/]+?)/?$@', $path, $matches ) ) {
 					$user_name = $matches['username'];
 
@@ -182,9 +192,7 @@ class WPPUS_Remote_Sources_Manager {
 							'Authorization' => 'Basic '
 								. base64_encode( $user_name . ':' . $credentials ), // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 						);
-					}
-
-					if ( 'GitLab' === $service ) {
+					} elseif ( 'GitLab' === $service ) {
 						$options = array( 'timeout' => 3 );
 						$scheme  = wp_parse_url( $url, PHP_URL_SCHEME );
 						$url     = sprintf(
@@ -286,7 +294,6 @@ class WPPUS_Remote_Sources_Manager {
 							$option_info['value'] = array_unique(
 								array_map(
 									function ( $ip ) {
-
 										return preg_match( '/\//', $ip ) ? $ip : $ip . '/32';
 									},
 									$option_info['value']
