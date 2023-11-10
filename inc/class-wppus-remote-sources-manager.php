@@ -175,7 +175,8 @@ class WPPUS_Remote_Sources_Manager {
 				}
 
 				if ( 'BitBucket' === $service ) {
-					wp_send_json_error( new WP_Error(
+					wp_send_json_error(
+						new WP_Error(
 							__METHOD__,
 							__( 'Error - Test Remote Repository Access is not supported for Bitbucket. Please save your settings and try to prime a package in the Overview page.', 'wppus' )
 						)
