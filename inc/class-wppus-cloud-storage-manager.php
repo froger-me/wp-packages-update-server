@@ -84,7 +84,8 @@ class WPPUS_Cloud_Storage_Manager {
 			self::$config = $config;
 		}
 
-		return apply_filters( 'wppus_license_api_config', self::$config );
+		// @todo doc
+		return apply_filters( 'wppus_could_storage_api_config', self::$config );
 	}
 
 	public static function get_instance() {

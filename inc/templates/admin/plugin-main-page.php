@@ -72,9 +72,9 @@
 				<label for="wppus_prime_package_slug"><?php esc_html_e( 'Prime a package using a Remote Repository (recommended)', 'wppus' ); ?></label>
 			</th>
 			<td>
-				<input class="regular-text" type="text" id="wppus_prime_package_slug" placeholder="<?php esc_attr_e( 'repository-name-aka-theme-or-plugin-slug' ); ?>" name="wppus_prime_package_slug" value=""> <input type="button" id="wppus_prime_package_trigger" value="<?php print esc_attr_e( 'Get remote package', 'wppus' ); ?>" class="button button-primary" disabled /><div class="spinner"></div>
+				<input class="regular-text" type="text" id="wppus_prime_package_slug" placeholder="<?php esc_attr_e( 'package-name' ); ?>" name="wppus_prime_package_slug" value=""> <input type="button" id="wppus_prime_package_trigger" value="<?php print esc_attr_e( 'Get remote package', 'wppus' ); ?>" class="button button-primary" disabled /><div class="spinner"></div>
 				<p class="description">
-					<?php echo sprintf( __( 'Get an archive of a package from a Remote Repository in the <code>%s</code> directory by entering the package slug.<br/>The repository name should be <code>repository-name-aka-plugin-slug</code> and all the files should be located at the root of the repository.<br/>In the case of a plugin the main plugin file must have the same name as the repository name - for example, the main plugin file in <code>repository-name-aka-theme-or-plugin-slug</code> repository would be <code>repository-name-aka-theme-or-plugin-slug.php</code>.', 'wppus' ), $packages_dir ); ?><?php // @codingStandardsIgnoreLine ?>
+					<?php echo sprintf( __( 'Get an archive of a package from a Remote Repository an put it in the <code>%s</code> directory by entering the package slug.<br/>The repository name should be <code>package-name</code> and all the files should be located at the root of the repository.<br/>In the case of a plugin, the main plugin file must have the same name as the repository name - for example, the main plugin file in <code>package-name</code> repository would be <code>package-name.php</code>.', 'wppus' ), $packages_dir ); ?><?php // @codingStandardsIgnoreLine ?>
 					<br>
 					<?php esc_html_e( 'Using this method adds the package to the list if not present or forcefully downloads its latest version from the Remote Repository and overwrites the existing package.', 'wppus' ); ?>
 					<br>

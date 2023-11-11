@@ -20,7 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $wppus_doing_update_api_request;
 global $wppus_doing_license_api_request;
 global $wppus_doing_api_request;
-
 global $wppus_always_active_plugins;
 
 if ( ! $wppus_always_active_plugins ) {
@@ -32,14 +31,18 @@ if ( ! $wppus_always_active_plugins ) {
 	);
 }
 
-$url_parts = explode( DIRECTORY_SEPARATOR, ltrim( wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' ) );
-
-$wppus_doing_update_api_request  = ( 'wp-update-server' === reset( $url_parts ) || 'wppus-update-api' === reset( $url_parts ) );
+$url_parts                       = explode(
+	DIRECTORY_SEPARATOR,
+	ltrim( wp_parse_url( $_SERVER['REQUEST_URI'], PHP_URL_PATH ), '/' )
+);
+$wppus_doing_update_api_request  = (
+	'wp-update-server' === reset( $url_parts ) ||
+	'wppus-update-api' === reset( $url_parts )
+);
 $wppus_doing_license_api_request = ( 'wppus-license-api' === reset( $url_parts ) );
 $wppus_doing_api_request         = $wppus_doing_license_api_request || $wppus_doing_update_api_request;
 
-if ( true === $wppus_doing_api_request ) {
-
+if ( $wppus_doing_api_request ) {
 	$hooks = array(
 		'registered_taxonomy',
 		'wp_register_sidebar_widget',
@@ -81,9 +84,9 @@ if ( true === $wppus_doing_api_request ) {
 	}
 
 	add_filter( 'option_active_plugins', 'wppus_unset_plugins', 99, 1 );
-	add_filter( 'template_directory', 'wppus_bypass_themes_functions', 99, 3 );
-	add_filter( 'stylesheet_directory', 'wppus_bypass_themes_functions', 99, 3 );
-	add_filter( 'enable_loading_advanced_cache_dropin', 'wppus_bypass_cache', 99, 1 );
+	add_filter( 'template_directory', 'wppus_bypass_themes_functions', 99, 0 );
+	add_filter( 'stylesheet_directory', 'wppus_bypass_themes_functions', 99, 0 );
+	add_filter( 'enable_loading_advanced_cache_dropin', 'wppus_bypass_cache', 99, 0 );
 }
 
 function wppus_unset_plugins( $plugins ) {
@@ -99,12 +102,10 @@ function wppus_unset_plugins( $plugins ) {
 	return $plugins;
 }
 
-function wppus_bypass_cache( $is_cache ) {
-
+function wppus_bypass_cache() {
 	return false;
 }
 
-function wppus_bypass_themes_functions( $template_dir, $template, $theme_root ) {
-
-	return dirname( __FILE__ );
+function wppus_bypass_themes_functions() {
+	return __DIR__;
 }
