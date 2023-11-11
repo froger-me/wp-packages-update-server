@@ -84,28 +84,16 @@ class WPPUS_Update_Manager {
 						if ( $error ) {
 							$this->packages_table->bulk_action_error = $error;
 						}
-					}
-
-					if ( $packages && 'delete' === $action ) {
+					} elseif ( $packages && 'delete' === $action ) {
 						$this->delete_packages_bulk( $packages );
-					}
-
-					if ( $packages && 'enable_license' === $action ) {
-						$this->change_packages_license_status_bulk( $packages, true );
-					}
-
-					if ( $packages && 'disable_license' === $action ) {
-						$this->change_packages_license_status_bulk( $packages, false );
-					}
-
-					if ( $delete_all_packages ) {
+					} elseif ( $delete_all_packages ) {
 						$this->delete_packages_bulk();
+					} else {
+						// @todo doc
+						do_action( 'wppus_udpdate_manager_request_action', $action, $packages );
 					}
 				}
 			}
-
-			$this->packages_table->licensed_package_slugs = get_option( 'wppus_licensed_package_slugs', array() );
-			$this->packages_table->show_license_info      = get_option( 'wppus_use_licenses' );
 		}
 	}
 
@@ -457,7 +445,8 @@ class WPPUS_Update_Manager {
 		}
 
 		if ( ! empty( $deleted_package_slugs ) ) {
-			$this->change_packages_license_status_bulk( $deleted_package_slugs, false );
+			// @todo doc
+			do_action( 'wppus_update_manager_deleted_packages_bulk', $deleted_package_slugs );
 		}
 	}
 
@@ -656,35 +645,6 @@ class WPPUS_Update_Manager {
 				),
 			)
 		);
-	}
-
-	protected function change_packages_license_status_bulk( $package_slugs, $add ) {
-		$package_slugs          = is_array( $package_slugs ) ? $package_slugs : array( $package_slugs );
-		$licensed_package_slugs = get_option( 'wppus_licensed_package_slugs', array() );
-		$changed                = false;
-
-		foreach ( $package_slugs as $package_slug ) {
-
-			if ( $add && ! in_array( $package_slug, $licensed_package_slugs, true ) ) {
-				$licensed_package_slugs[] = $package_slug;
-				$changed                  = true;
-
-				do_action( 'wppus_added_license_check', $package_slug );
-			} elseif ( ! $add && in_array( $package_slug, $licensed_package_slugs, true ) ) {
-				$key     = array_search( $package_slug, $licensed_package_slugs, true );
-				$changed = true;
-
-				unset( $licensed_package_slugs[ $key ] );
-
-				do_action( 'wppus_removed_license_check', $package_slug );
-			}
-		}
-
-		if ( $changed ) {
-			$licensed_package_slugs = array_values( $licensed_package_slugs );
-
-			update_option( 'wppus_licensed_package_slugs', $licensed_package_slugs, true );
-		}
 	}
 
 	public function get_package_info( $slug ) {

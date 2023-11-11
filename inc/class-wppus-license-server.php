@@ -24,6 +24,7 @@ class WPPUS_License_Server {
 		'date_expiry'         => '',
 		'package_slug'        => '',
 		'package_type'        => '',
+		'data'                => '{}',
 	);
 
 	public static $browsing_query = array(
@@ -112,6 +113,7 @@ class WPPUS_License_Server {
 
 			foreach ( $licenses as $index => $license ) {
 				$licenses[ $index ]->allowed_domains = maybe_unserialize( $license->allowed_domains );
+				$licenses[ $index ]->data            = json_decode( $license->data, true );
 			}
 		}
 
@@ -139,6 +141,7 @@ class WPPUS_License_Server {
 
 			if ( is_object( $license ) ) {
 				$license->allowed_domains = maybe_unserialize( $license->allowed_domains );
+				$license->data            = json_decode( $license->data, true );
 
 				$return = $license;
 			}
@@ -158,9 +161,10 @@ class WPPUS_License_Server {
 		if ( true === $validation ) {
 			global $wpdb;
 
-			$field   = isset( $payload['id'] ) ? 'id' : 'license_key';
-			$where   = array( $field => $payload[ $field ] );
-			$payload = $this->sanitize_license( $payload );
+			$field           = isset( $payload['id'] ) ? 'id' : 'license_key';
+			$where           = array( $field => $payload[ $field ] );
+			$payload         = $this->sanitize_license( $payload );
+			$payload['data'] = wp_json_encode( $payload['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 
 			if ( isset( $payload['allowed_domains'] ) ) {
 				$payload['allowed_domains'] = maybe_serialize( $payload['allowed_domains'] );
@@ -199,6 +203,10 @@ class WPPUS_License_Server {
 
 			$license['id']              = null;
 			$license['allowed_domains'] = maybe_serialize( $license['allowed_domains'] );
+			$payload['data']            = wp_json_encode(
+				$payload['data'],
+				JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+			);
 
 			$result = $wpdb->insert(
 				$wpdb->prefix . 'wppus_licenses',

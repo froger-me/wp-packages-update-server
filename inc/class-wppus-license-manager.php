@@ -22,36 +22,86 @@ class WPPUS_License_Manager {
 			if ( $use_licenses ) {
 				$this->license_server = new WPPUS_License_Server();
 
-				add_action( 'init', array( $this->scheduler, 'register_license_events' ), 10, 0 );
-				add_action( 'init', array( $this->scheduler, 'register_license_schedules' ), 10, 0 );
+				add_action( 'init', array( $this, 'register_license_events' ), 10, 0 );
+				add_action( 'init', array( $this, 'register_license_schedules' ), 10, 0 );
+
+				add_filter( 'wppus_packages_table_columns', array( $this, 'wppus_packages_table_columns' ), 10, 1 );
+				add_filter( 'wppus_packages_table_sortable_columns', array( $this, 'wppus_packages_table_sortable_columns' ), 10, 1 );
+				add_filter( 'wppus_packages_table_bulk_actions', array( $this, 'wppus_packages_table_bulk_actions' ), 10, 1 );
+				add_filter( 'wppus_packages_table_row_actions', array( $this, 'wppus_packages_table_row_actions' ), 10, 4 );
+				add_filter( 'wppus_packages_table_cell', array( $this, 'wppus_packages_table_cell' ), 10, 4 );
 			}
 
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 5, 1 );
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'plugin_options_menu' ), 11, 0 );
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 5, 1 );
 			add_action( 'load-wp-plugin-update-server_page_wppus-page-licenses', array( $this, 'add_page_options' ), 10, 0 );
+			add_action( 'wppus_udpdate_manager_request_action', array( $this, 'wppus_udpdate_manager_request_action' ), 10, 2 );
+			add_action( 'wppus_update_manager_deleted_packages_bulk', array( $this, 'wppus_update_manager_deleted_packages_bulk' ), 10, 1 );
 
 			add_filter( 'set-screen-option', array( $this, 'set_page_options' ), 10, 3 );
+			add_filter( 'wppus_page_wppus_scripts_l10n', array( $this, 'wppus_page_wppus_scripts_l10n' ), 10, 1 );
 		}
 	}
 
-	public static function clear_schedules() {
-		$scheduler = new WPPUS_Scheduler();
+	public static function activate() {
+		$result = self::maybe_create_or_upgrade_db();
 
-		return $scheduler->clear_license_schedules();
+		if ( ! $result ) {
+			$error_message = __( 'Failed to create the necessary database table(s).', 'wppus' );
+
+			die( $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		$manager = new self();
+
+		$manager->register_schedules();
 	}
 
-	public static function register_schedules() {
-		$scheduler = new WPPUS_Scheduler();
+	public static function deactivate() {
+		$manager = new self();
+
+		$manager->clear_schedules();
+	}
+
+	public function clear_schedules() {
+		return $this->clear_license_schedules();
+	}
+
+	public function register_schedules() {
 		$frequency = apply_filters( 'wppus_schedule_license_frequency', 'hourly' );
 
-		return $scheduler->register_license_schedules( $frequency );
+		return $this->register_license_schedules( $frequency );
 	}
 
-	public static function expire_licenses() {
-		$license_server = new WPPUS_License_Server();
+	public function expire_licenses() {
+		$this->license_server->switch_expired_licenses_status();
+	}
 
-		$license_server->switch_expired_licenses_status();
+	public function register_license_schedules() {
+		$scheduled_hook = array( $this, 'expire_licenses' );
+
+		add_action( 'wppus_expire_licenses', $scheduled_hook, 10, 2 );
+		do_action( 'wppus_registered_license_schedule', $scheduled_hook );
+	}
+
+	public function clear_license_schedules() {
+		$scheduled_hook = array( $this, 'expire_licenses' );
+
+		wp_clear_scheduled_hook( 'wppus_expire_licenses' );
+		do_action( 'wppus_cleared_license_schedule', $scheduled_hook );
+	}
+
+	public function register_license_events() {
+		$hook = 'wppus_expire_licenses';
+
+		if ( ! wp_next_scheduled( $hook ) ) {
+			$frequency = apply_filters( 'wppus_schedule_license_frequency', 'hourly' );
+			$timestamp = time();
+			$result    = wp_schedule_event( $timestamp, $frequency, $hook );
+
+			do_action( 'wppus_scheduled_license_event', $result, $timestamp, $frequency, $hook );
+		}
 	}
 
 	public function init_request() {
@@ -111,19 +161,54 @@ class WPPUS_License_Manager {
 		}
 	}
 
+	public function wppus_udpdate_manager_request_action( $action, $packages ) {
+
+		if ( $packages && 'enable_license' === $action ) {
+			$this->change_packages_license_status_bulk( $packages, true );
+		} elseif ( $packages && 'disable_license' === $action ) {
+			$this->change_packages_license_status_bulk( $packages, false );
+		}
+	}
+
+	public function wppus_update_manager_deleted_packages_bulk( $deleted_package_slugs ) {
+		$this->change_packages_license_status_bulk( $deleted_package_slugs, false );
+	}
+
 	public function admin_enqueue_scripts( $hook ) {
 		$debug = (bool) ( constant( 'WP_DEBUG' ) );
 
-		if ( 'wp-plugin-update-server_page_wppus-page-licenses' === $hook ) {
-			$version = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/jquery.validate.min.js' );
+		if ( false !== strpos( $hook, 'page_wppus' ) ) {
+			$js_ext = ( $debug ) ? '.js' : '.min.js';
+			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/license' . $js_ext );
 
-			wp_enqueue_script( 'wp-plugin-update-server-validate-script', WPPUS_PLUGIN_URL . 'js/admin/jquery.validate.min.js', array( 'jquery' ), $version, true );
+			wp_enqueue_script(
+				'wppus-license-script',
+				WPPUS_PLUGIN_URL . 'js/admin/license' . $js_ext,
+				array( 'jquery' ),
+				$ver_js,
+				true
+			);
+
+			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/jquery.validate.min.js' );
+
+			wp_enqueue_script(
+				'wp-plugin-update-server-validate-script',
+				WPPUS_PLUGIN_URL . 'js/admin/jquery.validate.min.js',
+				array( 'jquery' ),
+				$ver_js,
+				true
+			);
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 
 			$css_ext = ( $debug ) ? '.css' : '.min.css';
 			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/jquery-ui' . $css_ext );
 
-			wp_enqueue_style( 'wppus-admin-jquery-ui', WPPUS_PLUGIN_URL . 'css/admin/jquery-ui' . $css_ext, array(), $ver_css );
+			wp_enqueue_style(
+				'wppus-admin-jquery-ui',
+				WPPUS_PLUGIN_URL . 'css/admin/jquery-ui' . $css_ext,
+				array(),
+				$ver_css
+			);
 		}
 	}
 
@@ -139,8 +224,61 @@ class WPPUS_License_Manager {
 	}
 
 	public function set_page_options( $status, $option, $value ) {
-
 		return $value;
+	}
+
+	public function wppus_page_wppus_scripts_l10n( $l10n ) {
+		$l10n['deleteLicensesConfirm'] = array(
+			__( 'You are about to delete all the licenses from this server.', 'wppus' ),
+			__( 'All the records will be permanently deleted.', 'wppus' ),
+			__( 'Packages requiring these licenses will not be able to get a successful response from this server.', 'wppus' ),
+			"\n",
+			__( 'Are you sure you want to do this?', 'wppus' ),
+		);
+
+		if ( 3 < count( $l10n['deletePackagesConfirm'] ) ) {
+			array_splice( $l10n['deletePackagesConfirm'], -3, 0, __( 'License status will need to be re-applied manually for all packages.', 'wppus' ) );
+		}
+
+		return $l10n;
+	}
+
+	public function wppus_packages_table_columns( $columns ) {
+		$columns['col_use_license'] = __( 'License status', 'wppus' );
+
+		return $columns;
+	}
+
+	public function wppus_packages_table_sortable_columns( $columns ) {
+		$columns['col_use_license'] = __( 'License status', 'wppus' );
+
+		return $columns;
+	}
+
+	public function wppus_packages_table_bulk_actions( $actions ) {
+		$actions['enable_license']  = __( 'Require License', 'wppus' );
+		$actions['disable_license'] = __( 'Do not Require License', 'wppus' );
+
+		return $actions;
+	}
+
+	public function wppus_packages_table_row_actions( $actions, $args, $query_string, $record_key ) {
+		$use_license                = in_array( $record_key, get_option( 'wppus_licensed_package_slugs', array() ), true );
+		$license_action             = ( ! $use_license ) ? 'enable_license' : 'disable_license';
+		$license_action_text        = ( ! $use_license ) ? __( 'Require License', 'wppus' ) : __( 'Do not Require License', 'wppus' );
+		$args[1]                    = $license_action;
+		$args[ count( $args ) - 1 ] = $license_action_text;
+		$actions['change_license']  = vsprintf( '<a href="' . $query_string . '">%s</a>', $args );
+
+		return $actions;
+	}
+
+	public function wppus_packages_table_cell( $column_name, $record, $record_key ) {
+		$use_license = in_array( $record_key, get_option( 'wppus_licensed_package_slugs', array() ), true );
+
+		if ( 'col_use_license' === $column_name ) {
+			echo esc_html( ( $use_license ) ? __( 'Requires License', 'wppus' ) : __( 'Does not Require License', 'wppus' ) );
+		}
 	}
 
 	public function plugin_options_menu() {
@@ -180,6 +318,95 @@ class WPPUS_License_Manager {
 				'result'         => $result,
 			)
 		);
+	}
+
+	protected static function maybe_create_or_upgrade_db() {
+		global $wpdb;
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		if ( ! get_option( 'wppus_license_private_api_auth_key' ) ) {
+			update_option( 'wppus_license_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
+		}
+
+		if ( ! get_option( 'wppus_license_hmac_key' ) ) {
+			update_option( 'wppus_license_hmac_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
+		}
+
+		if ( ! get_option( 'wppus_license_crypto_key' ) ) {
+			update_option( 'wppus_license_crypto_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
+		}
+
+		$charset_collate = '';
+
+		if ( ! empty( $wpdb->charset ) ) {
+			$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
+		}
+
+		if ( ! empty( $wpdb->collate ) ) {
+			$charset_collate .= " COLLATE {$wpdb->collate}";
+		}
+
+		$table_name = $wpdb->prefix . 'wppus_licenses';
+		$sql        = 'CREATE TABLE ' . $table_name . " (
+			id int(12) NOT NULL auto_increment,
+			license_key varchar(255) NOT NULL,
+			max_allowed_domains int(12) NOT NULL,
+			allowed_domains longtext NOT NULL,
+			status ENUM('pending', 'activated', 'deactivated', 'blocked', 'expired') NOT NULL DEFAULT 'pending',
+			owner_name varchar(255) NOT NULL default '',
+			email varchar(64) NOT NULL,
+			company_name varchar(100) NOT NULL default '',
+			txn_id varchar(64) NOT NULL default '',
+			date_created date NOT NULL DEFAULT '0000-00-00',
+			date_renewed date NOT NULL DEFAULT '0000-00-00',
+			date_expiry date NOT NULL DEFAULT '0000-00-00',
+			package_slug varchar(255) NOT NULL default '',
+			package_type varchar(8) NOT NULL default '',
+			data longtext NOT NULL,
+			PRIMARY KEY  (id),
+			KEY licence_key (license_key)
+			)" . $charset_collate . ';';
+
+		dbDelta( $sql );
+
+		$table_name = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "wppus_licenses'" );
+
+		if ( $wpdb->prefix . 'wppus_licenses' !== $table_name ) {
+
+			return false;
+		}
+
+		return true;
+	}
+
+	protected function change_packages_license_status_bulk( $package_slugs, $add ) {
+		$package_slugs          = is_array( $package_slugs ) ? $package_slugs : array( $package_slugs );
+		$licensed_package_slugs = get_option( 'wppus_licensed_package_slugs', array() );
+		$changed                = false;
+
+		foreach ( $package_slugs as $package_slug ) {
+
+			if ( $add && ! in_array( $package_slug, $licensed_package_slugs, true ) ) {
+				$licensed_package_slugs[] = $package_slug;
+				$changed                  = true;
+
+				do_action( 'wppus_added_license_check', $package_slug );
+			} elseif ( ! $add && in_array( $package_slug, $licensed_package_slugs, true ) ) {
+				$key     = array_search( $package_slug, $licensed_package_slugs, true );
+				$changed = true;
+
+				unset( $licensed_package_slugs[ $key ] );
+
+				do_action( 'wppus_removed_license_check', $package_slug );
+			}
+		}
+
+		if ( $changed ) {
+			$licensed_package_slugs = array_values( $licensed_package_slugs );
+
+			update_option( 'wppus_licensed_package_slugs', $licensed_package_slugs, true );
+		}
 	}
 
 	protected function plugin_options_handler() {

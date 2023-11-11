@@ -5,18 +5,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class WP_Plugin_Update_Server {
-	protected $update_server;
-	protected $hmac_key;
-	protected $crypto_key;
-	protected $license_check_signature;
-	protected $use_licenses;
-	protected $scheduler;
 
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
 
-			if ( ! self::is_doing_api_request() && ! wp_doing_ajax() ) {
+			if ( ! wppus_is_doing_api_request() ) {
 				add_action( 'init', array( $this, 'register_activation_notices' ), 99, 0 );
 				add_action( 'init', array( $this, 'maybe_flush' ), 99, 0 );
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
@@ -81,7 +75,6 @@ class WP_Plugin_Update_Server {
 		}
 
 		WPPUS_Remote_Sources_Manager::register_schedules();
-		WPPUS_License_Manager::register_schedules();
 		WPPUS_Data_Manager::register_schedules();
 	}
 
@@ -89,7 +82,6 @@ class WP_Plugin_Update_Server {
 		flush_rewrite_rules();
 
 		WPPUS_Remote_Sources_Manager::clear_schedules();
-		WPPUS_License_Manager::clear_schedules();
 		WPPUS_Data_Manager::clear_schedules();
 	}
 
@@ -140,24 +132,6 @@ class WP_Plugin_Update_Server {
 		return $template;
 	}
 
-	public static function is_doing_api_request( $type = false ) {
-
-		if ( ! $type ) {
-
-			return WPPUS_Update_API::is_doing_api_request() || WPPUS_License_API::is_doing_api_request();
-		}
-
-		if ( 'license' === $type ) {
-
-			return WPPUS_License_API::is_doing_api_request();
-		}
-
-		if ( 'update' === $type ) {
-
-			return WPPUS_Update_API::is_doing_api_request();
-		}
-	}
-
 	public static function setup_mu_plugin_failure_notice() {
 		$class   = 'notice notice-error';
 		$message = sprintf(
@@ -186,59 +160,8 @@ class WP_Plugin_Update_Server {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		if ( ! get_option( 'wppus_license_private_api_auth_key' ) ) {
-			update_option( 'wppus_license_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
-		if ( ! get_option( 'wppus_license_hmac_key' ) ) {
-			update_option( 'wppus_license_hmac_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
-		if ( ! get_option( 'wppus_license_crypto_key' ) ) {
-			update_option( 'wppus_license_crypto_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
 		if ( ! get_option( 'wppus_package_private_api_auth_key' ) ) {
 			update_option( 'wppus_package_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
-		$charset_collate = '';
-
-		if ( ! empty( $wpdb->charset ) ) {
-			$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
-		}
-
-		if ( ! empty( $wpdb->collate ) ) {
-			$charset_collate .= " COLLATE {$wpdb->collate}";
-		}
-
-		$table_name = $wpdb->prefix . 'wppus_licenses';
-		$sql        = 'CREATE TABLE ' . $table_name . " (
-			id int(12) NOT NULL auto_increment,
-			license_key varchar(255) NOT NULL,
-			max_allowed_domains int(12) NOT NULL,
-			allowed_domains longtext NOT NULL,
-			status ENUM('pending', 'activated', 'deactivated', 'blocked', 'expired') NOT NULL DEFAULT 'pending',
-			owner_name varchar(255) NOT NULL default '',
-			email varchar(64) NOT NULL,
-			company_name varchar(100) NOT NULL default '',
-			txn_id varchar(64) NOT NULL default '',
-			date_created date NOT NULL DEFAULT '0000-00-00',
-			date_renewed date NOT NULL DEFAULT '0000-00-00',
-			date_expiry date NOT NULL DEFAULT '0000-00-00',
-			package_slug varchar(255) NOT NULL default '',
-			package_type varchar(8) NOT NULL default '',
-			PRIMARY KEY  (id),
-			KEY licence_key (license_key)
-			)" . $charset_collate . ';';
-
-		dbDelta( $sql );
-
-		$table_name = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "wppus_licenses'" );
-
-		if ( $wpdb->prefix . 'wppus_licenses' !== $table_name ) {
-
-			return false;
 		}
 
 		return true;
@@ -295,12 +218,11 @@ class WP_Plugin_Update_Server {
 			$js_ext = ( $debug ) ? '.js' : '.min.js';
 			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/main' . $js_ext );
 			$l10n   = array(
-				'invalidFileFormat'     => __( 'Error: invalid file format.', 'wppus' ),
-				'invalidFileSize'       => __( 'Error: invalid file size.', 'wppus' ),
-				'invalidFileName'       => __( 'Error: invalid file name.', 'wppus' ),
-				'invalidFile'           => __( 'Error: invalid file', 'wppus' ),
-				'deleteRecord'          => __( 'Are you sure you want to delete this record?', 'wppus' ),
-				'deleteLicensesConfirm' => __( "You are about to delete all the licenses from this server.\nAll the records will be permanently deleted.\nPackages requiring these licenses will not be able to get a successful response from this server.\n\nAre you sure you want to do this?", 'wppus' ),
+				'invalidFileFormat' => array( __( 'Error: invalid file format.', 'wppus' ) ),
+				'invalidFileSize'   => array( __( 'Error: invalid file size.', 'wppus' ) ),
+				'invalidFileName'   => array( __( 'Error: invalid file name.', 'wppus' ) ),
+				'invalidFile'       => array( __( 'Error: invalid file', 'wppus' ) ),
+				'deleteRecord'      => array( __( 'Are you sure you want to delete this record?', 'wppus' ) ),
 			);
 			$params = array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -308,13 +230,28 @@ class WP_Plugin_Update_Server {
 			);
 
 			if ( get_option( 'wppus_use_remote_repository' ) ) {
-				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a Remote Repository will be added again automatically whenever a client asks for updates.\nAll packages manually uploaded without counterpart in a Remote Repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
+				$l10n['deletePackagesConfirm'] = array(
+					__( 'You are about to delete all the packages from this server.', 'wppus' ),
+					__( 'Packages with a Remote Repository will be added again automatically whenever a client asks for updates.', 'wppus' ),
+					__( 'All packages manually uploaded without counterpart in a Remote Repository will be permanently deleted.', 'wppus' ),
+					"\n",
+					__( 'Are you sure you want to do this?', 'wppus' ),
+				);
 			} else {
-				$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nAll packages will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
+				$l10n['deletePackagesConfirm'] = array(
+					__( 'You are about to delete all the packages from this server.', 'wppus' ),
+					__( 'All packages will be permanently deleted.\n\nAre you sure you want to do this?', 'wppus' ),
+					"\n",
+					__( 'Are you sure you want to do this?', 'wppus' ),
+				);
 			}
 
 			// @todo doc
 			$l10n = apply_filters( 'wppus_page_wppus_scripts_l10n', $l10n );
+
+			foreach ( $l10n as $key => $values ) {
+				$l10n[ $key ] = implode( "\n", $values );
+			}
 
 			wp_enqueue_script(
 				'wp-plugin-update-server-script',

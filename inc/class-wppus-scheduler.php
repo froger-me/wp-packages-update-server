@@ -138,32 +138,6 @@ class WPPUS_Scheduler {
 		return $result;
 	}
 
-	public function register_license_schedules() {
-		$scheduled_hook = array( 'WPPUS_License_Manager', 'expire_licenses' );
-
-		add_action( 'wppus_expire_licenses', $scheduled_hook, 10, 2 );
-		do_action( 'wppus_registered_license_schedule', $scheduled_hook );
-	}
-
-	public function clear_license_schedules() {
-		$scheduled_hook = array( 'WPPUS_License_Manager', 'expire_licenses' );
-
-		wp_clear_scheduled_hook( 'wppus_expire_licenses' );
-		do_action( 'wppus_cleared_license_schedule', $scheduled_hook );
-	}
-
-	public function register_license_events() {
-		$hook = 'wppus_expire_licenses';
-
-		if ( ! wp_next_scheduled( $hook ) ) {
-			$frequency = apply_filters( 'wppus_schedule_license_frequency', 'hourly' );
-			$timestamp = time();
-			$result    = wp_schedule_event( $timestamp, $frequency, $hook );
-
-			do_action( 'wppus_scheduled_license_event', $result, $timestamp, $frequency, $hook );
-		}
-	}
-
 	public function register_cleanup_schedules() {
 
 		foreach ( $this->cleanable_datatypes as $type ) {

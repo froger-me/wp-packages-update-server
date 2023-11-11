@@ -7,8 +7,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class WPPUS_Packages_Table extends WP_List_Table {
 
 	public $bulk_action_error;
-	public $licensed_package_slugs;
-	public $show_license_info;
 	public $nonce_action;
 
 	protected $rows;
@@ -32,19 +30,19 @@ class WPPUS_Packages_Table extends WP_List_Table {
 	}
 
 	public function get_columns() {
-		$columns = array(
-			'cb'                     => '<input type="checkbox" />',
-			'col_name'               => __( 'Package Name', 'wppus' ),
-			'col_version'            => __( 'Version', 'wppus' ),
-			'col_type'               => __( 'Type', 'wppus' ),
-			'col_file_name'          => __( 'File Name', 'wppus' ),
-			'col_file_size'          => __( 'Size', 'wppus' ),
-			'col_file_last_modified' => __( 'Last Modified ', 'wppus' ),
+		// @todo doc
+		$columns = apply_filters(
+			'wppus_packages_table_columns',
+			array(
+				'cb'                     => '<input type="checkbox" />',
+				'col_name'               => __( 'Package Name', 'wppus' ),
+				'col_version'            => __( 'Version', 'wppus' ),
+				'col_type'               => __( 'Type', 'wppus' ),
+				'col_file_name'          => __( 'File Name', 'wppus' ),
+				'col_file_size'          => __( 'Size', 'wppus' ),
+				'col_file_last_modified' => __( 'Last Modified ', 'wppus' ),
+			)
 		);
-
-		if ( $this->show_license_info ) {
-			$columns['col_use_license'] = __( 'License status', 'wppus' );
-		}
 
 		return $columns;
 	}
@@ -55,18 +53,18 @@ class WPPUS_Packages_Table extends WP_List_Table {
 	}
 
 	public function get_sortable_columns() {
-		$columns = array(
-			'col_name'               => array( 'name', false ),
-			'col_version'            => array( 'version', false ),
-			'col_type'               => array( 'type', false ),
-			'col_file_name'          => array( 'file_name', false ),
-			'col_file_size'          => array( 'file_size', false ),
-			'col_file_last_modified' => array( 'file_last_modified', false ),
+		// @todo doc
+		$columns = apply_filters(
+			'wppus_packages_table_sortable_columns',
+			array(
+				'col_name'               => array( 'name', false ),
+				'col_version'            => array( 'version', false ),
+				'col_type'               => array( 'type', false ),
+				'col_file_name'          => array( 'file_name', false ),
+				'col_file_size'          => array( 'file_size', false ),
+				'col_file_last_modified' => array( 'file_last_modified', false ),
+			)
 		);
-
-		if ( $this->show_license_info ) {
-			$columns['col_use_license'] = array( 'use_license', false );
-		}
 
 		return $columns;
 	}
@@ -133,31 +131,17 @@ class WPPUS_Packages_Table extends WP_List_Table {
 		list( $columns, $hidden ) = $this->get_column_info();
 
 		if ( ! empty( $records ) ) {
-			$show_license_info = $this->show_license_info;
 
 			foreach ( $records as $record_key => $record ) {
-
-				if ( $show_license_info ) {
-					$use_license         = in_array( $record_key, $this->licensed_package_slugs, true );
-					$use_license_text    = ( $use_license ) ? __( 'Requires License', 'wppus' ) : __( 'Does not Require License', 'wppus' );
-					$license_action      = ( ! $use_license ) ? 'enable_license' : 'disable_license';
-					$license_action_text = ( ! $use_license ) ? __( 'Require License', 'wppus' ) : __( 'Do not Require License', 'wppus' );
-				}
-
 				wppus_get_admin_template(
 					'packages-table-row.php',
 					array(
-						'table'               => $table,
-						'columns'             => $columns,
-						'hidden'              => $hidden,
-						'records'             => $records,
-						'record_key'          => $record_key,
-						'record'              => $record,
-						'show_license_info'   => $show_license_info,
-						'use_license'         => $use_license,
-						'use_license_text'    => $use_license_text,
-						'license_action'      => $license_action,
-						'license_action_text' => $license_action_text,
+						'table'      => $table,
+						'columns'    => $columns,
+						'hidden'     => $hidden,
+						'records'    => $records,
+						'record_key' => $record_key,
+						'record'     => $record,
 					)
 				);
 			}
@@ -189,15 +173,14 @@ class WPPUS_Packages_Table extends WP_List_Table {
 	}
 
 	protected function get_bulk_actions() {
-		$actions = array(
-			'delete'   => __( 'Delete' ),
-			'download' => __( 'Download', 'wppus' ),
+		// @todo doc
+		$actions = apply_filters(
+			'wppus_packages_table_bulk_actions',
+			array(
+				'delete'   => __( 'Delete' ),
+				'download' => __( 'Download', 'wppus' ),
+			)
 		);
-
-		if ( $this->show_license_info ) {
-			$actions['enable_license']  = __( 'Require License', 'wppus' );
-			$actions['disable_license'] = __( 'Do not Require License', 'wppus' );
-		}
 
 		return $actions;
 	}

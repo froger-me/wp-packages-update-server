@@ -56,7 +56,7 @@ class WPPUS_Webhook_Manager {
 			get_option( 'wppus_remote_repository_use_webhooks' ) &&
 			get_option( 'wppus_use_remote_repository' )
 		) {
-			$l10n['deletePackagesConfirm'] = __( "You are about to delete all the packages from this server.\nPackages with a Remote Repository will be added again automatically whenever a client asks for updates, or when its Webhook is called.\nAll packages manually uploaded without counterpart in a Remote Repository will be permanently deleted.\nLicense status will need to be re-applied manually for all packages.\n\nAre you sure you want to do this?", 'wppus' );
+			$l10n['deletePackagesConfirm'][1] = __( 'Packages with a Remote Repository will be added again automatically whenever a client asks for updates, or when its Webhook is called.', 'wppus' );
 		}
 
 		return $l10n;

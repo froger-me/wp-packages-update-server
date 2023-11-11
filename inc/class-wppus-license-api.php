@@ -34,6 +34,9 @@ class WPPUS_License_API {
 				add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
 
 				add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
+				add_filter( 'wppus_handle_update_request_params', array( $this, 'wppus_handle_update_request_params' ), 0, 1 );
+				add_filter( 'wppus_server_class_name', array( $this, 'wppus_server_class_name' ), 0, 2 );
+
 			}
 		}
 	}
@@ -94,11 +97,51 @@ class WPPUS_License_API {
 				'action',
 				'api_auth_key',
 				'browse_query',
+				'update_license_key',
+				'update_license_signature',
 			),
 			array_keys( WPPUS_License_Server::$license_definition )
 		);
 
 		return $query_vars;
+	}
+
+	public function wppus_handle_update_request_params( $params ) {
+		global $wp;
+
+		$vars                                = $wp->query_vars;
+		$request_params['license_key']       = isset( $vars['update_license_key'] ) ?
+			trim( $vars['update_license_key'] ) :
+			null;
+		$request_params['license_signature'] = isset( $vars['update_license_signature'] ) ?
+				trim( $vars['update_license_signature'] ) :
+				null;
+
+		return $params;
+	}
+
+	public function wppus_server_class_name( $class_name, $package_id ) {
+		$use_licenses        = get_option( 'wppus_use_licenses' );
+		$package_use_license = false;
+
+		if ( $use_licenses ) {
+			$licensed_package_slugs = apply_filters(
+				'wppus_licensed_package_slugs',
+				get_option( 'wppus_licensed_package_slugs', array() )
+			);
+
+			if ( in_array( $package_id, $licensed_package_slugs, true ) ) {
+				$package_use_license = true;
+			}
+		}
+
+		if ( $package_use_license && $use_licenses ) {
+			require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-update-server.php';
+
+			$class_name = 'WPPUS_License_Update_Server';
+		}
+
+		return $class_name;
 	}
 
 	public function browse( $query ) {

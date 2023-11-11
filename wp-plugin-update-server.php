@@ -63,6 +63,8 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'activate' ) );
 	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'deactivate' ) );
 	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'uninstall' ) );
+	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_License_Manager', 'activate' ) );
+	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_License_Manager', 'deactivate' ) );
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'activate' ) );
 	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'deactivate' ) );
 	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'uninstall' ) );

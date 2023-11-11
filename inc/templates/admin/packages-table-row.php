@@ -25,12 +25,7 @@
 	$args[ count( $args ) - 1 ] = __( 'Delete' );
 	$actions['delete']          = vsprintf( '<a href="' . $query_string . '">%s</a>', $args );
 
-	if ( $show_license_info ) {
-		$args[1]                    = $license_action;
-		$args[ count( $args ) - 1 ] = $license_action_text;
-		$actions['change_license']  = vsprintf( '<a href="' . $query_string . '">%s</a>', $args );
-	}
-
+	$actions = apply_filters( 'wppus_packages_table_row_actions', $actions, $args, $query_string, $record_key );
 	$actions = $table->row_actions( $actions );
 	?>
 	<?php foreach ( $columns as $column_name => $column_display_name ) : ?>
@@ -72,10 +67,8 @@
 						)
 					);
 					?>
-				<?php elseif ( 'col_use_license' === $column_name ) : ?>
-					<?php echo esc_html( $use_license_text ); ?>
-				<?php elseif ( 'col_public_link' === $column_name ) : ?>
-					<?php echo esc_html( $record[ $key ] ); ?>
+				<?php else : ?>
+					<?php do_action( 'wppus_packages_table_cell', $column_name, $record, $record_key ); // @todo doc ?>
 				<?php endif; ?>
 			</td>
 		<?php endif; ?>

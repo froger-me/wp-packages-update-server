@@ -722,7 +722,7 @@ ___
 #### wppus_update_server
 
 ```php
-apply_filters( 'wppus_update_server', mixed $update_server, array $config, string $slug, mixed $use_license );
+apply_filters( 'wppus_update_server', mixed $update_server, array $config, string $slug );
 ```
 
 **Description**  
@@ -738,10 +738,6 @@ $config
 
 $slug
 > (string) the slug of the package using the Wppus_Update_Server object  
-
-$use_license
-> (mixed) true if the corresponding package needs a license, false if it doesn't, null if irrelevant when the object is used locally  
-
 
 ___
 #### wppus_update_checker
