@@ -6,14 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WPPUS_Update_API {
 	protected $update_server;
-	protected $scheduler;
 
 	protected static $doing_update_api_request = null;
 	protected static $instance;
 	protected static $config;
 
 	public function __construct( $init_hooks = false ) {
-		$this->scheduler = new WPPUS_Scheduler();
 
 		if ( $init_hooks ) {
 
@@ -175,7 +173,6 @@ class WPPUS_Update_API {
 		$this->update_server = new $server_class_name(
 			$config['use_remote_repository'],
 			home_url( '/wppus-update-api/' ),
-			$this->scheduler,
 			$config['server_directory'],
 			$config['repository_service_url'],
 			$config['repository_branch'],

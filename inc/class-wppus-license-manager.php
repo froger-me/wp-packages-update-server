@@ -9,15 +9,12 @@ class WPPUS_License_Manager {
 	protected $licences_table;
 	protected $message = '';
 	protected $errors  = array();
-	protected $scheduler;
 	protected $license_server;
 
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
 			$use_licenses = get_option( 'wppus_use_licenses' );
-
-			$this->scheduler = new WPPUS_Scheduler();
 
 			if ( $use_licenses ) {
 				$this->license_server = new WPPUS_License_Server();

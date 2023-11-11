@@ -17,7 +17,6 @@ class WPPUS_Update_Manager {
 	);
 
 	protected $packages_table;
-	protected $scheduler;
 	protected $rows = array();
 
 	public function __construct( $init_hooks = false ) {
@@ -25,8 +24,6 @@ class WPPUS_Update_Manager {
 		if ( $init_hooks ) {
 			$parts     = explode( DIRECTORY_SEPARATOR, untrailingslashit( WPPUS_PLUGIN_PATH ) );
 			$plugin_id = end( $parts ) . '/wp-plugin-update-server.php';
-
-			$this->scheduler = new WPPUS_Scheduler();
 
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'plugin_options_menu_main' ), 10, 0 );
@@ -415,7 +412,6 @@ class WPPUS_Update_Manager {
 		$update_server = new WPPUS_Update_Server(
 			$config['use_remote_repository'],
 			home_url( '/wppus-update-api/' ),
-			$this->scheduler,
 			$config['server_directory']
 		);
 

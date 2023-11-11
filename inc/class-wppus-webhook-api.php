@@ -158,7 +158,6 @@ class WPPUS_Webhook_API {
 				trim( rawurldecode( $wp->query_vars['type'] ) ) :
 				null;
 			$delay             = $config['repository_check_delay'];
-			$scheduler         = new WPPUS_Scheduler();
 			$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
 			$package_exists    = false;
 
@@ -167,6 +166,7 @@ class WPPUS_Webhook_API {
 				$package_exists = $wp_filesystem->exists( $package_path );
 			}
 
+			// @todo doc
 			$process = apply_filters(
 				'wppus_webhook_process_request',
 				true,
@@ -174,37 +174,36 @@ class WPPUS_Webhook_API {
 				$package_id,
 				$type,
 				$package_exists,
-				$config,
-				$scheduler
+				$config
 			);
 
 			if ( $process ) {
+				// @todo doc
 				do_action(
 					'wppus_webhook_before_processing_request',
 					$package_id,
 					$type,
 					$package_exists,
-					$config,
-					$scheduler
+					$config
 				);
 
 				if ( $package_exists && $delay ) {
-					$scheduler->clear_remote_check_schedule( $package_id, $type, true );
-					$scheduler->register_remote_check_single_event( $package_id, $type, $delay );
+					$this->clear_remote_check_schedule( $package_id, $type );
+					$this->register_remote_check_single_event( $package_id, $type, $delay );
 				} else {
 					$api = WPPUS_Update_API::get_instance();
 
-					$scheduler->clear_remote_check_schedule( $package_id, $type, true );
+					$this->clear_remote_check_schedule( $package_id, $type );
 					$api->download_remote_package( $package_id, $type, true );
 				}
 
+				// @todo doc
 				do_action(
 					'wppus_webhook_after_processing_request',
 					$package_id,
 					$type,
 					$package_exists,
-					$config,
-					$scheduler
+					$config
 				);
 			}
 		} else {
@@ -213,6 +212,27 @@ class WPPUS_Webhook_API {
 		}
 
 		do_action( 'wppus_webhook_after_handling_request', $config );
+	}
+
+	protected function register_remote_check_single_event( $slug, $type, $delay ) {
+		$hook = 'wppus_check_remote_' . $slug;
+
+		if ( ! wp_next_scheduled( $hook, array( $slug, $type, true ) ) ) {
+			$params    = array( $slug, $type, true );
+			$delay     = apply_filters( 'wppus_check_remote_delay', $delay, $slug );
+			$timestamp = time() + ( abs( intval( $delay ) ) * MINUTE_IN_SECONDS );
+			$result    = wp_schedule_single_event( $timestamp, $hook, $params );
+
+			do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, false, $hook, $params );
+		}
+	}
+
+	protected function clear_remote_check_schedule( $slug, $type ) {
+		$params         = array( $slug, $type, true );
+		$scheduled_hook = 'wppus_check_remote_' . $slug;
+
+		wp_clear_scheduled_hook( $scheduled_hook, $params );
+		do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
 	}
 
 	protected function validate_request( $config ) {

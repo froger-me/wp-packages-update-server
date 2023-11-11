@@ -12,7 +12,6 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 	public function __construct(
 		$use_remote_repository,
 		$server_url,
-		$scheduler,
 		$server_directory,
 		$repository_service_url,
 		$repository_branch,
@@ -23,7 +22,6 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		parent::__construct(
 			$use_remote_repository,
 			$server_url,
-			$scheduler,
 			$server_directory,
 			$repository_service_url,
 			$repository_branch,

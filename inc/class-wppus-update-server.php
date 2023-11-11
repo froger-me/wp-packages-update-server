@@ -20,12 +20,10 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	protected $repository_check_frequency;
 	protected $update_checker;
 	protected $type;
-	protected $scheduler;
 
 	public function __construct(
 		$use_remote_repository,
 		$server_url,
-		$scheduler,
 		$server_directory = null,
 		$repository_service_url = null,
 		$repository_branch = 'master',
@@ -42,7 +40,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$this->repository_branch              = $repository_branch;
 		$this->repository_credentials         = $repository_credentials;
 		$this->repository_check_frequency     = $repository_check_frequency;
-		$this->scheduler                      = $scheduler;
 	}
 
 	public static function unlock_update_from_remote( $slug ) {
@@ -284,7 +281,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 					$re_check_local = $this->save_remote_package_to_local( $safe_slug );
 				}
 			} else {
-				$this->scheduler->clear_remote_check_schedule( $safe_slug );
+				$this->clear_remote_check_schedule( $safe_slug );
 			}
 
 			if ( $re_check_local ) {
@@ -299,7 +296,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			$this->use_remote_repository &&
 			$this->repository_service_url
 		) {
-			$this->scheduler->register_remote_check_recurring_event(
+			$this->register_remote_check_recurring_event(
 				$safe_slug,
 				$this->repository_check_frequency
 			);
@@ -338,6 +335,27 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		}
 
 		return $package;
+	}
+
+	protected function register_remote_check_recurring_event( $slug, $frequency ) {
+		$hook = 'wppus_check_remote_' . $slug;
+
+		if ( ! wp_next_scheduled( $hook, array( $slug, null, false ) ) ) {
+			$params    = array( $slug, null, false );
+			$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
+			$timestamp = time();
+			$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+
+			do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, $frequency, $hook, $params );
+		}
+	}
+
+	public function clear_remote_check_schedule( $slug ) {
+		$params         = array( $slug, null, false );
+		$scheduled_hook = 'wppus_check_remote_' . $slug;
+
+		wp_clear_scheduled_hook( $scheduled_hook, $params );
+		do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
 	}
 
 	protected function actionGetMetadata( Wpup_Request $request ) {
