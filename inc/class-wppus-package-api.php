@@ -366,7 +366,7 @@ class WPPUS_Package_API {
 		$result = false;
 		$config = self::get_config();
 
-		if ( is_array( $config['ip_whitelist'] ) & ! empty( $config['ip_whitelist'] ) ) {
+		if ( is_array( $config['ip_whitelist'] ) && ! empty( $config['ip_whitelist'] ) ) {
 
 			foreach ( $config['ip_whitelist'] as $range ) {
 
