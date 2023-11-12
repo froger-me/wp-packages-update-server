@@ -65,21 +65,22 @@ jQuery(document).ready(function ($) {
 			submitHandler: function(form) {
 				var domainElements = $('.wppus-domains-list li:not(.wppus-domain-template) .wppus-domain-value'),
 					values = {
-					'id': $('#wppus_license_id').html(),
-					'license_key': $('#wppus_license_key').val(),
-					'max_allowed_domains': $('#wppus_license_max_allowed_domains').val(),
-					'allowed_domains': domainElements.map(function() { return $(this).text(); }).get(),
-					'status': $('#wppus_license_status').val(),
-					'owner_name': $('#wppus_license_owner_name').val(),
-					'email': $('#wppus_license_registered_email').val(),
-					'company_name': $('#wppus_license_owner_company').val(),
-					'txn_id': $('#wppus_license_transaction_id').val(),
-					'date_created': $('#wppus_license_date_created').val(),
-					'date_renewed': $('#wppus_license_date_renewed').val(),
-					'date_expiry': $('#wppus_license_date_expiry').val(),
-					'package_slug': $('#wppus_license_package_slug').val(),
-					'package_type': $('#wppus_license_package_type').val()
-				};
+						'id': $('#wppus_license_id').html(),
+						'license_key': $('#wppus_license_key').val(),
+						'max_allowed_domains': $('#wppus_license_max_allowed_domains').val(),
+						'allowed_domains': domainElements.map(function() { return $(this).text(); }).get(),
+						'status': $('#wppus_license_status').val(),
+						'owner_name': $('#wppus_license_owner_name').val(),
+						'email': $('#wppus_license_registered_email').val(),
+						'company_name': $('#wppus_license_owner_company').val(),
+						'txn_id': $('#wppus_license_transaction_id').val(),
+						'data': $('#wppus_license_data').val(),
+						'date_created': $('#wppus_license_date_created').val(),
+						'date_renewed': $('#wppus_license_date_renewed').val(),
+						'date_expiry': $('#wppus_license_date_expiry').val(),
+						'package_slug': $('#wppus_license_package_slug').val(),
+						'package_type': $('#wppus_license_package_type').val()
+					};
 
 				$('#wppus_license_values').val(JSON.stringify(values));
 				$('.no-submit').removeAttr('name');
@@ -116,6 +117,7 @@ jQuery(document).ready(function ($) {
 			$('#wppus_license_transaction_id').val(licenseData.txn_id);
 			$('#wppus_license_package_slug').val(licenseData.package_slug);
 			$('#wppus_license_status').val(licenseData.status);
+			$('#wppus_license_data').val(JSON.parse(licenseData.data));
 			$('#wppus_license_package_type').val(licenseData.package_type);
 
 			if ('0000-00-00' !== licenseData.date_expiry ) {

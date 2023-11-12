@@ -200,6 +200,15 @@ class WPPUS_License_Manager {
 			wp_enqueue_script( 'jquery-ui-datepicker' );
 
 			$css_ext = ( $debug ) ? '.css' : '.min.css';
+			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/license' . $css_ext );
+
+			wp_enqueue_style(
+				'wppus-admin-license',
+				WPPUS_PLUGIN_URL . 'css/admin/license' . $css_ext,
+				array(),
+				$ver_css
+			);
+
 			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/jquery-ui' . $css_ext );
 
 			wp_enqueue_style(

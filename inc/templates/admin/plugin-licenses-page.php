@@ -17,7 +17,7 @@
 					<div class="license-column">
 						<table class="form-table">
 							<tr valign="top">
-								<th scope="row"><?php esc_html_e( 'License Key ', 'wppus' ); ?><span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></span></th>
+								<th scope="row"><?php esc_html_e( 'License Key', 'wppus' ); ?> <span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></span></th>
 								<td>
 									<input type="text" id="wppus_license_key" data-random_key="<?php echo esc_html( bin2hex( openssl_random_pseudo_bytes( 16 ) ) ); ?>" name="wppus_license_key" class="no-submit" value="" size="30">
 									<p class="description">
@@ -35,7 +35,7 @@
 								</td>
 							</tr>
 							<tr valign="top">
-								<th scope="row"><?php esc_html_e( 'Package Slug ', 'wppus' ); ?><span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Package Slug', 'wppus' ); ?> <span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></th>
 								<td>
 									<input type="text" id="wppus_license_package_slug" name="wppus_license_package_slug" class="no-submit" value="" size="30">
 									<p class="description">
@@ -58,7 +58,7 @@
 								</td>
 							</tr>
 							<tr valign="top">
-								<th scope="row"><?php esc_html_e( 'Date Created ', 'wppus' ); ?><span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Date Created', 'wppus' ); ?> <span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></th>
 								<td>
 									<input type="text" id="wppus_license_date_created" name="wppus_license_date_created" class="wppus-license-date no-submit" value="" size="30">
 									<p class="description">
@@ -89,7 +89,7 @@
 					<div class="license-column">
 						<table class="form-table">
 							<tr valign="top">
-								<th scope="row"><?php esc_html_e( 'Registered Email ', 'wppus' ); ?><span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Registered Email', 'wppus' ); ?> <span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></th>
 								<td>
 									<input type="email" id="wppus_license_registered_email" name="wppus_license_registered_email" class="no-submit" value="" size="30">
 									<p class="description">
@@ -98,7 +98,7 @@
 								</td>
 							</tr>
 							<tr valign="top">
-								<th scope="row"><?php esc_html_e( 'Owner Name ', 'wppus' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Owner Name', 'wppus' ); ?></th>
 								<td>
 									<input type="text" id="wppus_license_owner_name" value="" size="30">
 									<p class="description">
@@ -107,7 +107,7 @@
 								</td>
 							</tr>
 							<tr valign="top">
-								<th scope="row"><?php esc_html_e( 'Company ', 'wppus' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Company', 'wppus' ); ?></th>
 								<td>
 									<input type="text" id="wppus_license_owner_company" value="" size="30">
 									<p class="description">
@@ -116,7 +116,7 @@
 								</td>
 							</tr>
 							<tr valign="top">
-								<th scope="row"><?php esc_html_e( 'Max. Allowed Domains ', 'wppus' ); ?><span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Max. Allowed Domains', 'wppus' ); ?> <span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></th>
 								<td>
 									<input type="number" min="1" id="wppus_license_max_allowed_domains" name="wppus_license_max_allowed_domains" class="no-submit" value="" size="30">
 									<p class="description">
@@ -125,7 +125,7 @@
 								</td>
 							</tr>
 							<tr valign="top" class="wppus-license-show-if-edit">
-								<th scope="row"><?php esc_html_e( 'Registered Domains ', 'wppus' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Registered Domains', 'wppus' ); ?></th>
 								<td>
 									<div id="wppus_license_registered_domains">
 										<ul class="wppus-domains-list">
@@ -143,11 +143,20 @@
 								</td>
 							</tr>
 							<tr valign="top">
-								<th scope="row"><?php esc_html_e( 'Transaction ID ', 'wppus' ); ?></th>
+								<th scope="row"><?php esc_html_e( 'Transaction ID', 'wppus' ); ?></th>
 								<td>
 									<input type="text" id="wppus_license_transaction_id" value="" size="30">
 									<p class="description">
 										<?php esc_html_e( 'If applicable, the transaction identifier associated to the purchase of the license.', 'wppus' ); ?>
+									</p>
+								</td>
+							</tr>
+							<tr valign="top">
+								<th scope="row"><?php esc_html_e( 'Extra Data', 'wppus' ); ?></th>
+								<td>
+									<textarea id="wppus_license_data"></textarea>
+									<p class="description">
+										<?php esc_html_e( 'Advanced - JSON-formatted custom data to add to the license.', 'wppus' ); ?>
 									</p>
 								</td>
 							</tr>
