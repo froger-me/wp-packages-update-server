@@ -189,7 +189,7 @@
 					<label for="wppus_license_private_api_auth_key"><?php esc_html_e( 'Private API Authentication Key', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text" type="text" id="wppus_license_private_api_auth_key" name="wppus_license_private_api_auth_key" value="<?php echo esc_attr( get_option( 'wppus_license_private_api_auth_key', 'private_api_auth_key' ) ); ?>">
+					<input class="regular-text secret" type="password" id="wppus_license_private_api_auth_key" name="wppus_license_private_api_auth_key" value="<?php echo esc_attr( get_option( 'wppus_license_private_api_auth_key', 'private_api_auth_key' ) ); ?>">
 					<p class="description"><?php esc_html_e( 'Ideally a random string - used to authenticate license administration requests (browse, read, edit, add, delete).', 'wppus' ); ?>
 						<br>
 						<strong><?php esc_html_e( 'WARNING: Keep this key secret, do not share it with customers!', 'wppus' ); ?></strong>
@@ -213,7 +213,7 @@
 					<label for="wppus_license_hmac_key"><?php esc_html_e( 'Signatures HMAC Key', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text" type="text" id="wppus_license_hmac_key" name="wppus_license_hmac_key" value="<?php echo esc_attr( get_option( 'wppus_license_hmac_key', 'hmac_key' ) ); ?>">
+					<input class="regular-text secret" type="password" id="wppus_license_hmac_key" name="wppus_license_hmac_key" value="<?php echo esc_attr( get_option( 'wppus_license_hmac_key', 'hmac_key' ) ); ?>">
 					<p class="description"><?php esc_html_e( 'Ideally a random string, used to authenticate license signatures.', 'wppus' ); ?>
 						<br>
 						<strong><?php esc_html_e( 'WARNING: Changing this value will invalidate all the licence signatures for current remote installations.', 'wppus' ); ?></strong>
@@ -227,7 +227,7 @@
 					<label for="wppus_license_crypto_key"><?php esc_html_e( 'Signatures Encryption Key', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text" type="text" id="wppus_license_crypto_key" name="wppus_license_crypto_key" value="<?php echo esc_attr( get_option( 'wppus_license_crypto_key', 'crypto_key' ) ); ?>">
+					<input class="regular-text secret" type="password" id="wppus_license_crypto_key" name="wppus_license_crypto_key" value="<?php echo esc_attr( get_option( 'wppus_license_crypto_key', 'crypto_key' ) ); ?>">
 					<p class="description"><?php esc_html_e( 'Ideally a random string, used to encrypt license signatures.', 'wppus' ); ?>
 						<br>
 						<strong><?php esc_html_e( 'WARNING: Changing this value will invalidate all the licence signatures for current remote installations.', 'wppus' ); ?></strong>

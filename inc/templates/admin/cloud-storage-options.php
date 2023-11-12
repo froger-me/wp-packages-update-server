@@ -24,7 +24,7 @@
 		<label for="wppus_cloud_storage_access_key"><?php esc_html_e( 'Cloud Storage Access Key', 'wppus' ); ?></label>
 	</th>
 	<td>
-		<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_access_key" name="wppus_cloud_storage_access_key" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_access_key' ) ); ?>">
+		<input class="regular-text cloud-storage-setting secret" type="password" id="wppus_cloud_storage_access_key" name="wppus_cloud_storage_access_key" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_access_key' ) ); ?>">
 		<p class="description">
 			<?php esc_html_e( 'The Access Key provided by the Cloud Storage service provider.', 'wppus' ); ?>
 		</p>
@@ -35,7 +35,7 @@
 		<label for="wppus_cloud_storage_secret_key"><?php esc_html_e( 'Cloud Storage Secret Key', 'wppus' ); ?></label>
 	</th>
 	<td>
-		<input class="regular-text cloud-storage-setting" type="text" id="wppus_cloud_storage_secret_key" name="wppus_cloud_storage_secret_key" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_secret_key' ) ); ?>">
+		<input class="regular-text cloud-storage-setting secret" type="password" id="wppus_cloud_storage_secret_key" name="wppus_cloud_storage_secret_key" value="<?php echo esc_attr( get_option( 'wppus_cloud_storage_secret_key' ) ); ?>">
 		<p class="description">
 			<?php esc_html_e( 'The Secret Key provided by the Cloud Storage service provider.', 'wppus' ); ?>
 		</p>

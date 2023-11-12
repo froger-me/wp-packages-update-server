@@ -14,6 +14,14 @@ jQuery(document).ready(function ($) {
 		history.pushState(null, '', hrefParts.join('?') );
 	}
 
+	$('input[type="password"].secret').on('focus', function () {
+		$(this).attr('type', 'text');
+	});
+
+	$('input[type="password"].secret').on('blur', function () {
+		$(this).attr('type', 'password');
+	});
+
 	$('.wppus-wrap .wp-list-table .delete a').on('click', function(e) {
 		var r = window.confirm(Wppus_l10n.deleteRecord);
 
