@@ -11,6 +11,7 @@ class WPPUS_Cloud_Storage_Manager {
 	protected static $instance;
 	protected static $config;
 	protected static $cloud_storage;
+	protected static $virtual_dir;
 
 	protected $doing_redirect = false;
 
@@ -31,6 +32,9 @@ class WPPUS_Cloud_Storage_Manager {
 			);
 
 			self::$cloud_storage->setExceptions();
+
+			// @todo doc
+			self::$virtual_dir = apply_filters( 'wppus_cloud_storage_virtual_dir', 'wppus-packages' );
 		}
 
 		if ( $init_hooks ) {
@@ -194,6 +198,7 @@ class WPPUS_Cloud_Storage_Manager {
 			'cloud-storage-options.php',
 			array(
 				'use_cloud_storage' => get_option( 'wppus_use_cloud_storage' ),
+				'virtual_dir'       => self::$virtual_dir,
 			)
 		);
 	}
@@ -206,14 +211,14 @@ class WPPUS_Cloud_Storage_Manager {
 		if ( false === $contents ) {
 
 			try {
-				$contents = self::$cloud_storage->getBucket( $config['storage_unit'], 'wppus-packages/' );
+				$contents = self::$cloud_storage->getBucket( $config['storage_unit'], self::$virtual_dir . '/' );
 
-				unset( $contents['wppus-packages/'] );
+				unset( $contents[ self::$virtual_dir . '/' ] );
 
 				if ( ! empty( $contents ) ) {
 
 					foreach ( $contents as $item ) {
-						$slugs[] = str_replace( array( 'wppus-packages/', '.zip' ), array( '', '' ), $item['name'] );
+						$slugs[] = str_replace( array( self::$virtual_dir . '/', '.zip' ), array( '', '' ), $item['name'] );
 					}
 				}
 			} catch ( PhpS3Exception $e ) {
@@ -228,9 +233,9 @@ class WPPUS_Cloud_Storage_Manager {
 		$config = self::get_config();
 
 		try {
-			$contents = self::$cloud_storage->getBucket( $config['storage_unit'], 'wppus-packages/' );
+			$contents = self::$cloud_storage->getBucket( $config['storage_unit'], self::$virtual_dir . '/' );
 
-			unset( $contents['wppus-packages/'] );
+			unset( $contents[ self::$virtual_dir . '/' ] );
 
 			if ( ! empty( $contents ) ) {
 
@@ -249,7 +254,7 @@ class WPPUS_Cloud_Storage_Manager {
 		$config = self::get_config();
 
 		try {
-			$result = self::$cloud_storage->deleteObject( $config['storage_unit'], 'wppus-packages/' . $slug . '.zip' );
+			$result = self::$cloud_storage->deleteObject( $config['storage_unit'], self::$virtual_dir . '/' . $slug . '.zip' );
 		} catch ( PhpS3Exception $e ) {
 			php_log( $e );
 		}
@@ -261,7 +266,7 @@ class WPPUS_Cloud_Storage_Manager {
 		$template_names = array( 'plugin-main-page.php', 'plugin-help-page.php', 'plugin-remote-sources-page.php' );
 
 		if ( in_array( $template_name, $template_names, true ) ) {
-			$args['packages_dir'] = 'CloudStorageUnit://wppus-packages/';
+			$args['packages_dir'] = 'CloudStorageUnit://' . self::$virtual_dir . '/';
 		}
 
 		return $args;
@@ -295,24 +300,24 @@ class WPPUS_Cloud_Storage_Manager {
 					} else {
 						$result[] = __( 'Cloud Storage Service was reached sucessfully.', 'wppus' );
 
-						if ( ! $this->virtual_folder_exists( 'wppus-packages' ) ) {
-							$created  = $this->create_virtual_folder( 'wppus-packages' );
+						if ( ! $this->virtual_folder_exists( self::$virtual_dir ) ) {
+							$created  = $this->create_virtual_folder( self::$virtual_dir );
 							$result[] = $created ?
 								sprintf(
 									// translators: %s is the virtual folder
 									esc_html__( 'Virtual folder "%s" was created successfully.', 'wppus' ),
-									'wppus-packages',
+									self::$virtual_dir,
 								) :
 								sprintf(
 									// translators: %s is the virtual folder
 									esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
-									'wppus-packages',
+									self::$virtual_dir,
 								);
 						} else {
 							$result[] = sprintf(
 								// translators: %s is the virtual folder
 								esc_html__( 'Virtual folder "%s" found.', 'wppus' ),
-								'wppus-packages',
+								self::$virtual_dir,
 							);
 						}
 					}
@@ -350,14 +355,14 @@ class WPPUS_Cloud_Storage_Manager {
 
 		try {
 
-			if ( ! $this->virtual_folder_exists( 'wppus-packages' ) ) {
+			if ( ! $this->virtual_folder_exists( self::$virtual_dir ) ) {
 
-				if ( ! $this->create_virtual_folder( 'wppus-packages' ) ) {
+				if ( ! $this->create_virtual_folder( self::$virtual_dir ) ) {
 					php_log(
 						sprintf(
 							// translators: %s is the virtual folder
 							esc_html__( 'WARNING: Unable to create Virtual folder "%s". The Cloud Storage feature may not work as expected. Try to create it manually and test again.', 'wppus' ),
-							'wppus-packages',
+							self::$virtual_dir,
 						)
 					);
 				}
@@ -380,7 +385,7 @@ class WPPUS_Cloud_Storage_Manager {
 				$filename = $local_package->getFileName();
 				$result   = self::$cloud_storage->getObject(
 					$config['storage_unit'],
-					'wppus-packages/' . $slug . '.zip',
+					self::$virtual_dir . '/' . $slug . '.zip',
 					$local_package->getFileName()
 				);
 
@@ -418,7 +423,7 @@ class WPPUS_Cloud_Storage_Manager {
 				self::$cloud_storage->putObjectFile(
 					$filename,
 					$config['storage_unit'],
-					'wppus-packages/' . $slug . '.zip'
+					self::$virtual_dir . '/' . $slug . '.zip'
 				);
 			}
 		} catch ( PhpS3Exception $e ) {
@@ -448,7 +453,7 @@ class WPPUS_Cloud_Storage_Manager {
 			self::$cloud_storage->putObjectFile(
 				$filename,
 				$config['storage_unit'],
-				'wppus-packages/' . $slug . '.zip'
+				self::$virtual_dir . '/' . $slug . '.zip'
 			);
 		} catch ( PhpS3Exception $e ) {
 			php_log( $e );
@@ -471,7 +476,7 @@ class WPPUS_Cloud_Storage_Manager {
 				if ( false === $info ) {
 					$info = self::$cloud_storage->getObjectInfo(
 						$config['storage_unit'],
-						'wppus-packages/' . $slug . '.zip',
+						self::$virtual_dir . '/' . $slug . '.zip',
 					);
 
 					wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
@@ -494,7 +499,7 @@ class WPPUS_Cloud_Storage_Manager {
 			try {
 				self::$cloud_storage->getObject(
 					$config['storage_unit'],
-					'wppus-packages/' . reset( $package_slugs ) . '.zip',
+					self::$virtual_dir . '/' . reset( $package_slugs ) . '.zip',
 					$archive_path
 				);
 			} catch ( PhpS3Exception $e ) {
@@ -528,7 +533,7 @@ class WPPUS_Cloud_Storage_Manager {
 				try {
 					self::$cloud_storage->getObject(
 						$config['storage_unit'],
-						'wppus-packages/' . $slug . '.zip',
+						self::$virtual_dir . '/' . $slug . '.zip',
 						$filename
 					);
 				} catch ( PhpS3Exception $e ) {
@@ -558,7 +563,7 @@ class WPPUS_Cloud_Storage_Manager {
 			if ( false === $info ) {
 				$info = self::$cloud_storage->getObjectInfo(
 					$config['storage_unit'],
-					'wppus-packages/' . $package_id . '.zip',
+					self::$virtual_dir . '/' . $package_id . '.zip',
 				);
 
 				wp_cache_set( $package_id . '-getObjectInfo', $info, 'wppus' );
@@ -575,7 +580,7 @@ class WPPUS_Cloud_Storage_Manager {
 
 				$url                  = self::$cloud_storage->getAuthenticatedUrlV4(
 					$config['storage_unit'],
-					'wppus-packages/' . $package_id . '.zip',
+					self::$virtual_dir . '/' . $package_id . '.zip',
 					abs( intval( wppus_get_nonce_expiry( $nonce ) ) ) - time(),
 				);
 				$this->doing_redirect = wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
@@ -601,7 +606,7 @@ class WPPUS_Cloud_Storage_Manager {
 			if ( false === $info ) {
 				$info = self::$cloud_storage->getObjectInfo(
 					$config['storage_unit'],
-					'wppus-packages/' . $slug . '.zip',
+					self::$virtual_dir . '/' . $slug . '.zip',
 				);
 
 				wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
@@ -614,7 +619,7 @@ class WPPUS_Cloud_Storage_Manager {
 				if ( ! $cache->get( $cache_key ) ) {
 					$result = self::$cloud_storage->getObject(
 						$config['storage_unit'],
-						'wppus-packages/' . $slug . '.zip',
+						self::$virtual_dir . '/' . $slug . '.zip',
 						$filename
 					);
 
@@ -642,7 +647,7 @@ class WPPUS_Cloud_Storage_Manager {
 		if ( false === $info ) {
 			$info = self::$cloud_storage->getObjectInfo(
 				$config['storage_unit'],
-				'wppus-packages/' . $slug . '.zip',
+				self::$virtual_dir . '/' . $slug . '.zip',
 			);
 
 			wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
@@ -674,7 +679,7 @@ class WPPUS_Cloud_Storage_Manager {
 				if ( false === $info ) {
 					$info = self::$cloud_storage->getObjectInfo(
 						$config['storage_unit'],
-						'wppus-packages/' . $slug . '.zip',
+						self::$virtual_dir . '/' . $slug . '.zip',
 					);
 
 					wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
@@ -687,7 +692,7 @@ class WPPUS_Cloud_Storage_Manager {
 					if ( ! $cache->get( $cache_key ) ) {
 						$result = self::$cloud_storage->getObject(
 							$config['storage_unit'],
-							'wppus-packages/' . $slug . '.zip',
+							self::$virtual_dir . '/' . $slug . '.zip',
 							$filename
 						);
 
@@ -743,15 +748,15 @@ class WPPUS_Cloud_Storage_Manager {
 		if ( false === $contents ) {
 
 			try {
-				$contents = self::$cloud_storage->getBucket( $config['storage_unit'], 'wppus-packages/' );
+				$contents = self::$cloud_storage->getBucket( $config['storage_unit'], self::$virtual_dir . '/' );
 
-				unset( $contents['wppus-packages/'] );
+				unset( $contents[ self::$virtual_dir . '/' ] );
 
 				if ( ! empty( $contents ) ) {
 					$update_manager = WPPUS_Update_Manager::get_instance();
 
 					foreach ( $contents as $item ) {
-						$slug = str_replace( array( 'wppus-packages/', '.zip' ), array( '', '' ), $item['name'] );
+						$slug = str_replace( array( self::$virtual_dir . '/', '.zip' ), array( '', '' ), $item['name'] );
 						$info = $update_manager->get_package_info( $slug );
 
 						if ( $info ) {
@@ -789,7 +794,7 @@ class WPPUS_Cloud_Storage_Manager {
 		$config = self::get_config();
 		$url    = self::$cloud_storage->getAuthenticatedURL(
 			$config['storage_unit'],
-			'wppus-packages/' . $request->slug . '.zip',
+			self::$virtual_dir . '/' . $request->slug . '.zip',
 			self::DOWNLOAD_URL_LIFETIME,
 		);
 
