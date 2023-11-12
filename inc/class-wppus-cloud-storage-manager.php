@@ -622,7 +622,7 @@ class WPPUS_Cloud_Storage_Manager {
 						$package     = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
 						$cache_value = $package->getMetadata();
 
-						$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime ); // @codingStandardsIgnoreLine
+						$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					}
 				}
 			}
@@ -695,7 +695,7 @@ class WPPUS_Cloud_Storage_Manager {
 							$package     = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
 							$cache_value = $package->getMetadata();
 
-							$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime ); // @codingStandardsIgnoreLine
+							$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 							if ( $package ) {
 								$package_info = $cache_value;

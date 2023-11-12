@@ -8,14 +8,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! function_exists( 'php_log' ) ) {
 	function php_log( $message = '', $prefix = '' ) {
 		$prefix   = $prefix ? ' ' . $prefix . ' => ' : ' => ';
-		$trace    = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 2 ); // @codingStandardsIgnoreLine
+		$trace    = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 2 ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace
 		$caller   = end( $trace );
 		$class    = isset( $caller['class'] ) ? $caller['class'] : '';
 		$type     = isset( $caller['type'] ) ? $caller['type'] : '';
 		$function = isset( $caller['function'] ) ? $caller['function'] : '';
 		$context  = $class . $type . $function . $prefix;
 
-		error_log( $context . print_r( $message, true ) ); // @codingStandardsIgnoreLine
+		error_log( $context . print_r( $message, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r, WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 }
 

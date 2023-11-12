@@ -224,36 +224,36 @@ function wppus_run_tests( $test ) {
 function wppus_tests_log( $message, $array_or_object = null ) {
 	global $wppus_output_log;
 
-	date_default_timezone_set( @date_default_timezone_get() ); // @codingStandardsIgnoreLine
+	date_default_timezone_set( @date_default_timezone_get() ); // phpcs:ignore WordPress.DateTime.RestrictedFunctions.timezone_change_date_default_timezone_set, WordPress.PHP.NoSilencedErrors.Discouraged
 
-	$line = date( '[Y-m-d H:i:s O]' ) . ' ' . $message; // @codingStandardsIgnoreLine
+	$line = date( '[Y-m-d H:i:s O]' ) . ' ' . $message; // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
 
 	if ( 'serverlog' === $wppus_output_log ) {
-		error_log( $line ); // @codingStandardsIgnoreLine
+		error_log( $line ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 
 		if ( null !== $array_or_object ) {
-			error_log( print_r( $array_or_object, true ) ); // @codingStandardsIgnoreLine
+			error_log( print_r( $array_or_object, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r, WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 	}
 
 	if ( 'filelog' === $wppus_output_log ) {
 		$log_file = WPPUS_Data_Manager::get_data_dir( 'logs' ) . 'tests.log';
-		$handle   = fopen( $log_file, 'a' ); // @codingStandardsIgnoreLine
+		$handle   = fopen( $log_file, 'a' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 
 		if ( $handle && flock( $handle, LOCK_EX ) ) {
 			$line .= "\n";
 
-			fwrite( $handle, $line ); // @codingStandardsIgnoreLine
+			fwrite( $handle, $line ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 
 			if ( null !== $array_or_object ) {
-				fwrite( $handle, print_r( $array_or_object, true ) ); // @codingStandardsIgnoreLine
+				fwrite( $handle, print_r( $array_or_object, true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r, WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
 			}
 
 			flock( $handle, LOCK_UN );
 		}
 
 		if ( $handle ) {
-			fclose( $handle ); // @codingStandardsIgnoreLine
+			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		}
 	}
 }

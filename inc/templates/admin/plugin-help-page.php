@@ -19,37 +19,104 @@
 	</h2>
 	<h2><?php esc_html_e( 'Provide updates with WP Plugin Update Server - packages requirements', 'wppus' ); ?></h2>
 	<p>
-		<?php _e( 'To link your packages to WP Plugin Update Server, and maybe to prevent webmasters from getting updates of your plugins and themes unless they have a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the <code>functions.php</code> file (for themes), and provide the necessary libraries in a <code>lib</code> directory at the root of the package - see <a target="_blank" href="https://github.com/froger-me/wp-package-updater">WP Package Updater</a> for more information.', 'wppus' ); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php
+		printf(
+			// translators: %1$s is <code>functions.php</code>, %2$s is <code>lib</code>, %3$s is a link to WP Package Updater
+			esc_html__( 'To link your packages to WP Plugin Update Server, and maybe to prevent webmasters from getting updates of your plugins and themes unless they have a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the %1$s file (for themes), and provide the necessary libraries in a %2$s directory at the root of the package - see %3$s for more information.', 'wppus' ),
+			'<code>functions.php</code>',
+			'<code>lib</code>',
+			'<a target="_blank" href="https://github.com/froger-me/wp-package-updater">' . esc_html( 'WP Package Updater' ) . '</a> '
+		);
+		?>
 	</p>
 	<p>
-		<?php echo sprintf( __( 'See <code>%s</code> for an example of plugin, and <code>%s</code> for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.', 'wppus' ), WPPUS_PLUGIN_PATH . 'integration-examples/dummy-plugin', WPPUS_PLUGIN_PATH . 'integration-examples/dummy-theme' ); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php
+		printf(
+			// translators: %1$s is <code>integration-examples/dummy-plugin</code>, %2$s is <code>integration-examples/dummy-theme</code>
+			esc_html__( 'See %1$s for an example of plugin, and %2$ss for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.', 'wppus' ),
+			'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration-examples/dummy-plugin</code>',
+			'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration-examples/dummy-plugin</code>',
+		);
+		?>
 	</p>
 	<p>
-		<?php echo sprintf( __( 'Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in <code>%s</code>. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in <code>package-name.zip</code> would be <code>package-name.php</code>.', 'wppus' ), $packages_dir ); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php
+		printf(
+			// translators: %1$s is <code>packages_dir</code>, %2$s is <code>package-name.zip</code>, %3$s is <code>package-name.php</code>
+			esc_html__( 'Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in %1$s. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in %2$s would be %3$s.', 'wppus' ),
+			'<code>' . esc_html( $packages_dir ) . '</code>',
+			'<code>package-name.zip</code>',
+			'<code>package-name.php</code>',
+		);
+		?>
 	</p>
 	<hr>
 	<h2><?php esc_html_e( 'Requests optimisation', 'wppus' ); ?></h2>
 	<p>
-		<?php _e( 'When the remote clients where your plugins and themes are installed send a request to check for updates, download a package or check or change license status, the current server\'s WordPress installation is loaded, with its own plugins and themes. This is not optimised if left untouched because unnecessary action and filter hooks that execute before <code>parse_request</code> action hook are also triggered, even though the request is not designed to produce any on-screen output or further computation.', 'wppus' ); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php
+		printf(
+			// translators: %s is <code>parse_request</code>
+			esc_html__( "When the remote clients where your plugins and themes are installed send a request to check for updates, download a package or check or change license status, the current server's WordPress installation is loaded, with its own plugins and themes. This is not optimised if left untouched because unnecessary action and filter hooks that execute before %s action hook are also triggered, even though the request is not designed to produce any on-screen output or further computation.", 'wppus' ),
+			'<code>parse_request</code>',
+		);
+		?>
 	</p>
 	<p>
-		<?php echo sprintf( __( 'To solve this, the file <code>%s</code> has been automatically copied to <code>%s</code>. This effectively creates a Must Use Plugin running before everything else and preventing themes and other plugins from being executed when an update request or a license API request is received by WP Plugin Update Server.' ), WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimiser.php', dirname( dirname( WPPUS_PLUGIN_PATH ) ) . '/mu-plugins/wppus-endpoint-optimiser.php' ); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php
+		printf(
+			// translators: %1$s is <code>optimisation/wppus-endpoint-optimiser.php</code>, %2$s is the MU Plugin's path
+			esc_html__( 'To solve this, the file <code>%1$s</code> has been automatically copied to <code>%2$s</code>. This effectively creates a Must Use Plugin running before everything else and preventing themes and other plugins from being executed when an update request or a license API request is received by WP Plugin Update Server.', 'wppus' ),
+			'<code>' . esc_html( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimiser.php' ) . '</code>',
+			'<code>' . esc_html( dirname( dirname( WPPUS_PLUGIN_PATH ) ) . '/mu-plugins/wppus-endpoint-optimiser.php' ) . '</code>',
+		);
+		?>
 	</p>
 	<p>
-		<?php echo sprintf( __( 'You may edit the variable <code>$wppus_always_active_plugins</code> of the MU Plugin file to allow some plugins to run anyway, or set the <code>$wppus_bypass_themes</code> to <code>false</code> to allow <code>functions.php</code> files to be included, for example to hook into WP Plugin Server actions and filters. If the MU Plugin is in use and a new version is available, it will be backed-up to <code>%s</code> when updating WP Plugin Update Server and it will automatically be replaced with its new version. If necessary, make sure to report any previous customization from the backup to the new file.' ), dirname( dirname( WPPUS_PLUGIN_PATH ) ) . '/mu-plugins/wppus-endpoint-optimiser.php.backup' ); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php
+		printf(
+			// translators: %1$s is <code>$wppus_always_active_plugins</code>, %2$s is <code>$wppus_bypass_themes</code>, %3$s is <code>false</code>, %4$s is <code>functions.php</code>, %5$s is <code>wppus-endpoint-optimiser.php.backup</code>
+			esc_html__( 'See %1$s for an example of plugin, and %2$ss for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.', 'wppus' ),
+			'<code>$wppus_always_active_plugins</code>',
+			'<code>$wppus_bypass_themes</code>',
+			'<code>false</code>',
+			'<code>functions.php</code>',
+			'<code>' . esc_html( dirname( dirname( WPPUS_PLUGIN_PATH ) ) . '/mu-plugins/wppus-endpoint-optimiser.php.backup' ) . '</code>',
+		);
+		?>
 	</p>
 	<p>
-		<?php _e( 'The MU Plugin also provides the global variable <code>$wppus_doing_update_api_request</code> and <code>$wppus_doing_license_api_request</code> that can be tested when adding hooks and filters would you choose to keep some plugins active with <code>$wppus_always_active_plugins</code> or keep <code>functions.php</code> from themes included with <code>$wppus_bypass_themes</code> set to <code>false</code>.' ); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php
+		printf(
+			// translators: %1$s is <code>$wppus_doing_update_api_request</code>, %2$s is <code>$wppus_doing_license_api_request</code>, %3$s is <code>$wppus_always_active_plugins</code>, %4$s is <code>functions.php</code>, %5$s is <code>$wppus_bypass_themes</code>, %5$s is <code>false</code>
+			esc_html__( 'The MU Plugin also provides the global variable %1$s and %2$s that can be tested when adding hooks and filters would you choose to keep some plugins active with %3$s or keep %4$s from themes included with %5$s set to %6$s.', 'wppus' ),
+			'<code>$wppus_doing_update_api_request</code>',
+			'<code>$wppus_doing_license_api_request</code>',
+			'<code>$wppus_always_active_plugins</code>',
+			'<code>functions.php</code>',
+			'<code>$wppus_bypass_themes</code>',
+			'<code>false</code>',
+		);
+		?>
 	</p>
 	<hr>
 	<h2><?php esc_html_e( 'More help...', 'wppus' ); ?></h2>
 	<p>
-		<?php _e( 'The full documentation can be found <a target="_blank" href="https://github.com/froger-me/wp-plugin-update-server/blob/master/README.md">here</a>, with more details for developers on how to integrate WP Plugin Server with their own plugins and themes.', 'wppus' ); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php
+		printf(
+			// translators: %s is a link to the documentation
+			esc_html__( 'The full documentation can be found %s, with more details for developers on how to integrate WP Plugin Server with their own plugins and themes.', 'wppus' ),
+			'<a target="_blank" href="https://github.com/froger-me/wp-plugin-update-server/blob/master/README.md">' . esc_html__( 'here', 'wppus' ) . '</a>',
+		);
+		?>
 	</p>
 	<p>
-		<?php _e( 'After reading the documentation, for more help on how to use WP Plugin Update Server, please <a target="_blank" href="https://github.com/froger-me/wp-plugin-update-server/issues">open an issue on Github</a> or contact <a href="mailto:wppus-help@froger.me">wppus-help@froger.me</a>.', 'wppus' ); ?><?php // @codingStandardsIgnoreLine ?>
-	</p>
-	<p>
-		<?php _e( 'Depending on the nature of the request, a fee may apply.'); ?><?php // @codingStandardsIgnoreLine ?>
+		<?php
+		printf(
+			// translators: %1$s is a link to opening an issue, %2$s is a contact email
+			esc_html__( 'After reading the documentation, for more help on how to use WP Plugin Update Server, 	please %1$s - bugfixes are welcome via pull requests, detailed bug reports with accurate pointers as to where and how they occur int he code will be addressed in a timely manner, and a fee will apply for any other request if they are addressed. If and only if you found a security issue, please contact %2$s with full details for responsible disclosure.', 'wppus' ),
+			'<a target="_blank" href="https://github.com/froger-me/wp-plugin-update-server/issues">' . esc_html__( 'open an issue on Github', 'wppus' ) . '</a>',
+			'<a href="mailto:wppus-help@froger.me">wppus-help@anyape.com</a>',
+		);
+		?>
 	</p>
 </div>

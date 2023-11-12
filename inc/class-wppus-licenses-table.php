@@ -231,7 +231,7 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 				$class   = 'notice notice-error';
 				$message = __( 'Download: Archive max size exceeded - try to adjust it in the settings below.', 'wppus' );
 
-				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message );// @codingStandardsIgnoreLine
+				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 				$this->bulk_action_error = '';
 			}

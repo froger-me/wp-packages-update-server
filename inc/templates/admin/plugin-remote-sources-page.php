@@ -138,7 +138,7 @@
 						<?php
 						printf(
 							// translators: %s is <code>consumer_key|consumer_secret</code>
-							esc_html__( 'In the case of Bitbucket, the Consumer key and secret separated by a pipe (%s). ', 'wppus' ),
+							esc_html__( 'In the case of Bitbucket, the Consumer key and secret separated by a pipe (%s).', 'wppus' ),
 							'<code>consumer_key|consumer_secret</code>'
 						);
 						?>

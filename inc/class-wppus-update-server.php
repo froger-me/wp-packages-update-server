@@ -190,7 +190,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		global $wp_filesystem;
 
-		$package_path = trailingslashit( $this->packageDirectory ) . $slug . '.zip'; // @codingStandardsIgnoreLine
+		$package_path = trailingslashit( $this->packageDirectory ) . $slug . '.zip'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$result       = false;
 		$type         = false;
 
@@ -241,7 +241,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			'package_id' => $package->slug,
 		);
 
-		return self::addQueryArg( $query, $this->serverUrl ); // @codingStandardsIgnoreLine
+		return self::addQueryArg( $query, $this->serverUrl ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
 	protected function actionDownload( Wpup_Request $request ) {
@@ -262,7 +262,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		global $wp_filesystem;
 
 		$safe_slug = preg_replace( '@[^a-z0-9\-_\.,+!]@i', '', $slug );
-		$filename  = trailingslashit( $this->packageDirectory ) . $safe_slug . '.zip'; // @codingStandardsIgnoreLine
+		$filename  = trailingslashit( $this->packageDirectory ) . $safe_slug . '.zip'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		// @todo doc
 		$save_remote_to_local = apply_filters(
 			'wppus_save_remote_to_local',
@@ -362,7 +362,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$meta                         = $request->package->getMetadata();
 		$meta['download_url']         = $this->generateDownloadUrl( $request->package );
 		$meta                         = $this->filterMetadata( $meta, $request );
-		$meta['request_time_elapsed'] = sprintf( '%.3f', microtime( true ) - $this->startTime ); // @codingStandardsIgnoreLine
+		$meta['request_time_elapsed'] = sprintf( '%.3f', microtime( true ) - $this->startTime ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		$this->outputAsJson( $meta );
 
@@ -385,14 +385,14 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 					new GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
 					$slug,
 					$slug,
-					$this->packageDirectory // @codingStandardsIgnoreLine
+					$this->packageDirectory // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				);
 			} elseif ( 'Theme' === $this->type ) {
 				$this->update_checker = new Proxuc_Vcs_ThemeUpdateChecker(
 					new GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
 					$slug,
 					$slug,
-					$this->packageDirectory // @codingStandardsIgnoreLine
+					$this->packageDirectory // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				);
 			}
 		} else {
@@ -401,7 +401,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 				$slug,
 				$slug,
 				$this->type,
-				$this->packageDirectory // @codingStandardsIgnoreLine
+				$this->packageDirectory // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			);
 		}
 

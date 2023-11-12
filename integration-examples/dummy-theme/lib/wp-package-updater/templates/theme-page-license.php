@@ -5,7 +5,7 @@
 	<div class="postbox">
 		<div class="inside">
 			<h2><?php echo esc_html( $title ); ?></h2>
-			<?php echo $form; ?><?php // @codingStandardsIgnoreLine ?>
+			<?php echo $form; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		</div>
 	</div>
 </div>

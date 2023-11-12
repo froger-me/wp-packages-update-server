@@ -74,7 +74,29 @@
 			<td>
 				<input class="regular-text" type="text" id="wppus_prime_package_slug" placeholder="<?php esc_attr_e( 'package-name' ); ?>" name="wppus_prime_package_slug" value=""> <input type="button" id="wppus_prime_package_trigger" value="<?php print esc_attr_e( 'Get remote package', 'wppus' ); ?>" class="button button-primary" disabled /><div class="spinner"></div>
 				<p class="description">
-					<?php echo sprintf( __( 'Get an archive of a package from a Remote Repository an put it in the <code>%s</code> directory by entering the package slug.<br/>The repository name should be <code>package-name</code> and all the files should be located at the root of the repository.<br/>In the case of a plugin, the main plugin file must have the same name as the repository name - for example, the main plugin file in <code>package-name</code> repository would be <code>package-name.php</code>.', 'wppus' ), $packages_dir ); ?><?php // @codingStandardsIgnoreLine ?>
+					<?php
+					printf(
+						// translators: %s is <code>$packages_dir</code>
+						esc_html__( 'Get an archive of a package from a Remote Repository an put it in the %s directory by entering the package slug.', 'wppus' ),
+						'<code>' . esc_html( $packages_dir ) . '</code>',
+					);
+					?>
+					<?php
+					printf(
+						// translators: %s is <code>package-name</code>
+						esc_html__( 'The repository name should be  and all the files should be located at the root of the repository.', 'wppus' ),
+						'<code>package-name</code>',
+					);
+					?>
+					<br>
+					<?php
+					printf(
+						// translators: %1$s is <code>package-name</code>, %2$s is <code>package-name.php</code>
+						esc_html__( 'In the case of a plugin, the main plugin file must have the same name as the repository name - for example, the main plugin file in %1$s repository would be %2$s.', 'wppus' ),
+						'<code>package-name</code>',
+						'<code>package-name.php</code>',
+					);
+					?>
 					<br>
 					<?php esc_html_e( 'Using this method adds the package to the list if not present or forcefully downloads its latest version from the Remote Repository and overwrites the existing package.', 'wppus' ); ?>
 					<br>
@@ -94,7 +116,22 @@
 			<td>
 				<input class="input-file hidden" type="file" id="wppus_manual_package_upload" name="wppus_manual_package_upload" value=""><label for="wppus_manual_package_upload" class="button"><?php esc_html_e( 'Choose package archive', 'wppus' ); ?></label> <input type="text" id="wppus_manual_package_upload_filename" placeholder="package-name.zip" value="" disabled> <input type="button" value="<?php print esc_attr_e( 'Upload package', 'wppus' ); ?>" class="button button-primary manual-package-upload-trigger" id="wppus_manual_package_upload_trigger" disabled /><div class="spinner"></div>
 				<p class="description">
-					<?php echo sprintf( __( 'Add a package zip archive to the <code>%s</code> directory. The archive needs to be a valid WordPress plugin or theme package.<br/>In the case of a plugin the main plugin file must have the same name as the zip archive - for example, the main plugin file in <code>package-name.zip</code> would be <code>package-name.php</code>.', 'wppus' ), $packages_dir ); ?><?php // @codingStandardsIgnoreLine ?>
+					<?php
+					printf(
+						// translators: %s is <code>$packages_dir</code>
+						esc_html__( 'Add a package zip archive to the %s directory. The archive needs to be a valid WordPress plugin or theme package.', 'wppus' ),
+						'<code>' . esc_html( $packages_dir ) . '</code>',
+					);
+					?>
+					<br>
+					<?php
+					printf(
+						// translators: %1$s is <code>package-name.zip</code>, %2$s is <code>package-name.php</code>
+						esc_html__( 'In the case of a plugin the main plugin file must have the same name as the zip archive - for example, the main plugin file in %1$s would be %2$s.', 'wppus' ),
+						'<code>package-name.zip</code>',
+						'<code>package-name.php</code>',
+					);
+					?>
 					<br>
 					<?php esc_html_e( 'Using this method adds the package to the list if not present or overwrites the existing package.', 'wppus' ); ?>
 					<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
@@ -127,7 +164,13 @@
 				<td>
 					<input class="regular-text" type="number" id="wppus_cache_max_size" name="wppus_cache_max_size" value="<?php echo esc_attr( get_option( 'wppus_cache_max_size', $default_cache_size ) ); ?>"> <input type="button" value="<?php print esc_attr_e( 'Force Clean', 'wppus' ); ?> (<?php print esc_attr( $cache_size ); ?>)" class="button ajax-trigger" data-action="force_clean" data-type="cache" />
 					<p class="description">
-						<?php echo sprintf( __( 'Maximum size in MB for the <code>%s</code> directory. If the size of the directory grows larger, its content will be deleted at next cron run (checked hourly). The size indicated in the "Force Clean" button is the real current size.', 'wppus' ), WPPUS_Data_Manager::get_data_dir( 'cache' ) ); ?><?php // @codingStandardsIgnoreLine ?>
+						<?php
+						printf(
+							// translators: %s is <code>cache_dir_path</code>
+							esc_html__( 'Maximum size in MB for the %s directory. If the size of the directory grows larger, its content will be deleted at next cron run (checked hourly). The size indicated in the "Force Clean" button is the real current size.', 'wppus' ),
+							'<code>' . esc_html( WPPUS_Data_Manager::get_data_dir( 'cache' ) ) . '</code>'
+						);
+						?>
 					</p>
 				</td>
 			</tr>
@@ -138,7 +181,13 @@
 				<td>
 					<input class="regular-text" type="number" id="wppus_logs_max_size" name="wppus_logs_max_size" value="<?php echo esc_attr( get_option( 'wppus_logs_max_size', $default_logs_size ) ); ?>"> <input type="button" value="<?php print esc_attr_e( 'Force Clean', 'wppus' ); ?> (<?php print esc_attr( $logs_size ); ?>)" class="button ajax-trigger" data-action="force_clean" data-type="logs" />
 					<p class="description">
-						<?php echo sprintf( __( 'Maximum size in MB for the <code>%s</code> directory. If the size of the directory grows larger, its content will be deleted at next cron run (checked hourly). The size indicated in the "Force Clean" button is the real current size.', 'wppus' ), WPPUS_Data_Manager::get_data_dir( 'logs' ) ); ?><?php // @codingStandardsIgnoreLine ?>
+						<?php
+						printf(
+							// translators: %s is <code>logs_dir_path</code>
+							esc_html__( 'Maximum size in MB for the %s directory. If the size of the directory grows larger, its content will be deleted at next cron run (checked hourly). The size indicated in the "Force Clean" button is the real current size.', 'wppus' ),
+							'<code>' . esc_html( WPPUS_Data_Manager::get_data_dir( 'logs' ) ) . '</code>'
+						);
+						?>
 					</p>
 				</td>
 			</tr>

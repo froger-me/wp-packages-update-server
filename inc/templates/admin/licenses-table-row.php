@@ -9,7 +9,7 @@
 		$style   = '';
 		$actions = '';
 
-		if ( in_array( $column_name, $hidden ) ) { //@codingStandardsIgnoreLine
+		if ( in_array( $column_name, $hidden, true ) ) {
 			$style = 'display:none;';
 		}
 
@@ -18,7 +18,7 @@
 				'edit'   => sprintf( '<a href="#">%s</a>', __( 'Edit', 'wppus' ) ),
 				'delete' => sprintf(
 					'<a href="?page=%s&action=%s&license_data=%s&linknonce=%s">%s</a>',
-					$_REQUEST['page'], //@codingStandardsIgnoreLine
+					$_REQUEST['page'], // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 					'delete',
 					$record['id'],
 					wp_create_nonce( 'linknonce' ),
@@ -39,7 +39,7 @@
 					<?php echo esc_html( $record[ $key ] ); ?>
 				<?php elseif ( 'col_license_key' === $column_name ) : ?>
 					<?php echo esc_html( $record[ $key ] ); ?>
-					<?php echo $actions; ?><?php //@codingStandardsIgnoreLine ?>
+					<?php echo $actions; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				<?php elseif ( 'col_status' === $column_name ) : ?>
 					<?php echo esc_html( ucfirst( $record[ $key ] ) ); ?>
 				<?php elseif ( 'col_package_type' === $column_name ) : ?>

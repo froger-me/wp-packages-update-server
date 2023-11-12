@@ -165,7 +165,7 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 			// translators: %1$s is the package type
 			$message .= '<p>' . sprintf( __( 'The %1$s may not have any effect until the issues are resolved.', 'wp-update-migrate' ), $this->package_type ) . '</p>';
 
-			printf( '<div class="%1$s">%2$s</div>', $class, $message ); // @codingStandardsIgnoreLine
+			printf( '<div class="%1$s">%2$s</div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		public function update_success_notice() {
@@ -174,7 +174,7 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 			$title   = $this->package_name . ' - ' . sprintf( __( 'Success updating to version %1$s', 'wp-update-migrate' ), $this->to_version );
 			$message = '<h3>' . $title . '</h3><p>' . $this->success_update_info . '</p>';
 
-			printf( '<div class="%1$s">%2$s</div>', $class, $message ); // @codingStandardsIgnoreLine
+			printf( '<div class="%1$s">%2$s</div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		protected static function get_content_dir() {
@@ -357,6 +357,5 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 		protected function handle_success( $message = null ) {
 			$this->success_update_info .= $message . '<br/>';
 		}
-
 	}
 }

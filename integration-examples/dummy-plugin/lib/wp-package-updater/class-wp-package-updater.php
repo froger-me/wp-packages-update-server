@@ -154,7 +154,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			}
 		}
 
-		public function locate_template( $template_name, $load = false, $require_once = true ) {
+		public function locate_template( $template_name, $load = false, $required_once = true ) {
 			$template = apply_filters(
 				'wppu_' . $this->package_id . '_locate_template',
 				$this->package_path . 'lib/wp-package-updater/templates/' . $template_name,
@@ -163,13 +163,13 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			);
 
 			if ( $load && '' !== $template ) {
-				load_template( $template, $require_once );
+				load_template( $template, $required_once );
 			}
 
 			return $template;
 		}
 
-		public function get_template( $template_name, $args = array(), $load = true, $require_once = false ) {
+		public function get_template( $template_name, $args = array(), $load = true, $required_once = false ) {
 			$template_name = apply_filters( 'wppu_' . $this->package_id . '_get_template_name', $template_name, $args );
 			$template_args = apply_filters( 'wppu_' . $this->package_id . '_get_template_args', $args, $template_name );
 
@@ -182,7 +182,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				}
 			}
 
-			return $this->locate_template( $template_name, $load, $require_once );
+			return $this->locate_template( $template_name, $load, $required_once );
 		}
 
 		public function wp_prepare_themes_for_js( $prepared_themes ) {
@@ -239,7 +239,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 
 			ksort( $reordered_menu );
 
-			$submenu['themes.php'] = $reordered_menu; // @codingStandardsIgnoreLine
+			$submenu['themes.php'] = $reordered_menu; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 			return $menu_ord;
 		}
@@ -247,11 +247,10 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		public function theme_license_settings() {
 
 			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // @codingStandardsIgnoreLine
+				wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 
 			$this->print_license_form_theme_page();
-
 		}
 
 		public function add_admin_scripts( $hook ) {
@@ -423,7 +422,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			wp_send_json_success( $license_data );
 		}
 
-		public function set_license_error_notice_content( $package_info, $result ) {
+		public function set_license_error_notice_content( $package_info, $result ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 			if ( isset( $package_info->license_error ) && ! empty( $package_info->license_error ) ) {
 
@@ -443,7 +442,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			if ( $error ) {
 				$class = 'license-error license-error-' . $this->package_slug . ' notice notice-error is-dismissible';
 
-				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $error ); // @codingStandardsIgnoreLine
+				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $error ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		}
 
@@ -630,7 +629,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				throw new RuntimeException(
 					sprintf(
 						'The package updater cannot determine if "%s" is a plugin or a theme. ',
-						htmlentities( $this->package_path )
+						esc_html( htmlentities( $this->package_path ) )
 					)
 				);
 			}

@@ -7,14 +7,14 @@
 
 	$query_string = '?page=%s&action=%s&packages=%s&linknonce=%s';
 	$args         = array(
-		$_REQUEST['page'], //@codingStandardsIgnoreLine
+		$_REQUEST['page'], // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		'download',
 		$record_key,
 		wp_create_nonce( 'linknonce' ),
 	);
 
-	if ( isset( $_REQUEST['s'] ) ) { //@codingStandardsIgnoreLine
-		$args[]        = $_REQUEST['s']; //@codingStandardsIgnoreLine
+	if ( isset( $_REQUEST['s'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$args[]        = $_REQUEST['s']; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$query_string .= '&s=%s';
 	}
 
@@ -34,7 +34,7 @@
 		$class = $column_name . ' column-' . $column_name;
 		$style = '';
 
-		if ( in_array( $column_name, $hidden ) ) { //@codingStandardsIgnoreLine
+		if ( in_array( $column_name, $hidden, true ) ) {
 			$style = 'display:none;';
 		}
 
@@ -48,7 +48,7 @@
 			<td class="<?php echo esc_attr( $class ); ?>" style="<?php echo esc_attr( $style ); ?>">
 				<?php if ( 'col_name' === $column_name ) : ?>
 					<?php echo esc_html( $record[ $key ] ); ?>
-					<?php echo $actions; ?><?php //@codingStandardsIgnoreLine ?>
+					<?php echo $actions; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				<?php elseif ( 'col_version' === $column_name ) : ?>
 					<?php echo esc_html( $record[ $key ] ); ?>
 				<?php elseif ( 'col_type' === $column_name ) : ?>
