@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-class WP_Plugin_Update_Server {
+class WP_Packages_Update_Server {
 	protected static $instance;
 
 	public function __construct( $init_hooks = false ) {
@@ -44,7 +44,7 @@ class WP_Plugin_Update_Server {
 		}
 
 		if ( ! class_exists( 'ZipArchive' ) ) {
-			$error_message = __( 'The zip PHP extension is required by WP Plugin Update Server. Please check your server configuration.', 'wppus' );
+			$error_message = __( 'The zip PHP extension is required by WP Packages Update Server. Please check your server configuration.', 'wppus' );
 
 			die( $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
@@ -204,12 +204,12 @@ class WP_Plugin_Update_Server {
 
 		if ( filter_input( INPUT_COOKIE, 'wppus_activated_mu_failure', FILTER_UNSAFE_RAW ) ) {
 			setcookie( 'wppus_activated_mu_failure', '', time() - 3600, '/', COOKIE_DOMAIN );
-			add_action( 'admin_notices', array( 'WP_Plugin_Update_Server', 'setup_mu_plugin_failure_notice' ), 10, 0 );
+			add_action( 'admin_notices', array( 'WP_Packages_Update_Server', 'setup_mu_plugin_failure_notice' ), 10, 0 );
 		}
 
 		if ( filter_input( INPUT_COOKIE, 'wppus_activated_mu_success', FILTER_UNSAFE_RAW ) ) {
 			setcookie( 'wppus_activated_mu_success', '', time() - 3600, '/', COOKIE_DOMAIN );
-			add_action( 'admin_notices', array( 'WP_Plugin_Update_Server', 'setup_mu_plugin_success_notice' ), 10, 0 );
+			add_action( 'admin_notices', array( 'WP_Packages_Update_Server', 'setup_mu_plugin_success_notice' ), 10, 0 );
 		}
 	}
 
@@ -222,7 +222,7 @@ class WP_Plugin_Update_Server {
 	}
 
 	public function load_textdomain() {
-		load_plugin_textdomain( 'wppus', false, 'wp-plugin-update-server/languages' );
+		load_plugin_textdomain( 'wppus', false, 'wp-packages-update-server/languages' );
 	}
 
 	public function admin_enqueue_scripts( $hook ) {
@@ -268,15 +268,15 @@ class WP_Plugin_Update_Server {
 			}
 
 			wp_enqueue_script(
-				'wp-plugin-update-server-script',
+				'wp-packages-update-server-script',
 				WPPUS_PLUGIN_URL . 'js/admin/main' . $js_ext,
 				array( 'jquery' ),
 				$ver_js,
 				true
 			);
-			wp_localize_script( 'wp-plugin-update-server-script', 'Wppus_l10n', $l10n );
+			wp_localize_script( 'wp-packages-update-server-script', 'Wppus_l10n', $l10n );
 			wp_add_inline_script(
-				'wp-plugin-update-server-script',
+				'wp-packages-update-server-script',
 				'var Wppus = ' . wp_json_encode( $params ),
 				'before'
 			);
@@ -289,12 +289,12 @@ class WP_Plugin_Update_Server {
 	}
 
 	public function display_settings_header() {
-		echo '<h1>' . esc_html__( 'WP Plugin Update Server', 'wppus' ) . '</h1>';
+		echo '<h1>' . esc_html__( 'WP Packages Update Server', 'wppus' ) . '</h1>';
 		$this->display_tabs();
 	}
 
 	public function admin_menu() {
-		$page_title = __( 'WP Plugin Update Server', 'wppus' );
+		$page_title = __( 'WP Packages Update Server', 'wppus' );
 		$menu_title = $page_title;
 		$icon       = 'data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNy44NSAxNS4zMSI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNhNGE0YTQ7fS5jbHMtMntmaWxsOiNhMGE1YWE7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5VbnRpdGxlZC0xPC90aXRsZT48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMCwxMy41NGMyLjIzLDAsNC40NiwwLDYuNjksMCwuNjksMCwxLS4xNSwxLS45MSwwLTIuMzUsMC00LjcxLDAtNy4wNiwwLS42NC0uMi0uODctLjg0LS44NS0xLjEzLDAtMi4yNiwwLTMuMzksMC0uNDQsMC0uNjgtLjExLS42OC0uNjJzLjIzLS42My42OC0uNjJjMS40MSwwLDIuODEsMCw0LjIyLDAsLjgyLDAsMS4yMS40MywxLjIsMS4yNywwLDIuOTMsMCw1Ljg3LDAsOC44LDAsMS0uMjksMS4yNC0xLjI4LDEuMjVxLTIuNywwLTUuNDEsMGMtLjU0LDAtLjg1LjA5LS44NS43NXMuMzUuNzMuODcuNzFjLjgyLDAsMS42NSwwLDIuNDgsMCwuNDgsMCwuNzQuMTguNzUuNjlzLS40LjUxLS43NS41MUg1LjJjLS4zNSwwLS43OC4xMS0uNzUtLjVzLjI4LS43MS43Ni0uN2MuODMsMCwxLjY1LDAsMi40OCwwLC41NCwwLC45NSwwLC45NC0uNzRzLS40OC0uNzEtMS0uNzFIMi41MWMtMS4yMiwwLTEuNS0uMjgtMS41LTEuNTFRMSw5LjE1LDEsNWMwLTEuMTQuMzQtMS40NiwxLjQ5LTEuNDdINi40NGMuNCwwLC43LDAsLjcxLjU3cy0uMjEuNjgtLjcuNjdjLTEuMTMsMC0yLjI2LDAtMy4zOSwwLS41NywwLS44My4xNy0uODIuNzhxMCwzLjYyLDAsNy4yNGMwLC42LjIxLjguOC43OUM1LjM2LDEzLjUyLDcuNjgsMTMuNTQsMTAsMTMuNTRaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0xMy4xLDkuMzhsLTIuNjIsMi41YS44MS44MSwwLDAsMS0xLjEyLDBMNi43NCw5LjM4YS43NC43NCwwLDAsMSwwLTEuMDguODIuODIsMCwwLDEsMS4xMywwTDkuMTMsOS41VjNhLjguOCwwLDAsMSwxLjU5LDBWOS41TDEyLDguM2EuODIuODIsMCwwLDEsMS4xMywwQS43NC43NCwwLDAsMSwxMy4xLDkuMzhaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48L3N2Zz4=';
 
@@ -303,7 +303,7 @@ class WP_Plugin_Update_Server {
 
 	public function admin_menu_help() {
 		$function   = array( $this, 'help_page' );
-		$page_title = __( 'WP Plugin Update Server - Help', 'wppus' );
+		$page_title = __( 'WP Packages Update Server - Help', 'wppus' );
 		$menu_title = __( 'Help', 'wppus' );
 		$menu_slug  = 'wppus-page-help';
 

@@ -9,7 +9,7 @@
 		<input type="checkbox" id="wppus_remote_repository_use_webhooks" name="wppus_remote_repository_use_webhooks" value="1" <?php checked( $use_webhooks, 1 ); ?>>
 		<p class="description">
 			<?php esc_html_e( 'Check this if you wish for each repository of the Remote Repository Service to call a Webhook when updates are pushed.', 'wppus' ); ?><br>
-			<?php esc_html_e( 'When checked, WP Plugin Update Server will not regularly poll repositories for package version changes, but relies on events sent by the repositories to schedule a package download.', 'wppus' ); ?>
+			<?php esc_html_e( 'When checked, WP Packages Update Server will not regularly poll repositories for package version changes, but relies on events sent by the repositories to schedule a package download.', 'wppus' ); ?>
 			<br/>
 			<?php
 			printf(
@@ -23,7 +23,7 @@
 			);
 			?>
 			<br>
-			<?php esc_html_e( 'Note that WP Plugin Update Server does not rely on the content of the payload to schedule a package download, so any type of event can be used to trigger the Webhook.', 'wppus' ); ?>
+			<?php esc_html_e( 'Note that WP Packages Update Server does not rely on the content of the payload to schedule a package download, so any type of event can be used to trigger the Webhook.', 'wppus' ); ?>
 		</p>
 	</td>
 </tr>
@@ -34,7 +34,7 @@
 	<td>
 		<input type="number" min="0" id="wppus_remote_repository_check_delay" name="wppus_remote_repository_check_delay" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_check_delay', 0 ) ); ?>">
 		<p class="description">
-			<?php esc_html_e( 'Delay in minutes after which WP Plugin Update Server will poll the Remote Repository for package updates when the Webhook has been called.', 'wppus' ); ?><br>
+			<?php esc_html_e( 'Delay in minutes after which WP Packages Update Server will poll the Remote Repository for package updates when the Webhook has been called.', 'wppus' ); ?><br>
 			<?php esc_html_e( 'Leave at 0 to schedule a package update during the cron run happening immediately after the Webhook was called.', 'wppus' ); ?>
 		</p>
 	</td>

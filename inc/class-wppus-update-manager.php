@@ -23,7 +23,7 @@ class WPPUS_Update_Manager {
 
 		if ( $init_hooks ) {
 			$parts     = explode( DIRECTORY_SEPARATOR, untrailingslashit( WPPUS_PLUGIN_PATH ) );
-			$plugin_id = end( $parts ) . '/wp-plugin-update-server.php';
+			$plugin_id = end( $parts ) . '/wp-packages-update-server.php';
 
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 10, 0 );
@@ -105,7 +105,7 @@ class WPPUS_Update_Manager {
 	}
 
 	public function admin_menu() {
-		$page_title = __( 'WP Plugin Update Server', 'wppus' );
+		$page_title = __( 'WP Packages Update Server', 'wppus' );
 		$capability = 'manage_options';
 		$function   = array( $this, 'plugin_page' );
 		$menu_title = __( 'Overview', 'wppus' );
@@ -564,7 +564,7 @@ class WPPUS_Update_Manager {
 		$result = '';
 
 		if ( isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) && wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' ) ) {
-			$result  = __( 'WP Plugin Update Server options successfully updated', 'wppus' );
+			$result  = __( 'WP Packages Update Server options successfully updated', 'wppus' );
 			$options = $this->get_submitted_options();
 
 			foreach ( $options as $option_name => $option_info ) {

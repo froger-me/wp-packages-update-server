@@ -1,4 +1,4 @@
-=== WP Plugin Update Server ===
+=== WP Packages Update Server ===
 Contributors: frogerme
 Tags: plugins, themes, updates, license
 Requires at least: 4.9.5
@@ -12,9 +12,9 @@ Run your own update server for plugins and themes.
 
 == Description ==
 
-WP Plugin Update Server allows developers to provide updates for plugins and themes packages not hosted on wordpress.org. It is useful to provide updates for plugins or themes not compliant with the GPLv2 (or later).
+WP Packages Update Server allows developers to provide updates for plugins and themes packages not hosted on wordpress.org. It is useful to provide updates for plugins or themes not compliant with the GPLv2 (or later).
 Packages may be either uploaded directly, or hosted in a Remote Repository, public or private. It supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab.
-Package updates may require a license, and licenses can be managed through an API or a user interface within WP Plugin Update Server.
+Package updates may require a license, and licenses can be managed through an API or a user interface within WP Packages Update Server.
 
 == Important notes ==
 
@@ -22,39 +22,39 @@ This plugin is for developers only.
 
 Zip PHP extension is required (use ZipArchive, no fallback to PclZip).
 
-For more information, available APIs, functions, actions and filters, see [the plugin's full documentation](https://github.com/froger-me/wp-plugin-update-server/blob/master/README.md).
+For more information, available APIs, functions, actions and filters, see [the plugin's full documentation](https://github.com/froger-me/wp-packages-update-server/blob/master/README.md).
 
-Make sure to read the full documentation and the content of the "Help" tab under "WP Plugin Update Server" settings before opening an issue or contacting the author.
+Make sure to read the full documentation and the content of the "Help" tab under "WP Packages Update Server" settings before opening an issue or contacting the author.
 
 == Overview ==
 
 This plugin adds the following major features to WordPress:
 
-* **WP Plugin Update Server admin page:** to manage the list of packages and configure the plugin.
+* **WP Packages Update Server admin page:** to manage the list of packages and configure the plugin.
 * **Package management:** to manage update packages, showing a listing with Package Name, Version, Type, File Name, Size, Last Modified and License Status ; includes bulk operations to delete, download and change the license status, and the ability to delete all the packages.
 * **Add Packages:** Upload update packages from a local machine to the server, or download them to the server from a Remote Repository.
 * **General settings:** for archive files download size, cache, and logs, with force clean.
 * **Packages licensing:** Prevent plugins and themes installed on remote WordPress installation from being updated without a valid license. Licenses are generated automatically by default and the values are unguessable (it is recommended to keep the default). When checking the validity of licenses an extra license signature is also checked to prevent the use of a license on more than the configured allowed domains.
-* **Packages remote source:** WP Plugin Update Server can act as a proxy and will help you to connect your clients with your plugins and themes kept on a Remote Repository, so that they are always up to date. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab. Packages will not be installed on your server, only transferred to the clients whenever they request them.
+* **Packages remote source:** WP Packages Update Server can act as a proxy and will help you to connect your clients with your plugins and themes kept on a Remote Repository, so that they are always up to date. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab. Packages will not be installed on your server, only transferred to the clients whenever they request them.
 
-To connect their plugins or themes and WP Plugin Update Server, developers can find integration examples in the `wp-plugin-update-server/integration-examples` directory, or check the [documentation of the WP Package Updater](https://github.com/froger-me/wp-package-updater/blob/master/README.md).
+To connect their plugins or themes and WP Packages Update Server, developers can find integration examples in the `wp-packages-update-server/integration-examples` directory, or check the [documentation of the WP Package Updater](https://github.com/froger-me/wp-package-updater/blob/master/README.md).
 
-In addition, a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) developers can add to the WordPress installation running WP Plugin Update Server is available in `wp-plugin-update-server/optimisation/wppus-endpoint-optimizer.php`.
+In addition, a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) developers can add to the WordPress installation running WP Packages Update Server is available in `wp-packages-update-server/optimisation/wppus-endpoint-optimizer.php`.
 
 == Upgrade Information ==
 
 When upgrading from v1.3, licenses from Software License Manager plugin will be migrated automatically, and SLM will be bypassed while doing license checks using the old API, and compatibility will be ensured until v2.0. It is recommended to dactivate or uninstall Software license Manager entirely. Developers will need to update the [WP Package Updater](https://github.com/froger-me/wp-package-updater) library before v2.0 as support for SLM API calls will be removed then.
 
-Upgrading from 1.4.13 to 1.4.14 requires to upgrade the `lib` directory of all the packages delivered by WP Plugin Update Server due to a change in the Github API (deprecation of query parameters authentication). You can find the updated `lib` content in the integration examples in the `wp-plugin-update-server/integration-examples` directory.
+Upgrading from 1.4.13 to 1.4.14 requires to upgrade the `lib` directory of all the packages delivered by WP Packages Update Server due to a change in the Github API (deprecation of query parameters authentication). You can find the updated `lib` content in the integration examples in the `wp-packages-update-server/integration-examples` directory.
 
-Upgrading from 1.4.15 to 1.4.16 requires an upgrade of the 'lib' directory of all packages provided by the WP Plugin Update Server. The updated 'lib' content can be found in the integration examples in the 'wp-plugin-update-server/integration-examples' directory.
+Upgrading from 1.4.15 to 1.4.16 requires an upgrade of the 'lib' directory of all packages provided by the WP Packages Update Server. The updated 'lib' content can be found in the integration examples in the 'wp-packages-update-server/integration-examples' directory.
 
 == Roadmap ==
 
 Aside from minor version updates (bugfixes, interface improvements and simple new features), below is the current roadmap. This can evolve depending on feedback, reviews and popularity.
 
-* **v1.5**: Add statistics for packages passing through WP Plugin Update Server – number of updates, number of installs, etc for each package – potentially with CSV export.
-* **v1.6**: Optionally include the [WP Package Updater](https://github.com/froger-me/wp-package-updater) and its logic to packages passing through WP Plugin Update Server (has to be done manually in version prior to 1.6, which may potentially lead to errors if not done properly). This feature would be enabled only on an opt-in basis.
+* **v1.5**: Add statistics for packages passing through WP Packages Update Server – number of updates, number of installs, etc for each package – potentially with CSV export.
+* **v1.6**: Optionally include the [WP Package Updater](https://github.com/froger-me/wp-package-updater) and its logic to packages passing through WP Packages Update Server (has to be done manually in version prior to 1.6, which may potentially lead to errors if not done properly). This feature would be enabled only on an opt-in basis.
 
 == Special Thanks ==
 
@@ -65,7 +65,7 @@ Authorisation to use these libraries freely provided relevant licenses are inclu
 
 This section describes how to install the plugin and get it working.
 
-1. Upload the plugin files to the `/wp-content/plugins/wp-plugin-update-server` directory, or install the plugin through the WordPress plugins screen directly
+1. Upload the plugin files to the `/wp-content/plugins/wp-packages-update-server` directory, or install the plugin through the WordPress plugins screen directly
 2. Activate the plugin through the 'Plugins' screen in WordPress
 3. Edit plugin settings
 
@@ -110,11 +110,11 @@ This section describes how to install the plugin and get it working.
 * Add server log in case of error when repacking package zip files.
 
 = 1.4.6 =
-* Fix path handling on Windows in WP Plugin Updater library (packages update recommended but not required if not using Windows Server in production environment)
+* Fix path handling on Windows in WP Package Updater library (packages update recommended but not required if not using Windows Server in production environment)
 * Add more server logs and more explicit error messages to ease troubleshoot
 
 = 1.4.5 =
-* Better error message handling in WP Plugin Updater library (packages update recommended but not required)
+* Better error message handling in WP Package Updater library (packages update recommended but not required)
 * Add default error in case of invalid license
 
 = 1.4.4 =
@@ -139,14 +139,14 @@ This section describes how to install the plugin and get it working.
 * Fix order in licenses table
 
 = 1.4 =
-* Handle licenses in WP Plugin Update Server
+* Handle licenses in WP Packages Update Server
 * Provide a compatible public API with SLM API (check, activate, deactivate)
 * Provide a secure private license API (browse, read, edit, add, delete) - "add" compatible with "slm_create_new"
 * Refactor main aspects of the plugin structure and UI
 * Seamless upgrade from v1.3, migration of settings and licenses from SLM
 * Automatic expiration of licenses wherever an expiration date is set
 * Upgrade [WP Package Updater](https://github.com/froger-me/wp-package-updater) to v1.4.0
-* Upgrade Dummy Plugin and Dummy Theme to v1.4 - ensure older versions are compatible with WP Plugin Update Server until v2.0
+* Upgrade Dummy Plugin and Dummy Theme to v1.4 - ensure older versions are compatible with WP Packages Update Server until v2.0
 * Compatibility with v1.3 endpoints and v1.0.0 WP Package Updater ensured until v2.0
 * License APIs, functions, actions and filters, with complete documentation
 * Package download URLs now contains an unguessable token that changes everyday to prevent hotlinking

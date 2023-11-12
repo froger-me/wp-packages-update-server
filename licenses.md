@@ -1,9 +1,9 @@
-# WP Plugin Update Server - Licenses - Developer documentation
-(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-plugin-update-server/blob/master/README.md))
+# WP Packages Update Server - Licenses - Developer documentation
+(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-packages-update-server/blob/master/README.md))
 
-WP Plugin Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin when managing licenses.
+WP Packages Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin when managing licenses.
 
-- [WP Plugin Update Server - Licenses - Developer documentation](#wp-plugin-update-server---licenses---developer-documentation)
+- [WP Packages Update Server - Licenses - Developer documentation](#wp-packages-update-server---licenses---developer-documentation)
       - [The License Query](#the-license-query)
   - [API](#api)
     - [Public API](#public-api)
@@ -102,7 +102,7 @@ The License API is accessible via POST and GET requests on the `/wppus-license-a
 The description of the API further below is using the following code as reference, where `$params` are the parameters passed to the API (other parameters can be adjusted, they are just WordPress' default) and `$data` is the JSON response:
 
 ```php
-$url = 'https://domain.com/wppus-license-api/'; // Replace domain.com with the domain where WP Plugin Update Server is installed.
+$url = 'https://domain.com/wppus-license-api/'; // Replace domain.com with the domain where WP Packages Update Server is installed.
 
 $response = wp_remote_post(
     $url,
@@ -738,7 +738,7 @@ $payload
 ___
 ## Actions
 
-WP Plugin Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.
+WP Packages Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.
 **Warning**: the actions below with the mention "Fired during client license API request" need to be used with caution. Although they may also be triggered when using the functions above, these actions will be called when client packages request for updates or when License API calls are performed. Registering functions doing heavy computation to these actions when client license API requests are handled can seriously degrade the server's performances.
 
 ___
@@ -958,7 +958,7 @@ Fired during client license API request.
 ___
 ## Filters
 
-WP Plugin Update Server gives developers the possibility to customise its behavior with a series of custom filters.
+WP Packages Update Server gives developers the possibility to customise its behavior with a series of custom filters.
 **Warning**: the filters below with the mention "Fired during client license API request" need to be used with caution. Although they may be triggered when using the functions above, these filters will be called when client packages request for updates or when License API calls are performed. Registering functions doing heavy computation to these filters when client license API requests are handled can seriously degrade the server's performances.
 
 ___

@@ -2,7 +2,7 @@
 	exit; // Exit if accessed directly
 } ?>
 <div class="wrap wppus-wrap">
-	<?php WP_Plugin_Update_Server::get_instance()->display_settings_header(); ?>
+	<?php WP_Packages_Update_Server::get_instance()->display_settings_header(); ?>
 	<?php if ( get_option( 'wppus_use_licenses' ) ) : ?>
 	<form id="wppus-licenses-list" action="" method="post">
 		<h3><?php esc_html_e( 'Licenses', 'wppus' ); ?></h3>
@@ -187,7 +187,7 @@
 					<p class="description">
 						<?php esc_html_e( 'Check to activate license-enabled plugins and themes packages delivery.', 'wppus' ); ?>
 						<br>
-						<strong><?php esc_html_e( 'It affects all the packages with a "Requires License" license status delivered by this installation of WP Plugin Update Server.', 'wppus' ); ?></strong>
+						<strong><?php esc_html_e( 'It affects all the packages with a "Requires License" license status delivered by this installation of WP Packages Update Server.', 'wppus' ); ?></strong>
 						<br>
 						<strong><?php esc_html_e( 'Settings of the "Licenses" section will be saved only if this option is checked.', 'wppus' ); ?></strong>
 					</p>

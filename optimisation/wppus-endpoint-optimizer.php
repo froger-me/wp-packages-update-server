@@ -1,6 +1,6 @@
 <?php
 /**
-* Run as little as possible of the WordPress core with WP Plugin Update Server actions and filters.
+* Run as little as possible of the WordPress core with WP Packages Update Server actions and filters.
 * Effect:
 * - keep only a selection of plugins (@see $wppus_always_active_plugins below)
 * - prevent inclusion of themes functions.php (parent and child)
@@ -27,7 +27,7 @@ if ( ! $wppus_always_active_plugins ) {
 		// Edit with your plugin IDs here to keep them active during update checks.
 		// 'my-plugin-slug/my-plugin-file.php',
 		// 'my-other-plugin-slug/my-other-plugin-file.php',
-		'wp-plugin-update-server/wp-plugin-update-server.php',
+		'wp-packages-update-server/wp-packages-update-server.php',
 	);
 }
 

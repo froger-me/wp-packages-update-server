@@ -1,7 +1,7 @@
-# WP Plugin Update Server - Packages - Developer documentation
-(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-plugin-update-server/blob/master/README.md))  
+# WP Packages Update Server - Packages - Developer documentation
+(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-packages-update-server/blob/master/README.md))  
 
-WP Plugin Update Server offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin when managing packages.  
+WP Packages Update Server offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin when managing packages.  
 
 * [Functions](#user-content-functions)
 	* [wppus_get_root_data_dir](#user-content-wppus_get_root_data_dir)
@@ -259,7 +259,7 @@ $package_path
 ___
 ## Actions
 
-WP Plugin Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.  
+WP Packages Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.  
 **Warning**: the actions below with the mention "Fired during client update API request" need to be used with caution. Although they may also be triggered when using the functions above, these actions will possibly be called when client packages request for updates. Registering functions doing heavy computation to these actions when client update API requests are handled can seriously degrade the server's performances.  
 
 ___
@@ -619,7 +619,7 @@ $archive_path
 ___
 ## Filters
 
-WP Plugin Update Server gives developers the possibility to customise its behavior with a series of custom filters.  
+WP Packages Update Server gives developers the possibility to customise its behavior with a series of custom filters.  
 **Warning**: the filters below with the mention "Fired during client update API request" need to be used with caution. Although they may be triggered when using the functions above, these filters will possibly be called when client packages request for updates. Registering functions doing heavy computation to these filters when client update API requests are handled can seriously degrade the server's performances.  
 
 ___

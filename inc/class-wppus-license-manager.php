@@ -34,7 +34,7 @@ class WPPUS_License_Manager {
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 20, 0 );
 			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 20, 1 );
 			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 20, 2 );
-			add_action( 'load-wp-plugin-update-server_page_wppus-page-licenses', array( $this, 'add_page_options' ), 10, 0 );
+			add_action( 'load-wp-packages-update-server_page_wppus-page-licenses', array( $this, 'add_page_options' ), 10, 0 );
 			add_action( 'wppus_udpdate_manager_request_action', array( $this, 'wppus_udpdate_manager_request_action' ), 10, 2 );
 			add_action( 'wppus_update_manager_deleted_packages_bulk', array( $this, 'wppus_update_manager_deleted_packages_bulk' ), 10, 1 );
 
@@ -191,7 +191,7 @@ class WPPUS_License_Manager {
 			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/jquery.validate.min.js' );
 
 			wp_enqueue_script(
-				'wp-plugin-update-server-validate-script',
+				'wp-packages-update-server-validate-script',
 				WPPUS_PLUGIN_URL . 'js/admin/jquery.validate.min.js',
 				array( 'jquery' ),
 				$ver_js,
@@ -291,7 +291,7 @@ class WPPUS_License_Manager {
 
 	public function admin_menu() {
 		$function    = array( $this, 'plugin_page' );
-		$page_title  = __( 'WP Plugin Update Server - Licenses', 'wppus' );
+		$page_title  = __( 'WP Packages Update Server - Licenses', 'wppus' );
 		$menu_title  = __( 'Licenses', 'wppus' );
 		$menu_slug   = 'wppus-page-licenses';
 		$parent_slug = 'wppus-page';
@@ -440,7 +440,7 @@ class WPPUS_License_Manager {
 			isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) &&
 			wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' )
 		) {
-			$result  = __( 'WP Plugin Update Server license options successfully updated.', 'wppus' );
+			$result  = __( 'WP Packages Update Server license options successfully updated.', 'wppus' );
 			$options = $this->get_submitted_options();
 
 			foreach ( $options as $option_name => $option_info ) {

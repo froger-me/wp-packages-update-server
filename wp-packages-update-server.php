@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: WP Plugin Update Server
-Plugin URI: https://github.com/froger-me/wp-plugin-update-server/
+Plugin Name: WP Packages Update Server
+Plugin URI: https://github.com/froger-me/wp-packages-update-server/
 Description: Run your own update server for plugins and themes.
 Version: 2.0
 Author: Alexandre Froger
@@ -53,15 +53,15 @@ require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-api.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-api.php';
 
 if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing_api_request() ) {
-	require_once WPPUS_PLUGIN_PATH . 'inc/class-wp-plugin-update-server.php';
+	require_once WPPUS_PLUGIN_PATH . 'inc/class-wp-packages-update-server.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-remote-sources-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-manager.php';
 
-	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'activate' ) );
-	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'deactivate' ) );
-	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WP_Plugin_Update_Server', 'uninstall' ) );
+	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'activate' ) );
+	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'deactivate' ) );
+	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'uninstall' ) );
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_License_Manager', 'activate' ) );
 	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_License_Manager', 'deactivate' ) );
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'activate' ) );
@@ -165,7 +165,7 @@ function wppus_run() {
 		}
 
 		if ( ! isset( $objects['plugin'] ) ) {
-			$objects['plugin'] = new WP_Plugin_Update_Server( true );
+			$objects['plugin'] = new WP_Packages_Update_Server( true );
 		}
 	}
 

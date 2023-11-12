@@ -327,7 +327,7 @@ if ( ! function_exists( 'wppus_get_template' ) ) {
 			}
 		}
 
-		return WP_Plugin_Update_Server::locate_template( $template_name, $load, $require_file );
+		return WP_Packages_Update_Server::locate_template( $template_name, $load, $require_file );
 	}
 }
 
@@ -345,7 +345,7 @@ if ( ! function_exists( 'wppus_get_admin_template' ) ) {
 			}
 		}
 
-		return WP_Plugin_Update_Server::locate_admin_template( $template_name, $load, $require_file );
+		return WP_Packages_Update_Server::locate_admin_template( $template_name, $load, $require_file );
 	}
 }
 // @TODO doc

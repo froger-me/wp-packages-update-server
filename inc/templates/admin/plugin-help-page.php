@@ -2,13 +2,13 @@
 	exit; // Exit if accessed directly
 } ?>
 <div class="wrap wppus-wrap">
-	<?php WP_Plugin_Update_Server::get_instance()->display_settings_header(); ?>
-	<h2><?php esc_html_e( 'Provide updates with WP Plugin Update Server - packages requirements', 'wppus' ); ?></h2>
+	<?php WP_Packages_Update_Server::get_instance()->display_settings_header(); ?>
+	<h2><?php esc_html_e( 'Provide updates with WP Packages Update Server - packages requirements', 'wppus' ); ?></h2>
 	<p>
 		<?php
 		printf(
 			// translators: %1$s is <code>functions.php</code>, %2$s is <code>lib</code>, %3$s is a link to WP Package Updater
-			esc_html__( 'To link your packages to WP Plugin Update Server, and maybe to prevent webmasters from getting updates of your plugins and themes unless they have a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the %1$s file (for themes), and provide the necessary libraries in a %2$s directory at the root of the package - see %3$s for more information.', 'wppus' ),
+			esc_html__( 'To link your packages to WP Packages Update Server, and maybe to prevent webmasters from getting updates of your plugins and themes unless they have a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the %1$s file (for themes), and provide the necessary libraries in a %2$s directory at the root of the package - see %3$s for more information.', 'wppus' ),
 			'<code>functions.php</code>',
 			'<code>lib</code>',
 			'<a target="_blank" href="https://github.com/froger-me/wp-package-updater">' . esc_html( 'WP Package Updater' ) . '</a> '
@@ -51,7 +51,7 @@
 		<?php
 		printf(
 			// translators: %1$s is <code>optimisation/wppus-endpoint-optimiser.php</code>, %2$s is the MU Plugin's path
-			esc_html__( 'To solve this, the file <code>%1$s</code> has been automatically copied to <code>%2$s</code>. This effectively creates a Must Use Plugin running before everything else and preventing themes and other plugins from being executed when an update request or a license API request is received by WP Plugin Update Server.', 'wppus' ),
+			esc_html__( 'To solve this, the file <code>%1$s</code> has been automatically copied to <code>%2$s</code>. This effectively creates a Must Use Plugin running before everything else and preventing themes and other plugins from being executed when an update request or a license API request is received by WP Packages Update Server.', 'wppus' ),
 			'<code>' . esc_html( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimiser.php' ) . '</code>',
 			'<code>' . esc_html( dirname( dirname( WPPUS_PLUGIN_PATH ) ) . '/mu-plugins/wppus-endpoint-optimiser.php' ) . '</code>',
 		);
@@ -91,7 +91,7 @@
 		printf(
 			// translators: %s is a link to the documentation
 			esc_html__( 'The full documentation can be found %s, with more details for developers on how to integrate WP Plugin Server with their own plugins and themes.', 'wppus' ),
-			'<a target="_blank" href="https://github.com/froger-me/wp-plugin-update-server/blob/master/README.md">' . esc_html__( 'here', 'wppus' ) . '</a>',
+			'<a target="_blank" href="https://github.com/froger-me/wp-packages-update-server/blob/master/README.md">' . esc_html__( 'here', 'wppus' ) . '</a>',
 		);
 		?>
 	</p>
@@ -99,8 +99,8 @@
 		<?php
 		printf(
 			// translators: %1$s is a link to opening an issue, %2$s is a contact email
-			esc_html__( 'After reading the documentation, for more help on how to use WP Plugin Update Server, 	please %1$s - bugfixes are welcome via pull requests, detailed bug reports with accurate pointers as to where and how they occur in the code will be addressed in a timely manner, and a fee will apply for any other request if they are addressed. If and only if you found a security issue, please contact %2$s with full details for responsible disclosure.', 'wppus' ),
-			'<a target="_blank" href="https://github.com/froger-me/wp-plugin-update-server/issues">' . esc_html__( 'open an issue on Github', 'wppus' ) . '</a>',
+			esc_html__( 'After reading the documentation, for more help on how to use WP Packages Update Server, 	please %1$s - bugfixes are welcome via pull requests, detailed bug reports with accurate pointers as to where and how they occur in the code will be addressed in a timely manner, and a fee will apply for any other request if they are addressed. If and only if you found a security issue, please contact %2$s with full details for responsible disclosure.', 'wppus' ),
+			'<a target="_blank" href="https://github.com/froger-me/wp-packages-update-server/issues">' . esc_html__( 'open an issue on Github', 'wppus' ) . '</a>',
 			'<a href="mailto:wppus-help@froger.me">wppus-help@anyape.com</a>',
 		);
 		?>

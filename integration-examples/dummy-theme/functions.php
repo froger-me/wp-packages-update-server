@@ -5,15 +5,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /* ================================================================================================ */
-/*                                  WP Plugin Update Server                                         */
+/*                                  WP Packages Update Server                                         */
 /* ================================================================================================ */
 
 /**
-* Selectively uncomment the sections below to enable updates with WP Plugin Update Server.
+* Selectively uncomment the sections below to enable updates with WP Packages Update Server.
 *
 * WARNING - READ FIRST:
 * Before deploying the plugin or theme, make sure to change the following value
-* - https://your-update-server.com  => The URL of the server where WP Plugin Update Server is installed
+* - https://your-update-server.com  => The URL of the server where WP Packages Update Server is installed
 * - $prefix_updater                 => Replace "prefix" in this variable's name with a unique theme prefix
 *
 * @see https://github.com/froger-me/wp-package-updater

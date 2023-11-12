@@ -2,7 +2,7 @@
 	exit; // Exit if accessed directly
 } ?>
 <div class="wrap wppus-wrap">
-	<?php WP_Plugin_Update_Server::get_instance()->display_settings_header(); ?>
+	<?php WP_Packages_Update_Server::get_instance()->display_settings_header(); ?>
 	<form action="" method="post">
 		<table class="form-table package-source">
 			<tr>
@@ -24,7 +24,7 @@
 						);
 						?>
 						<br>
-						<strong><?php esc_html_e( 'It affects all the packages delivered by this installation of WP Plugin Update Server if they have a corresponding repository in the Remote Repository Service.', 'wppus' ); ?></strong>
+						<strong><?php esc_html_e( 'It affects all the packages delivered by this installation of WP Packages Update Server if they have a corresponding repository in the Remote Repository Service.', 'wppus' ); ?></strong>
 						<br>
 						<strong><?php esc_html_e( 'Settings of the "Remote Sources" section will be saved only if this option is checked.', 'wppus' ); ?></strong>
 					</p>
@@ -163,7 +163,7 @@
 						<?php endforeach; ?>
 					</select>
 					<p class="description">
-						<?php esc_html_e( 'How often WP Plugin Update Server will poll each Remote Repository for package updates - checking too often may slow down the server (recommended "Once Daily").', 'wppus' ); ?>
+						<?php esc_html_e( 'How often WP Packages Update Server will poll each Remote Repository for package updates - checking too often may slow down the server (recommended "Once Daily").', 'wppus' ); ?>
 					</p>
 				</td>
 			</tr>

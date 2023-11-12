@@ -147,7 +147,7 @@ class WPPUS_Remote_Sources_Manager {
 
 	public function admin_menu() {
 		$function   = array( $this, 'plugin_page' );
-		$page_title = __( 'WP Plugin Update Server - Remote Sources', 'wppus' );
+		$page_title = __( 'WP Packages Update Server - Remote Sources', 'wppus' );
 		$menu_title = __( 'Remote Sources', 'wppus' );
 		$menu_slug  = 'wppus-page-remote-sources';
 
@@ -383,7 +383,7 @@ class WPPUS_Remote_Sources_Manager {
 			isset( $_REQUEST['wppus_plugin_options_handler_nonce'] ) &&
 			wp_verify_nonce( $_REQUEST['wppus_plugin_options_handler_nonce'], 'wppus_plugin_options' )
 		) {
-			$result  = __( 'WP Plugin Update Server options successfully updated', 'wppus' );
+			$result  = __( 'WP Packages Update Server options successfully updated', 'wppus' );
 			$options = $this->get_submitted_options();
 
 			foreach ( $options as $option_name => $option_info ) {

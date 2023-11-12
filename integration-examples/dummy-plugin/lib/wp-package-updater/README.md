@@ -2,14 +2,14 @@
 
 ### Description
 
-Used to enable updates for plugins and themes distributed via WP Plugin Update Server.
+Used to enable updates for plugins and themes distributed via WP Packages Update Server.
 
 ### Requirements
 
 The library must sit in a `lib` folder at the root of the plugin or theme directory.
 
 Before deploying the plugin or theme, make sure to change the following value:
-- `https://your-update-server.com`  => The URL of the server where WP Plugin Update Server is installed.
+- `https://your-update-server.com`  => The URL of the server where WP Packages Update Server is installed.
 - `$prefix_updater`                 => Change this variable's name with your plugin or theme prefix
 
 ### Code to include in main plugin file
