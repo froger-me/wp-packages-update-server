@@ -2,43 +2,7 @@
 	exit; // Exit if accessed directly
 } ?>
 <div class="wrap wppus-wrap">
-	<h1><?php esc_html_e( 'WP Plugin Update Server', 'wppus' ); ?></h1>
-	<?php if ( is_string( $updated ) && ! empty( $updated ) ) : ?>
-		<div class="updated notice notice-success is-dismissible">
-			<p>
-				<?php echo esc_html( $updated ); ?>
-			</p>
-		</div>
-	<?php elseif ( is_array( $updated ) && ! empty( $updated ) ) : ?>
-		<div class="error notice notice-error is-dismissible">
-			<ul>
-				<?php foreach ( $updated as $option_name => $message ) : ?>
-					<li><?php echo esc_html( $message ); ?></li>
-				<?php endforeach; ?>
-			</ul>
-		</div>
-	<?php endif; ?>
-	<?php if ( is_string( $action_error ) && ! empty( $action_error ) ) : ?>
-		<div class="error notice notice-error is-dismissible">
-			<p>
-				<?php echo esc_html( $action_error ); ?>
-			</p>
-		</div>
-	<?php endif; ?>
-	<h2 class="nav-tab-wrapper">
-		<a href="admin.php?page=wppus-page" class="nav-tab">
-			<span class='dashicons dashicons-welcome-view-site'></span> <?php esc_html_e( 'Overview', 'wppus' ); ?>
-		</a>
-		<a href="admin.php?page=wppus-page-remote-sources" class="nav-tab nav-tab-active">
-			<span class='dashicons dashicons-networking'></span> <?php esc_html_e( 'Remote Sources', 'wppus' ); ?>
-		</a>
-		<a href="admin.php?page=wppus-page-licenses" class="nav-tab">
-			<span class='dashicons dashicons-admin-network'></span> <?php esc_html_e( 'Licenses', 'wppus' ); ?>
-		</a>
-		<a href="admin.php?page=wppus-page-help" class="nav-tab">
-			<span class='dashicons dashicons-editor-help'></span> <?php esc_html_e( 'Help', 'wppus' ); ?>
-		</a>
-	</h2>
+	<?php WP_Plugin_Update_Server::get_instance()->display_settings_header(); ?>
 	<form action="" method="post">
 		<table class="form-table package-source">
 			<tr>

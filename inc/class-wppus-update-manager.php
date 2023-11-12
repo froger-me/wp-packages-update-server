@@ -26,8 +26,9 @@ class WPPUS_Update_Manager {
 			$plugin_id = end( $parts ) . '/wp-plugin-update-server.php';
 
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
-			add_action( 'admin_menu', array( $this, 'plugin_options_menu_main' ), 10, 0 );
-			add_action( 'admin_menu', array( $this, 'plugin_options_menu_help' ), 99, 0 );
+			add_action( 'admin_menu', array( $this, 'admin_menu' ), 10, 0 );
+			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 10, 1 );
+			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 10, 2 );
 			add_action( 'wp_ajax_wppus_force_clean', array( $this, 'force_clean' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_prime_package_from_remote', array( $this, 'prime_package_from_remote' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_manual_package_upload', array( $this, 'manual_package_upload' ), 10, 0 );
@@ -103,31 +104,13 @@ class WPPUS_Update_Manager {
 		return array_merge( $links, $link );
 	}
 
-	public function plugin_options_menu_main() {
-		$page_title  = __( 'WP Plugin Update Server', 'wppus' );
-		$menu_title  = $page_title;
-		$capability  = 'manage_options';
-		$menu_slug   = 'wppus-page';
-		$parent_slug = $menu_slug;
-		$function    = array( $this, 'plugin_main_page' );
-		$icon        = 'data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNy44NSAxNS4zMSI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNhNGE0YTQ7fS5jbHMtMntmaWxsOiNhMGE1YWE7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5VbnRpdGxlZC0xPC90aXRsZT48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMCwxMy41NGMyLjIzLDAsNC40NiwwLDYuNjksMCwuNjksMCwxLS4xNSwxLS45MSwwLTIuMzUsMC00LjcxLDAtNy4wNiwwLS42NC0uMi0uODctLjg0LS44NS0xLjEzLDAtMi4yNiwwLTMuMzksMC0uNDQsMC0uNjgtLjExLS42OC0uNjJzLjIzLS42My42OC0uNjJjMS40MSwwLDIuODEsMCw0LjIyLDAsLjgyLDAsMS4yMS40MywxLjIsMS4yNywwLDIuOTMsMCw1Ljg3LDAsOC44LDAsMS0uMjksMS4yNC0xLjI4LDEuMjVxLTIuNywwLTUuNDEsMGMtLjU0LDAtLjg1LjA5LS44NS43NXMuMzUuNzMuODcuNzFjLjgyLDAsMS42NSwwLDIuNDgsMCwuNDgsMCwuNzQuMTguNzUuNjlzLS40LjUxLS43NS41MUg1LjJjLS4zNSwwLS43OC4xMS0uNzUtLjVzLjI4LS43MS43Ni0uN2MuODMsMCwxLjY1LDAsMi40OCwwLC41NCwwLC45NSwwLC45NC0uNzRzLS40OC0uNzEtMS0uNzFIMi41MWMtMS4yMiwwLTEuNS0uMjgtMS41LTEuNTFRMSw5LjE1LDEsNWMwLTEuMTQuMzQtMS40NiwxLjQ5LTEuNDdINi40NGMuNCwwLC43LDAsLjcxLjU3cy0uMjEuNjgtLjcuNjdjLTEuMTMsMC0yLjI2LDAtMy4zOSwwLS41NywwLS44My4xNy0uODIuNzhxMCwzLjYyLDAsNy4yNGMwLC42LjIxLjguOC43OUM1LjM2LDEzLjUyLDcuNjgsMTMuNTQsMTAsMTMuNTRaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0xMy4xLDkuMzhsLTIuNjIsMi41YS44MS44MSwwLDAsMS0xLjEyLDBMNi43NCw5LjM4YS43NC43NCwwLDAsMSwwLTEuMDguODIuODIsMCwwLDEsMS4xMywwTDkuMTMsOS41VjNhLjguOCwwLDAsMSwxLjU5LDBWOS41TDEyLDguM2EuODIuODIsMCwwLDEsMS4xMywwQS43NC43NCwwLDAsMSwxMy4xLDkuMzhaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48L3N2Zz4=';
-
-		add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $function, $icon );
-
+	public function admin_menu() {
+		$page_title = __( 'WP Plugin Update Server', 'wppus' );
+		$capability = 'manage_options';
+		$function   = array( $this, 'plugin_page' );
 		$menu_title = __( 'Overview', 'wppus' );
 
-		add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
-	}
-
-	public function plugin_options_menu_help() {
-		$function    = array( $this, 'plugin_help_page' );
-		$page_title  = __( 'WP Plugin Update Server - Help', 'wppus' );
-		$menu_title  = __( 'Help', 'wppus' );
-		$menu_slug   = 'wppus-page-help';
-		$capability  = 'manage_options';
-		$parent_slug = 'wppus-page';
-
-		add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
+		add_submenu_page( 'wppus-page', $page_title, $menu_title, $capability, 'wppus-page', $function );
 	}
 
 	public function add_page_options() {
@@ -142,11 +125,10 @@ class WPPUS_Update_Manager {
 	}
 
 	public function set_page_options( $status, $option, $value ) {
-
 		return $value;
 	}
 
-	public function plugin_main_page() {
+	public function plugin_page() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -174,18 +156,19 @@ class WPPUS_Update_Manager {
 		);
 	}
 
-	public function plugin_help_page() {
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
-
-		wppus_get_admin_template(
-			'plugin-help-page.php',
-			array(
-				'packages_dir' => WPPUS_Data_Manager::get_data_dir( 'packages' ),
-			)
+	public function wppus_admin_tab_links( $links ) {
+		$links['main'] = array(
+			admin_url( 'admin.php?page=wppus-page' ),
+			"<span class='dashicons dashicons-welcome-view-site'></span> " . __( 'Overview', 'wppus' ),
 		);
+
+		return $links;
+	}
+
+	public function wppus_admin_tab_states( $states, $page ) {
+		$states['main'] = 'wppus-page' === $page;
+
+		return $states;
 	}
 
 	public function force_clean() {

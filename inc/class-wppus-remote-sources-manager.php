@@ -21,7 +21,9 @@ class WPPUS_Remote_Sources_Manager {
 			add_action( 'wp_ajax_wppus_force_clean', array( $this, 'force_clean' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_force_register', array( $this, 'force_register' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_remote_repository_test', array( $this, 'remote_repository_test' ), 10, 0 );
-			add_action( 'admin_menu', array( $this, 'plugin_options_menu' ), 11, 0 );
+			add_action( 'admin_menu', array( $this, 'admin_menu' ), 15, 0 );
+			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 15, 1 );
+			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 15, 2 );
 		}
 	}
 
@@ -143,19 +145,16 @@ class WPPUS_Remote_Sources_Manager {
 	}
 
 
-	public function plugin_options_menu() {
-		$function    = array( $this, 'plugin_packages_remote_source_page' );
-		$page_title  = __( 'WP Plugin Update Server - Remote Sources', 'wppus' );
-		$menu_title  = __( 'Remote Sources', 'wppus' );
-		$menu_slug   = 'wppus-page-remote-sources';
-		$parent_slug = 'wppus-page';
-		$capability  = 'manage_options';
+	public function admin_menu() {
+		$function   = array( $this, 'plugin_page' );
+		$page_title = __( 'WP Plugin Update Server - Remote Sources', 'wppus' );
+		$menu_title = __( 'Remote Sources', 'wppus' );
+		$menu_slug  = 'wppus-page-remote-sources';
 
-		add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
+		add_submenu_page( 'wppus-page', $page_title, $menu_title, 'manage_options', $menu_slug, $function );
 	}
 
-	public function plugin_packages_remote_source_page() {
-
+	public function plugin_page() {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
@@ -183,6 +182,21 @@ class WPPUS_Remote_Sources_Manager {
 				'packages_dir'         => WPPUS_Data_Manager::get_data_dir( 'packages' ),
 			)
 		);
+	}
+
+	public function wppus_admin_tab_links( $links ) {
+		$links['remote-sources'] = array(
+			admin_url( 'admin.php?page=wppus-page-remote-sources' ),
+			"<span class='dashicons dashicons-networking'></span> " . __( 'Remote Sources', 'wppus' ),
+		);
+
+		return $links;
+	}
+
+	public function wppus_admin_tab_states( $states, $page ) {
+		$states['remote-sources'] = 'wppus-page-remote-sources' === $page;
+
+		return $states;
 	}
 
 	public function force_register() {

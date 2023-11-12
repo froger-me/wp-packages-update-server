@@ -1,11 +1,12 @@
-.wppus-wrap .nav-tab .dashicons {
-	vertical-align: middle;
+.wppus-wrap .nav-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
 }
 
 .wppus-wrap .column-col_id {
 	width: 75px;
 }
-
 
 .wppus-add-packages .spinner {
     float: none;

@@ -5,6 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class WP_Plugin_Update_Server {
+	protected static $instance;
 
 	public function __construct( $init_hooks = false ) {
 
@@ -14,10 +15,23 @@ class WP_Plugin_Update_Server {
 				add_action( 'init', array( $this, 'register_activation_notices' ), 99, 0 );
 				add_action( 'init', array( $this, 'maybe_flush' ), 99, 0 );
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
+				add_action( 'admin_menu', array( $this, 'admin_menu' ), 5, 0 );
+				add_action( 'admin_menu', array( $this, 'admin_menu_help' ), 99, 0 );
+				add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 99, 1 );
+				add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 99, 2 );
 			}
 
 			add_action( 'init', array( $this, 'load_textdomain' ), 10, 0 );
 		}
+	}
+
+	public static function get_instance() {
+
+		if ( ! isset( self::$instance ) ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	public static function activate() {
@@ -272,5 +286,89 @@ class WP_Plugin_Update_Server {
 
 			wp_enqueue_style( 'wppus-admin-main', WPPUS_PLUGIN_URL . 'css/admin/main' . $css_ext, array(), $ver_css );
 		}
+	}
+
+	public function display_settings_header() {
+		echo '<h1>' . esc_html__( 'WP Plugin Update Server', 'wppus' ) . '</h1>';
+		$this->display_tabs();
+	}
+
+	public function admin_menu() {
+		$page_title = __( 'WP Plugin Update Server', 'wppus' );
+		$menu_title = $page_title;
+		$icon       = 'data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNy44NSAxNS4zMSI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNhNGE0YTQ7fS5jbHMtMntmaWxsOiNhMGE1YWE7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5VbnRpdGxlZC0xPC90aXRsZT48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMCwxMy41NGMyLjIzLDAsNC40NiwwLDYuNjksMCwuNjksMCwxLS4xNSwxLS45MSwwLTIuMzUsMC00LjcxLDAtNy4wNiwwLS42NC0uMi0uODctLjg0LS44NS0xLjEzLDAtMi4yNiwwLTMuMzksMC0uNDQsMC0uNjgtLjExLS42OC0uNjJzLjIzLS42My42OC0uNjJjMS40MSwwLDIuODEsMCw0LjIyLDAsLjgyLDAsMS4yMS40MywxLjIsMS4yNywwLDIuOTMsMCw1Ljg3LDAsOC44LDAsMS0uMjksMS4yNC0xLjI4LDEuMjVxLTIuNywwLTUuNDEsMGMtLjU0LDAtLjg1LjA5LS44NS43NXMuMzUuNzMuODcuNzFjLjgyLDAsMS42NSwwLDIuNDgsMCwuNDgsMCwuNzQuMTguNzUuNjlzLS40LjUxLS43NS41MUg1LjJjLS4zNSwwLS43OC4xMS0uNzUtLjVzLjI4LS43MS43Ni0uN2MuODMsMCwxLjY1LDAsMi40OCwwLC41NCwwLC45NSwwLC45NC0uNzRzLS40OC0uNzEtMS0uNzFIMi41MWMtMS4yMiwwLTEuNS0uMjgtMS41LTEuNTFRMSw5LjE1LDEsNWMwLTEuMTQuMzQtMS40NiwxLjQ5LTEuNDdINi40NGMuNCwwLC43LDAsLjcxLjU3cy0uMjEuNjgtLjcuNjdjLTEuMTMsMC0yLjI2LDAtMy4zOSwwLS41NywwLS44My4xNy0uODIuNzhxMCwzLjYyLDAsNy4yNGMwLC42LjIxLjguOC43OUM1LjM2LDEzLjUyLDcuNjgsMTMuNTQsMTAsMTMuNTRaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0xMy4xLDkuMzhsLTIuNjIsMi41YS44MS44MSwwLDAsMS0xLjEyLDBMNi43NCw5LjM4YS43NC43NCwwLDAsMSwwLTEuMDguODIuODIsMCwwLDEsMS4xMywwTDkuMTMsOS41VjNhLjguOCwwLDAsMSwxLjU5LDBWOS41TDEyLDguM2EuODIuODIsMCwwLDEsMS4xMywwQS43NC43NCwwLDAsMSwxMy4xLDkuMzhaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48L3N2Zz4=';
+
+		add_menu_page( $page_title, $menu_title, 'manage_options', 'wppus-page', '', $icon );
+	}
+
+	public function admin_menu_help() {
+		$function   = array( $this, 'help_page' );
+		$page_title = __( 'WP Plugin Update Server - Help', 'wppus' );
+		$menu_title = __( 'Help', 'wppus' );
+		$menu_slug  = 'wppus-page-help';
+
+		add_submenu_page( 'wppus-page', $page_title, $menu_title, 'manage_options', $menu_slug, $function );
+	}
+
+	public function help_page() {
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		wppus_get_admin_template(
+			'plugin-help-page.php',
+			array(
+				'packages_dir' => WPPUS_Data_Manager::get_data_dir( 'packages' ),
+			)
+		);
+	}
+
+	public function wppus_admin_tab_links( $links ) {
+		$links['help'] = array(
+			admin_url( 'admin.php?page=wppus-page-help' ),
+			"<span class='dashicons dashicons-editor-help'></span> " . __( 'Help', 'wppus' ),
+		);
+
+		return $links;
+	}
+
+	public function wppus_admin_tab_states( $states, $page ) {
+		$states['help'] = 'wppus-page-help' === $page;
+
+		return $states;
+	}
+
+	protected function display_tabs() {
+		$states = $this->get_tab_states();
+		$state  = array_filter( $states );
+
+		if ( ! $state ) {
+			return;
+		}
+
+		$state = array_keys( $state );
+		$state = reset( $state );
+		$links = apply_filters( 'wppus_admin_tab_links', array() );
+
+		wppus_get_admin_template(
+			'tabs.php',
+			array(
+				'states' => $states,
+				'state'  => $state,
+				'links'  => $links,
+			)
+		);
+	}
+
+	protected function get_tab_states() {
+		$page   = filter_input( INPUT_GET, 'page', FILTER_UNSAFE_RAW );
+		$states = array();
+
+		if ( 0 === strpos( $page, 'wppus-page' ) ) {
+			$states = apply_filters( 'wppus_admin_tab_states', $states, $page );
+		}
+
+		return $states;
 	}
 }

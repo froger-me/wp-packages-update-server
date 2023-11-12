@@ -31,7 +31,9 @@ class WPPUS_License_Manager {
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 5, 1 );
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
-			add_action( 'admin_menu', array( $this, 'plugin_options_menu' ), 11, 0 );
+			add_action( 'admin_menu', array( $this, 'admin_menu' ), 20, 0 );
+			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 20, 1 );
+			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 20, 2 );
 			add_action( 'load-wp-plugin-update-server_page_wppus-page-licenses', array( $this, 'add_page_options' ), 10, 0 );
 			add_action( 'wppus_udpdate_manager_request_action', array( $this, 'wppus_udpdate_manager_request_action' ), 10, 2 );
 			add_action( 'wppus_update_manager_deleted_packages_bulk', array( $this, 'wppus_update_manager_deleted_packages_bulk' ), 10, 1 );
@@ -278,8 +280,8 @@ class WPPUS_License_Manager {
 		}
 	}
 
-	public function plugin_options_menu() {
-		$function    = array( $this, 'plugin_page_license_settings' );
+	public function admin_menu() {
+		$function    = array( $this, 'plugin_page' );
 		$page_title  = __( 'WP Plugin Update Server - Licenses', 'wppus' );
 		$menu_title  = __( 'Licenses', 'wppus' );
 		$menu_slug   = 'wppus-page-licenses';
@@ -289,10 +291,10 @@ class WPPUS_License_Manager {
 		add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
 	}
 
-	public function plugin_page_license_settings() {
+	public function plugin_page() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Sorry, you are not allowed to access this page.' ) );
+			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 		$result         = $this->plugin_options_handler();
@@ -315,6 +317,21 @@ class WPPUS_License_Manager {
 				'result'         => $result,
 			)
 		);
+	}
+
+	public function wppus_admin_tab_links( $links ) {
+		$links['licenses'] = array(
+			admin_url( 'admin.php?page=wppus-page-licenses' ),
+			"<span class='dashicons dashicons-admin-network'></span> " . __( 'Licenses', 'wppus' ),
+		);
+
+		return $links;
+	}
+
+	public function wppus_admin_tab_states( $states, $page ) {
+		$states['licenses'] = 'wppus-page-licenses' === $page;
+
+		return $states;
 	}
 
 	protected static function maybe_create_or_upgrade_db() {

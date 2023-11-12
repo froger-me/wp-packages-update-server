@@ -2,21 +2,7 @@
 	exit; // Exit if accessed directly
 } ?>
 <div class="wrap wppus-wrap">
-	<h1><?php esc_html_e( 'WP Plugin Update Server', 'wppus' ); ?></h1>
-	<h2 class="nav-tab-wrapper">
-		<a href="admin.php?page=wppus-page" class="nav-tab">
-			<span class='dashicons dashicons-welcome-view-site'></span> <?php esc_html_e( 'Overview', 'wppus' ); ?>
-		</a>
-		<a href="admin.php?page=wppus-page-remote-sources" class="nav-tab">
-			<span class='dashicons dashicons-networking'></span> <?php esc_html_e( 'Remote Sources', 'wppus' ); ?>
-		</a>
-		<a href="admin.php?page=wppus-page-licenses" class="nav-tab">
-			<span class='dashicons dashicons-admin-network'></span> <?php esc_html_e( 'Licenses', 'wppus' ); ?>
-		</a>
-		<a href="admin.php?page=wppus-page-help" class="nav-tab nav-tab-active">
-			<span class='dashicons dashicons-editor-help'></span> <?php esc_html_e( 'Help', 'wppus' ); ?>
-		</a>
-	</h2>
+	<?php WP_Plugin_Update_Server::get_instance()->display_settings_header(); ?>
 	<h2><?php esc_html_e( 'Provide updates with WP Plugin Update Server - packages requirements', 'wppus' ); ?></h2>
 	<p>
 		<?php
@@ -113,7 +99,7 @@
 		<?php
 		printf(
 			// translators: %1$s is a link to opening an issue, %2$s is a contact email
-			esc_html__( 'After reading the documentation, for more help on how to use WP Plugin Update Server, 	please %1$s - bugfixes are welcome via pull requests, detailed bug reports with accurate pointers as to where and how they occur int he code will be addressed in a timely manner, and a fee will apply for any other request if they are addressed. If and only if you found a security issue, please contact %2$s with full details for responsible disclosure.', 'wppus' ),
+			esc_html__( 'After reading the documentation, for more help on how to use WP Plugin Update Server, 	please %1$s - bugfixes are welcome via pull requests, detailed bug reports with accurate pointers as to where and how they occur in the code will be addressed in a timely manner, and a fee will apply for any other request if they are addressed. If and only if you found a security issue, please contact %2$s with full details for responsible disclosure.', 'wppus' ),
 			'<a target="_blank" href="https://github.com/froger-me/wp-plugin-update-server/issues">' . esc_html__( 'open an issue on Github', 'wppus' ) . '</a>',
 			'<a href="mailto:wppus-help@froger.me">wppus-help@anyape.com</a>',
 		);
