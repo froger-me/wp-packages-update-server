@@ -386,7 +386,7 @@ class WPPUS_License_Manager {
 			date_expiry date NOT NULL DEFAULT '0000-00-00',
 			package_slug varchar(255) NOT NULL default '',
 			package_type varchar(8) NOT NULL default '',
-			data longtext NOT NULL default '{}',
+			data longtext NOT NULL,
 			PRIMARY KEY  (id),
 			KEY licence_key (license_key)
 			)" . $charset_collate . ';';
