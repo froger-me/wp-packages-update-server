@@ -49,7 +49,7 @@ class WPPUS_Remote_Sources_Manager {
 	public function register_remote_check_scheduled_hooks() {
 		$result = false;
 
-		if ( ! wppus_is_doing_update_api_request() ) {
+		if ( ! WPPUS_Update_API::is_doing_api_request() ) {
 			$slugs = $this->get_package_slugs();
 
 			if ( ! empty( $slugs ) ) {
@@ -75,7 +75,7 @@ class WPPUS_Remote_Sources_Manager {
 
 	public function reschedule_remote_check_recurring_events( $frequency ) {
 
-		if ( wppus_is_doing_update_api_request() ) {
+		if ( WPPUS_Update_API::is_doing_api_request() ) {
 
 			return false;
 		}
