@@ -4,62 +4,62 @@
 WP Packages Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin when managing licenses.
 
 - [WP Packages Update Server - Licenses - Developer documentation](#wp-packages-update-server---licenses---developer-documentation)
-      - [The License Query](#the-license-query)
+	  - [The License Query](#the-license-query)
   - [API](#api)
-    - [Public API](#public-api)
-      - [check](#check)
-      - [activate](#activate)
-      - [deactivate](#deactivate)
-    - [Private API](#private-api)
-      - [browse](#browse)
-      - [read](#read)
-      - [edit](#edit)
-      - [add](#add)
-      - [delete](#delete)
+	- [Public API](#public-api)
+	  - [check](#check)
+	  - [activate](#activate)
+	  - [deactivate](#deactivate)
+	- [Private API](#private-api)
+	  - [browse](#browse)
+	  - [read](#read)
+	  - [edit](#edit)
+	  - [add](#add)
+	  - [delete](#delete)
   - [Functions](#functions)
-      - [wppus_is_doing_license_api_request](#wppus_is_doing_license_api_request)
-      - [wppus_browse_licenses](#wppus_browse_licenses)
-      - [wppus_read_license](#wppus_read_license)
-      - [wppus_edit_license](#wppus_edit_license)
-      - [wppus_add_license](#wppus_add_license)
-      - [wppus_delete_license](#wppus_delete_license)
-      - [wppus_check_license](#wppus_check_license)
-      - [wppus_activate_license](#wppus_activate_license)
-      - [wppus_deactivate_license](#wppus_deactivate_license)
+	  - [wppus_is_doing_license_api_request](#wppus_is_doing_license_api_request)
+	  - [wppus_browse_licenses](#wppus_browse_licenses)
+	  - [wppus_read_license](#wppus_read_license)
+	  - [wppus_edit_license](#wppus_edit_license)
+	  - [wppus_add_license](#wppus_add_license)
+	  - [wppus_delete_license](#wppus_delete_license)
+	  - [wppus_check_license](#wppus_check_license)
+	  - [wppus_activate_license](#wppus_activate_license)
+	  - [wppus_deactivate_license](#wppus_deactivate_license)
   - [Actions](#actions)
-      - [wppus_added_license_check](#wppus_added_license_check)
-      - [wppus_removed_license_check](#wppus_removed_license_check)
-      - [wppus_registered_license_schedule](#wppus_registered_license_schedule)
-      - [wppus_cleared_license_schedule](#wppus_cleared_license_schedule)
-      - [wppus_scheduled_license_event](#wppus_scheduled_license_event)
-      - [wppus_browse_licenses](#wppus_browse_licenses-1)
-      - [wppus_did_browse_licenses](#wppus_did_browse_licenses)
-      - [wppus_did_read_license](#wppus_did_read_license)
-      - [wppus_did_edit_license](#wppus_did_edit_license)
-      - [wppus_did_add_license](#wppus_did_add_license)
-      - [wppus_did_delete_license](#wppus_did_delete_license)
-      - [wppus_did_check_license](#wppus_did_check_license)
-      - [wppus_did_activate_license](#wppus_did_activate_license)
-      - [wppus_did_deactivate_license](#wppus_did_deactivate_license)
+	  - [wppus_added_license_check](#wppus_added_license_check)
+	  - [wppus_removed_license_check](#wppus_removed_license_check)
+	  - [wppus_registered_license_schedule](#wppus_registered_license_schedule)
+	  - [wppus_cleared_license_schedule](#wppus_cleared_license_schedule)
+	  - [wppus_scheduled_license_event](#wppus_scheduled_license_event)
+	  - [wppus_browse_licenses](#wppus_browse_licenses-1)
+	  - [wppus_did_browse_licenses](#wppus_did_browse_licenses)
+	  - [wppus_did_read_license](#wppus_did_read_license)
+	  - [wppus_did_edit_license](#wppus_did_edit_license)
+	  - [wppus_did_add_license](#wppus_did_add_license)
+	  - [wppus_did_delete_license](#wppus_did_delete_license)
+	  - [wppus_did_check_license](#wppus_did_check_license)
+	  - [wppus_did_activate_license](#wppus_did_activate_license)
+	  - [wppus_did_deactivate_license](#wppus_did_deactivate_license)
   - [Filters](#filters)
-      - [wppus_licensed_package_slugs](#wppus_licensed_package_slugs)
-      - [wppus_license_valid](#wppus_license_valid)
-      - [wppus_license_server](#wppus_license_server)
-      - [wppus_license_api_config](#wppus_license_api_config)
-      - [wppus_submitted_licenses_config](#wppus_submitted_licenses_config)
-      - [wppus_check_license_result](#wppus_check_license_result)
-      - [wppus_activate_license_result](#wppus_activate_license_result)
-      - [wppus_deactivate_license_result](#wppus_deactivate_license_result)
-      - [wppus_check_license_dirty_payload](#wppus_check_license_dirty_payload)
-      - [wppus_activate_license_dirty_payload](#wppus_activate_license_dirty_payload)
-      - [wppus_deactivate_license_dirty_payload](#wppus_deactivate_license_dirty_payload)
-      - [wppus_activate_license_payload](#wppus_activate_license_payload)
-      - [wppus_deactivate_license_payload](#wppus_deactivate_license_payload)
-      - [wppus_browse_licenses_payload](#wppus_browse_licenses_payload)
-      - [wppus_read_license_payload](#wppus_read_license_payload)
-      - [wppus_edit_license_payload](#wppus_edit_license_payload)
-      - [wppus_add_license_payload](#wppus_add_license_payload)
-      - [wppus_delete_license_payload](#wppus_delete_license_payload)
+	  - [wppus_licensed_package_slugs](#wppus_licensed_package_slugs)
+	  - [wppus_license_valid](#wppus_license_valid)
+	  - [wppus_license_server](#wppus_license_server)
+	  - [wppus_license_api_config](#wppus_license_api_config)
+	  - [wppus_submitted_licenses_config](#wppus_submitted_licenses_config)
+	  - [wppus_check_license_result](#wppus_check_license_result)
+	  - [wppus_activate_license_result](#wppus_activate_license_result)
+	  - [wppus_deactivate_license_result](#wppus_deactivate_license_result)
+	  - [wppus_check_license_dirty_payload](#wppus_check_license_dirty_payload)
+	  - [wppus_activate_license_dirty_payload](#wppus_activate_license_dirty_payload)
+	  - [wppus_deactivate_license_dirty_payload](#wppus_deactivate_license_dirty_payload)
+	  - [wppus_activate_license_payload](#wppus_activate_license_payload)
+	  - [wppus_deactivate_license_payload](#wppus_deactivate_license_payload)
+	  - [wppus_browse_licenses_payload](#wppus_browse_licenses_payload)
+	  - [wppus_read_license_payload](#wppus_read_license_payload)
+	  - [wppus_edit_license_payload](#wppus_edit_license_payload)
+	  - [wppus_add_license_payload](#wppus_add_license_payload)
+	  - [wppus_delete_license_payload](#wppus_delete_license_payload)
 
 ___
 #### The License Query
@@ -68,23 +68,23 @@ The License Query is an associative array. It is used to browse the license reco
 
 ```php
 $license_query = array(
-    'relationship' => 'AND',          // Relationship of the criteria when provided - 'AND or 'OR' - default 'AND' (optional)
-    'limit'        => '10',           // Limit the number of results - default 10 (optional)
-    'offset'       => '0',            // Results offset - default 0 (optional)
-    'order_by'     => 'date_created', // Order of the license records returned - default 'date_created' (optional)
-    'criteria'     => array(          // Criteria to filter the license records - accepts multiple values - if omitted, the result is not filtered (optional)
-        array(
-            'field'    => 'field',    // Field to filter by - see the list of accepted license fields below (required)
-            'value'    => 'value',    // Value of the field to filter by - format depends on the operator (required)
-            'operator' => 'operator'  // Comparison operator - see the list of accepted operators below (required)
-        ),
-        array(
-            'field'    => 'field',    // Field to filter by - see the list of accepted license fields below (required)
-            'value'    => 'value',    // Value of the field to filter by - format depends on the operator (required)
-            'operator' => 'operator'  // Comparison operator - see the list of accepted operators below (required)
-        ),
-        ...                           // More criteria...
-    ),
+	'relationship' => 'AND',          // Relationship of the criteria when provided - 'AND or 'OR' - default 'AND' (optional)
+	'limit'        => '10',           // Limit the number of results - default 10 (optional)
+	'offset'       => '0',            // Results offset - default 0 (optional)
+	'order_by'     => 'date_created', // Order of the license records returned - default 'date_created' (optional)
+	'criteria'     => array(          // Criteria to filter the license records - accepts multiple values - if omitted, the result is not filtered (optional)
+		array(
+			'field'    => 'field',    // Field to filter by - see the list of accepted license fields below (required)
+			'value'    => 'value',    // Value of the field to filter by - format depends on the operator (required)
+			'operator' => 'operator'  // Comparison operator - see the list of accepted operators below (required)
+		),
+		array(
+			'field'    => 'field',    // Field to filter by - see the list of accepted license fields below (required)
+			'value'    => 'value',    // Value of the field to filter by - format depends on the operator (required)
+			'operator' => 'operator'  // Comparison operator - see the list of accepted operators below (required)
+		),
+		...                           // More criteria...
+	),
 );
 ```
 
@@ -105,32 +105,30 @@ The description of the API further below is using the following code as referenc
 $url = 'https://domain.com/wppus-license-api/'; // Replace domain.com with the domain where WP Packages Update Server is installed.
 
 $response = wp_remote_post(
-    $url,
-    array(
-        'method'      => 'POST',
-        'timeout'     => 45,
-        'redirection' => 5,
-        'httpversion' => '1.0',
-        'blocking'    => true,
-        'headers'     => array(),
-        'body'        => $params,
-        'cookies'     => array(),
-    );
+	$url,
+	array(
+		'method'      => 'POST',
+		'timeout'     => 45,
+		'redirection' => 5,
+		'httpversion' => '1.0',
+		'blocking'    => true,
+		'headers'     => array(),
+		'body'        => $params,
+		'cookies'     => array(),
+	);
 );
 
 if ( is_wp_error( $response ) ) {
-    echo esc_html( sprintf( __( 'Something went wrong: %s', 'text-domain' ), $response->get_error_message() ) );
+	printf( esc_html__( 'Something went wrong: %s', 'text-domain' ), esc_html( $response->get_error_message() ) );
 } else {
+	$data         = wp_remote_retrieve_body( $response );
+	$decoded_data = json_decode( $data );
 
-    if ( '200' === $response->code ) {
-        $data         = wp_remote_retrieve_body( $response );
-        $decoded_data = json_decode( $data );
-        // Handle success with $decoded_data
-    } else {
-        $data         = wp_remote_retrieve_body( $response );
-        $decoded_data = json_decode( $data );
-        // Handle failure with $decoded_data
-    }
+	if ( '200' === $response->code ) {
+		// Handle success with $decoded_data
+	} else {
+		// Handle failure with $decoded_data
+	}
 }
 ```
 
@@ -146,37 +144,37 @@ ___
 
 ```php
 $params = array(
-    'action'      => 'check',        // Action to perform when calling the License API (required)
-    'license_key' => 'test-license', // The key of the license to check (required)
+	'action'      => 'check',        // Action to perform when calling the License API (required)
+	'license_key' => 'test-license', // The key of the license to check (required)
 );
 ```
 
 Response `$data` - **success**:
 ```json
 {
-    "id": "99",
-    "license_key": "test-license",
-    "max_allowed_domains": "2",
-    "allowed_domains": [
-        "domain1.example.com",
-    ],
-    "status": "activated",
-    "owner_name": "Test Owner",
-    "email": "test@test.com",
-    "company_name": "Test Company",
-    "txn_id": "#111111111",
-    "date_created": "2099-12-01",
-    "date_renewed": "2099-12-15",
-    "date_expiry": "2099-12-31",
-    "package_slug": "test-package",
-    "package_type": "plugin"
+	"id": "99",
+	"license_key": "test-license",
+	"max_allowed_domains": "2",
+	"allowed_domains": [
+		"domain1.example.com",
+	],
+	"status": "activated",
+	"owner_name": "Test Owner",
+	"email": "test@test.com",
+	"company_name": "Test Company",
+	"txn_id": "#111111111",
+	"date_created": "2099-12-01",
+	"date_renewed": "2099-12-15",
+	"date_expiry": "2099-12-31",
+	"package_slug": "test-package",
+	"package_type": "plugin"
 }
 ```
 
 Response `$data` - **failure** (in case of invalid `license_key`):
 ```json
 {
-    "license_key": "test-license"
+	"license_key": "test-license"
 }
 ```
 
@@ -185,63 +183,63 @@ ___
 
 ```php
 $params = array(
-    'action'          => 'activate',             // Action to perform when calling the License API (required)
-    'license_key'     => 'test-license',         // The key of the license to activate for the provided domain (required)
-    'allowed_domains' => array( 'example.com' ), // Domain name for which the license needs to be activated - can be a string (required)
+	'action'          => 'activate',             // Action to perform when calling the License API (required)
+	'license_key'     => 'test-license',         // The key of the license to activate for the provided domain (required)
+	'allowed_domains' => array( 'example.com' ), // Domain name for which the license needs to be activated - can be a string (required)
 );
 ```
 
 Response `$data` - **success**:
 ```json
 {
-    "id": "99",
-    "license_key": "test-license",
-    "max_allowed_domains": "2",
-    "allowed_domains": [
-        "domain1.example.com",
-        "example.com"
-    ],
-    "status": "activated",
-    "owner_name": "Test Owner",
-    "email": "test@test.com",
-    "company_name": "Test Company",
-    "txn_id": "#111111111",
-    "date_created": "2099-12-01",
-    "date_renewed": "2099-12-15",
-    "date_expiry": "2099-12-31",
-    "package_slug": "test-package",
-    "package_type": "plugin",
-    "license_signature": "some_complex_encrypted_string-some_complex_hmac"
+	"id": "99",
+	"license_key": "test-license",
+	"max_allowed_domains": "2",
+	"allowed_domains": [
+		"domain1.example.com",
+		"example.com"
+	],
+	"status": "activated",
+	"owner_name": "Test Owner",
+	"email": "test@test.com",
+	"company_name": "Test Company",
+	"txn_id": "#111111111",
+	"date_created": "2099-12-01",
+	"date_renewed": "2099-12-15",
+	"date_expiry": "2099-12-31",
+	"package_slug": "test-package",
+	"package_type": "plugin",
+	"license_signature": "some_complex_encrypted_string-some_complex_hmac"
 }
 ```
 
 Response `$data` - **failure** (in case of invalid `license_key`):
 ```json
 {
-    "license_key": "test-license"
+	"license_key": "test-license"
 }
 ```
 
 Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"expired"` and `"blocked"`):
 ```json
 {
-    "status": "expired"
+	"status": "expired"
 }
 ```
 
 Response `$data` - **failure** (in case of already activated for `allowed_domains`):
 ```json
 {
-    "allowed_domains": [
-        "example.com"
-    ]
+	"allowed_domains": [
+		"example.com"
+	]
 }
 ```
 
 Response `$data` - **failure** (in case of no more domains allowed for activation):
 ```json
 {
-    "max_allowed_domains": "2"
+	"max_allowed_domains": "2"
 }
 ```
 
@@ -250,74 +248,74 @@ ___
 
 ```php
 $params = array(
-    'action'          => 'deactivate',           // Action to perform when calling the License API (required)
-    'license_key'     => 'test-license',         // The key of the license to activate for the provided domain (required)
-    'allowed_domains' => array( 'example.com' ), // Domain name for which the license needs to be deactivated - can be a string (required)
+	'action'          => 'deactivate',           // Action to perform when calling the License API (required)
+	'license_key'     => 'test-license',         // The key of the license to activate for the provided domain (required)
+	'allowed_domains' => array( 'example.com' ), // Domain name for which the license needs to be deactivated - can be a string (required)
 );
 ```
 
 Response `$data` - **success** (in case some domains are still activated):
 ```json
 {
-    "id": "99",
-    "license_key": "test-license",
-    "max_allowed_domains": "2",
-    "allowed_domains": [
-        "domain1.example.com",
-    ],
-    "status": "activated",
-    "owner_name": "Test Owner",
-    "email": "test@test.com",
-    "company_name": "Test Company",
-    "txn_id": "#111111111",
-    "date_created": "2099-12-01",
-    "date_renewed": "2099-12-15",
-    "date_expiry": "2099-12-31",
-    "package_slug": "test-package",
-    "package_type": "plugin"
+	"id": "99",
+	"license_key": "test-license",
+	"max_allowed_domains": "2",
+	"allowed_domains": [
+		"domain1.example.com",
+	],
+	"status": "activated",
+	"owner_name": "Test Owner",
+	"email": "test@test.com",
+	"company_name": "Test Company",
+	"txn_id": "#111111111",
+	"date_created": "2099-12-01",
+	"date_renewed": "2099-12-15",
+	"date_expiry": "2099-12-31",
+	"package_slug": "test-package",
+	"package_type": "plugin"
 }
 ```
 
 Response `$data` - **failure** (in case of invalid `license_key`):
 ```json
 {
-    "license_key": "test-license"
+	"license_key": "test-license"
 }
 ```
 
 Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"expired"` and `"blocked"`):
 ```json
 {
-    "status": "expired"
+	"status": "expired"
 }
 ```
 
 Response `$data` - **success** (in case all domains have been deactivated):
 ```json
 {
-    "id": "99",
-    "license_key": "test-license",
-    "max_allowed_domains": "2",
-    "allowed_domains": [],
-    "status": "deactivated",
-    "owner_name": "Test Owner",
-    "email": "test@test.com",
-    "company_name": "Test Company",
-    "txn_id": "#111111111",
-    "date_created": "2099-12-01",
-    "date_renewed": "2099-12-15",
-    "date_expiry": "2099-12-31",
-    "package_slug": "test-package",
-    "package_type": "plugin"
+	"id": "99",
+	"license_key": "test-license",
+	"max_allowed_domains": "2",
+	"allowed_domains": [],
+	"status": "deactivated",
+	"owner_name": "Test Owner",
+	"email": "test@test.com",
+	"company_name": "Test Company",
+	"txn_id": "#111111111",
+	"date_created": "2099-12-01",
+	"date_renewed": "2099-12-15",
+	"date_expiry": "2099-12-31",
+	"package_slug": "test-package",
+	"package_type": "plugin"
 }
 ```
 
 Response `$data` - **failure** (in case of already deactivated for `allowed_domains`):
 ```json
 {
-    "allowed_domains": [
-        "example.com"
-    ]
+	"allowed_domains": [
+		"example.com"
+	]
 }
 ```
 
@@ -335,7 +333,7 @@ In case the Private API Authentication Key is invalid, all the actions of the Pr
 Response `$data` - forbidden access:
 ```json
 {
-    "message": "Unauthorized access - check the provided API key"
+	"message": "Unauthorized access - check the provided API key"
 }
 ```
 
@@ -346,34 +344,34 @@ See [The License Query](#user-content-the-license-query) for more information on
 
 ```php
 $params = array(
-    'action'       => 'browse',                         // Action to perform when calling the License API (required)
-    'browse_query' => wp_json_encode( $license_query ), // A  JSON representation of a License Query (required)
-    'api_auth_key' => 'secret',                         // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
+	'action'       => 'browse',                         // Action to perform when calling the License API (required)
+	'browse_query' => wp_json_encode( $license_query ), // A  JSON representation of a License Query (required)
+	'api_auth_key' => 'secret',                         // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
 Response `$data` - **success**:
 ```json
 [
-    {
-        "id": "99",
-        "license_key": "test-license",
-        "max_allowed_domains": "2",
-        "allowed_domains": [
-            "domain1.example.com",
-        ],
-        "status": "deactivated",
-        "owner_name": "Test Owner",
-        "email": "test@test.com",
-        "company_name": "Test Company",
-        "txn_id": "#111111111",
-        "date_created": "2099-12-01",
-        "date_renewed": "2099-12-15",
-        "date_expiry": "2099-12-31",
-        "package_slug": "test-package",
-        "package_type": "plugin"
-    },
-    ...
+	{
+		"id": "99",
+		"license_key": "test-license",
+		"max_allowed_domains": "2",
+		"allowed_domains": [
+			"domain1.example.com",
+		],
+		"status": "deactivated",
+		"owner_name": "Test Owner",
+		"email": "test@test.com",
+		"company_name": "Test Company",
+		"txn_id": "#111111111",
+		"date_created": "2099-12-01",
+		"date_renewed": "2099-12-15",
+		"date_expiry": "2099-12-31",
+		"package_slug": "test-package",
+		"package_type": "plugin"
+	},
+	...
 ]
 ```
 
@@ -387,32 +385,32 @@ ___
 
 ```php
 $params = array(
-    'action'       => 'read',         // Action to perform when calling the License API (required)
-    'id'           => '99',           // The id of the license to read (optional if license_key is provided)
-    'license_key'  => 'test-license', // The key of the license to read (optional if id is provided)
-    'api_auth_key' => 'secret',       // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
+	'action'       => 'read',         // Action to perform when calling the License API (required)
+	'id'           => '99',           // The id of the license to read (optional if license_key is provided)
+	'license_key'  => 'test-license', // The key of the license to read (optional if id is provided)
+	'api_auth_key' => 'secret',       // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
 Response `$data` - **success**:
 ```json
 {
-    "id": "99",
-    "license_key": "test-license",
-    "max_allowed_domains": "2",
-    "allowed_domains": [
-        "domain1.example.com",
-    ],
-    "status": "deactivated",
-    "owner_name": "Test Owner",
-    "email": "test@test.com",
-    "company_name": "Test Company",
-    "txn_id": "#111111111",
-    "date_created": "2099-12-01",
-    "date_renewed": "2099-12-15",
-    "date_expiry": "2099-12-31",
-    "package_slug": "test-package",
-    "package_type": "plugin"
+	"id": "99",
+	"license_key": "test-license",
+	"max_allowed_domains": "2",
+	"allowed_domains": [
+		"domain1.example.com",
+	],
+	"status": "deactivated",
+	"owner_name": "Test Owner",
+	"email": "test@test.com",
+	"company_name": "Test Company",
+	"txn_id": "#111111111",
+	"date_created": "2099-12-01",
+	"date_renewed": "2099-12-15",
+	"date_expiry": "2099-12-31",
+	"package_slug": "test-package",
+	"package_type": "plugin"
 }
 ```
 
@@ -426,59 +424,59 @@ ___
 
 ```php
 $params = array(
-    'action'              => 'edit',              // Action to perform when calling the License API (required)
-    'id'                  => '99',                // The id of the license to edit (optional if license_key is provided)
-    'license_key'         => 'test-license-new',  // The key of the license to edit (optional if id is provided, required along with id if this is the value to be edited)
-    'max_allowed_domains' => '99',                // The maximum number of domains allowed to use the license - minimum 1 (required)
-    'allowed_domains'     => array(               // Domains currently allowed to use the license (optional)
-        'different1.example.com',
-        'different2.example.com',
-    ),
-    'status'              => 'blocked',           // The status of the license - one of pending, activated, deactivated, blocked, expired (required)
-    'owner_name'          => 'Another Owner',     // The full name of the owner of the license (optional)
-    'email'               => 'test-new@test.com', // The email registered with the license (required)
-    'company_name'        => 'New Company',       // The company of the owner of the license (optional)
-    'txn_id'              => '#999999999',        // If applicable, the transaction identifier associated to the purchase of the license (optional)
-    'date_created'        => '3099-12-01',        // Creation date of the license - YYYY-MM-DD  (required)
-    'date_renewed'        => '3099-12-015',       // Date of the last time the license was renewed -\n YYYY-MM-DD (optional)
-    'date_expiry'         => '3099-12-31',        // Expiry date of the license - YYY-MM-DD - if omitted, no expiry (optional)
-    'package_slug'        => 'new-package',       // The package slug - only alphanumeric characters and dashes are allowed (required)
-    'package_type'        => 'theme',             // Type of package the license is for - one of plugin, theme (required)
-    'api_auth_key'        => 'secret',            // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
+	'action'              => 'edit',              // Action to perform when calling the License API (required)
+	'id'                  => '99',                // The id of the license to edit (optional if license_key is provided)
+	'license_key'         => 'test-license-new',  // The key of the license to edit (optional if id is provided, required along with id if this is the value to be edited)
+	'max_allowed_domains' => '99',                // The maximum number of domains allowed to use the license - minimum 1 (required)
+	'allowed_domains'     => array(               // Domains currently allowed to use the license (optional)
+		'different1.example.com',
+		'different2.example.com',
+	),
+	'status'              => 'blocked',           // The status of the license - one of pending, activated, deactivated, blocked, expired (required)
+	'owner_name'          => 'Another Owner',     // The full name of the owner of the license (optional)
+	'email'               => 'test-new@test.com', // The email registered with the license (required)
+	'company_name'        => 'New Company',       // The company of the owner of the license (optional)
+	'txn_id'              => '#999999999',        // If applicable, the transaction identifier associated to the purchase of the license (optional)
+	'date_created'        => '3099-12-01',        // Creation date of the license - YYYY-MM-DD  (required)
+	'date_renewed'        => '3099-12-015',       // Date of the last time the license was renewed -\n YYYY-MM-DD (optional)
+	'date_expiry'         => '3099-12-31',        // Expiry date of the license - YYY-MM-DD - if omitted, no expiry (optional)
+	'package_slug'        => 'new-package',       // The package slug - only alphanumeric characters and dashes are allowed (required)
+	'package_type'        => 'theme',             // Type of package the license is for - one of plugin, theme (required)
+	'api_auth_key'        => 'secret',            // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
 Response `$data` - **success**:
 ```json
 {
-    "id": "99",
-    "license_key": "test-license-new",
-    "max_allowed_domains": "99",
-    "allowed_domains": [
-        "different1.example.com",
-        "different2.example.com"
-    ],
-    "status": "blocked",
-    "owner_name": "Another Owner",
-    "email": "test-new@test.com",
-    "company_name": "New Company",
-    "txn_id": "#999999999",
-    "date_created": "3099-12-01",
-    "date_renewed": "3099-12-15",
-    "date_expiry": "3099-12-31",
-    "package_slug": "new-package",
-    "package_type": "theme"
+	"id": "99",
+	"license_key": "test-license-new",
+	"max_allowed_domains": "99",
+	"allowed_domains": [
+		"different1.example.com",
+		"different2.example.com"
+	],
+	"status": "blocked",
+	"owner_name": "Another Owner",
+	"email": "test-new@test.com",
+	"company_name": "New Company",
+	"txn_id": "#999999999",
+	"date_created": "3099-12-01",
+	"date_renewed": "3099-12-15",
+	"date_expiry": "3099-12-31",
+	"package_slug": "new-package",
+	"package_type": "theme"
 }
 ```
 
 Response `$data` - **failure** (in case the fields do not match the requirements):
 ```json
 {
-    "errors": [
-        "error message 1",
-        "error message 2",
-        ...
-    ]
+	"errors": [
+		"error message 1",
+		"error message 2",
+		...
+	]
 }
 ```
 
@@ -487,57 +485,57 @@ ___
 
 ```php
 $params = array(
-    'action'              => 'add',           // Action to perform when calling the License API (required)
-    'license_key'         => 'test-license',  // The key of the license to add (required)
-    'max_allowed_domains' => '2',             // The maximum number of domains allowed to use the license - minimum 1 (required)
-    'allowed_domains'     => array(           // Domains currently allowed to use the license (optional)
-        'domain1.example.com',
-        'domain2.example.com',
-    ),
-    'status'              => 'pending',       // The status of the license - one of pending, activated, deactivated, blocked, expired (required)
-    'owner_name'          => 'Test Owner',    // The full name of the owner of the license (optional)
-    'email'               => 'test@test.com', // The email registered with the license (required)
-    'company_name'        => 'Test Company',  // The company of the owner of the license (optional)
-    'txn_id'              => '#111111111',    // If applicable, the transaction identifier associated to the purchase of the license (optional)
-    'date_created'        => '2099-12-01',    // Creation date of the license - YYYY-MM-DD  (required)
-    'date_renewed'        => '2099-12-015',   // Date of the last time the license was renewed -\n YYYY-MM-DD (optional)
-    'date_expiry'         => '2099-12-31',    // Expiry date of the license - YYY-MM-DD - if omitted, no expiry (optional)
-    'package_slug'        => 'test-package',  // The package slug - only alphanumeric characters and dashes are allowed (required)
-    'package_type'        => 'plugin',        // Type of package the license is for - one of plugin, theme (required)
-    'api_auth_key'        => 'secret',        // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
+	'action'              => 'add',           // Action to perform when calling the License API (required)
+	'license_key'         => 'test-license',  // The key of the license to add (required)
+	'max_allowed_domains' => '2',             // The maximum number of domains allowed to use the license - minimum 1 (required)
+	'allowed_domains'     => array(           // Domains currently allowed to use the license (optional)
+		'domain1.example.com',
+		'domain2.example.com',
+	),
+	'status'              => 'pending',       // The status of the license - one of pending, activated, deactivated, blocked, expired (required)
+	'owner_name'          => 'Test Owner',    // The full name of the owner of the license (optional)
+	'email'               => 'test@test.com', // The email registered with the license (required)
+	'company_name'        => 'Test Company',  // The company of the owner of the license (optional)
+	'txn_id'              => '#111111111',    // If applicable, the transaction identifier associated to the purchase of the license (optional)
+	'date_created'        => '2099-12-01',    // Creation date of the license - YYYY-MM-DD  (required)
+	'date_renewed'        => '2099-12-015',   // Date of the last time the license was renewed -\n YYYY-MM-DD (optional)
+	'date_expiry'         => '2099-12-31',    // Expiry date of the license - YYY-MM-DD - if omitted, no expiry (optional)
+	'package_slug'        => 'test-package',  // The package slug - only alphanumeric characters and dashes are allowed (required)
+	'package_type'        => 'plugin',        // Type of package the license is for - one of plugin, theme (required)
+	'api_auth_key'        => 'secret',        // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
 Response `$data` - **success**:
 ```json
 {
-    "id": "99",
-    "license_key": "test-license",
-    "max_allowed_domains": "2",
-    "allowed_domains": [
-        "domain1.example.com",
-    ],
-    "status": "deactivated",
-    "owner_name": "Test Owner",
-    "email": "test@test.com",
-    "company_name": "Test Company",
-    "txn_id": "#111111111",
-    "date_created": "2099-12-01",
-    "date_renewed": "2099-12-15",
-    "date_expiry": "2099-12-31",
-    "package_slug": "test-package",
-    "package_type": "plugin"
+	"id": "99",
+	"license_key": "test-license",
+	"max_allowed_domains": "2",
+	"allowed_domains": [
+		"domain1.example.com",
+	],
+	"status": "deactivated",
+	"owner_name": "Test Owner",
+	"email": "test@test.com",
+	"company_name": "Test Company",
+	"txn_id": "#111111111",
+	"date_created": "2099-12-01",
+	"date_renewed": "2099-12-15",
+	"date_expiry": "2099-12-31",
+	"package_slug": "test-package",
+	"package_type": "plugin"
 }
 ```
 
 Response `$data` - **failure** (in case the fields do not match the requirements):
 ```json
 {
-    "errors": [
-        "error message 1",
-        "error message 2",
-        ...
-    ]
+	"errors": [
+		"error message 1",
+		"error message 2",
+		...
+	]
 }
 ```
 
@@ -546,32 +544,32 @@ ___
 
 ```php
 $params = array(
-    'action'       => 'delete',       // Action to perform when calling the License API (required)
-    'id'           => '99',           // The id of the license to delete (optional if license_key is provided)
-    'license_key'  => 'test-license', // The key of the license to delete (optional if id is provided)
-    'api_auth_key' => 'secret',       // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
+	'action'       => 'delete',       // Action to perform when calling the License API (required)
+	'id'           => '99',           // The id of the license to delete (optional if license_key is provided)
+	'license_key'  => 'test-license', // The key of the license to delete (optional if id is provided)
+	'api_auth_key' => 'secret',       // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
 
 Response `$data` - **success**:
 ```json
 {
-    "id": "99",
-    "license_key": "test-license",
-    "max_allowed_domains": "2",
-    "allowed_domains": [
-        "domain1.example.com",
-    ],
-    "status": "deactivated",
-    "owner_name": "Test Owner",
-    "email": "test@test.com",
-    "company_name": "Test Company",
-    "txn_id": "#111111111",
-    "date_created": "2099-12-01",
-    "date_renewed": "2099-12-15",
-    "date_expiry": "2099-12-31",
-    "package_slug": "test-package",
-    "package_type": "plugin"
+	"id": "99",
+	"license_key": "test-license",
+	"max_allowed_domains": "2",
+	"allowed_domains": [
+		"domain1.example.com",
+	],
+	"status": "deactivated",
+	"owner_name": "Test Owner",
+	"email": "test@test.com",
+	"company_name": "Test Company",
+	"txn_id": "#111111111",
+	"date_created": "2099-12-01",
+	"date_renewed": "2099-12-15",
+	"date_expiry": "2099-12-31",
+	"package_slug": "test-package",
+	"package_type": "plugin"
 }
 ```
 
