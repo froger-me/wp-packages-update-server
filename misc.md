@@ -3,20 +3,20 @@
 
 WP Packages Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin. Below is the documentation to interface with miscellaneous aspects of WP Packages Update Server. 
 
-* [WP Packages Update Server - Miscellaneous - Developer documentation](#wp-packages-update-server---miscellaneous---developer-documentation)
-	* [Functions](#user-content-functions)
-		* [php_log](#user-content-php_log)
-		* [cidr_match](#user-content-cidr_match)
-		* [wppus_is_doing_api_request](#user-content-wppus_is_doing_api_request)
-		* [wppus_is_doing_webhook_api_request](#user-content-wppus_is_doing_webhook_api_request)
-		* [wppus_init_nonce_auth](#user-content-wppus_init_nonce_auth)
-		* [wppus_create_nonce](#user-content-wppus_create_nonce)
-		* [wppus_get_nonce_expiry](#user-content-wppus_get_nonce_expiry)
-		* [wppus_validate_nonce](#user-content-wppus_validate_nonce)
-		* [wppus_delete_nonce](#user-content-wppus_delete_nonce)
-		* [wppus_clear_nonces](#user-content-wppus_clear_nonces)
-	* [Actions](#user-content-actions)
-	* [Filters](#user-content-filters)
+- [WP Packages Update Server - Miscellaneous - Developer documentation](#wp-packages-update-server---miscellaneous---developer-documentation)
+	- [Functions](#user-content-functions)
+		- [php_log](#user-content-php_log)
+		- [cidr_match](#user-content-cidr_match)
+		- [wppus_is_doing_api_request](#user-content-wppus_is_doing_api_request)
+		- [wppus_is_doing_webhook_api_request](#user-content-wppus_is_doing_webhook_api_request)
+		- [wppus_init_nonce_auth](#user-content-wppus_init_nonce_auth)
+		- [wppus_create_nonce](#user-content-wppus_create_nonce)
+		- [wppus_get_nonce_expiry](#user-content-wppus_get_nonce_expiry)
+		- [wppus_validate_nonce](#user-content-wppus_validate_nonce)
+		- [wppus_delete_nonce](#user-content-wppus_delete_nonce)
+		- [wppus_clear_nonces](#user-content-wppus_clear_nonces)
+	- [Actions](#user-content-actions)
+	- [Filters](#user-content-filters)
 ___
 ### Functions
 
