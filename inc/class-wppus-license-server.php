@@ -159,16 +159,16 @@ class WPPUS_License_Server {
 		if ( true === $validation ) {
 			global $wpdb;
 
-			$field           = isset( $payload['id'] ) ? 'id' : 'license_key';
-			$where           = array( $field => $payload[ $field ] );
-			$payload['data'] = wp_json_encode( $payload['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
-			$payload         = $this->sanitize_license( $payload );
+			$field   = isset( $payload['id'] ) ? 'id' : 'license_key';
+			$where   = array( $field => $payload[ $field ] );
+			$payload = $this->sanitize_license( $payload );
 
 			if ( isset( $payload['allowed_domains'] ) ) {
 				$payload['allowed_domains'] = maybe_serialize( $payload['allowed_domains'] );
 			}
 
-			$result = $wpdb->update(
+			$payload['data'] = wp_json_encode( $payload['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+			$result          = $wpdb->update(
 				$wpdb->prefix . 'wppus_licenses',
 				$payload,
 				$where
@@ -198,9 +198,9 @@ class WPPUS_License_Server {
 			global $wpdb;
 
 			$license['id']              = null;
+			$license                    = $this->sanitize_license( $license );
 			$license['allowed_domains'] = maybe_serialize( $license['allowed_domains'] );
 			$license['data']            = wp_json_encode( $license['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
-			$license                    = $this->sanitize_license( $license );
 			$result                     = $wpdb->insert(
 				$wpdb->prefix . 'wppus_licenses',
 				$license
@@ -471,6 +471,19 @@ class WPPUS_License_Server {
 				} else {
 					$license['allowed_domains'] = array();
 				}
+			} elseif ( 'data' === $key ) {
+
+				if ( empty( $license[ $key ] ) ) {
+					$license[ $key ] = '{}';
+				}
+
+				if ( is_scalar( $license[ $key ] ) ) {
+					$license[ $key ] = wp_json_encode( json_decode( $license[ $key ], true ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+				} else {
+					$license[ $key ] = wp_json_encode( $license[ $key ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+				}
+
+				$license[ $key ] = json_decode( $license[ $key ], true );
 			} else {
 				$license[ $key ] = wp_strip_all_tags( $value );
 			}
