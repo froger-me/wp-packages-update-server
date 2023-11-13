@@ -75,8 +75,7 @@ class WPPUS_License_Server {
 		$prepare_args   = array();
 		$payload        = apply_filters( 'wppus_browse_licenses_payload', $payload );
 		$browsing_query = $this->build_browsing_query( $payload );
-
-		$sql = "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE 1 = 1 ";
+		$sql            = "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE 1 = 1 ";
 
 		foreach ( $browsing_query['criteria'] as $crit ) {
 			$sql .= $browsing_query['relationship'] . ' ' . $crit['field'] . ' ';
@@ -102,8 +101,7 @@ class WPPUS_License_Server {
 			}
 		}
 
-		$sql .= ' ORDER BY ' . $browsing_query['order_by'] . ' LIMIT %d OFFSET %d';
-
+		$sql           .= ' ORDER BY ' . $browsing_query['order_by'] . ' LIMIT %d OFFSET %d';
 		$prepare_args[] = $browsing_query['limit'];
 		$prepare_args[] = $browsing_query['offset'];
 
@@ -136,16 +134,14 @@ class WPPUS_License_Server {
 			$where_field = ( isset( $payload['id'] ) && ! empty( $payload['id'] ) ) ? 'id' : 'license_key';
 			$where_value = $payload[ $where_field ];
 			$payload     = $this->sanitize_license( $payload );
-
-			$sql     = "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE {$where_field} = %s;";
-			$license = $wpdb->get_row( $wpdb->prepare( $sql, $where_value ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$sql         = "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE {$where_field} = %s;";
+			$license     = $wpdb->get_row( $wpdb->prepare( $sql, $where_value ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			if ( is_object( $license ) ) {
 				$license->allowed_domains = maybe_unserialize( $license->allowed_domains );
 				$license->data            = json_decode( $license->data, true );
 				$license->data            = ( null === $license->data ) ? array() : $license->data;
-
-				$return = $license;
+				$return                   = $license;
 			}
 		}
 
@@ -238,8 +234,7 @@ class WPPUS_License_Server {
 			$where   = array( $field => $payload[ $field ] );
 			$payload = $this->sanitize_license( $payload );
 			$license = $this->read_license( $payload );
-
-			$result = $wpdb->delete(
+			$result  = $wpdb->delete(
 				$wpdb->prefix . 'wppus_licenses',
 				$where
 			);
