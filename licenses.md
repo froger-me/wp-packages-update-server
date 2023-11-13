@@ -597,7 +597,7 @@ wppus_is_doing_license_api_request();
 Determine wether the current request is made by a client plugin or theme interacting with the plugin's license API.
 
 **Return value**
-> (bool) true if the current request is a client plugin or theme interacting with the plugin's API, false otherwise.
+> (bool) true if the current request is a client plugin or theme interacting with the plugin's API, false otherwise
 
 ___
 #### wppus_browse_licenses
@@ -614,7 +614,7 @@ $browse_query
 > (array) See [The License Query](#user-content-the-license-query)
 
 **Return value**
-> (array) An array of license object matching the License Query.
+> (array) An array of license object matching the License Query
 
 ___
 #### wppus_read_license
@@ -631,7 +631,7 @@ $payload
 > (array) See the License API action [read](#user-content-read)
 
 **Return value**
-> (mixed) An object in case of success (see the response of the License API action [read](#user-content-read) - the object is the decoded value of the JSON string) or an empty array otherwise.
+> (mixed) An object in case of success (see the response of the License API action [read](#user-content-read) - the object is the decoded value of the JSON string) or an empty array otherwise
 
 ___
 #### wppus_edit_license
@@ -648,7 +648,7 @@ $payload
 > (array) See `$params` for the License API action [add](#user-content-add)
 
 **Return value**
-> (mixed) An object in case of success (see the response of the License API action [add](#user-content-add) - the object is the decoded value of the JSON string) or an array of errors otherwise.
+> (mixed) An object in case of success (see the response of the License API action [add](#user-content-add) - the object is the decoded value of the JSON string) or an array of errors otherwise
 
 ___
 #### wppus_add_license
@@ -665,7 +665,7 @@ $payload
 > (array) See `$params` for the License API action [add](#user-content-add)
 
 **Return value**
-> (mixed) An object in case of success (see the response of the License API action [add](#user-content-add) - the object is the decoded value of the JSON string) or an array of errors otherwise.
+> (mixed) An object in case of success (see the response of the License API action [add](#user-content-add) - the object is the decoded value of the JSON string) or an array of errors otherwise
 
 ___
 #### wppus_delete_license
@@ -682,7 +682,7 @@ $payload
 > (array) See `$params` for the License API action [delete](#user-content-delete)
 
 **Return value**
-> (mixed) An object in case of success (see the response of the License API action [delete](#user-content-delete) - the object is the decoded value of the JSON string) or an empty array otherwise.
+> (mixed) An object in case of success (see the response of the License API action [delete](#user-content-delete) - the object is the decoded value of the JSON string) or an empty array otherwise
 
 ___
 #### wppus_check_license
@@ -699,7 +699,7 @@ $payload
 > (array) An associative array with a single value - `array( 'license_key' => 'key_of_the_license_to_check' )`.
 
 **Return value**
-> (mixed) An object in case of success, and associative array in case of failure (see the response of the License API action [check](#user-content-check) - the object is the decoded value of the JSON string).
+> (mixed) An object in case of success, and associative array in case of failure (see the response of the License API action [check](#user-content-check) - the object is the decoded value of the JSON string)
 
 ___
 #### wppus_activate_license
@@ -716,7 +716,7 @@ $payload
 > (array) An associative array with 2 values - `array( 'license_key' => 'key_of_the_license_to_activate', 'allowed_domains' => 'domain_to_activate' )`.
 
 **Return value**
-> (mixed) An object in case of success, and associative array in case of failure (see the response of the License API action [activate](#user-content-activate) - the object is the decoded value of the JSON string).
+> (mixed) An object in case of success, and associative array in case of failure (see the response of the License API action [activate](#user-content-activate) - the object is the decoded value of the JSON string)
 
 ___
 #### wppus_deactivate_license
@@ -733,7 +733,7 @@ $payload
 > (array) An associative array with 2 values - `array( 'license_key' => 'key_of_the_license_to_deactivate', 'allowed_domains' => 'domain_to_deactivate' )`.
 
 **Return value**
-> (mixed) An object in case of success, and associative array in case of failure (see the response of the License API action [deactivate](#user-content-deactivate) - the object is the decoded value of the JSON string).
+> (mixed) An object in case of success, and associative array in case of failure (see the response of the License API action [deactivate](#user-content-deactivate) - the object is the decoded value of the JSON string)
 
 ___
 ## Actions

@@ -17,6 +17,12 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 	* [wppus_force_cleanup_tmp](#user-content-wppus_force_cleanup_tmp)
 	* [wppus_get_local_package_path](#user-content-wppus_get_local_package_path)
 	* [wppus_download_local_package](#user-content-wppus_download_local_package)
+function wppus_is_doing_package_api_request()
+function wppus_check_remote_package_update( $slug, $type )
+function wppus_download_remote_package( $slug, $type )
+function wppus_delete_package( $slug )
+function wppus_get_package_info( $package_slug, $json_encode = true )
+function wppus_get_batch_package_info( $search, $json_encode = true )
 * [Actions](#user-content-actions)
 	* [wppus_primed_package_from_remote](#user-content-wppus_primed_package_from_remote)
 	* [wppus_did_manual_upload_package](#user-content-wppus_did_manual_upload_package)
@@ -62,7 +68,7 @@ wppus_get_root_data_dir();
 Get the path to the plugin's content directory.
 
 **Return value**
-> (string) the path to the plugin content's directory.
+> (string) the path to the plugin content's directory
 
 
 ___
@@ -76,7 +82,7 @@ wppus_get_packages_data_dir();
 Get the path to the packages directory on the WordPress file system.
 
 **Return value**
-> (string) the path to the packages directory on the WordPress file system.
+> (string) the path to the packages directory on the WordPress file system
 
 
 ___
@@ -104,7 +110,7 @@ wppus_is_doing_update_api_request();
 Determine wether the current request is made by a client plugin or theme interacting with the plugin's API.
 
 **Return value**
-> (bool) true if the current request is a client plugin or theme interacting with the plugin's API, false otherwise.
+> (bool) true if the current request is a client plugin or theme interacting with the plugin's API, false otherwise
 
 
 ___
@@ -122,7 +128,7 @@ $package_slug
 > (string) slug of the plugin package to check  
 
 **Return value**
-> (bool) true if the remote plugin package is an updated version, false otherwise. If the local package does not exist, returns true.
+> (bool) true if the remote plugin package is an updated version, false otherwise. If the local package does not exist, returns true
 
 
 ___
@@ -140,7 +146,7 @@ $package_slug
 > (string) slug of the theme package to check   
 
 **Return value**
-> (bool) true if the remote theme package is an updated version, false otherwise. If the package does not exist on the WordPress file system, returns true.
+> (bool) true if the remote theme package is an updated version, false otherwise. If the package does not exist on the WordPress file system, returns true
 
 
 ___
@@ -158,7 +164,7 @@ $package_slug
 > (string) slug of the plugin package to download  
 
 **Return value**
-> (bool) true if the plugin package was successfully downloaded, false otherwise.
+> (bool) true if the plugin package was successfully downloaded, false otherwise
 
 
 ___
@@ -176,7 +182,7 @@ $package_slug
 > (string) slug of the theme package to download  
 
 **Return value**
-> (bool) true if the theme package was successfully downloaded, false otherwise.
+> (bool) true if the theme package was successfully downloaded, false otherwise
 
 
 ___
