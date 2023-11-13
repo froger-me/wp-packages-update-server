@@ -353,7 +353,7 @@ if ( ! function_exists( 'wppus_init_nonce_auth' ) ) {
 	function wppus_init_nonce_auth( $private_auth_key, $auth_header_name = null ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 
-		return WPPUS_Nonce::init_auth( $private_auth_key, $auth_header_name );
+		WPPUS_Nonce::init_auth( $private_auth_key, $auth_header_name );
 	}
 }
 // @TODO doc
