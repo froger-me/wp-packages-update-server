@@ -61,7 +61,6 @@ class WPPUS_Nonce {
 		$table = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . 'wppus_nonce' . "'" );
 
 		if ( $wpdb->prefix . 'wppus_nonce' !== $table ) {
-
 			return false;
 		}
 
@@ -236,13 +235,12 @@ class WPPUS_Nonce {
 			$nonce_expiry = $row->expiry;
 		}
 
-		return $nonce_expiry;
+		return intval( $nonce_expiry );
 	}
 
 	public static function validate_nonce( $value ) {
 
 		if ( empty( $value ) ) {
-
 			return false;
 		}
 
@@ -266,7 +264,6 @@ class WPPUS_Nonce {
 	public static function clear_nonces() {
 
 		if ( defined( 'WP_SETUP_CONFIG' ) || defined( 'WP_INSTALLING' ) ) {
-
 			return;
 		}
 
@@ -397,7 +394,6 @@ class WPPUS_Nonce {
 		$result = $wpdb->insert( $table, $data );
 
 		if ( (bool) $result ) {
-
 			return $data;
 		}
 
