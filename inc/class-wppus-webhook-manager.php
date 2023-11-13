@@ -24,7 +24,10 @@ class WPPUS_Webhook_Manager {
 
 	public static function activate() {
 
-		if ( ! get_option( 'wppus_remote_repository_webhook_secret' ) ) {
+		if (
+			! get_option( 'wppus_remote_repository_webhook_secret' ) ||
+			'repository_webhook_secret' === get_option( 'wppus_remote_repository_webhook_secret' )
+		) {
 			update_option( 'wppus_remote_repository_webhook_secret', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
 		}
 	}

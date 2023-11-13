@@ -348,15 +348,24 @@ class WPPUS_License_Manager {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		if ( ! get_option( 'wppus_license_private_api_auth_key' ) ) {
+		if (
+			! get_option( 'wppus_license_private_api_auth_key' ) ||
+			'private_api_auth_key' === get_option( 'wppus_license_private_api_auth_key' )
+		) {
 			update_option( 'wppus_license_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
 		}
 
-		if ( ! get_option( 'wppus_license_hmac_key' ) ) {
+		if (
+			! get_option( 'wppus_license_hmac_key' ) ||
+			'hmac_key' === get_option( 'wppus_license_hmac_key' )
+		) {
 			update_option( 'wppus_license_hmac_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
 		}
 
-		if ( ! get_option( 'wppus_license_crypto_key' ) ) {
+		if (
+			! get_option( 'wppus_license_crypto_key' ) ||
+			'crypto_key' === get_option( 'wppus_license_crypto_key' )
+		) {
 			update_option( 'wppus_license_crypto_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
 		}
 
