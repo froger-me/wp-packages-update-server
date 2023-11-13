@@ -167,8 +167,11 @@ class WPPUS_License_Server {
 				$payload['allowed_domains'] = maybe_serialize( $payload['allowed_domains'] );
 			}
 
-			$payload['data'] = wp_json_encode( $payload['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
-			$result          = $wpdb->update(
+			if ( isset( $payload['data'] ) ) {
+				$payload['data'] = wp_json_encode( $payload['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+			}
+
+			$result = $wpdb->update(
 				$wpdb->prefix . 'wppus_licenses',
 				$payload,
 				$where
