@@ -203,14 +203,9 @@ class WPPUS_License_Server {
 
 			$license['id']              = null;
 			$license['allowed_domains'] = maybe_serialize( $license['allowed_domains'] );
-			$payload['data']            = wp_json_encode(
-				$payload['data'],
-				JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
-			);
-
-			$license = $this->sanitize_license( $license );
-
-			$result = $wpdb->insert(
+			$license['data']            = wp_json_encode( $license['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+			$license                    = $this->sanitize_license( $license );
+			$result                     = $wpdb->insert(
 				$wpdb->prefix . 'wppus_licenses',
 				$license
 			);

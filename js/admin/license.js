@@ -117,7 +117,7 @@ jQuery(document).ready(function ($) {
 			$('#wppus_license_transaction_id').val(licenseData.txn_id);
 			$('#wppus_license_package_slug').val(licenseData.package_slug);
 			$('#wppus_license_status').val(licenseData.status);
-			$('#wppus_license_data').val(JSON.parse(licenseData.data));
+			$('#wppus_license_data').val(licenseData.data ? JSON.parse(licenseData.data) : '');
 			$('#wppus_license_package_type').val(licenseData.package_type);
 
 			if ('0000-00-00' !== licenseData.date_expiry ) {
