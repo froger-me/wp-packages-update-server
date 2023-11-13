@@ -8,21 +8,21 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 	* [wppus_get_packages_data_dir](#user-content-wppus_get_packages_data_dir)
 	* [wppus_get_logs_data_dir](#user-content-wppus_get_logs_data_dir)
 	* [wppus_is_doing_update_api_request](#user-content-wppus_is_doing_update_api_request)
+	* [wppus_is_doing_package_api_request](#user-content-wppus_is_doing_package_api_request)
+	* [wppus_check_remote_package_update](#user-content-wppus_check_remote_package_update)
 	* [wppus_check_remote_plugin_update](#user-content-wppus_check_remote_plugin_update)
 	* [wppus_check_remote_theme_update](#user-content-wppus_check_remote_theme_update)
-	* [wppus_download_remote_plugin_to_local](#user-content-wppus_download_remote_plugin_to_local)
-	* [wppus_download_remote_theme_to_local](#user-content-wppus_download_remote_theme_to_local)
+	* [wppus_download_remote_package](#user-content-wppus_download_remote_package)
+	* [wppus_download_remote_plugin](#user-content-wppus_download_remote_plugin)
+	* [wppus_download_remote_theme](#user-content-wppus_download_remote_theme)
 	* [wppus_force_cleanup_cache](#user-content-wppus_force_cleanup_cache)
 	* [wppus_force_cleanup_logs](#user-content-wppus_force_cleanup_logs)
 	* [wppus_force_cleanup_tmp](#user-content-wppus_force_cleanup_tmp)
 	* [wppus_get_local_package_path](#user-content-wppus_get_local_package_path)
 	* [wppus_download_local_package](#user-content-wppus_download_local_package)
-function wppus_is_doing_package_api_request()
-function wppus_check_remote_package_update( $slug, $type )
-function wppus_download_remote_package( $slug, $type )
-function wppus_delete_package( $slug )
-function wppus_get_package_info( $package_slug, $json_encode = true )
-function wppus_get_batch_package_info( $search, $json_encode = true )
+	* [wppus_delete_package](#user-content-wppus_delete_package)
+	* [wppus_get_package_info](#user-content-wppus_get_package_info)
+	* [wppus_get_batch_package_info](#user-content-wppus_get_batch_package_info)
 * [Actions](#user-content-actions)
 	* [wppus_primed_package_from_remote](#user-content-wppus_primed_package_from_remote)
 	* [wppus_did_manual_upload_package](#user-content-wppus_did_manual_upload_package)
@@ -70,7 +70,6 @@ Get the path to the plugin's content directory.
 **Return value**
 > (string) the path to the plugin content's directory
 
-
 ___
 #### wppus_get_packages_data_dir
 
@@ -79,11 +78,10 @@ wppus_get_packages_data_dir();
 ```
 
 **Description**  
-Get the path to the packages directory on the WordPress file system.
+Get the path to the packages directory on the file system.
 
 **Return value**
-> (string) the path to the packages directory on the WordPress file system
-
+> (string) the path to the packages directory on the file system
 
 ___
 #### wppus_get_logs_data_dir
@@ -98,7 +96,6 @@ Get the path to the plugin's log directory.
 **Return value**
 > (string) the path to the plugin's log directory.
 
-
 ___
 #### wppus_is_doing_update_api_request
 
@@ -110,8 +107,40 @@ wppus_is_doing_update_api_request();
 Determine wether the current request is made by a client plugin or theme interacting with the plugin's API.
 
 **Return value**
-> (bool) true if the current request is a client plugin or theme interacting with the plugin's API, false otherwise
+> (bool) `true` if the current request is a client plugin or theme interacting with the plugin's API, `false` otherwise
 
+___
+#### wppus_is_doing_package_api_request
+
+```php
+wppus_is_doing_package_api_request()
+```
+
+**Description**
+Determine wether the current request is made by a remote client interacting with the plugin's package API.
+
+**Return value**
+> (bool) `true` the current request is made by a remote client interacting with the plugin's package API, `false` otherwise
+
+___
+#### wppus_check_remote_package_update
+
+```php
+wppus_check_remote_package_update( $package_slug, $type )
+```
+
+**Description**  
+Determine wether the remote package is an updated version compared to the one on the file system.
+
+**Parameters**  
+$package_slug
+> (string) slug of the package to check   
+
+$type
+> (string) type of the package  
+
+**Return value**
+> (string) path of the package on the file system
 
 ___
 #### wppus_check_remote_plugin_update
@@ -121,15 +150,14 @@ wppus_check_remote_plugin_update( string $package_slug );
 ```
 
 **Description**  
-Determine wether the remote plugin package is an updated version compared to one on the WordPress file system.
+Determine wether the remote plugin package is an updated version compared to one on the file system.
 
 **Parameters**  
 $package_slug
 > (string) slug of the plugin package to check  
 
 **Return value**
-> (bool) true if the remote plugin package is an updated version, false otherwise. If the local package does not exist, returns true
-
+> (bool) `true` if the remote plugin package is an updated version, `false` otherwise. If the local package does not exist, returns `true`
 
 ___
 #### wppus_check_remote_theme_update
@@ -139,51 +167,68 @@ wppus_check_remote_theme_update( string $package_slug );
 ```
 
 **Description**  
-Determine wether the remote theme package is an updated version compared to the one on the WordPress file system.
+Determine wether the remote theme package is an updated version compared to the one on the file system.
 
 **Parameters**  
 $package_slug
 > (string) slug of the theme package to check   
 
 **Return value**
-> (bool) true if the remote theme package is an updated version, false otherwise. If the package does not exist on the WordPress file system, returns true
-
+> (bool) `true` if the remote theme package is an updated version, `false` otherwise. If the package does not exist on the file system, returns `true`
 
 ___
-#### wppus_download_remote_plugin_to_local
+#### wppus_download_remote_package
 
 ```php
-wppus_download_remote_plugin_to_local( string $package_slug );
+wppus_download_remote_package( $slug, $type )
 ```
 
 **Description**  
-Download a plugin package from the Remote Repository down to the package directory on the WordPress file system.
+Download a package from the Remote Repository down to the package directory on the file system.
+
+**Parameters**  
+$package_slug
+> (string) slug of the package to download  
+
+$type
+> (string) type of the package  
+
+**Return value**
+> (bool) `true` if the plugin package was successfully downloaded, `false` otherwise
+
+___
+#### wppus_download_remote_plugin
+
+```php
+wppus_download_remote_plugin( string $package_slug );
+```
+
+**Description**  
+Download a plugin package from the Remote Repository down to the package directory on the file system.
 
 **Parameters**  
 $package_slug
 > (string) slug of the plugin package to download  
 
 **Return value**
-> (bool) true if the plugin package was successfully downloaded, false otherwise
-
+> (bool) `true` if the plugin package was successfully downloaded, `false` otherwise
 
 ___
-#### wppus_download_remote_theme_to_local
+#### wppus_download_remote_theme
 
 ```php
-wppus_download_remote_theme_to_local( string $package_slug );
+wppus_download_remote_theme( string $package_slug );
 ```
 
 **Description**  
-Download a theme package from the Remote Repository down to the package directory on the WordPress file system.
+Download a theme package from the Remote Repository down to the package directory on the file system.
 
 **Parameters**  
 $package_slug
 > (string) slug of the theme package to download  
 
 **Return value**
-> (bool) true if the theme package was successfully downloaded, false otherwise
-
+> (bool) `true` if the theme package was successfully downloaded, `false` otherwise
 
 ___
 #### wppus_force_cleanup_cache
@@ -196,8 +241,7 @@ wppus_force_cleanup_cache();
 Force clean up the `cache` plugin data.
 
 **Return value**
-> (bool) true in case of success, false otherwise
-
+> (bool) `true` in case of success, `false` otherwise
 
 ___
 #### wppus_force_cleanup_logs
@@ -210,8 +254,7 @@ wppus_force_cleanup_logs();
 Force clean up the `logs` plugin data.
 
 **Return value**
-> (bool) true in case of success, false otherwise
-
+> (bool) `true` in case of success, `false` otherwise
 
 ___
 #### wppus_force_cleanup_tmp
@@ -224,8 +267,7 @@ wppus_force_cleanup_tmp();
 Force clean up the `tmp` plugin data.
 
 **Return value**
-> (bool) true in case of success, false otherwise
-
+> (bool) `true` in case of success, `false` otherwise
 
 ___
 #### wppus_get_local_package_path
@@ -235,15 +277,14 @@ wppus_get_local_package_path( string $package_slug );
 ```
 
 **Description**  
-Get the path of a plugin or theme package on the WordPress file system
+Get the path of a plugin or theme package on the file system
 
 **Parameters**  
 $package_slug
 > (string) slug of the package  
 
 **Return value**
-> (string) path of the package on the WordPress file system
-
+> (string) path of the package on the file system
 
 ___
 #### wppus_download_local_package
@@ -253,15 +294,134 @@ wppus_download_local_package( string $package_slug, string $package_path = null 
 ```
 
 **Description**  
-Start a download of a package from the WordPress file system and exits. 
+Start a download of a package from the file system and exits. 
 
 **Parameters**  
 $package_slug  
 > (string) slug of the package  
 
 $package_path  
-> (string) path of the package on the WordPress file system - if `null`, will attempt to find it using `wppus_get_local_package_path( $package_slug )`   
+> (string) path of the package on the file system - if `null`, will attempt to find it using `wppus_get_local_package_path( $package_slug )`   
 
+___
+#### wppus_delete_package
+
+```php
+wppus_delete_package( $slug )
+```
+
+**Description**  
+Deletes a package on the file system
+
+**Parameters**  
+$package_slug
+> (string) slug of the package  
+
+___
+#### wppus_get_package_info
+
+```php
+wppus_get_package_info( $package_slug, $json_encode = true )
+```
+
+**Description**  
+Get information about a package on the file system
+
+**Parameters**  
+$package_slug
+> (string) slug of the package  
+
+$json_encode
+> (bool) whether to return a JSON object (default) or a PHP associative array  
+
+**Return value**
+> (array|string) the package information as a PHP associative array or a JSON object  
+
+Values format in case of a plugin package:
+```json
+{
+	"name": "Plugin Name",
+	"version": "1.4.14",
+	"homepage": "https:\/\/domain.tld\/",
+	"author": "Author",
+	"author_homepage": "https:\/\/domain.tld\/",
+	"requires": "9.9.9",
+	"tested": "9.9.9",
+	"requires_php": "8.2",
+	"sections": {
+	    "description": "<p>Plugin description. <strong>Basic HTML<\/strong> can be used in all sections.<\/p>",
+	    "extra_section": "<p>An extra section.<\/p>",
+	    "installation": "<p>Installation instructions.<\/p>",
+	    "changelog": "<p>This section will be displayed by default when the user clicks 'View version x.y.z details'.<\/p>"
+	},
+	"last_updated": "9999-00-00 99:99:99",
+	"icons": {
+	    "1x": "https:\/\/domain.tld\/icon-128x128.png",
+	    "2x": "https:\/\/domain.tld\/icon-256x256.png"
+	},
+	"banners": {
+	    "low": "https:\/\/domain.tld\/banner-722x250.png",
+	    "high": "https:\/\/domain.tld\/banner-1544x500.png"
+	},
+	"slug": "plugin-slug",
+	"type": "plugin",
+	"file_name": "plugin-slug.zip",
+	"file_path": "\/webroot\/wp-content\/wppus\/packages\/plugin-slug.zip",
+	"file_size": 999,
+	"file_last_modified": 9999
+}
+```
+
+Values format in case of a theme package:
+```json
+{
+	"name": "Theme Name",
+	"version": "1.0.0",
+	"homepage": "https:\/\/domain.tld\/",
+	"author": "Author",
+	"author_homepage": "https:\/\/domain.tld",
+	"details_url": "https:\/\/domain.tld\/",
+	"last_updated": "9999-00-00 99:99:99",
+	"slug": "theme-slug",
+	"type": "theme",
+	"file_name": "theme-slug.zip",
+	"file_path": "cloudStorage:\/\/wppus-packages\/theme-slug.zip",
+	"file_size": 999,
+	"file_last_modified": 9999
+}
+```
+___
+#### wppus_get_batch_package_info
+
+```php
+wppus_get_batch_package_info( $search, $json_encode = true )
+```
+
+**Description**  
+Get batch information of packages on the file system
+
+**Parameters**  
+$search
+> (string) search string to be used in package's slug and package's name (case insensitive)  
+
+$json_encode
+> (bool) whether to return a JSON object (default) or a PHP associative array  
+
+**Return value**
+> (array|string) the batch information as a PHP associative array or a JSON object ; each entry is formatted like in [wppus_get_package_info](#user-content-wppus_get_package_info)
+
+Values format:
+```json
+{
+    "theme-slug": {
+        [...]
+    },
+    "plugin-slug": {
+       [...]
+    }
+}
+
+```
 ___
 ## Actions
 
@@ -280,7 +440,7 @@ Fired after an attempt to prime a package from a Remote Repository has been perf
 
 **Parameters**  
 $result  
-> (bool) true the operation was successful, false otherwise  
+> (bool) `true` the operation was successful, `false` otherwise  
 
 $slug  
 > (slug) slug of the package  
@@ -297,7 +457,7 @@ Fired after an attempt to upload a package manually has been performed.
 
 **Parameters**  
 $result  
-> (bool) true the operation was successful, false otherwise  
+> (bool) `true` the operation was successful, `false` otherwise  
 
 $type  
 > (string) type of package - "Plugin" or "Theme"  
@@ -356,7 +516,7 @@ Fired during client update API request.
 
 **Parameters**  
 $result  
-> (bool) true if the event was scheduled, false otherwise  
+> (bool) `true` if the event was scheduled, `false` otherwise  
 
 $slug  
 > (string) slug of the package for which the event was scheduled  
@@ -427,7 +587,7 @@ Fired after a cleanup event has been scheduled for a type of plugin data.
 
 **Parameters**  
 $result
-> (bool) true if the event was scheduled, false otherwise  
+> (bool) `true` if the event was scheduled, `false` otherwise  
 
 $type
 > (string) plugin data type for which the event was scheduled (`cache`, `logs`,or `tmp`)  
@@ -490,7 +650,7 @@ Fired after cleanup was attempted for a type of plugin data.
 
 **Parameters**  
 $result
-> (bool) true if the clean up was successful, flase otherwise  
+> (bool) `true` if the clean up was successful, flase otherwise  
 
 $type
 > (string) type of data to clean up (`cache`, `logs`,or `tmp`)  
@@ -499,7 +659,7 @@ $size
 > (int) the size of the data in before the clean up attempt (in bytes)  
 
 $force
-> (bool) true if it was a forced cleanup (without checking if the size was beyond the maximum set size), false otherwise  
+> (bool) `true` if it was a forced cleanup (without checking if the size was beyond the maximum set size), `false` otherwise  
 
 ___
 #### wppus_before_handle_update_request
@@ -524,7 +684,7 @@ do_action( 'wppus_downloaded_remote_package', mixed $package, string $type, stri
 ```
 
 **Description**  
-Fired after an attempt to download a package from the Remote Repository Service down to the WordPress file system has been performed.  
+Fired after an attempt to download a package from the Remote Repository Service down to the file system has been performed.  
 Fired during client update API request.  
 
 **Parameters**  
@@ -545,12 +705,12 @@ do_action( 'wppus_saved_remote_package_to_local', bool $result, string $type, st
 ```
 
 **Description**  
-Fired after an attempt to save a downloaded package on the WordPress file system hase been performed.  
+Fired after an attempt to save a downloaded package on the file system hase been performed.  
 Fired during client update API request.  
 
 **Parameters**  
 $result
-> (bool) true in case of success, false otherwise  
+> (bool) `true` in case of success, `false` otherwise  
 
 $type
 > (string) type of the saved package - "Plugin" or "Theme"  
@@ -571,7 +731,7 @@ Fired during client update API request.
 
 **Parameters**  
 $has_update
-> (bool) true is the package has updates on the Remote Repository, false otherwise  
+> (bool) `true` is the package has updates on the Remote Repository, `false` otherwise  
 
 $type
 > (string) type of the package checked - "Plugin" or "Theme"  
@@ -587,12 +747,12 @@ do_action( 'wppus_deleted_package', bool $result, string $type, string $slug );
 ```
 
 **Description**  
-Fired after a package has been deleted from the WordPress file system.  
+Fired after a package has been deleted from the file system.  
 Fired during client update API request.  
 
 **Parameters**  
 $result
-> (bool) true if the package has been deleted on the WordPress file system  
+> (bool) `true` if the package has been deleted on the file system  
 
 $type
 > (string) type of the deleted package - "Plugin" or "Theme"  
@@ -691,7 +851,6 @@ $frequency
 $slug
 > (string) the slug of the package to check for updates  
 
-
 ___
 #### wppus_handle_update_request_params
 
@@ -707,7 +866,6 @@ Fired during client update API request.
 $params
 > (array) the parameters of the request to the API  
 
-
 ___
 #### wppus_update_api_config
 
@@ -722,7 +880,6 @@ Fired during client update API request.
 **Parameters**  
 $config
 > (array) the update api configuration values  
-
 
 ___
 #### wppus_update_server
@@ -779,4 +936,4 @@ $repository_credentials
 > (mixed) the credentials to access the Remote Repository where the packages are located  
 
 $repository_service_self_hosted
-> (bool) true if the Remote Repository is on a self-hosted repository service, false otherwiseark  
+> (bool) `true` if the Remote Repository is on a self-hosted repository service, `false` otherwiseark  

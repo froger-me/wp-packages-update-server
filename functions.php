@@ -4,7 +4,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-// @todo doc
 if ( ! function_exists( 'php_log' ) ) {
 	function php_log( $message = '', $prefix = '' ) {
 		$prefix   = $prefix ? ' ' . $prefix . ' => ' : ' => ';
@@ -19,7 +18,6 @@ if ( ! function_exists( 'php_log' ) ) {
 	}
 }
 
-// @todo doc
 if ( ! function_exists( 'cidr_match' ) ) {
 	function cidr_match( $ip, $range ) {
 		list ( $subnet, $bits ) = explode( '/', $range );
@@ -52,7 +50,6 @@ if ( ! function_exists( 'wppus_is_doing_update_api_request' ) ) {
 	}
 }
 
-// @todo doc
 if ( ! function_exists( 'wppus_is_doing_webhook_api_request' ) ) {
 	function wppus_is_doing_webhook_api_request() {
 
@@ -60,7 +57,6 @@ if ( ! function_exists( 'wppus_is_doing_webhook_api_request' ) ) {
 	}
 }
 
-// @todo doc
 if ( ! function_exists( 'wppus_is_doing_package_api_request' ) ) {
 	function wppus_is_doing_package_api_request() {
 
@@ -68,7 +64,6 @@ if ( ! function_exists( 'wppus_is_doing_package_api_request' ) ) {
 	}
 }
 
-// @todo doc
 if ( ! function_exists( 'wppus_is_doing_api_request' ) ) {
 	function wppus_is_doing_api_request() {
 		$is_api_request = (
@@ -138,7 +133,6 @@ if ( ! function_exists( 'wppus_check_remote_theme_update' ) ) {
 	}
 }
 
-// @TODO doc
 if ( ! function_exists( 'wppus_check_remote_package_update' ) ) {
 	function wppus_check_remote_package_update( $slug, $type ) {
 		$api = WPPUS_Update_API::get_instance();
@@ -161,7 +155,6 @@ if ( ! function_exists( 'wppus_download_remote_theme' ) ) {
 	}
 }
 
-// @TODO doc
 if ( ! function_exists( 'wppus_download_remote_package' ) ) {
 	function wppus_download_remote_package( $slug, $type ) {
 		$api = WPPUS_Update_API::get_instance();
@@ -170,7 +163,6 @@ if ( ! function_exists( 'wppus_download_remote_package' ) ) {
 	}
 }
 
-// @TODO doc
 if ( ! function_exists( 'wppus_delete_package' ) ) {
 	function wppus_delete_package( $slug ) {
 		$api = WPPUS_Update_Manager::get_instance();
@@ -179,7 +171,6 @@ if ( ! function_exists( 'wppus_delete_package' ) ) {
 	}
 }
 
-// @TODO doc
 if ( ! function_exists( 'wppus_get_package_info' ) ) {
 	function wppus_get_package_info( $package_slug, $json_encode = true ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
@@ -196,7 +187,6 @@ if ( ! function_exists( 'wppus_get_package_info' ) ) {
 	}
 }
 
-// @TODO doc
 if ( ! function_exists( 'wppus_get_batch_package_info' ) ) {
 	function wppus_get_batch_package_info( $search, $json_encode = true ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
@@ -348,7 +338,7 @@ if ( ! function_exists( 'wppus_get_admin_template' ) ) {
 		return WP_Packages_Update_Server::locate_admin_template( $template_name, $load, $require_file );
 	}
 }
-// @TODO doc
+
 if ( ! function_exists( 'wppus_init_nonce_auth' ) ) {
 	function wppus_init_nonce_auth( $private_auth_key, $auth_header_name = null ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
@@ -356,7 +346,7 @@ if ( ! function_exists( 'wppus_init_nonce_auth' ) ) {
 		WPPUS_Nonce::init_auth( $private_auth_key, $auth_header_name );
 	}
 }
-// @TODO doc
+
 if ( ! function_exists( 'wppus_create_nonce' ) ) {
 	function wppus_create_nonce(
 		$true_nonce = true,
@@ -380,7 +370,7 @@ if ( ! function_exists( 'wppus_create_nonce' ) ) {
 		);
 	}
 }
-// @TODO doc
+
 if ( ! function_exists( 'wppus_get_nonce_expiry' ) ) {
 	function wppus_get_nonce_expiry( $nonce ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
@@ -388,7 +378,7 @@ if ( ! function_exists( 'wppus_get_nonce_expiry' ) ) {
 		return WPPUS_Nonce::get_nonce_expiry( $nonce );
 	}
 }
-// @TODO doc
+
 if ( ! function_exists( 'wppus_validate_nonce' ) ) {
 	function wppus_validate_nonce( $value ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
@@ -396,7 +386,7 @@ if ( ! function_exists( 'wppus_validate_nonce' ) ) {
 		return WPPUS_Nonce::validate_nonce( $value );
 	}
 }
-// @TODO doc
+
 if ( ! function_exists( 'wppus_delete_nonce' ) ) {
 	function wppus_delete_nonce( $value ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
@@ -404,7 +394,7 @@ if ( ! function_exists( 'wppus_delete_nonce' ) ) {
 		return WPPUS_Nonce::delete_nonce( $value );
 	}
 }
-// @TODO doc
+
 if ( ! function_exists( 'wppus_clear_nonces' ) ) {
 	function wppus_clear_nonces() {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
