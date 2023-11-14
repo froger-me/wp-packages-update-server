@@ -1,38 +1,35 @@
 # WP Packages Update Server - Run your own update server for plugins and themes
 
-Plugin documentation:
-- [General description](#user-content-general-description)
-	- [Overview](#user-content-overview)
-	- [Special Thanks](#user-content-special-thanks)
-	- [Compatibility](#user-content-compatibility)
-	- [Screenshots](#user-content-screenshots)
-- [User Interface](#user-content-user-interface)
-	- [Overview Tab](#user-content-overview-tab)
-	- [Remote Sources Tab](#user-content-remote-sources-tab)
-	- [Licenses Tab](#user-content-licenses-tab)
-- [Performances](#user-content-performances)
-	- [Benchmark](#user-content-benchmark)
-	- [Update API](#user-content-update-api)
-	- [Public License API](#user-content-public-license-api)
-- [Help](#user-content-help)
-	- [Provide updates with WP Packages Update Server - packages requirements](#user-content-provide-updates-with-wp-packages-update-server---packages-requirements)
-	- [Requests optimisation](#user-content-requests-optimisation)
-	- [More Help...](#user-content-more-help)
+* [WP Packages Update Server - Run your own update server for plugins and themes](#wp-packages-update-server---run-your-own-update-server-for-plugins-and-themes)
+	* [General Description](#general-description)
+		* [Overview](#overview)
+		* [Special Thanks](#special-thanks)
+		* [Compatibility](#compatibility)
+		* [Screenshots](#screenshots)
+			* [Overview](#overview-1)
+			* [Remote Sources](#remote-sources)
+			* [Licenses](#licenses)
+			* [Client - plugin screens](#client---plugin-screens)
+			* [Client - theme screens](#client---theme-screens)
+			* [Client - updates screen](#client---updates-screen)
+	* [User Interface](#user-interface)
+		* [Overview Tab](#overview-tab)
+		* [Remote Sources Tab](#remote-sources-tab)
+		* [Licenses Tab](#licenses-tab)
+	* [Performances](#performances)
+		* [Benchmark](#benchmark)
+		* [Update API](#update-api)
+		* [Public License API](#public-license-api)
+	* [Help](#help)
+		* [Provide updates with WP Packages Update Server - packages requirements](#provide-updates-with-wp-packages-update-server---packages-requirements)
+		* [Requests optimisation](#requests-optimisation)
+		* [More help...](#more-help)
+
 
 Developer documentation:
 - [Packages](https://github.com/froger-me/wp-packages-update-server/blob/master/packages.md)
-	- [Functions](https://github.com/froger-me/wp-packages-update-server/blob/master/packages.md#user-content-functions)
-	- [Actions](https://github.com/froger-me/wp-packages-update-server/blob/master/packages.md#user-content-actions)
-	- [Filters](https://github.com/froger-me/wp-packages-update-server/blob/master/packages.md#user-content-filters)
 - [Licenses](https://github.com/froger-me/wp-packages-update-server/blob/master/licenses.md)
-	- [API](https://github.com/froger-me/wp-packages-update-server/blob/master/licenses.md#user-content-api)
-	- [Functions](https://github.com/froger-me/wp-packages-update-server/blob/master/licenses.md#user-content-functions)
-	- [Actions](https://github.com/froger-me/wp-packages-update-server/blob/master/licenses.md#user-content-actions)
-	- [Filters](https://github.com/froger-me/wp-packages-update-server/blob/master/licenses.md#user-content-filters)
 - [Miscellaneous](https://github.com/froger-me/wp-packages-update-server/blob/master/misc.md)
-	- [Functions](https://github.com/froger-me/wp-packages-update-server/blob/master/misc.md#user-content-functions)
-	- [Actions](https://github.com/froger-me/wp-packages-update-server/blob/master/misc.md#user-content-actions)
-	- [Filters](https://github.com/froger-me/wp-packages-update-server/blob/master/misc.md#user-content-filters)
 
 ## General Description
 
@@ -117,7 +114,7 @@ This tab allows administrators to:
 
 In addition, the following settings are available:
 
-Name                                | Type   | Description                                                                                                                  
+Name                                | Type   | Description
 ----------------------------------- |:------:| ------------------------------------------------------------------------------------------------------------------------------
 Archive max size (in MB)            | number | Maximum file size when uploading or downloading packages.
 Cache max size (in MB)              | number | Maximum size in MB for the `wp-content/plugins/wp-packages-update-server/cache` directory. If the size of the directory grows larger, its content will be deleted at next cron run (checked hourly). The size indicated in the "Force Clean" button is the real current size.
@@ -132,7 +129,7 @@ If "Enable Package Licenses" is checked, this tab allows administrators to:
 These actions are useful to forcefully alter the schedules (maintenance, tests, etc).  
 In addition, the following settings are available:
 
-Name                                  | Type      | Description                                                                                                                                                                                                                    
+Name                                  | Type      | Description
 ------------------------------------- |:---------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Use Remote Repository Service         | checkbox  | Enables this server to download plugins and themes from a Remote Repository before delivering updates.<br/>Supports Bitbucket, Github and Gitlab.<br/>If left unchecked, zip packages need to be manually uploaded to `wp-content/plugins/wp-packages-update-server/packages`.<br/>**It affects all the packages delivered by this installation of WP Packages Update Server if they have a corresponding repository in the Remote Repository Service.**<br/>**Settings of the "Packages remote source" section will be saved only if this option is checked.**
 Remote Repository Service URL         | text      | The URL of the Remote Repository Service where packages are hosted.<br/>Must follow the following pattern: `https://repository-service.tld/username` where `https://repository-service.tld` may be a self-hosted instance of Gitlab.<br/>Each package repository URL must follow the following pattern: `https://repository-service.tld/username/package-name/` ; the package files must be located at the root of the repository, and in the case of plugins the main plugin file must follow the pattern `package-name.php`.
@@ -152,7 +149,7 @@ If "Enable Package Licenses" is checked, this tab allows administrators to:
 
 In addition, the following settings are available:
 
-Name                                    | Type     | Description                                                                                                                                                                                                                                                                            
+Name                                    | Type     | Description
 ----------------------------------------|:--------:| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Enable Package Licenses                 | checkbox | Enables this server manages to deliver license-enabled plugins and themes using Software License Manager licenses.<br/>**It affects all the packages with a "Requires License" license status delivered by this installation of WP Packages Update Server. Settings of the "Packages licensing" section will be saved only if this option is checked.**
 Private API Authentication Key          | text     | deally a random string - used to authenticate administration requests (create, update and delete).<br/>**WARNING: Keep this key secret, do not share it with customers!**
@@ -304,5 +301,5 @@ The MU Plugin also provides the global variables `$wppus_doing_update_api_reques
 
 ### More help...
 
-For more help on how to use WP Packages Update Server, please open an issue on Github or contact wppus-help@froger.me.  
-Depending on the nature of the request, a fee may apply.
+For more help on how to use WP Packages Update Server, please open an issue - bugfixes are welcome via pull requests, detailed bug reports with accurate pointers as to where and how they occur in the code will be addressed in a timely manner, and a fee will apply for any other request if they are addressed.  
+If and only if you found a security issue, please contact wppus-help@anyape.com with full details for responsible disclosure.
