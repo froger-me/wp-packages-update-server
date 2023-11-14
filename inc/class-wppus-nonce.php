@@ -126,7 +126,9 @@ class WPPUS_Nonce {
 			$code     = 400;
 
 			if ( ! self::authorize() ) {
-				$response = __( 'Unauthorized access', 'wppus' );
+				$response = array(
+					'message' => __( 'Unauthorized access', 'wppus' ),
+				);
 				$code     = 403;
 			} elseif ( isset( $wp->query_vars['action'] ) ) {
 				$method = $wp->query_vars['action'];
@@ -143,7 +145,17 @@ class WPPUS_Nonce {
 					unset( $wp->query_vars['action'] );
 
 					$response = self::$method( $wp->query_vars );
-					$code     = 200;
+
+					if ( $response ) {
+						$code = 200;
+					} else {
+						$response = array(
+							'message' => __( 'Internal Error - nonce insert error', 'wppus' ),
+						);
+						$code     = 500;
+
+						php_log( __METHOD__ . ' wpdb::insert error' );
+					}
 				}
 			}
 
