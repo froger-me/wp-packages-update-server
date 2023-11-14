@@ -393,7 +393,6 @@ class WPPUS_Cloud_Storage_Manager {
 	}
 
 	public function wppus_check_remote_package_update_local_meta( $local_meta, $local_package, $slug ) {
-		// If we do not have local_meta, we want to download the package, get the local_meta, then delete it in any case
 		WP_Filesystem();
 
 		global $wp_filesystem;
@@ -485,7 +484,6 @@ class WPPUS_Cloud_Storage_Manager {
 	}
 
 	public function wppus_save_remote_to_local( $save, $slug, $filename, $check_remote ) {
-		// We want to set save to true if the package is not found in cloud storage
 		$config = self::get_config();
 
 		try {
@@ -618,7 +616,6 @@ class WPPUS_Cloud_Storage_Manager {
 	}
 
 	public function wppus_find_package_no_cache( $slug, $filename, $cache ) {
-		// We want to create a local cache, using the file in cloud storage, so we need to download it
 		WP_Filesystem();
 
 		global $wp_filesystem;

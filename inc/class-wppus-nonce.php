@@ -191,7 +191,7 @@ class WPPUS_Nonce {
 	) {
 		// @todo doc
 		$nonce = apply_filters(
-			'wppus_create_nonce',
+			'wppus_created_nonce',
 			false,
 			$true_nonce,
 			$expiry_length,

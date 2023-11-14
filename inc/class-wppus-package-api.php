@@ -156,11 +156,11 @@ class WPPUS_Package_API {
 			$result = wppus_download_remote_package( $package_id, $type );
 			$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
 			//@todo doc
-			$result = apply_filters( 'wppus_package_update', $result, $package_id, $type );
+			$result = apply_filters( 'wppus_package_edit', $result, $package_id, $type );
 
 			if ( $result ) {
 				//@todo doc
-				do_action( 'wppus_did_update_package', $result );
+				do_action( 'wppus_did_edit_package', $result );
 			}
 		}
 
@@ -186,11 +186,11 @@ class WPPUS_Package_API {
 			}
 
 			//@todo doc
-			$result = apply_filters( 'wppus_package_create', $result, $package_id, $type );
+			$result = apply_filters( 'wppus_package_add', $result, $package_id, $type );
 
 			if ( $result ) {
 				//@todo doc
-				do_action( 'wppus_did_create_package', $result );
+				do_action( 'wppus_did_add_package', $result );
 			}
 
 			if ( ! $result ) {
@@ -232,7 +232,13 @@ class WPPUS_Package_API {
 
 		wppus_download_local_package( $package_id, $path, false );
 		//@todo doc
-		do_action( 'wppus_did_download_package', $package_id );
+		do_action(
+			'wppus_did_download_package',
+			array(
+				'package_id' => $package_id,
+				'type'       => $type,
+			)
+		);
 
 		exit;
 	}

@@ -128,7 +128,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	}
 
 	public function check_remote_package_update( $slug ) {
-		$has_update    = true;
+		$needs_update  = true;
 		$local_package = $this->findPackage( $slug );
 
 		if ( $local_package instanceof Wpup_Package ) {
@@ -144,14 +144,14 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 			if ( ! $local_meta ) {
 				// @todo doc
-				$has_update = apply_filters(
-					'wppus_check_remote_package_update_no_local_meta',
-					$has_update,
+				$needs_update = apply_filters(
+					'wppus_check_remote_package_update_no_local_meta_needs_update',
+					$needs_update,
 					$local_package,
 					$slug
 				);
 
-				return $has_update;
+				return $needs_update;
 			}
 
 			$local_info = array(
@@ -169,7 +169,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 				$remote_info = $this->update_checker->requestInfo();
 
 				if ( $remote_info && ! is_wp_error( $remote_info ) ) {
-					$has_update = version_compare( $remote_info['version'], $local_info['version'], '>' );
+					$needs_update = version_compare( $remote_info['version'], $local_info['version'], '>' );
 				} else {
 					php_log(
 						$remote_info,
@@ -180,9 +180,9 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			}
 		}
 
-		do_action( 'wppus_checked_remote_package_update', $has_update, $this->type, $slug );
+		do_action( 'wppus_checked_remote_package_update', $needs_update, $this->type, $slug );
 
-		return $has_update;
+		return $needs_update;
 	}
 
 	public function remove_package( $slug ) {
