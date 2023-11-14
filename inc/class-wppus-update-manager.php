@@ -427,6 +427,8 @@ class WPPUS_Update_Manager {
 			// @todo doc
 			do_action( 'wppus_update_manager_deleted_packages_bulk', $deleted_package_slugs );
 		}
+
+		return empty( $deleted_package_slugs ) ? false : $deleted_package_slugs;
 	}
 
 	public function download_packages_bulk( $package_slugs ) {

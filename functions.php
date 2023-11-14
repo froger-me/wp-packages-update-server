@@ -167,7 +167,7 @@ if ( ! function_exists( 'wppus_delete_package' ) ) {
 	function wppus_delete_package( $slug ) {
 		$api = WPPUS_Update_Manager::get_instance();
 
-		$api->delete_packages_bulk( array( $slug ) );
+		return (bool) $api->delete_packages_bulk( array( $slug ) );
 	}
 }
 

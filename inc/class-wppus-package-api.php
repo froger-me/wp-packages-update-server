@@ -193,9 +193,7 @@ class WPPUS_Package_API {
 	}
 
 	public function delete( $package_id, $type ) {
-		wppus_delete_package( $package_id );
-
-		$result = ! (bool) $this->read( $package_id, $type );
+		$result = (bool) wppus_delete_package( $package_id );
 		//@todo doc
 		$result = apply_filters( 'wppus_package_delete', $result, $package_id, $type );
 
@@ -203,7 +201,7 @@ class WPPUS_Package_API {
 			//@todo doc
 			do_action( 'wppus_did_delete_package', $result );
 		} else {
-			$this->http_response_code = 400;
+			$this->http_response_code = 404;
 		}
 
 		return $result;
