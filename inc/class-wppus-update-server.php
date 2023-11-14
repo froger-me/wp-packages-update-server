@@ -203,6 +203,23 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		// @todo doc
 		$result = apply_filters( 'wppus_delete_package_result', $result, $type, $slug );
 
+		if ( $result ) {
+
+			if ( ! $this->cache ) {
+				$this->cache = new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) );
+			}
+
+			if (
+				$wp_filesystem->is_file( $package_path ) &&
+				$wp_filesystem->is_readable( $package_path )
+			) {
+				$cache_key = 'metadata-b64-' . $slug . '-'
+					. md5( $package_path . '|' . filesize( $package_path ) . '|' . filemtime( $package_path ) );
+
+				$this->cache->clear( $cache_key );
+			}
+		}
+
 		do_action( 'wppus_deleted_package', $result, $type, $slug );
 
 		return $result;

@@ -8,6 +8,7 @@ class WPPUS_Package_API {
 	protected $http_response_code = 200;
 
 	protected static $doing_update_api_request = null;
+	protected static $instance;
 	protected static $config;
 
 	public function __construct( $init_hooks = false ) {
@@ -47,6 +48,15 @@ class WPPUS_Package_API {
 
 		//@todo doc
 		return apply_filters( 'wppus_package_api_config', self::$config );
+	}
+
+	public static function get_instance() {
+
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
 	}
 
 	public function add_endpoints() {
@@ -182,10 +192,12 @@ class WPPUS_Package_API {
 				//@todo doc
 				do_action( 'wppus_did_create_package', $result );
 			}
-		}
 
-		if ( ! $result ) {
-			$this->http_response_code = 409;
+			if ( ! $result ) {
+				$this->http_response_code = 409;
+			}
+		} else {
+			$this->http_response_code = 400;
 		}
 
 		return $result;
@@ -206,15 +218,16 @@ class WPPUS_Package_API {
 		return $result;
 	}
 
-	public function download( $package_id, $type ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+	public function download( $package_id, $type ) {
 		$path = wppus_get_local_package_path( $package_id );
 
 		if ( ! $path ) {
-			$this->http_response_code = 404;
 
-			return array(
-				'message' => __( 'Package not found.', 'wppus' ),
-			);
+			if ( ! $this->add( $package_id, $type ) ) {
+				return array(
+					'message' => __( 'Package not found', 'wppus' ),
+				);
+			}
 		}
 
 		wppus_download_local_package( $package_id, $path, false );
@@ -251,7 +264,7 @@ class WPPUS_Package_API {
 						'token'  => $token,
 						'action' => 'download',
 					),
-					home_url( 'wppus-package-api/' . $type . '/' . $package_id )
+					home_url( 'wppus-package-api/' . $type . '/' . $package_id . '/' )
 				),
 				'token'  => $token,
 				'expiry' => wppus_get_nonce_expiry( $token ),
@@ -293,7 +306,7 @@ class WPPUS_Package_API {
 			) {
 				$this->http_response_code = 405;
 				$response                 = array(
-					'message' => __( 'Unauthorized GET method.', 'wppus' ),
+					'message' => __( 'Unauthorized GET method', 'wppus' ),
 				);
 			} else {
 
@@ -342,7 +355,7 @@ class WPPUS_Package_API {
 					} else {
 						$this->http_response_code = 400;
 						$response                 = array(
-							'message' => __( 'Package API action not found.', 'wppus' ),
+							'message' => __( 'Package API action not found', 'wppus' ),
 						);
 					}
 				} else {

@@ -254,6 +254,26 @@ class WPPUS_Cloud_Storage_Manager {
 		$config = self::get_config();
 
 		try {
+			$info = wp_cache_get( $slug . '-getObjectInfo', 'wppus' );
+
+			if ( false === $info ) {
+				$info = self::$cloud_storage->getObjectInfo(
+					$config['storage_unit'],
+					self::$virtual_dir . '/' . $slug . '.zip',
+				);
+
+				wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
+			}
+
+			if ( $info ) {
+				$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
+				$filename          = $package_directory . $slug . '.zip';
+				$cache             = new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) );
+				$cache_key         = 'metadata-b64-' . $slug . '-'
+						. md5( $filename . '|' . $info['size'] . '|' . $info['time'] );
+				$cache->clear( $cache_key );
+			}
+
 			$result = self::$cloud_storage->deleteObject( $config['storage_unit'], self::$virtual_dir . '/' . $slug . '.zip' );
 		} catch ( PhpS3Exception $e ) {
 			php_log( $e );
@@ -558,6 +578,7 @@ class WPPUS_Cloud_Storage_Manager {
 
 		if ( 'download' === $method ) {
 			$package_id = isset( $payload['package_id'] ) ? $payload['package_id'] : null;
+			$type       = isset( $payload['type'] ) ? $payload['type'] : null;
 			$info       = wp_cache_get( $package_id . '-getObjectInfo', 'wppus' );
 
 			if ( false === $info ) {
@@ -570,23 +591,27 @@ class WPPUS_Cloud_Storage_Manager {
 			}
 
 			if ( ! $info ) {
-				wp_send_json( array( 'message' => __( 'Package not found.', 'wppus' ) ), 404 );
-			} else {
-				$nonce = filter_input( INPUT_GET, 'token', FILTER_UNSAFE_RAW );
+				$api = WPPUS_Package_API::get_instance();
 
-				if ( ! $nonce ) {
-					$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
+				if ( ! $api->add( $package_id, $type ) ) {
+					wp_send_json( array( 'message' => __( 'Package not found', 'wppus' ) ), 404 );
 				}
-
-				$url                  = self::$cloud_storage->getAuthenticatedUrlV4(
-					$config['storage_unit'],
-					self::$virtual_dir . '/' . $package_id . '.zip',
-					abs( intval( wppus_get_nonce_expiry( $nonce ) ) ) - time(),
-				);
-				$this->doing_redirect = wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
-
-				do_action( 'wppus_did_download_package', $package_id );
 			}
+
+			$nonce = filter_input( INPUT_GET, 'token', FILTER_UNSAFE_RAW );
+
+			if ( ! $nonce ) {
+				$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
+			}
+
+			$url                  = self::$cloud_storage->getAuthenticatedUrlV4(
+				$config['storage_unit'],
+				self::$virtual_dir . '/' . $package_id . '.zip',
+				abs( intval( wppus_get_nonce_expiry( $nonce ) ) ) - time(),
+			);
+			$this->doing_redirect = wp_redirect( $url ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+
+			do_action( 'wppus_did_download_package', $package_id );
 
 			exit;
 		}
