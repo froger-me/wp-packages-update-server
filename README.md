@@ -306,6 +306,3 @@ The MU Plugin also provides the global variables `$wppus_doing_update_api_reques
 
 For more help on how to use WP Packages Update Server, please open an issue on Github or contact wppus-help@froger.me.  
 Depending on the nature of the request, a fee may apply.
-
-## Miscellaneous
-
