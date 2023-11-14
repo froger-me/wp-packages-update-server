@@ -3,28 +3,115 @@
 
 WP Packages Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin. Below is the documentation to interface with miscellaneous aspects of WP Packages Update Server. 
 
-- [WP Packages Update Server - Miscellaneous - Developer documentation](#wp-packages-update-server---miscellaneous---developer-documentation)
-	- [Functions](#user-content-functions)
-		- [php_log](#user-content-php_log)
-		- [cidr_match](#user-content-cidr_match)
-		- [wppus_is_doing_api_request](#user-content-wppus_is_doing_api_request)
-		- [wppus_is_doing_webhook_api_request](#user-content-wppus_is_doing_webhook_api_request)
-		- [wppus_init_nonce_auth](#user-content-wppus_init_nonce_auth)
-		- [wppus_create_nonce](#user-content-wppus_create_nonce)
-		- [wppus_get_nonce_expiry](#user-content-wppus_get_nonce_expiry)
-		- [wppus_validate_nonce](#user-content-wppus_validate_nonce)
-		- [wppus_delete_nonce](#user-content-wppus_delete_nonce)
-		- [wppus_clear_nonces](#user-content-wppus_clear_nonces)
-	- [Actions](#user-content-actions)
-	- [Filters](#user-content-filters)
-___
-### Functions
+* [WP Packages Update Server - Miscellaneous - Developer documentation](#wp-packages-update-server---miscellaneous---developer-documentation)
+	* [Nonce API](#nonce-api)
+	* [Functions](#functions)
+		* [php\_log](#php_log)
+		* [cidr\_match](#cidr_match)
+		* [wppus\_is\_doing\_api\_request](#wppus_is_doing_api_request)
+			* [wppus\_is\_doing\_webhook\_api\_request](#wppus_is_doing_webhook_api_request)
+			* [wppus\_init\_nonce\_auth](#wppus_init_nonce_auth)
+			* [wppus\_create\_nonce](#wppus_create_nonce)
+			* [wppus\_get\_nonce\_expiry](#wppus_get_nonce_expiry)
+			* [wppus\_validate\_nonce](#wppus_validate_nonce)
+			* [wppus\_delete\_nonce](#wppus_delete_nonce)
+			* [wppus\_delete\_nonce](#wppus_delete_nonce-1)
+		* [Actions](#actions)
+		* [Filters](#filters)
+
+
+## Nonce API
+
+The nonce API is accessible via `POST` and `GET` requests on the `/wppus-token/` endpoint to acquire a reusable token, and `/wppus-nonce/` to acquire a true nonce.  
+It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well.
+
+Authorization is granted with either the `HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY` header in `POST` (recommended) or with the `api_auth_key` parameter for both `POST` and `GET` ; the key is the Private API Authentication Key of the Packages API by default (authorization key and header may be overriden with the `wppus_init_nonce_auth` [function](#wppus_init_nonce_auth)).  
+**Using `GET` requests directly in the browser, whether through the URL bar or JavaScript, is strongly discouraged due to security concerns** ; it should be avoided at all cost to prevent the inadvertent exposure of the authorization key.
+
+In case the Private API Authentication Key is invalid, the API will return the following response (message's language depending on availabe translations), with HTTP response code set to `403`:
+
+Response `$data` - forbidden access:
+```json
+{
+	"message": "Unauthorized access"
+}
+```
+
+The description of the API below is using the following code as reference, where `$params` are the parameters passed to the API (other parameters can be adjusted, they are just WordPress' default) and `$data` is the JSON response:
+
+```php
+$url = 'https://domain.tld/wppus-nonce/'; // Replace domain.tld with the domain where WP Packages Update Server is installed.
+$url = 'https://domain.tld/wppus-token/'; // Replace domain.tld with the domain where WP Packages Update Server is installed.
+
+$response = wp_remote_post(
+	$url,
+	array(
+		'method'      => 'POST',
+		'timeout'     => 45,
+		'redirection' => 5,
+		'httpversion' => '1.0',
+		'blocking'    => true,
+		'headers'     => array(),
+		'body'        => $params,
+		'cookies'     => array(),
+	);
+);
+
+if ( is_wp_error( $response ) ) {
+	printf( esc_html__( 'Something went wrong: %s', 'text-domain' ), esc_html( $response->get_error_message() ) );
+} else {
+	$data         = wp_remote_retrieve_body( $response );
+	$decoded_data = json_decode( $data );
+
+	if ( '200' === $response->code ) {
+		// Handle success with $decoded_data
+	} else {
+		// Handle failure with $decoded_data
+	}
+}
+```
+
+Parameters to aquire a reusable token or a true nonce:
+
+```php
+$params = array(
+	'expiry_length' => 999,          // The expiry length in seconds (optional - default value to WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH - 30 seconds)
+	'data' => array(                 // Data to store along the token or true nonce (optional)
+		'permanent' => false,        // set to a truthy value to create a nonce that never expires
+		'key1'      => 'value1',     // custom data
+		'key2'      => array(        // custom data can be as nested as needed
+			'subkey1' => 'subval1',
+			'subkey2' => 'subval2'
+		),
+	),
+	'api_auth_key'  => 'secret',     // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-Package-API-Key headers, or overriden header name, if absent)
+);
+```
+
+Response `$data` - **success**:
+```json
+{
+	"nonce": "nonce_value",
+    "true_nonce": true|false,
+    "expiry": 9999999999,
+    "data": {
+		"key1": "value1",
+		"key2": "value2",
+		"key3": {
+			"subkey1": "subval1",
+			"subkey2": "subval2"
+		},
+	}
+}
+```
+
+## Functions
 
 The functions listed below are made publicly available by the plugin for theme and plugin developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).  
 Although the main classes can theoretically be instanciated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
 
 ___
-#### php_log
+### php_log
 
 ```php
 php_log( mixed $message = '', string $prefix = '' );
@@ -34,15 +121,14 @@ php_log( mixed $message = '', string $prefix = '' );
 Convenience function to log a message to `error_log`.
 
 **Parameters**  
-$message  
+`$message`
 > (mixed) the message to log ; can be any variable  
 
-$prefix  
+`$prefix`
 > (string) a prefix to add before the variable ; useful to add context  
 
-
 ___
-#### cidr_match
+### cidr_match
 
 ```php
 cidr_match( $ip, $range );
@@ -52,18 +138,17 @@ cidr_match( $ip, $range );
 Check whether an IP address is a match for the provided CIDR range.
 
 **Parameters**  
-$ip  
+`$ip`
 > (string) the IP address to check  
 
-$range  
+`$range`
 > (string) a CIDR range  
 
 **Return value**
 > (bool) whether an IP address is a match for the provided CIDR range
 
-
 ___
-#### wppus_is_doing_api_request
+### wppus_is_doing_api_request
 
 ```php
 wppus_is_doing_api_request()
@@ -74,7 +159,6 @@ Determine whether the current request is made by a remote client interacting wit
 
 **Return value**
 > (bool) `true` if the current request is made by a remote client interacting with any of the APIs, `false` otherwise
-
 
 ___
 #### wppus_is_doing_webhook_api_request
@@ -101,10 +185,10 @@ Set the Private Authorization Key and the Authorization Header name used to requ
 If the Authentication Header name is not set, the `api_auth_key` variable set in `POST` method is used instead when requesting nonces.
 
 **Parameters**  
-$private_auth_key  
+`$private_auth_key`
 > (string) the Private Authorization Key  
 
-$auth_header_name  
+`$auth_header_name`
 > (string|null) the Authorization Header name  
 
 ___
@@ -118,19 +202,19 @@ wppus_create_nonce( bool $true_nonce = true, int $expiry_length = WPPUS_Nonce::D
 Creates a cryptographic token - allows creation of tokens that are true one-time-use nonces, with custom expiry length and custom associated data.
 
 **Parameters**  
-$true_nonce  
+`$true_nonce`
 > (bool) whether the nonce is one-time-use ; default `true`  
 
-$expiry_length  
+`$expiry_length`
 > (int) the number of seconds after which the nonce expires ; default `WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH` - 30 seconds 
 
-$data  
+`$data`
 > (array) custom data to save along with the nonce ; set an element with key `permanent` to a truthy value to create a nonce that never expires ; default `array()`  
 
-$return_type  
+`$return_type`
 > (int) whether to return the nonce, or an array of information ; default `WPPUS_Nonce::NONCE_ONLY` ; other accepted value is `WPPUS_Nonce::NONCE_INFO_ARRAY`  
 
-$store  
+`$store`
 > (bool) whether to store the nonce, or let a third party mechanism take care of it ; default `true`  
 
 **Return value**
@@ -142,7 +226,7 @@ array(
 	'expiry'     => 9999,			// the expiry timestamp
 	'data'       => array(),		// custom data saved along with the nonce
 );
-```  
+```
 
 ___
 #### wppus_get_nonce_expiry
@@ -155,7 +239,7 @@ wppus_get_nonce_expiry( string $nonce )
 Get the expiry timestamp of a nonce.  
 
 **Parameters**  
-$nonce  
+`$nonce`
 > (string) the nonce  
 
 **Return value**
@@ -173,7 +257,7 @@ Check whether the value is a valid nonce.
 Note: if the nonce is a true nonce, it will be invalidated and further calls to this function with the same `$value` will return `false`.  
 
 **Parameters**  
-$value  
+`$value`
 > (string) the value to check  
 
 **Return value**
@@ -190,7 +274,7 @@ wppus_delete_nonce( string $value )
 Delete a nonce from the system if the corresponding value exists.  
 
 **Parameters**  
-$value  
+`$value`
 > (string) the value to delete  
 
 **Return value**
