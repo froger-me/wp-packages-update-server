@@ -175,16 +175,19 @@ class WPPUS_Nonce {
 		$expiry_length = self::DEFAULT_EXPIRY_LENGTH,
 		$data = array(),
 		$return_type = self::NONCE_ONLY,
-		$store = true,
-		$delegate = false,
-		$delegate_args = array()
+		$store = true
 	) {
+		// @todo doc
+		$nonce = apply_filters(
+			'wppus_create_nonce',
+			false,
+			$true_nonce,
+			$expiry_length,
+			$data,
+			$return_type
+		);
 
-		if ( $delegate && is_array( $delegate_args ) && is_callable( $delegate ) ) {
-			$delegate_args['true_nonce']    = $true_nonce;
-			$delegate_args['expiry_length'] = $expiry_length;
-			$nonce                          = call_user_func_array( $delegate, $delegate_args );
-		} else {
+		if ( ! $nonce ) {
 			$id    = self::generate_id();
 			$nonce = md5( wp_salt( 'nonce' ) . $id . microtime( true ) );
 		}

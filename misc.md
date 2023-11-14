@@ -111,7 +111,7 @@ ___
 #### wppus_create_nonce
 
 ```php
-wppus_create_nonce( bool $true_nonce = true, int $expiry_length = WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH, array $data = array(), int $return_type = WPPUS_Nonce::NONCE_ONLY, bool $store = true, bool|callable $delegate = false, array $delegate_args = array() )
+wppus_create_nonce( bool $true_nonce = true, int $expiry_length = WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH, array $data = array(), int $return_type = WPPUS_Nonce::NONCE_ONLY, bool $store = true, bool|callable )
 ```
 
 **Description**  
@@ -132,12 +132,6 @@ $return_type
 
 $store  
 > (bool) whether to store the nonce, or let a third party mechanism take care of it ; default `true`  
-
-$delegate  
-> (bool|callable) if needed, a function or method to create the nonce ; default `false`  
-
-$delegate_args  
-> (array) if `$delegate` is of type `callable`, the arguments to pass to the function or method used to create the nonce ; default `array()`  
 
 **Return value**
 > (bool|string|array) `false` in case of failure ; the cryptographic token string if `$return_type` is set to `WPPUS_Nonce::NONCE_ONLY` ; an array of information if `$return_type` is set to `WPPUS_Nonce::NONCE_INFO_ARRAY` with the following format:

@@ -353,21 +353,11 @@ if ( ! function_exists( 'wppus_create_nonce' ) ) {
 		$expiry_length = WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH,
 		$data = array(),
 		$return_type = WPPUS_Nonce::NONCE_ONLY,
-		$store = true,
-		$delegate = false,
-		$delegate_args = array()
+		$store = true
 	) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 
-		return WPPUS_Nonce::create_nonce(
-			$true_nonce,
-			$expiry_length,
-			$data,
-			$return_type,
-			$store,
-			$delegate,
-			$delegate_args
-		);
+		return WPPUS_Nonce::create_nonce( $true_nonce, $expiry_length, $data, $return_type, $store );
 	}
 }
 
