@@ -52,6 +52,27 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_checked\_remote\_package\_update](#wppus_checked_remote_package_update)
 		* [wppus\_deleted\_package](#wppus_deleted_package)
 		* [wppus\_before\_zip](#wppus_before_zip)
+		* [wppus\_did\_browse\_package](#wppus_did_browse_package)
+		* [wppus\_did\_read\_package](#wppus_did_read_package)
+		* [wppus\_did\_edit\_package](#wppus_did_edit_package)
+		* [wppus\_did\_add\_package](#wppus_did_add_package)
+		* [wppus\_did\_delete\_package](#wppus_did_delete_package)
+		* [wppus\_did\_download\_package](#wppus_did_download_package)
+		* [wppus\_did\_signed\_url\_package](#wppus_did_signed_url_package)
+		* [wppus\_package\_api\_request](#wppus_package_api_request)
+		* [wppus\_remote\_sources\_options\_updated](#wppus_remote_sources_options_updated)
+		* [wppus\_check\_remote\_update](#wppus_check_remote_update)
+		* [wppus\_udpdate\_manager\_request\_action](#wppus_udpdate_manager_request_action)
+		* [wppus\_update\_manager\_deleted\_packages\_bulk](#wppus_update_manager_deleted_packages_bulk)
+		* [wppus\_before\_packages\_download\_repack](#wppus_before_packages_download_repack)
+		* [wppus\_triggered\_packages\_download](#wppus_triggered_packages_download)
+		* [wppus\_after\_packages\_download](#wppus_after_packages_download)
+		* [wppus\_get\_package\_info](#wppus_get_package_info-1)
+		* [wppus\_find\_package\_no\_cache](#wppus_find_package_no_cache)
+		* [wppus\_update\_server\_action\_download](#wppus_update_server_action_download)
+		* [wppus\_webhook\_before\_processing\_request](#wppus_webhook_before_processing_request)
+		* [wppus\_webhook\_after\_processing\_request](#wppus_webhook_after_processing_request)
+		* [wppus\_packages\_table\_cell](#wppus_packages_table_cell)
 	* [Filters](#filters)
 		* [wppus\_submitted\_data\_config](#wppus_submitted_data_config)
 		* [wppus\_submitted\_remote\_sources\_config](#wppus_submitted_remote_sources_config)
@@ -61,6 +82,34 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_update\_api\_config](#wppus_update_api_config)
 		* [wppus\_update\_server](#wppus_update_server)
 		* [wppus\_update\_checker](#wppus_update_checker)
+		* [wppus\_cloud\_storage\_virtual\_dir](#wppus_cloud_storage_virtual_dir)
+		* [wppus\_could\_storage\_api\_config](#wppus_could_storage_api_config)
+		* [wppus\_package\_api\_config](#wppus_package_api_config)
+		* [wppus\_package\_browse](#wppus_package_browse)
+		* [wppus\_package\_read](#wppus_package_read)
+		* [wppus\_package\_edit](#wppus_package_edit)
+		* [wppus\_package\_add](#wppus_package_add)
+		* [wppus\_package\_delete](#wppus_package_delete)
+		* [wppus\_package\_signed\_url](#wppus_package_signed_url)
+		* [wppus\_package\_signed\_url\_token](#wppus_package_signed_url_token)
+		* [wppus\_package\_public\_api\_methods](#wppus_package_public_api_methods)
+		* [wppus\_package\_api\_request\_authorized](#wppus_package_api_request_authorized)
+		* [wppus\_packages\_table\_columns](#wppus_packages_table_columns)
+		* [wppus\_packages\_table\_sortable\_columns](#wppus_packages_table_sortable_columns)
+		* [wppus\_packages\_table\_bulk\_actions](#wppus_packages_table_bulk_actions)
+		* [wppus\_use\_recurring\_schedule](#wppus_use_recurring_schedule)
+		* [wppus\_remote\_sources\_manager\_get\_package\_slugs](#wppus_remote_sources_manager_get_package_slugs)
+		* [wppus\_server\_class\_name](#wppus_server_class_name)
+		* [wppus\_delete\_packages\_bulk\_paths](#wppus_delete_packages_bulk_paths)
+		* [wppus\_package\_info](#wppus_package_info)
+		* [wppus\_batch\_package\_info\_include](#wppus_batch_package_info_include)
+		* [wppus\_update\_manager\_batch\_package\_info](#wppus_update_manager_batch_package_info)
+		* [wppus\_check\_remote\_package\_update\_local\_meta](#wppus_check_remote_package_update_local_meta)
+		* [wppus\_check\_remote\_package\_update\_no\_local\_meta\_needs\_update](#wppus_check_remote_package_update_no_local_meta_needs_update)
+		* [wppus\_delete\_package\_result](#wppus_delete_package_result)
+		* [wppus\_update\_server\_action\_download\_handled](#wppus_update_server_action_download_handled)
+		* [wppus\_save\_remote\_to\_local](#wppus_save_remote_to_local)
+		* [wppus\_webhook\_process\_request](#wppus_webhook_process_request)
 
 
 
@@ -1258,6 +1307,360 @@ Fired during client update API request.
 > (string) the path where the package archive will be located after packing  
 
 ___
+### wppus_did_browse_package
+
+```php
+do_action( 'wppus_did_browse_package', array $result );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+___
+### wppus_did_read_package
+
+```php
+do_action( 'wppus_did_read_package', array $result );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+___
+### wppus_did_edit_package
+
+```php
+do_action( 'wppus_did_edit_package', array $result );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+___
+### wppus_did_add_package
+
+```php
+do_action( 'wppus_did_add_package', array $result );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+___
+### wppus_did_delete_package
+
+```php
+do_action( 'wppus_did_delete_package', array $result );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+___
+### wppus_did_download_package
+
+```php
+do_action( 'wppus_did_download_package', array $result );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+___
+### wppus_did_signed_url_package
+
+```php
+do_action( 'wppus_did_signed_url_package', array $result );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+___
+### wppus_package_api_request
+
+```php
+do_action( 'wppus_package_api_request', string $method, array $payload );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$method`
+> (string)   
+
+`$payload`
+> (array)   
+
+___
+### wppus_remote_sources_options_updated
+
+```php
+do_action( 'wppus_remote_sources_options_updated', array $errors );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$errors`
+> (array)   
+
+___
+### wppus_check_remote_update
+
+```php
+do_action( 'wppus_check_remote_update', string $package_slug, string $type, WPPUS_Update_Server $update_server );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$package_slug`
+> (string)   
+
+`$type`
+> (string)   
+
+`$update_server`
+> (WPPUS_Update_Server)   
+
+___
+### wppus_udpdate_manager_request_action
+
+```php
+do_action( 'wppus_udpdate_manager_request_action', string $action, array $package_slugs );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$action`
+> (string)   
+
+`$package_slugs`
+> (array)   
+
+___
+### wppus_update_manager_deleted_packages_bulk
+
+```php
+do_action( 'wppus_update_manager_deleted_packages_bulk', array $deleted_package_slugs );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$deleted_package_slugs`
+> (array)   
+
+___
+### wppus_before_packages_download_repack
+
+```php
+do_action( 'wppus_before_packages_download_repack', string $archive_name, string $archive_path, array $package_slugs );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$archive_name`
+> (string)   
+
+`$archive_path`
+> (string)   
+
+`$package_slugs`
+> (array)   
+
+___
+### wppus_triggered_packages_download
+
+```php
+do_action( 'wppus_triggered_packages_download', string $archive_name, string $archive_path );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$archive_name`
+> (string)   
+
+`$archive_path`
+> (string)   
+
+___
+### wppus_after_packages_download
+
+```php
+do_action( 'wppus_after_packages_download', string $archive_name, string $archive_path );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$archive_name`
+> (string)   
+
+`$archive_path`
+> (string)   
+
+___
+### wppus_get_package_info
+
+```php
+do_action( 'wppus_get_package_info', array $package_info, string $package_slug, string $package_path );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$package_info`
+> (array)   
+
+`$package_slug`
+> (string)   
+
+`$package_path`
+> (string)   
+
+___
+### wppus_find_package_no_cache
+
+```php
+do_action( 'wppus_find_package_no_cache', string $package_slug, string $package_path, Wpup_FileCache $cache );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$package_slug`
+> (string)   
+
+`$package_path`
+> (string)   
+
+`$cache`
+> (Wpup_FileCache)   
+
+___
+### wppus_update_server_action_download
+
+```php
+do_action( 'wppus_update_server_action_download', Wpup_Request $request );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$request`
+> (Wpup_Request)   
+
+___
+### wppus_webhook_before_processing_request
+
+```php
+do_action( 'wppus_webhook_before_processing_request', string $package_id, string $type, bool $package_exists, array $config );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$package_id`
+> (string)   
+
+`$type`
+> (string)   
+
+`$package_exists`
+> (bool)   
+
+`$config`
+> (array)   
+
+___
+### wppus_webhook_after_processing_request
+
+```php
+do_action( 'wppus_webhook_after_processing_request', string $package_id, string $type, bool $package_exists, array $config );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$package_id`
+> (string)   
+
+`$type`
+> (string)   
+
+`$package_exists`
+> (bool)   
+
+`$config`
+> (array)   
+
+___
+### wppus_packages_table_cell
+
+```php
+do_action( 'wppus_packages_table_cell', string $column_name, array $record, string $record_key );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$column_name`
+> (string)   
+
+`$record`
+> (array)   
+
+`$record_key`
+> (string)   
+
+___
 ## Filters
 
 WP Packages Update Server gives developers the possibility to customise its behavior with a series of custom filters.  
@@ -1412,3 +1815,508 @@ Fired during client update API request.
 
 `$repository_service_self_hosted`
 > (bool) `true` if the Remote Repository is on a self-hosted repository service, `false` otherwiseark  
+
+___
+### wppus_cloud_storage_virtual_dir
+
+```php
+apply_filters( 'wppus_cloud_storage_virtual_dir', string $virtual_dir );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$virtual_dir`
+> (string)   
+
+___
+### wppus_could_storage_api_config
+
+```php
+apply_filters( 'wppus_could_storage_api_config', array $config );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$config`
+> (array)   
+
+___
+### wppus_package_api_config
+
+```php
+apply_filters( 'wppus_package_api_config', array $config );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$config`
+> (array)   
+
+___
+### wppus_package_browse
+
+```php
+apply_filters( 'wppus_package_browse', array $result, array $query );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+`$query`
+> (array)   
+
+___
+### wppus_package_read
+
+```php
+apply_filters( 'wppus_package_read', array $result, string $package_id, string $type );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+`$package_id`
+> (string)   
+
+`$type`
+> (string)   
+
+___
+### wppus_package_edit
+
+```php
+apply_filters( 'wppus_package_edit', array $result, string $package_id, string $type );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+`$package_id`
+> (string)   
+
+`$type`
+> (string)   
+
+___
+### wppus_package_add
+
+```php
+apply_filters( 'wppus_package_add', array $result, $package_id, string $type );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+`$package_id`
+> ($package_id)   
+
+`$type`
+> (string)   
+
+___
+### wppus_package_delete
+
+```php
+apply_filters( 'wppus_package_delete', array $result, string $package_id, string $type );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+`$package_id`
+> (string)   
+
+`$type`
+> (string)   
+
+___
+### wppus_package_signed_url
+
+```php
+apply_filters( 'wppus_package_signed_url', array $result, string $package_id, string $type );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$result`
+> (array)   
+
+`$package_id`
+> (string)   
+
+`$type`
+> (string)   
+
+___
+### wppus_package_signed_url_token
+
+```php
+apply_filters( 'wppus_package_signed_url_token', $token, string $package_id, string $type );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$token`
+> ($token)   
+
+`$package_id`
+> (string)   
+
+`$type`
+> (string)   
+
+___
+### wppus_package_public_api_methods
+
+```php
+apply_filters( 'wppus_package_public_api_methods', array $public_api_methods );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$public_api_methods`
+> (array)   
+
+___
+### wppus_package_api_request_authorized
+
+```php
+apply_filters( 'wppus_package_api_request_authorized', bool $authorized, string $method, array $payload );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$authorized`
+> (bool)   
+
+`$method`
+> (string)   
+
+`$payload`
+> (array)   
+
+___
+### wppus_packages_table_columns
+
+```php
+apply_filters( 'wppus_packages_table_columns', array $columns );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$columns`
+> (array)   
+
+___
+### wppus_packages_table_sortable_columns
+
+```php
+apply_filters( 'wppus_packages_table_sortable_columns', array $columns );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$columns`
+> (array)   
+
+___
+### wppus_packages_table_bulk_actions
+
+```php
+apply_filters( 'wppus_packages_table_bulk_actions', array $actions );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$actions`
+> (array)   
+
+___
+### wppus_use_recurring_schedule
+
+```php
+apply_filters( 'wppus_use_recurring_schedule', bool $use_recurring_schedule );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$use_recurring_schedule`
+> (bool)   
+
+___
+### wppus_remote_sources_manager_get_package_slugs
+
+```php
+apply_filters( 'wppus_remote_sources_manager_get_package_slugs', array $package_slugs );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$package_slugs`
+> (array)   
+
+___
+### wppus_server_class_name
+
+```php
+apply_filters( 'wppus_server_class_name', string $class_name, string $package_id, array $config );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$class_name`
+> (string)   
+
+`$package_id`
+> (string)   
+
+`$config`
+> (array)   
+
+___
+### wppus_delete_packages_bulk_paths
+
+```php
+apply_filters( 'wppus_delete_packages_bulk_paths', string $package_paths, array $package_slugs );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$package_paths`
+> (string)   
+
+`$package_slugs`
+> (array)   
+
+___
+### wppus_package_info
+
+```php
+apply_filters( 'wppus_package_info', array $package_info, string $package_slug );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$package_info`
+> (array)   
+
+`$package_slug`
+> (string)   
+
+___
+### wppus_batch_package_info_include
+
+```php
+apply_filters( 'wppus_batch_package_info_include', bool $include, array $package_info, string $search );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$include`
+> (bool)   
+
+`$package_info`
+> (array)   
+
+`$search`
+> (string)   
+
+___
+### wppus_update_manager_batch_package_info
+
+```php
+apply_filters( 'wppus_update_manager_batch_package_info', array $packages, string $search );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$packages`
+> (array)   
+
+`$search`
+> (string)   
+
+___
+### wppus_check_remote_package_update_local_meta
+
+```php
+apply_filters( 'wppus_check_remote_package_update_local_meta', array $package_info, Wpup_Package $package, string $package_slug );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$package_info`
+> (array)   
+
+`$package`
+> (Wpup_Package)   
+
+`$package_slug`
+> (string)   
+
+___
+### wppus_check_remote_package_update_no_local_meta_needs_update
+
+```php
+apply_filters( 'wppus_check_remote_package_update_no_local_meta_needs_update', bool $needs_update, Wpup_Package $package, string $package_slug );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$needs_update`
+> (bool)   
+
+`$package`
+> (Wpup_Package)   
+
+`$package_slug`
+> (string)   
+
+___
+### wppus_delete_package_result
+
+```php
+apply_filters( 'wppus_delete_package_result', bool $deleted, string $type, string $package_slug );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$deleted`
+> (bool)   
+
+`$type`
+> (string)   
+
+`$package_slug`
+> (string)   
+
+___
+### wppus_update_server_action_download_handled
+
+```php
+apply_filters( 'wppus_update_server_action_download_handled', bool $download_handled, Wpup_Request $request );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$download_handled`
+> (bool)   
+
+`$request`
+> (Wpup_Request)   
+
+___
+### wppus_save_remote_to_local
+
+```php
+apply_filters( 'wppus_save_remote_to_local', bool $save_to_local, string $package_slug, string $package_path, bool $check_remote );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$save_to_local`
+> (bool)   
+
+`$package_slug`
+> (string)   
+
+`$package_path`
+> (string)   
+
+`$check_remote`
+> (bool)   
+
+___
+### wppus_webhook_process_request
+
+```php
+apply_filters( 'wppus_webhook_process_request', bool $process_request, array $payload, string $package_id, string $type, bool $package_exists, array $config );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$process_request`
+> (bool)   
+
+`$payload`
+> (array)   
+
+`$package_id`
+> (string)   
+
+`$type`
+> (string)   
+
+`$package_exists`
+> (bool)   
+
+`$config`
+> (array)   
+
+___

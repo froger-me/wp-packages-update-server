@@ -41,6 +41,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_did\_check\_license](#wppus_did_check_license)
 		* [wppus\_did\_activate\_license](#wppus_did_activate_license)
 		* [wppus\_did\_deactivate\_license](#wppus_did_deactivate_license)
+		* [wppus\_license\_api\_request](#wppus_license_api_request)
 	* [Filters](#filters)
 		* [wppus\_licensed\_package\_slugs](#wppus_licensed_package_slugs)
 		* [wppus\_license\_valid](#wppus_license_valid)
@@ -60,6 +61,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_edit\_license\_payload](#wppus_edit_license_payload)
 		* [wppus\_add\_license\_payload](#wppus_add_license_payload)
 		* [wppus\_delete\_license\_payload](#wppus_delete_license_payload)
+		* [wppus\_license\_public\_api\_methods](#wppus_license_public_api_methods)
 
 ___
 ## The License Query
@@ -973,6 +975,23 @@ Fired during client license API request.
 > (mixed) the result of the operation - a license record object, an associative array with the illegal status, or an associative array with the domain already inactive for the license record
 
 ___
+### wppus_license_api_request
+
+```php
+do_action( 'wppus_license_api_request', string $method, array $payload );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$method`
+> (string)   
+
+`$payload`
+> (array)   
+
+___
 ## Filters
 
 WP Packages Update Server gives developers the possibility to customise its behavior with a series of custom filters.
@@ -1275,3 +1294,19 @@ Fired during client license API request.
 **Parameters**  
 `$payload`
 > (array) payload used to delete a license record
+
+___
+### wppus_license_public_api_methods
+
+```php
+apply_filters( 'wppus_license_public_api_methods', array $public_api_methods );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$public_api_methods`
+> (array)   
+
+___

@@ -16,9 +16,20 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 			* [wppus\_validate\_nonce](#wppus_validate_nonce)
 			* [wppus\_delete\_nonce](#wppus_delete_nonce)
 			* [wppus\_delete\_nonce](#wppus_delete_nonce-1)
-		* [Actions](#actions)
-		* [Filters](#filters)
-
+	* [Actions](#actions)
+		* [wppus\_no\_api\_includes](#wppus_no_api_includes)
+		* [wppus\_no\_license\_api\_includes](#wppus_no_license_api_includes)
+	* [Filters](#filters)
+		* [wppus\_is\_api\_request](#wppus_is_api_request)
+		* [wppus\_page\_wppus\_scripts\_l10n](#wppus_page_wppus_scripts_l10n)
+		* [wppus\_nonce\_api\_code](#wppus_nonce_api_code)
+		* [wppus\_nonce\_api\_response](#wppus_nonce_api_response)
+		* [wppus\_created\_nonce](#wppus_created_nonce)
+		* [wppus\_clear\_nonces\_query](#wppus_clear_nonces_query)
+		* [wppus\_clear\_nonces\_query\_args](#wppus_clear_nonces_query_args)
+		* [wppus\_expire\_nonce](#wppus_expire_nonce)
+		* [wppus\_delete\_nonce](#wppus_delete_nonce-2)
+		* [wppus\_fetch\_nonce](#wppus_fetch_nonce)
 
 ## Nonce API
 
@@ -104,7 +115,6 @@ Response `$data` - **success**:
 	}
 }
 ```
-
 ## Functions
 
 The functions listed below are made publicly available by the plugin for theme and plugin developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).  
@@ -294,13 +304,238 @@ Clear expired nonces from the system.
 > (bool) whether some nonces were cleared  
 
 ___
-### Actions
+## Actions
 
 WP Packages Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.  
 **Warning**: the filters below with the mention "Fired during API requests" need to be used with caution. Although they may be triggered when using the functions above, these filters will possibly be called when the Update API, License API, Packages API or a Webhook is called. Registering functions doing heavy computation to these filters can seriously degrade the server's performances.  
+### wppus_no_api_includes
+
+```php
+do_action( 'wppus_no_api_includes' );
+```
+
+**Description**  
+
 
 ___
-### Filters
+### wppus_no_license_api_includes
+
+```php
+do_action( 'wppus_no_license_api_includes' );
+```
+
+**Description**  
+
+
+___
+## Filters
 
 WP Packages Update Server gives developers the possibility to customise its behavior with a series of custom filters.  
 **Warning**: the filters below with the mention "Fired during API requests" need to be used with caution. Although they may be triggered when using the functions above, these filters will possibly be called when the Update API, License API, Packages API or a Webhook is called. Registering functions doing heavy computation to these filters can seriously degrade the server's performances.  
+
+### wppus_is_api_request
+
+```php
+apply_filters( 'wppus_is_api_request', bool $is_api_request );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$is_api_request`
+> (bool)   
+
+___
+### wppus_page_wppus_scripts_l10n
+
+```php
+apply_filters( 'wppus_page_wppus_scripts_l10n', array $l10n );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$l10n`
+> (array)   
+
+___
+### wppus_nonce_api_code
+
+```php
+apply_filters( 'wppus_nonce_api_code', string $code, array $request_params );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$code`
+> (string)   
+
+`$request_params`
+> (array)   
+
+___
+### wppus_nonce_api_response
+
+```php
+apply_filters( 'wppus_nonce_api_response', array $response, string $code, array $request_params );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$response`
+> (array)   
+
+`$code`
+> (string)   
+
+`$request_params`
+> (array)   
+
+___
+### wppus_created_nonce
+
+```php
+apply_filters( 'wppus_created_nonce', bool|string|array $nonce_value, bool $true_nonce, int $expiry_length, array $data, int $return_type );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$nonce_value`
+> (bool|string|array)   
+
+`$true_nonce`
+> (bool)   
+
+`$expiry_length`
+> (int)   
+
+`$data`
+> (array)   
+
+`$return_type`
+> (int)   
+
+___
+### wppus_clear_nonces_query
+
+```php
+apply_filters( 'wppus_clear_nonces_query', string $sql, array $sql_args );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$sql`
+> (string)   
+
+`$sql_args`
+> (array)   
+
+___
+### wppus_clear_nonces_query_args
+
+```php
+apply_filters( 'wppus_clear_nonces_query_args', array $sql_args, string $sql );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$sql_args`
+> (array)   
+
+`$sql`
+> (string)   
+
+___
+### wppus_expire_nonce
+
+```php
+apply_filters( 'wppus_expire_nonce', null|string $expire_nonce, string $nonce_value, bool $true_nonce, int $expiry, array $data, object $row );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$expire_nonce`
+> (null|string)   
+
+`$nonce_value`
+> (string)   
+
+`$true_nonce`
+> (bool)   
+
+`$expiry`
+> (int)   
+
+`$data`
+> (array)   
+
+`$row`
+> (object)   
+
+___
+### wppus_delete_nonce
+
+```php
+apply_filters( 'wppus_delete_nonce', bool $delete, bool $true_nonce, int $expiry, array $data, object $row );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$delete`
+> (bool)   
+
+`$true_nonce`
+> (bool)   
+
+`$expiry`
+> (int)   
+
+`$data`
+> (array)   
+
+`$row`
+> (object)   
+
+___
+### wppus_fetch_nonce
+
+```php
+apply_filters( 'wppus_fetch_nonce', string $nonce_value, bool $true_nonce, int $expiry, array $data, object $row );
+```
+
+**Description**  
+
+
+**Parameters**  
+`$nonce_value`
+> (string)   
+
+`$true_nonce`
+> (bool)   
+
+`$expiry`
+> (int)   
+
+`$data`
+> (array)   
+
+`$row`
+> (object)   
+
+___
