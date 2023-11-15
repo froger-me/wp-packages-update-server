@@ -128,6 +128,9 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	}
 
 	public function check_remote_package_update( $slug ) {
+		// @todo doc
+		do_action( 'wppus_check_remote_update', $slug );
+
 		$needs_update  = true;
 		$local_package = $this->findPackage( $slug );
 
@@ -335,7 +338,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 				$this->cache = new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) );
 			}
 
-			if ( $this->cache && ! $cached_value ) {
+			if ( ! $cached_value ) {
 				// @todo doc
 				do_action( 'wppus_find_package_no_cache', $safe_slug, $filename, $this->cache );
 			}

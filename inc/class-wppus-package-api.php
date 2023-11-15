@@ -292,7 +292,7 @@ class WPPUS_Package_API {
 	protected function is_api_public( $method ) {
 		// @TODO doc
 		$public_api    = apply_filters(
-			'wppus_package_public_api_methods',
+			'wppus_package_public_api_actions',
 			array( 'download' )
 		);
 		$is_api_public = in_array( $method, $public_api, true );

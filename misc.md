@@ -308,6 +308,8 @@ ___
 
 WP Packages Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.  
 **Warning**: the filters below with the mention "Fired during API requests" need to be used with caution. Although they may be triggered when using the functions above, these filters will possibly be called when the Update API, License API, Packages API or a Webhook is called. Registering functions doing heavy computation to these filters can seriously degrade the server's performances.  
+
+___
 ### wppus_no_api_includes
 
 ```php
@@ -315,7 +317,7 @@ do_action( 'wppus_no_api_includes' );
 ```
 
 **Description**  
-
+Fired when the plugin is including files and the current request is not made by a remote client interacting with any of the plugin's API.
 
 ___
 ### wppus_no_license_api_includes
@@ -325,7 +327,7 @@ do_action( 'wppus_no_license_api_includes' );
 ```
 
 **Description**  
-
+Fired when the plugin is including files and the current request is not made by a client plugin or theme interacting with the plugin's license API.
 
 ___
 ## Filters
@@ -333,6 +335,7 @@ ___
 WP Packages Update Server gives developers the possibility to customise its behavior with a series of custom filters.  
 **Warning**: the filters below with the mention "Fired during API requests" need to be used with caution. Although they may be triggered when using the functions above, these filters will possibly be called when the Update API, License API, Packages API or a Webhook is called. Registering functions doing heavy computation to these filters can seriously degrade the server's performances.  
 
+___
 ### wppus_is_api_request
 
 ```php
@@ -340,11 +343,11 @@ apply_filters( 'wppus_is_api_request', bool $is_api_request );
 ```
 
 **Description**  
-
+Filter whether the current request must be treated as an API request.  
 
 **Parameters**  
 `$is_api_request`
-> (bool)   
+> (bool) whether the current request must be treated as an API request  
 
 ___
 ### wppus_page_wppus_scripts_l10n
@@ -354,11 +357,11 @@ apply_filters( 'wppus_page_wppus_scripts_l10n', array $l10n );
 ```
 
 **Description**  
-
+Filter the internationalization strings passed to the frontend scripts.  
 
 **Parameters**  
 `$l10n`
-> (array)   
+> (array) the internationalization strings passed to the frontend scripts  
 
 ___
 ### wppus_nonce_api_code
@@ -368,14 +371,14 @@ apply_filters( 'wppus_nonce_api_code', string $code, array $request_params );
 ```
 
 **Description**  
-
+Filter the HTTP response code to be sent by the Nonce API.  
 
 **Parameters**  
 `$code`
-> (string)   
+> (string) the HTTP response code to be sent by the Nonce API  
 
 `$request_params`
-> (array)   
+> (array) the request's parameters  
 
 ___
 ### wppus_nonce_api_response
@@ -385,17 +388,17 @@ apply_filters( 'wppus_nonce_api_response', array $response, string $code, array 
 ```
 
 **Description**  
-
+Filter the response to be sent by the Nonce API.  
 
 **Parameters**  
 `$response`
-> (array)   
+> (array) the response to be sent by the Nonce API  
 
 `$code`
-> (string)   
+> (string) the HTTP response code sent by the Nonce API  
 
 `$request_params`
-> (array)   
+> (array) the request's parameters  
 
 ___
 ### wppus_created_nonce
@@ -405,23 +408,23 @@ apply_filters( 'wppus_created_nonce', bool|string|array $nonce_value, bool $true
 ```
 
 **Description**  
-
+Filter the value of the nonce before it is created ; if `$nonce_value` is truthy, the value is used as nonce and the default generation algorithm is bypassed ; developers must respect the `$return_type`.
 
 **Parameters**  
 `$nonce_value`
-> (bool|string|array)   
+> (bool|string|array) the value of the nonce before it is created - if truthy, the nonce is considered created with this value  
 
 `$true_nonce`
-> (bool)   
+> (bool) whether the nonce is a true, one-time-use nonce  
 
 `$expiry_length`
-> (int)   
+> (int) the expiry length of the nonce in seconds  
 
 `$data`
-> (array)   
+> (array) data to store along the nonce  
 
 `$return_type`
-> (int)   
+> (int) `WPPUS_Nonce::NONCE_ONLY` or `WPPUS_Nonce::NONCE_INFO_ARRAY`  
 
 ___
 ### wppus_clear_nonces_query
@@ -431,14 +434,14 @@ apply_filters( 'wppus_clear_nonces_query', string $sql, array $sql_args );
 ```
 
 **Description**  
-
+Filter the SQL query used to clear expired nonces.
 
 **Parameters**  
 `$sql`
-> (string)   
+> (string) the SQL query used to clear expired nonces  
 
 `$sql_args`
-> (array)   
+> (array) the arguments passed to the SQL query used to clear expired nonces  
 
 ___
 ### wppus_clear_nonces_query_args
@@ -448,69 +451,72 @@ apply_filters( 'wppus_clear_nonces_query_args', array $sql_args, string $sql );
 ```
 
 **Description**  
-
+Filter the arguments passed to the SQL query used to clear expired nonces.
 
 **Parameters**  
 `$sql_args`
-> (array)   
+> (array) the arguments passed to the SQL query used to clear expired nonces  
 
 `$sql`
-> (string)   
+> (string) the SQL query used to clear expired nonces  
 
 ___
 ### wppus_expire_nonce
 
 ```php
-apply_filters( 'wppus_expire_nonce', null|string $expire_nonce, string $nonce_value, bool $true_nonce, int $expiry, array $data, object $row );
+apply_filters( 'wppus_expire_nonce', bool $expire_nonce, string $nonce_value, bool $true_nonce, int $expiry, array $data, object $row );
 ```
 
 **Description**  
-
+Filter whether to consider the nonce has expired.
 
 **Parameters**  
 `$expire_nonce`
-> (null|string)   
+> (bool) whether to consider the nonce has expired  
 
 `$nonce_value`
-> (string)   
+> (string) the value of the nonce  
 
 `$true_nonce`
-> (bool)   
+> (bool) whether the nonce is a true, one-time-use nonce  
 
 `$expiry`
-> (int)   
+> (int) the timestamp at which the nonce expires  
 
 `$data`
-> (array)   
+> (array) data stored along the nonce  
 
 `$row`
-> (object)   
+> (object) the database record corresponding to the nonce  
 
 ___
 ### wppus_delete_nonce
 
 ```php
-apply_filters( 'wppus_delete_nonce', bool $delete, bool $true_nonce, int $expiry, array $data, object $row );
+apply_filters( 'wppus_delete_nonce', bool $delete, string $nonce_value, bool $true_nonce, int $expiry, array $data, object $row );
 ```
 
 **Description**  
-
+Filter whether to delete the nonce.
 
 **Parameters**  
 `$delete`
-> (bool)   
+> (bool) whether to delete the nonce  
+
+`$nonce_value`
+> (string) the value of the nonce  
 
 `$true_nonce`
-> (bool)   
+> (bool) whether the nonce is a true, one-time-use nonce  
 
 `$expiry`
-> (int)   
+> (int) the timestamp at which the nonce expires  
 
 `$data`
-> (array)   
+> (array) data stored along the nonce  
 
 `$row`
-> (object)   
+> (object) the database record corresponding to the nonce  
 
 ___
 ### wppus_fetch_nonce
@@ -520,22 +526,22 @@ apply_filters( 'wppus_fetch_nonce', string $nonce_value, bool $true_nonce, int $
 ```
 
 **Description**  
-
+Filter the value of the nonce after it has been fetched from the database.
 
 **Parameters**  
 `$nonce_value`
-> (string)   
+> (string) the value of the nonce after it has been fetched from the database  
 
 `$true_nonce`
-> (bool)   
+> (bool) whether the nonce is a true, one-time-use nonce  
 
 `$expiry`
-> (int)   
+> (int) the timestamp at which the nonce expires  
 
 `$data`
-> (array)   
+> (array) data stored along the nonce  
 
 `$row`
-> (object)   
+> (object) the database record corresponding to the nonce  
 
 ___

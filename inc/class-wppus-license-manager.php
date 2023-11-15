@@ -21,12 +21,12 @@ class WPPUS_License_Manager {
 
 				add_action( 'init', array( $this, 'register_license_events' ), 10, 0 );
 				add_action( 'init', array( $this, 'register_license_schedules' ), 10, 0 );
+				add_action( 'wppus_packages_table_cell', array( $this, 'wppus_packages_table_cell' ), 10, 4 );
 
 				add_filter( 'wppus_packages_table_columns', array( $this, 'wppus_packages_table_columns' ), 10, 1 );
 				add_filter( 'wppus_packages_table_sortable_columns', array( $this, 'wppus_packages_table_sortable_columns' ), 10, 1 );
 				add_filter( 'wppus_packages_table_bulk_actions', array( $this, 'wppus_packages_table_bulk_actions' ), 10, 1 );
 				add_filter( 'wppus_packages_table_row_actions', array( $this, 'wppus_packages_table_row_actions' ), 10, 4 );
-				add_filter( 'wppus_packages_table_cell', array( $this, 'wppus_packages_table_cell' ), 10, 4 );
 			}
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 5, 1 );

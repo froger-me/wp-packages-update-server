@@ -90,9 +90,6 @@ class WPPUS_Update_API {
 			$this->update_server->set_type( $type );
 		}
 
-		// @todo doc
-		do_action( 'wppus_check_remote_update', $slug, $type, $this->update_server );
-
 		return $this->update_server->check_remote_package_update( $slug );
 	}
 

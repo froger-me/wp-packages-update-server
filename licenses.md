@@ -61,7 +61,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_edit\_license\_payload](#wppus_edit_license_payload)
 		* [wppus\_add\_license\_payload](#wppus_add_license_payload)
 		* [wppus\_delete\_license\_payload](#wppus_delete_license_payload)
-		* [wppus\_license\_public\_api\_methods](#wppus_license_public_api_methods)
+		* [wppus\_license\_public\_api\_actions](#wppus_license_public_api_actions)
 
 ___
 ## The License Query
@@ -627,7 +627,7 @@ wppus_browse_licenses( array $browse_query );
 Browse the license records filtered using various criteria.
 
 **Parameters**  
-$browse_query
+`$browse_query`
 > (array) See [The License Query](#the-license-query)
 
 **Return value**
@@ -644,7 +644,7 @@ wppus_read_license( array $payload );
 Read a license record.
 
 **Parameters**  
-$payload
+`$payload`
 > (array) See the License API action [read](#read)
 
 **Return value**
@@ -661,7 +661,7 @@ wppus_edit_license( array $payload );
 Add a license record.
 
 **Parameters**  
-$payload
+`$payload`
 > (array) See `$params` for the License API action [add](#add)
 
 **Return value**
@@ -678,7 +678,7 @@ wppus_add_license( array $payload );
 Add a license.
 
 **Parameters**  
-$payload
+`$payload`
 > (array) See `$params` for the License API action [add](#add)
 
 **Return value**
@@ -712,7 +712,7 @@ wppus_check_license( array $payload );
 Check a License information.
 
 **Parameters**  
-$payload
+`$payload`
 > (array) An associative array with a single value - `array( 'license_key' => 'key_of_the_license_to_check' )`.
 
 **Return value**
@@ -729,7 +729,7 @@ wppus_activate_license( array $payload );
 Activate a License.
 
 **Parameters**  
-$payload
+`$payload`
 > (array) An associative array with 2 values - `array( 'license_key' => 'key_of_the_license_to_activate', 'allowed_domains' => 'domain_to_activate' )`.
 
 **Return value**
@@ -746,7 +746,7 @@ wppus_deactivate_license( array $payload );
 Deactivate a License.
 
 **Parameters**  
-$payload
+`$payload`
 > (array) An associative array with 2 values - `array( 'license_key' => 'key_of_the_license_to_deactivate', 'allowed_domains' => 'domain_to_deactivate' )`.
 
 **Return value**
@@ -978,18 +978,18 @@ ___
 ### wppus_license_api_request
 
 ```php
-do_action( 'wppus_license_api_request', string $method, array $payload );
+do_action( 'wppus_license_api_request', string $action, array $payload );
 ```
 
 **Description**  
-
+Fired before the License API request is processed ; useful to bypass the execution of currently implemented actions, or implement new actions. 
 
 **Parameters**  
-`$method`
-> (string)   
+`$action`
+> (string) the License API action  
 
 `$payload`
-> (array)   
+> (array) the payload of the request  
 
 ___
 ## Filters
@@ -1296,17 +1296,17 @@ Fired during client license API request.
 > (array) payload used to delete a license record
 
 ___
-### wppus_license_public_api_methods
+### wppus_license_public_api_actions
 
 ```php
-apply_filters( 'wppus_license_public_api_methods', array $public_api_methods );
+apply_filters( 'wppus_license_public_api_actions', array $public_api_actions );
 ```
 
 **Description**  
-
+Filter the public API actions ; public actions can be accessed via the `GET` method, all other actions are considered private and can only be accessed via the `POST` method.
 
 **Parameters**  
-`$public_api_methods`
-> (array)   
+`$public_api_actions`
+> (array) the public API actions  
 
 ___

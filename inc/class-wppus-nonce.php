@@ -357,21 +357,22 @@ class WPPUS_Nonce {
 					$data['permanent']
 				)
 			) {
-				// @todo doc
-				$row->nonce = apply_filters(
+				$expire     = apply_filters(
 					'wppus_expire_nonce',
-					null,
+					true,
 					$row->nonce,
 					$row->true_nonce,
 					$row->expiry,
 					$data,
 					$row
 				);
+				$row->nonce = $expire ? null : $row->nonce;
 			}
 			// @todo doc
 			$delete_nonce = apply_filters(
 				'wppus_delete_nonce',
 				$row->true_nonce || null === $row->nonce,
+				$row->nonce,
 				$row->true_nonce,
 				$row->expiry,
 				$data,

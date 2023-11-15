@@ -166,11 +166,12 @@ class WPPUS_Webhook_API {
 				$package_exists = $wp_filesystem->exists( $package_path );
 			}
 
+			$payload = $wp_filesystem->get_contents( 'php://input' );
 			// @todo doc
 			$process = apply_filters(
 				'wppus_webhook_process_request',
 				true,
-				$wp_filesystem->get_contents( 'php://input' ),
+				$payload,
 				$package_id,
 				$type,
 				$package_exists,
@@ -181,6 +182,7 @@ class WPPUS_Webhook_API {
 				// @todo doc
 				do_action(
 					'wppus_webhook_before_processing_request',
+					$payload,
 					$package_id,
 					$type,
 					$package_exists,
@@ -200,6 +202,7 @@ class WPPUS_Webhook_API {
 				// @todo doc
 				do_action(
 					'wppus_webhook_after_processing_request',
+					$payload,
 					$package_id,
 					$type,
 					$package_exists,

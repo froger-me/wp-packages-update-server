@@ -92,7 +92,7 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_package\_delete](#wppus_package_delete)
 		* [wppus\_package\_signed\_url](#wppus_package_signed_url)
 		* [wppus\_package\_signed\_url\_token](#wppus_package_signed_url_token)
-		* [wppus\_package\_public\_api\_methods](#wppus_package_public_api_methods)
+		* [wppus\_package\_public\_api\_actions](#wppus_package_public_api_actions)
 		* [wppus\_package\_api\_request\_authorized](#wppus_package_api_request_authorized)
 		* [wppus\_packages\_table\_columns](#wppus_packages_table_columns)
 		* [wppus\_packages\_table\_sortable\_columns](#wppus_packages_table_sortable_columns)
@@ -173,7 +173,7 @@ The URL can also be built manually, with a token can also be acquired with the f
 ```php
 $params = array(
 	'data' => array(
-		'package_id' => 'package-slug', // The slug of the package  
+		'package_slug' => 'package-slug', // The slug of the package  
 		'type'      => 'package-type',  // The type of package (plugin or theme)
 		'actions'      => array(        // The actions the token can be used for
 			'download',
@@ -1314,11 +1314,11 @@ do_action( 'wppus_did_browse_package', array $result );
 ```
 
 **Description**  
-
+Fired after the `browse` Package API action.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the action  
 
 ___
 ### wppus_did_read_package
@@ -1328,11 +1328,11 @@ do_action( 'wppus_did_read_package', array $result );
 ```
 
 **Description**  
-
+Fired after the `read` Package API action.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the action  
 
 ___
 ### wppus_did_edit_package
@@ -1342,11 +1342,11 @@ do_action( 'wppus_did_edit_package', array $result );
 ```
 
 **Description**  
-
+Fired after the `edit` Package API action.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the action  
 
 ___
 ### wppus_did_add_package
@@ -1356,11 +1356,11 @@ do_action( 'wppus_did_add_package', array $result );
 ```
 
 **Description**  
-
+Fired after the `add` Package API action.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the action  
 
 ___
 ### wppus_did_delete_package
@@ -1370,11 +1370,11 @@ do_action( 'wppus_did_delete_package', array $result );
 ```
 
 **Description**  
-
+Fired after the `delete` Package API action.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the action  
 
 ___
 ### wppus_did_download_package
@@ -1384,11 +1384,11 @@ do_action( 'wppus_did_download_package', array $result );
 ```
 
 **Description**  
-
+Fired after the `download` Package API action.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the action  
 
 ___
 ### wppus_did_signed_url_package
@@ -1398,11 +1398,11 @@ do_action( 'wppus_did_signed_url_package', array $result );
 ```
 
 **Description**  
-
+Fired after the `signed_url` Package API action.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the action  
 
 ___
 ### wppus_package_api_request
@@ -1412,14 +1412,14 @@ do_action( 'wppus_package_api_request', string $method, array $payload );
 ```
 
 **Description**  
-
+Fired before the Package API request is processed ; useful to bypass the execution of currently implemented actions, or implement new actions. 
 
 **Parameters**  
-`$method`
-> (string)   
+`$action`
+> (string) the Package API action  
 
 `$payload`
-> (array)   
+> (array) the payload of the request  
 
 ___
 ### wppus_remote_sources_options_updated
@@ -1429,31 +1429,25 @@ do_action( 'wppus_remote_sources_options_updated', array $errors );
 ```
 
 **Description**  
-
+Fired after the options in "Remote Sources" have been updated.
 
 **Parameters**  
 `$errors`
-> (array)   
+> (array) an array of containing errors if any  
 
 ___
 ### wppus_check_remote_update
 
 ```php
-do_action( 'wppus_check_remote_update', string $package_slug, string $type, WPPUS_Update_Server $update_server );
+do_action( 'wppus_check_remote_update', string $package_slug );
 ```
 
 **Description**  
-
+Fired before checking if the package on the remote repository has updates.
 
 **Parameters**  
 `$package_slug`
-> (string)   
-
-`$type`
-> (string)   
-
-`$update_server`
-> (WPPUS_Update_Server)   
+> (string) the slug of the package on the remote repository  
 
 ___
 ### wppus_udpdate_manager_request_action
@@ -1463,14 +1457,14 @@ do_action( 'wppus_udpdate_manager_request_action', string $action, array $packag
 ```
 
 **Description**  
-
+Fired if the action sent by the admin interface is not `'delete'` or `'download'`.
 
 **Parameters**  
 `$action`
-> (string)   
+> (string) the action sent by the admin interface  
 
 `$package_slugs`
-> (array)   
+> (array) the slugs of the packages on which to perform the action  
 
 ___
 ### wppus_update_manager_deleted_packages_bulk
@@ -1480,11 +1474,11 @@ do_action( 'wppus_update_manager_deleted_packages_bulk', array $deleted_package_
 ```
 
 **Description**  
-
+Fired after packages were deleted in bulk from the file system.
 
 **Parameters**  
 `$deleted_package_slugs`
-> (array)   
+> (array) the slugs of the deleted packages  
 
 ___
 ### wppus_before_packages_download_repack
@@ -1494,17 +1488,17 @@ do_action( 'wppus_before_packages_download_repack', string $archive_name, string
 ```
 
 **Description**  
-
+Fired before an archive containing multiple packages for download is created.
 
 **Parameters**  
 `$archive_name`
-> (string)   
+> (string) the name of the archive to create  
 
 `$archive_path`
-> (string)   
+> (string) the absolute path of the archive to create  
 
 `$package_slugs`
-> (array)   
+> (array) the slugs of the packages to include in the archive  
 
 ___
 ### wppus_triggered_packages_download
@@ -1514,14 +1508,14 @@ do_action( 'wppus_triggered_packages_download', string $archive_name, string $ar
 ```
 
 **Description**  
-
+Fired after download for an archive containing one or multiple packages has been triggered and before the content is streamed.
 
 **Parameters**  
 `$archive_name`
-> (string)   
+> (string) the name of the archive  
 
 `$archive_path`
-> (string)   
+> (string) the absolute path of the archive  
 
 ___
 ### wppus_after_packages_download
@@ -1531,14 +1525,14 @@ do_action( 'wppus_after_packages_download', string $archive_name, string $archiv
 ```
 
 **Description**  
-
+Fired after download for an archive containing one or multiple packages has been performed, regardless of whether the content has been streamed.
 
 **Parameters**  
 `$archive_name`
-> (string)   
+> (string) the name of the archive  
 
 `$archive_path`
-> (string)   
+> (string) the absolute path of the archive  
 
 ___
 ### wppus_get_package_info
@@ -1548,17 +1542,17 @@ do_action( 'wppus_get_package_info', array $package_info, string $package_slug, 
 ```
 
 **Description**  
-
+Fired before getting information from a package.
 
 **Parameters**  
 `$package_info`
-> (array)   
+> (array) the information of the package in WP cache  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package  
 
 `$package_path`
-> (string)   
+> (string) the absolute path of the package on the file system  
 
 ___
 ### wppus_find_package_no_cache
@@ -1568,17 +1562,17 @@ do_action( 'wppus_find_package_no_cache', string $package_slug, string $package_
 ```
 
 **Description**  
-
+Fired if a package exist and was found, but the cache containing the package information does not.
 
 **Parameters**  
 `$package_slug`
-> (string)   
+> (string) the slug of the package  
 
 `$package_path`
-> (string)   
+> (string) the absolute path of the package on the file system  
 
 `$cache`
-> (Wpup_FileCache)   
+> (Wpup_FileCache) the cache object  
 
 ___
 ### wppus_update_server_action_download
@@ -1588,57 +1582,64 @@ do_action( 'wppus_update_server_action_download', Wpup_Request $request );
 ```
 
 **Description**  
-
+Fired before starting a package download from the update API.  
+Fired during client update API request.  
 
 **Parameters**  
 `$request`
-> (Wpup_Request)   
+> (Wpup_Request) the request object  
 
 ___
 ### wppus_webhook_before_processing_request
 
 ```php
-do_action( 'wppus_webhook_before_processing_request', string $package_id, string $type, bool $package_exists, array $config );
+do_action( 'wppus_webhook_before_processing_request', array $payload, string $package_slug, string $type, bool $package_exists, array $config );
 ```
 
 **Description**  
-
+Fired before processing a webhook request.  
 
 **Parameters**  
-`$package_id`
-> (string)   
+`$payload`
+> (array) the data sent by the Remote Repository Service  
+
+`$package_slug`
+> (string) the slug of the package triggering the webhook  
 
 `$type`
-> (string)   
+> (string) the type of the package triggering the webhook  
 
 `$package_exists`
-> (bool)   
+> (bool) whether the package exists on the file system  
 
 `$config`
-> (array)   
+> (array) the webhook configuration  
 
 ___
 ### wppus_webhook_after_processing_request
 
 ```php
-do_action( 'wppus_webhook_after_processing_request', string $package_id, string $type, bool $package_exists, array $config );
+do_action( 'wppus_webhook_after_processing_request', array $payload, string $package_slug, string $type, bool $package_exists, array $config );
 ```
 
 **Description**  
-
+Fired after a webhook request has been processed.  
 
 **Parameters**  
-`$package_id`
-> (string)   
+`$payload`
+> (array) the data sent by the Remote Repository Service  
+
+`$package_slug`
+> (string) the slug of the package triggering the webhook  
 
 `$type`
-> (string)   
+> (string) the type of the package triggering the webhook  
 
 `$package_exists`
-> (bool)   
+> (bool) whether the package exists on the file system  
 
 `$config`
-> (array)   
+> (array) the webhook configuration  
 
 ___
 ### wppus_packages_table_cell
@@ -1648,17 +1649,17 @@ do_action( 'wppus_packages_table_cell', string $column_name, array $record, stri
 ```
 
 **Description**  
-
+Fired when outputing a table cell in the admin interface where `$column_name` is not one of the following: `col_name`, `col_version`, `col_type`, `col_file_name`, `col_file_size`, `col_file_last_modified`.
 
 **Parameters**  
 `$column_name`
-> (string)   
+> (string) the name of the column of the cell  
 
 `$record`
-> (array)   
+> (array) the record corresponding to the cell  
 
 `$record_key`
-> (string)   
+> (string) the record key  
 
 ___
 ## Filters
@@ -1879,7 +1880,7 @@ ___
 ### wppus_package_read
 
 ```php
-apply_filters( 'wppus_package_read', array $result, string $package_id, string $type );
+apply_filters( 'wppus_package_read', array $result, string $package_slug, string $type );
 ```
 
 **Description**  
@@ -1889,7 +1890,7 @@ apply_filters( 'wppus_package_read', array $result, string $package_id, string $
 `$result`
 > (array)   
 
-`$package_id`
+`$package_slug`
 > (string)   
 
 `$type`
@@ -1899,7 +1900,7 @@ ___
 ### wppus_package_edit
 
 ```php
-apply_filters( 'wppus_package_edit', array $result, string $package_id, string $type );
+apply_filters( 'wppus_package_edit', array $result, string $package_slug, string $type );
 ```
 
 **Description**  
@@ -1909,7 +1910,7 @@ apply_filters( 'wppus_package_edit', array $result, string $package_id, string $
 `$result`
 > (array)   
 
-`$package_id`
+`$package_slug`
 > (string)   
 
 `$type`
@@ -1919,7 +1920,7 @@ ___
 ### wppus_package_add
 
 ```php
-apply_filters( 'wppus_package_add', array $result, $package_id, string $type );
+apply_filters( 'wppus_package_add', array $result, $package_slug, string $type );
 ```
 
 **Description**  
@@ -1929,8 +1930,8 @@ apply_filters( 'wppus_package_add', array $result, $package_id, string $type );
 `$result`
 > (array)   
 
-`$package_id`
-> ($package_id)   
+`$package_slug`
+> ($package_slug)   
 
 `$type`
 > (string)   
@@ -1939,7 +1940,7 @@ ___
 ### wppus_package_delete
 
 ```php
-apply_filters( 'wppus_package_delete', array $result, string $package_id, string $type );
+apply_filters( 'wppus_package_delete', array $result, string $package_slug, string $type );
 ```
 
 **Description**  
@@ -1949,7 +1950,7 @@ apply_filters( 'wppus_package_delete', array $result, string $package_id, string
 `$result`
 > (array)   
 
-`$package_id`
+`$package_slug`
 > (string)   
 
 `$type`
@@ -1959,7 +1960,7 @@ ___
 ### wppus_package_signed_url
 
 ```php
-apply_filters( 'wppus_package_signed_url', array $result, string $package_id, string $type );
+apply_filters( 'wppus_package_signed_url', array $result, string $package_slug, string $type );
 ```
 
 **Description**  
@@ -1969,7 +1970,7 @@ apply_filters( 'wppus_package_signed_url', array $result, string $package_id, st
 `$result`
 > (array)   
 
-`$package_id`
+`$package_slug`
 > (string)   
 
 `$type`
@@ -1979,7 +1980,7 @@ ___
 ### wppus_package_signed_url_token
 
 ```php
-apply_filters( 'wppus_package_signed_url_token', $token, string $package_id, string $type );
+apply_filters( 'wppus_package_signed_url_token', $token, string $package_slug, string $type );
 ```
 
 **Description**  
@@ -1989,24 +1990,24 @@ apply_filters( 'wppus_package_signed_url_token', $token, string $package_id, str
 `$token`
 > ($token)   
 
-`$package_id`
+`$package_slug`
 > (string)   
 
 `$type`
 > (string)   
 
 ___
-### wppus_package_public_api_methods
+### wppus_package_public_api_actions
 
 ```php
-apply_filters( 'wppus_package_public_api_methods', array $public_api_methods );
+apply_filters( 'wppus_package_public_api_actions', array $public_api_actions );
 ```
 
 **Description**  
 
 
 **Parameters**  
-`$public_api_methods`
+`$public_api_actions`
 > (array)   
 
 ___
@@ -2103,7 +2104,7 @@ ___
 ### wppus_server_class_name
 
 ```php
-apply_filters( 'wppus_server_class_name', string $class_name, string $package_id, array $config );
+apply_filters( 'wppus_server_class_name', string $class_name, string $package_slug, array $config );
 ```
 
 **Description**  
@@ -2113,7 +2114,7 @@ apply_filters( 'wppus_server_class_name', string $class_name, string $package_id
 `$class_name`
 > (string)   
 
-`$package_id`
+`$package_slug`
 > (string)   
 
 `$config`
@@ -2294,7 +2295,7 @@ ___
 ### wppus_webhook_process_request
 
 ```php
-apply_filters( 'wppus_webhook_process_request', bool $process_request, array $payload, string $package_id, string $type, bool $package_exists, array $config );
+apply_filters( 'wppus_webhook_process_request', bool $process_request, array $payload, string $package_slug, string $type, bool $package_exists, array $config );
 ```
 
 **Description**  
@@ -2307,7 +2308,7 @@ apply_filters( 'wppus_webhook_process_request', bool $process_request, array $pa
 `$payload`
 > (array)   
 
-`$package_id`
+`$package_slug`
 > (string)   
 
 `$type`
