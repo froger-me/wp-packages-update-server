@@ -36,7 +36,7 @@
 				<label for="wppus_prime_package_slug"><?php esc_html_e( 'Prime a package using a Remote Repository (recommended)', 'wppus' ); ?></label>
 			</th>
 			<td>
-				<input class="regular-text" type="text" id="wppus_prime_package_slug" placeholder="<?php esc_attr_e( 'package-name' ); ?>" name="wppus_prime_package_slug" value=""> <input type="button" id="wppus_prime_package_trigger" value="<?php print esc_attr_e( 'Get remote package', 'wppus' ); ?>" class="button button-primary" disabled /><div class="spinner"></div>
+				<input class="regular-text" type="text" id="wppus_prime_package_slug" placeholder="<?php esc_attr_e( 'package-slug' ); ?>" name="wppus_prime_package_slug" value=""> <input type="button" id="wppus_prime_package_trigger" value="<?php print esc_attr_e( 'Get remote package', 'wppus' ); ?>" class="button button-primary" disabled /><div class="spinner"></div>
 				<p class="description">
 					<?php
 					printf(
@@ -47,18 +47,18 @@
 					?>
 					<?php
 					printf(
-						// translators: %s is <code>package-name</code>
+						// translators: %s is <code>package-slug</code>
 						esc_html__( 'The repository name should be  and all the files should be located at the root of the repository.', 'wppus' ),
-						'<code>package-name</code>',
+						'<code>package-slug</code>',
 					);
 					?>
 					<br>
 					<?php
 					printf(
-						// translators: %1$s is <code>package-name</code>, %2$s is <code>package-name.php</code>
+						// translators: %1$s is <code>package-slug</code>, %2$s is <code>package-slug.php</code>
 						esc_html__( 'In the case of a plugin, the main plugin file must have the same name as the repository name - for example, the main plugin file in %1$s repository would be %2$s.', 'wppus' ),
-						'<code>package-name</code>',
-						'<code>package-name.php</code>',
+						'<code>package-slug</code>',
+						'<code>package-slug.php</code>',
 					);
 					?>
 					<br>
@@ -78,7 +78,7 @@
 				</label>
 			</th>
 			<td>
-				<input class="input-file hidden" type="file" id="wppus_manual_package_upload" name="wppus_manual_package_upload" value=""><label for="wppus_manual_package_upload" class="button"><?php esc_html_e( 'Choose package archive', 'wppus' ); ?></label> <input type="text" id="wppus_manual_package_upload_filename" placeholder="package-name.zip" value="" disabled> <input type="button" value="<?php print esc_attr_e( 'Upload package', 'wppus' ); ?>" class="button button-primary manual-package-upload-trigger" id="wppus_manual_package_upload_trigger" disabled /><div class="spinner"></div>
+				<input class="input-file hidden" type="file" id="wppus_manual_package_upload" name="wppus_manual_package_upload" value=""><label for="wppus_manual_package_upload" class="button"><?php esc_html_e( 'Choose package archive', 'wppus' ); ?></label> <input type="text" id="wppus_manual_package_upload_filename" placeholder="package-slug.zip" value="" disabled> <input type="button" value="<?php print esc_attr_e( 'Upload package', 'wppus' ); ?>" class="button button-primary manual-package-upload-trigger" id="wppus_manual_package_upload_trigger" disabled /><div class="spinner"></div>
 				<p class="description">
 					<?php
 					printf(
@@ -90,10 +90,10 @@
 					<br>
 					<?php
 					printf(
-						// translators: %1$s is <code>package-name.zip</code>, %2$s is <code>package-name.php</code>
+						// translators: %1$s is <code>package-slug.zip</code>, %2$s is <code>package-slug.php</code>
 						esc_html__( 'In the case of a plugin the main plugin file must have the same name as the zip archive - for example, the main plugin file in %1$s would be %2$s.', 'wppus' ),
-						'<code>package-name.zip</code>',
-						'<code>package-name.php</code>',
+						'<code>package-slug.zip</code>',
+						'<code>package-slug.php</code>',
 					);
 					?>
 					<br>

@@ -51,10 +51,10 @@
 						<br>
 						<?php
 						printf(
-							// translators: %1$s is <code>https://repository-service.tld/identifier/package-name/</code>, %2$s is <code>identifier</code>
+							// translators: %1$s is <code>https://repository-service.tld/identifier/package-slug/</code>, %2$s is <code>identifier</code>
 							esc_html__( 'Each package repository URL must follow the following pattern: %1$s ; the package files must be located at the root of the repository, and in the case of plugins the main plugin file must follow the pattern %2$s.', 'wppus' ),
-							'<code>https://repository-service.tld/identifier/package-name/</code>',
-							'<code>package-name.php</code>',
+							'<code>https://repository-service.tld/identifier/package-slug/</code>',
+							'<code>package-slug.php</code>',
 						);
 						?>
 					</p>

@@ -28,11 +28,11 @@
 	<p>
 		<?php
 		printf(
-			// translators: %1$s is <code>packages_dir</code>, %2$s is <code>package-name.zip</code>, %3$s is <code>package-name.php</code>
+			// translators: %1$s is <code>packages_dir</code>, %2$s is <code>package-slug.zip</code>, %3$s is <code>package-slug.php</code>
 			esc_html__( 'Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in %1$s. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in %2$s would be %3$s.', 'wppus' ),
 			'<code>' . esc_html( $packages_dir ) . '</code>',
-			'<code>package-name.zip</code>',
-			'<code>package-name.php</code>',
+			'<code>package-slug.zip</code>',
+			'<code>package-slug.php</code>',
 		);
 		?>
 	</p>
