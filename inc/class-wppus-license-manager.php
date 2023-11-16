@@ -530,7 +530,7 @@ class WPPUS_License_Manager {
 				),
 				'wppus_license_hmac_key'                 => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_license_hmac_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'display_name'            => __( 'Signatures HMAC Key', 'wppus' ),
+					'display_name'            => __( 'Signatures Authentication Key', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 				),
 				'wppus_license_crypto_key'               => array(
@@ -540,7 +540,7 @@ class WPPUS_License_Manager {
 				),
 				'wppus_license_check_signature'          => array(
 					'value'        => filter_input( INPUT_POST, 'wppus_license_check_signature', FILTER_VALIDATE_BOOLEAN ),
-					'display_name' => __( 'Check License signature?', 'wppus' ),
+					'display_name' => __( 'Check License Signature?', 'wppus' ),
 					'condition'    => 'boolean',
 				),
 			)
