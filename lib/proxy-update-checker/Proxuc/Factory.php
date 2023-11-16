@@ -1,7 +1,7 @@
 <?php
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitHubApi;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitLabApi;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BitBucketApi;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitHubApi;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitLabApi;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\BitBucketApi;
 
 if ( ! class_exists(Proxuc_Factory::class, false) ):
 
@@ -87,8 +87,8 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 				return null;
 			}
 		
-			require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/Puc/v5p1/Vcs/'. $apiClass .'.php';
-			$apiClass = 'YahnisElsts\PluginUpdateChecker\v5p1\Vcs\\' . $apiClass;
+			require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/Puc/v5p3/Vcs/'. $apiClass .'.php';
+			$apiClass = 'YahnisElsts\PluginUpdateChecker\v5p3\Vcs\\' . $apiClass;
 
 			return new $checkerClass(
 				new $apiClass($metadataUrl),

@@ -2,11 +2,11 @@
 
 require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/plugin-update-checker.php';
 
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\Api;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BaseChecker;
-use YahnisElsts\PluginUpdateChecker\v5p1\Plugin\Package;
-use YahnisElsts\PluginUpdateChecker\v5p1\Plugin\UpdateChecker;
-use YahnisElsts\PluginUpdateChecker\v5p1\Plugin\PluginInfo;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\Api;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\BaseChecker;
+use YahnisElsts\PluginUpdateChecker\v5p3\Plugin\Package;
+use YahnisElsts\PluginUpdateChecker\v5p3\Plugin\UpdateChecker;
+use YahnisElsts\PluginUpdateChecker\v5p3\Plugin\PluginInfo;
 
 if ( ! class_exists(Proxuc_Vcs_PluginUpdateChecker::class, false) ):
 
@@ -17,16 +17,16 @@ if ( ! class_exists(Proxuc_Vcs_PluginUpdateChecker::class, false) ):
 		protected $branch = 'master';
 
 		/**
-		 * @var Puc\v5p1\Vcs\Api Repository API client.
+		 * @var Puc\v5p3\Vcs\Api Repository API client.
 		 */
 		protected $api = null;
 
 		protected $manualCheckErrorTransient = null;
         protected $package = null;
 		/**
-		 * Puc\v5p1\Vcs\PluginUpdateChecker constructor.
+		 * Puc\v5p3\Vcs\PluginUpdateChecker constructor.
 		 *
-		 * @param Puc\v5p1\Vcs\Api $api
+		 * @param Puc\v5p3\Vcs\Api $api
 		 * @param string $pluginFile
 		 * @param string $slug
 		 * @param int $checkPeriod
@@ -209,7 +209,7 @@ if ( ! class_exists(Proxuc_Vcs_PluginUpdateChecker::class, false) ):
 		 * Copy plugin metadata from a file header to a Plugin Info object.
 		 *
 		 * @param array $fileHeader
-		 * @param Puc_v5p1_Plugin_Info $pluginInfo
+		 * @param Puc_v5p3_Plugin_Info $pluginInfo
 		 */
 		protected function setInfoFromHeader($fileHeader, $pluginInfo) {
 			$headerToPropertyMap = array(
@@ -240,7 +240,7 @@ if ( ! class_exists(Proxuc_Vcs_PluginUpdateChecker::class, false) ):
 		 * Copy plugin metadata from the remote readme.txt file.
 		 *
 		 * @param string $ref GitHub tag or branch where to look for the readme.
-		 * @param Puc_v5p1_Plugin_Info $pluginInfo
+		 * @param Puc_v5p3_Plugin_Info $pluginInfo
 		 */
 		protected function setInfoFromRemoteReadme($ref, $pluginInfo) {
 			$readme = $this->api->getRemoteReadme($ref);

@@ -2,11 +2,11 @@
 
 require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/plugin-update-checker.php';
 
-use YahnisElsts\PluginUpdateChecker\v5p1\Utils;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BaseChecker;
-use YahnisElsts\PluginUpdateChecker\v5p1\Theme\Package;
-use YahnisElsts\PluginUpdateChecker\v5p1\Theme\Update;
-use YahnisElsts\PluginUpdateChecker\v5p1\Theme\UpdateChecker;
+use YahnisElsts\PluginUpdateChecker\v5p3\Utils;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\BaseChecker;
+use YahnisElsts\PluginUpdateChecker\v5p3\Theme\Package;
+use YahnisElsts\PluginUpdateChecker\v5p3\Theme\Update;
+use YahnisElsts\PluginUpdateChecker\v5p3\Theme\UpdateChecker;
 
 if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 
@@ -20,14 +20,14 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 		protected $branch = 'master';
 
 		/**
-		 * @var Puc\v5p1\Vcs\Api Repository API client.
+		 * @var Puc\v5p3\Vcs\Api Repository API client.
 		 */
 		protected $api = null;
 
 		/**
-		 * Puc\v5p1\Vcs\ThemeUpdateChecker constructor.
+		 * Puc\v5p3\Vcs\ThemeUpdateChecker constructor.
 		 *
-		 * @param Puc\v5p1\Vcs\Api $api
+		 * @param Puc\v5p3\Vcs\Api $api
 		 * @param null $stylesheet
 		 * @param null $customSlug
 		 * @param int $checkPeriod

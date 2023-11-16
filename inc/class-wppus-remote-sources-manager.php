@@ -1,6 +1,6 @@
 <?php
 
-use YahnisElsts\PluginUpdateChecker\v5p1\OAuthSignature;
+use YahnisElsts\PluginUpdateChecker\v5p3\OAuthSignature;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly

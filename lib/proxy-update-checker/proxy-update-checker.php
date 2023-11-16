@@ -8,12 +8,12 @@
  */
 require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/plugin-update-checker.php';
 
-use YahnisElsts\PluginUpdateChecker\v5p1\Plugin;
-use YahnisElsts\PluginUpdateChecker\v5p1\Theme;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitHubApi;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitLabApi;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BitBucketApi;
+use YahnisElsts\PluginUpdateChecker\v5p3\Plugin;
+use YahnisElsts\PluginUpdateChecker\v5p3\Theme;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitHubApi;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitLabApi;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\BitBucketApi;
 
 require dirname(__FILE__) . '/Proxuc/Factory.php';
 require dirname(__FILE__) . '/Proxuc/Autoloader.php';
@@ -25,6 +25,6 @@ Proxuc_Factory::addVersion('Vcs_PluginUpdateChecker', 'Proxuc_Vcs_PluginUpdateCh
 Proxuc_Factory::addVersion('Vcs_ThemeUpdateChecker', 'Proxuc_Vcs_ThemeUpdateChecker', '1.0');
 
 Proxuc_Factory::setApiVersion('5.0');
-Proxuc_Factory::addVersion('GitHubApi', 'GitHubApi', '5.1');
-Proxuc_Factory::addVersion('BitBucketApi', 'BitBucketApi', '5.1');
-Proxuc_Factory::addVersion('GitLabApi', 'GitLabApi', '5.1');
+Proxuc_Factory::addVersion('GitHubApi', 'GitHubApi', '5.3');
+Proxuc_Factory::addVersion('BitBucketApi', 'BitBucketApi', '5.3');
+Proxuc_Factory::addVersion('GitLabApi', 'GitLabApi', '5.3');

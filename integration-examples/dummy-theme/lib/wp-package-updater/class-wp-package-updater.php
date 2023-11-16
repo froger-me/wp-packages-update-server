@@ -13,8 +13,8 @@ defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 /**
  * Since v5 all classes have been moved into namespaces
  */
-use YahnisElsts\PluginUpdateChecker\v5p1\PucFactory;
-use YahnisElsts\PluginUpdateChecker\v5p1\Plugin\UpdateChecker;
+use YahnisElsts\PluginUpdateChecker\v5p3\PucFactory;
+use YahnisElsts\PluginUpdateChecker\v5p3\Plugin\UpdateChecker;
 
 /* ================================================================================================ */
 /*                                     WP Package Updater                                           */

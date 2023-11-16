@@ -1,9 +1,9 @@
 <?php
 require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/plugin-update-checker.php';
 
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitHubApi;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\GitLabApi;
-use YahnisElsts\PluginUpdateChecker\v5p1\Vcs\BitBucketApi;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitHubApi;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitLabApi;
+use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\BitBucketApi;
 
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
 
