@@ -50,7 +50,7 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_downloaded\_remote\_package](#wppus_downloaded_remote_package)
 		* [wppus\_saved\_remote\_package\_to\_local](#wppus_saved_remote_package_to_local)
 		* [wppus\_checked\_remote\_package\_update](#wppus_checked_remote_package_update)
-		* [wppus\_deleted\_package](#wppus_deleted_package)
+		* [wppus\_removed\_package](#wppus_removed_package)
 		* [wppus\_before\_zip](#wppus_before_zip)
 		* [wppus\_did\_browse\_package](#wppus_did_browse_package)
 		* [wppus\_did\_read\_package](#wppus_did_read_package)
@@ -106,7 +106,7 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_update\_manager\_batch\_package\_info](#wppus_update_manager_batch_package_info)
 		* [wppus\_check\_remote\_package\_update\_local\_meta](#wppus_check_remote_package_update_local_meta)
 		* [wppus\_check\_remote\_package\_update\_no\_local\_meta\_needs\_update](#wppus_check_remote_package_update_no_local_meta_needs_update)
-		* [wppus\_delete\_package\_result](#wppus_delete_package_result)
+		* [wppus\_remove\_package\_result](#wppus_remove_package_result)
 		* [wppus\_update\_server\_action\_download\_handled](#wppus_update_server_action_download_handled)
 		* [wppus\_save\_remote\_to\_local](#wppus_save_remote_to_local)
 		* [wppus\_webhook\_process\_request](#wppus_webhook_process_request)
@@ -251,7 +251,7 @@ $params = array(
 	'action'       => 'browse',         // Action to perform when calling the Package API (required)
 	'browse_query' => wp_json_encode(   
 		array( 'search' => 'keyword' )
-	),                                 // the JSON representation of an array with a single key 'search' with the value being the string to be used in package's slug and package's name (optional - case insensitive)
+	),                                 // the JSON representation of an array with a single key 'search' with the value being the keyword used to search in package's slug and package's name (optional - case insensitive)
 	'api_auth_key' => 'secret',        // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-Package-API-Key headers if absent)
 );
 ```
@@ -804,7 +804,7 @@ Get the path of a plugin or theme package on the file system
 > (string) slug of the package  
 
 **Return value**
-> (string) path of the package on the file system
+> (string) path of the package on the **local** file system
 
 ___
 ### wppus_download_local_package
@@ -821,7 +821,7 @@ Start a download of a package from the file system and exits.
 > (string) slug of the package  
 
 `$package_path`
-> (string) path of the package on the file system - if `null`, will attempt to find it using `wppus_get_local_package_path( $package_slug )`   
+> (string) path of the package on the **local** file system - if `null`, will attempt to find it using `wppus_get_local_package_path( $package_slug )`   
 
 ___
 ### wppus_delete_package
@@ -1264,25 +1264,25 @@ Fired during client update API request.
 > (string) slug of the package checked  
 
 ___
-### wppus_deleted_package
+### wppus_removed_package
 
 ```php
-do_action( 'wppus_deleted_package', bool $result, string $type, string $slug );
+do_action( 'wppus_removed_package', bool $result, string $type, string $slug );
 ```
 
 **Description**  
-Fired after a package has been deleted from the file system.  
+Fired after a package has been removed from the file system.  
 Fired during client update API request.  
 
 **Parameters**  
 `$result`
-> (bool) `true` if the package has been deleted on the file system  
+> (bool) `true` if the package has been removed on the file system  
 
 `$type`
-> (string) type of the deleted package - "Plugin" or "Theme"  
+> (string) type of the removed package - "Plugin" or "Theme"  
 
 `$slug`
-> (string) slug of the deleted package  
+> (string) slug of the removed package  
 
 ___
 ### wppus_before_zip
@@ -1443,7 +1443,8 @@ do_action( 'wppus_check_remote_update', string $package_slug );
 ```
 
 **Description**  
-Fired before checking if the package on the remote repository has updates.
+Fired before checking if the package on the remote repository has updates.  
+Fired during client update API request.
 
 **Parameters**  
 `$package_slug`
@@ -1542,7 +1543,7 @@ do_action( 'wppus_get_package_info', array $package_info, string $package_slug, 
 ```
 
 **Description**  
-Fired before getting information from a package.
+Fired before getting information from a package.  
 
 **Parameters**  
 `$package_info`
@@ -1552,7 +1553,7 @@ Fired before getting information from a package.
 > (string) the slug of the package  
 
 `$package_path`
-> (string) the absolute path of the package on the file system  
+> (string) the absolute path of the package on the **local** file system  
 
 ___
 ### wppus_find_package_no_cache
@@ -1562,14 +1563,15 @@ do_action( 'wppus_find_package_no_cache', string $package_slug, string $package_
 ```
 
 **Description**  
-Fired if a package exist and was found, but the cache containing the package information does not.
+Fired if a package exist and was found, but the cache containing the package information does not.  
+Fired during client update API request.
 
 **Parameters**  
 `$package_slug`
 > (string) the slug of the package  
 
 `$package_path`
-> (string) the absolute path of the package on the file system  
+> (string) the absolute path of the package on the **local** file system  
 
 `$cache`
 > (Wpup_FileCache) the cache object  
@@ -1825,11 +1827,12 @@ apply_filters( 'wppus_cloud_storage_virtual_dir', string $virtual_dir );
 ```
 
 **Description**  
-
+Filter the name of the virtual directory where the packages are stored in the Cloud Storage Service.  
+Fired during client update API request.
 
 **Parameters**  
 `$virtual_dir`
-> (string)   
+> (string) the name of the virtual directory where the packages are stored in the Cloud Storage Service - default `wppus-packages`  
 
 ___
 ### wppus_could_storage_api_config
@@ -1839,11 +1842,12 @@ apply_filters( 'wppus_could_storage_api_config', array $config );
 ```
 
 **Description**  
-
+Filter the configuration to use the Cloud Storage Service.  
+Fired during client update API request.
 
 **Parameters**  
 `$config`
-> (array)   
+> (array) the configuration to use the Cloud Storage Service  
 
 ___
 ### wppus_package_api_config
@@ -1853,11 +1857,11 @@ apply_filters( 'wppus_package_api_config', array $config );
 ```
 
 **Description**  
-
+Filter the configuration of the Package API.
 
 **Parameters**  
 `$config`
-> (array)   
+> (array) the configuration of the Package API  
 
 ___
 ### wppus_package_browse
@@ -1867,14 +1871,14 @@ apply_filters( 'wppus_package_browse', array $result, array $query );
 ```
 
 **Description**  
-
+Filter the result of the `browse` operation of the Package API.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the `browse` operation  
 
 `$query`
-> (array)   
+> (array) the query - see [browse](#browse)  
 
 ___
 ### wppus_package_read
@@ -1884,17 +1888,17 @@ apply_filters( 'wppus_package_read', array $result, string $package_slug, string
 ```
 
 **Description**  
-
+Filter the result of the `read` operation of the Package API.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the `read` operation  
 
 `$package_slug`
-> (string)   
+> (string) the slthe slug of the read package  
 
 `$type`
-> (string)   
+> (string) the type of the read package  
 
 ___
 ### wppus_package_edit
@@ -1904,17 +1908,17 @@ apply_filters( 'wppus_package_edit', array $result, string $package_slug, string
 ```
 
 **Description**  
-
+Filter the result of the `edit` operation of the Package API.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the `edit` operation  
 
 `$package_slug`
-> (string)   
+> (string) the slthe slug of the edited package  
 
 `$type`
-> (string)   
+> (string) the type of the edited package  
 
 ___
 ### wppus_package_add
@@ -1924,17 +1928,17 @@ apply_filters( 'wppus_package_add', array $result, $package_slug, string $type )
 ```
 
 **Description**  
-
+Filter the result of the `add` operation of the Package API.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the `add` operation  
 
 `$package_slug`
-> ($package_slug)   
+> ($package_slug)the slug of the added package   
 
 `$type`
-> (string)   
+> (string) the type of the added package  
 
 ___
 ### wppus_package_delete
@@ -1944,17 +1948,17 @@ apply_filters( 'wppus_package_delete', array $result, string $package_slug, stri
 ```
 
 **Description**  
-
+Filter the result of the `delete` operation of the Package API.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the `delete` operation  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the deleted package  
 
 `$type`
-> (string)   
+> (string) the type of the deleted package  
 
 ___
 ### wppus_package_signed_url
@@ -1964,17 +1968,17 @@ apply_filters( 'wppus_package_signed_url', array $result, string $package_slug, 
 ```
 
 **Description**  
-
+Filter the result of the `signed_url` operation of the Package API.
 
 **Parameters**  
 `$result`
-> (array)   
+> (array) the result of the `signed_url` operation  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package for which the URL was signed  
 
 `$type`
-> (string)   
+> (string) the type of the package for which the URL was signed  
 
 ___
 ### wppus_package_signed_url_token
@@ -1984,17 +1988,17 @@ apply_filters( 'wppus_package_signed_url_token', $token, string $package_slug, s
 ```
 
 **Description**  
-
+Filter the token used to sign the URL.  
 
 **Parameters**  
 `$token`
-> ($token)   
+> ($token) the token used to sign the URL
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package for which the URL needs to be signed  
 
 `$type`
-> (string)   
+> (string) the type of the package for which the URL needs to be signed  
 
 ___
 ### wppus_package_public_api_actions
@@ -2004,11 +2008,11 @@ apply_filters( 'wppus_package_public_api_actions', array $public_api_actions );
 ```
 
 **Description**  
-
+Filter the public API actions ; public actions can be accessed via the `GET` method and a token, all other actions are considered private and can only be accessed via the `POST` method.
 
 **Parameters**  
 `$public_api_actions`
-> (array)   
+> (array) the public API actions  
 
 ___
 ### wppus_package_api_request_authorized
@@ -2018,17 +2022,17 @@ apply_filters( 'wppus_package_api_request_authorized', bool $authorized, string 
 ```
 
 **Description**  
-
+Filter whether the Package API request is authorized
 
 **Parameters**  
 `$authorized`
-> (bool)   
+> (bool) whether the Package API request is authorized  
 
 `$method`
-> (string)   
+> (string) the method of the request - `GET` or `POST`  
 
 `$payload`
-> (array)   
+> (array) the payload of the request  
 
 ___
 ### wppus_packages_table_columns
@@ -2038,11 +2042,11 @@ apply_filters( 'wppus_packages_table_columns', array $columns );
 ```
 
 **Description**  
-
+Filter the columns to display in the packages Overview table.  
 
 **Parameters**  
 `$columns`
-> (array)   
+> (array) the columns to display in the packages Overview table  
 
 ___
 ### wppus_packages_table_sortable_columns
@@ -2052,11 +2056,11 @@ apply_filters( 'wppus_packages_table_sortable_columns', array $columns );
 ```
 
 **Description**  
-
+Filter the sortable columns in the packages Overview table.  
 
 **Parameters**  
 `$columns`
-> (array)   
+> (array) the sortable columns in the packages Overview table  
 
 ___
 ### wppus_packages_table_bulk_actions
@@ -2066,11 +2070,11 @@ apply_filters( 'wppus_packages_table_bulk_actions', array $actions );
 ```
 
 **Description**  
-
+Filter the bulk actions in the packages Overview table.
 
 **Parameters**  
 `$actions`
-> (array)   
+> (array) the bulk actions in the packages Overview table  
 
 ___
 ### wppus_use_recurring_schedule
@@ -2080,11 +2084,11 @@ apply_filters( 'wppus_use_recurring_schedule', bool $use_recurring_schedule );
 ```
 
 **Description**  
-
+Filter whether WPPUS is using recurring schedules to check to update packages from the Remote Repository Service.  
 
 **Parameters**  
 `$use_recurring_schedule`
-> (bool)   
+> (bool) whether WPPUS is using recurring schedules to check to update packages from the Remote Repository Service  
 
 ___
 ### wppus_remote_sources_manager_get_package_slugs
@@ -2094,11 +2098,11 @@ apply_filters( 'wppus_remote_sources_manager_get_package_slugs', array $package_
 ```
 
 **Description**  
-
+Filter the slugs of packages currently available on the file system to display in the packages Overview table.  
 
 **Parameters**  
 `$package_slugs`
-> (array)   
+> (array) the slugs of packages currently available on the file system to display in the packages Overview table  
 
 ___
 ### wppus_server_class_name
@@ -2108,17 +2112,22 @@ apply_filters( 'wppus_server_class_name', string $class_name, string $package_sl
 ```
 
 **Description**  
+Filter the class name to use to instanciate a `Wpup_UpdateServer` object.  
+WPPUS uses 2 classes inheriting from `Wpup_UpdateServer`:
+- `WPPUS_License_Update_Server` in case the package needs a license
+- `WPPUS_Update_Server` for all the other packages
 
+Fired during client update API request.
 
 **Parameters**  
 `$class_name`
-> (string)   
+> (string) the class name to use to instanciate a `Wpup_UpdateServer` object  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package to serve  
 
 `$config`
-> (array)   
+> (array) the update API configuration  
 
 ___
 ### wppus_delete_packages_bulk_paths
@@ -2128,14 +2137,14 @@ apply_filters( 'wppus_delete_packages_bulk_paths', string $package_paths, array 
 ```
 
 **Description**  
-
+Filter the paths or the package archives to delete.
 
 **Parameters**  
 `$package_paths`
-> (string)   
+> (string) the paths or the package archives to delete from the file system  
 
 `$package_slugs`
-> (array)   
+> (array) the slugs or the package to delete from the file system  
 
 ___
 ### wppus_package_info
@@ -2145,14 +2154,14 @@ apply_filters( 'wppus_package_info', array $package_info, string $package_slug )
 ```
 
 **Description**  
-
+Filter the package information retrieved by the admin interface or through [`wppus_get_package_info`](#wppus_get_package_info).
 
 **Parameters**  
 `$package_info`
-> (array)   
+> (array) the information of the package  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package  
 
 ___
 ### wppus_batch_package_info_include
@@ -2162,34 +2171,34 @@ apply_filters( 'wppus_batch_package_info_include', bool $include, array $package
 ```
 
 **Description**  
-
+Filter whether to include the package in the batch of information.
 
 **Parameters**  
 `$include`
-> (bool)   
+> (bool) whether to include the package in the batch of information  
 
 `$package_info`
-> (array)   
+> (array) the information of the package  
 
 `$search`
-> (string)   
+> (string) the keyword used to search in package's slug and package's name  
 
 ___
 ### wppus_update_manager_batch_package_info
 
 ```php
-apply_filters( 'wppus_update_manager_batch_package_info', array $packages, string $search );
+apply_filters( 'wppus_update_manager_batch_package_info', array $packages_information, string $search );
 ```
 
 **Description**  
-
+Filter the array of package information retrieved by the admin interface or through [`wppus_get_batch_package_info`](#wppus_get_batch_package_info).
 
 **Parameters**  
-`$packages`
-> (array)   
+`$packages_information`
+> (array) the array of package information  
 
 `$search`
-> (string)   
+> (string) the keyword used to search in package's slug and package's name  
 
 ___
 ### wppus_check_remote_package_update_local_meta
@@ -2199,17 +2208,18 @@ apply_filters( 'wppus_check_remote_package_update_local_meta', array $package_in
 ```
 
 **Description**  
-
+Filter the package information gathered from the file system before checking for updates in the Remote Repository Service.  
+Fired during client update API request.
 
 **Parameters**  
 `$package_info`
-> (array)   
+> (array) the package information  
 
 `$package`
-> (Wpup_Package)   
+> (Wpup_Package) the package object retrieved from the file system, either from cache or from the package archive  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package  
 
 ___
 ### wppus_check_remote_package_update_no_local_meta_needs_update
@@ -2219,37 +2229,38 @@ apply_filters( 'wppus_check_remote_package_update_no_local_meta_needs_update', b
 ```
 
 **Description**  
-
+Filter whether the package in the file system needs to be updated with the one hosted on the Remote Repository Service when no corresponding package information was found on the file system.  
+Fired during client update API request.
 
 **Parameters**  
 `$needs_update`
-> (bool)   
+> (bool) whether the package in the file system needs to be updated  
 
 `$package`
-> (Wpup_Package)   
+> (Wpup_Package) the package object retrieved from the file system, either from cache or from the package archive  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package  
 
 ___
-### wppus_delete_package_result
+### wppus_remove_package_result
 
 ```php
-apply_filters( 'wppus_delete_package_result', bool $deleted, string $type, string $package_slug );
+apply_filters( 'wppus_remove_package_result', bool $removed, string $type, string $package_slug );
 ```
 
 **Description**  
-
+Filter whether the package was removed from the file system.  
 
 **Parameters**  
-`$deleted`
-> (bool)   
+`$removed`
+> (bool) whether the package was removed from the file system  
 
 `$type`
-> (string)   
+> (string) the type of the package  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package  
 
 ___
 ### wppus_update_server_action_download_handled
@@ -2259,14 +2270,15 @@ apply_filters( 'wppus_update_server_action_download_handled', bool $download_han
 ```
 
 **Description**  
-
+Filter whether the package download has been handled. Returning `true` considers the download handled and prevents WPPUS from streaming the file to the remote client.  
+Fired during client update API request.
 
 **Parameters**  
 `$download_handled`
-> (bool)   
+> (bool) whether the package download has been handled  
 
 `$request`
-> (Wpup_Request)   
+> (Wpup_Request) the request object  
 
 ___
 ### wppus_save_remote_to_local
@@ -2276,20 +2288,21 @@ apply_filters( 'wppus_save_remote_to_local', bool $save_to_local, string $packag
 ```
 
 **Description**  
-
+Filter whether WPPUS needs to attempt to download a package from the Remote Repository Service onto the file system.  
+Fired during client update API request.
 
 **Parameters**  
 `$save_to_local`
-> (bool)   
+> (bool) whether WPPUS needs to attempt to download a package from the Remote Repository Service onto the file system  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package  
 
 `$package_path`
-> (string)   
+> (string) the absolute path of the package on the **local** file system  
 
 `$check_remote`
-> (bool)   
+> (bool) `true` if the Remote Repository Service is about to be checked and the package downloaded, `false` if the local cache is about to be used  
 
 ___
 ### wppus_webhook_process_request
@@ -2299,25 +2312,25 @@ apply_filters( 'wppus_webhook_process_request', bool $process_request, array $pa
 ```
 
 **Description**  
-
+Filter whether to process the Webhook request.  
 
 **Parameters**  
 `$process_request`
-> (bool)   
+> (bool) whether to process the Webhook request  
 
 `$payload`
-> (array)   
+> (array) the payload of the request  
 
 `$package_slug`
-> (string)   
+> (string) the slug of the package  
 
 `$type`
-> (string)   
+> (string) the type of the package  
 
 `$package_exists`
-> (bool)   
+> (bool) whether the package exists on the file system  
 
 `$config`
-> (array)   
+> (array) the webhook configuration  
 
 ___

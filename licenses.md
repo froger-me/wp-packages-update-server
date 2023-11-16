@@ -62,6 +62,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_add\_license\_payload](#wppus_add_license_payload)
 		* [wppus\_delete\_license\_payload](#wppus_delete_license_payload)
 		* [wppus\_license\_public\_api\_actions](#wppus_license_public_api_actions)
+		* [wppus\_license\_api\_request\_authorized](#wppus_license_api_request_authorized)
 
 ___
 ## The License Query
@@ -1308,5 +1309,25 @@ Filter the public API actions ; public actions can be accessed via the `GET` met
 **Parameters**  
 `$public_api_actions`
 > (array) the public API actions  
+
+___
+### wppus_license_api_request_authorized
+
+```php
+apply_filters( 'wppus_license_api_request_authorized', bool $authorized, string $method, array $payload );
+```
+
+**Description**  
+Filter whether the License API request is authorized.
+
+**Parameters**  
+`$authorized`
+> (bool) whether the License API request is authorized  
+
+`$method`
+> (string) the method of the request - `GET` or `POST`  
+
+`$payload`
+> (array) the payload of the request  
 
 ___

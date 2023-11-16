@@ -204,7 +204,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		}
 
 		// @todo doc
-		$result = apply_filters( 'wppus_delete_package_result', $result, $type, $slug );
+		$result = apply_filters( 'wppus_remove_package_result', $result, $type, $slug );
 
 		if ( $result ) {
 
@@ -223,7 +223,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			}
 		}
 
-		do_action( 'wppus_deleted_package', $result, $type, $slug );
+		do_action( 'wppus_removed_package', $result, $type, $slug );
 
 		return $result;
 	}
