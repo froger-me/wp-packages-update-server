@@ -431,14 +431,20 @@ class WPPUS_License_API {
 				}
 
 				if ( ! $malformed_request ) {
-
-					if (
-						$this->is_api_public( $method ) ||
+					$authorized = apply_filters(
+						'wppus_license_api_request_authorized',
 						(
-							$this->authorize_ip() &&
-							$this->authorize()
-						)
-					) {
+							$this->is_api_public( $method ) ||
+							(
+								$this->authorize_ip() &&
+								$this->authorize()
+							)
+						),
+						$method,
+						$payload
+					);
+
+					if ( $authorized ) {
 						// @todo doc
 						do_action( 'wppus_license_api_request', $method, $payload );
 
