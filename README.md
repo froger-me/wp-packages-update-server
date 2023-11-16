@@ -73,30 +73,30 @@ Note: the screenshots are updated on a regular basis, but the actual interface m
 
 #### Overview
 
-<img src="https://ps.w.org/wp-packages-update-server/assets/screenshot-1.png" alt="Overview" width="100%">
+<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-1.png" alt="Overview" width="100%">
 
 #### Remote Sources
 
-<img src="https://ps.w.org/wp-packages-update-server/assets/screenshot-2.png" alt="Remote Sources" width="100%">
+<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-2.png" alt="Remote Sources" width="100%">
 
 #### Licenses
 
-<img src="https://ps.w.org/wp-packages-update-server/assets/screenshot-3.png" alt="Licenses" width="100%">
+<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-3.png" alt="Licenses" width="100%">
 
 #### Client - plugin screens
 
-<img src="https://ps.w.org/wp-packages-update-server/assets/screenshot-4.png" alt="Plugins" width="100%">
-<img src="https://ps.w.org/wp-packages-update-server/assets/screenshot-5.png" alt="Plugin Details" width="100%">
+<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-4.png" alt="Plugins" width="100%">
+<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-5.png" alt="Plugin Details" width="100%">
 
 #### Client - theme screens
 
-<img src="https://ps.w.org/wp-packages-update-server/assets/screenshot-6.png" alt="Themes" width="100%">
-<img src="https://ps.w.org/wp-packages-update-server/assets/screenshot-7.png" alt="Theme Details" width="100%">
-<img src="https://ps.w.org/wp-packages-update-server/assets/screenshot-8.png" alt="Theme License" width="100%">
+<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-6.png" alt="Themes" width="100%">
+<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-7.png" alt="Theme Details" width="100%">
+<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-8.png" alt="Theme License" width="100%">
 
 #### Client - updates screen
 
-<img src="https://ps.w.org/wp-packages-update-server/assets/screenshot-9.png" alt="Updates" width="100%">
+<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-9.png" alt="Updates" width="100%">
 
 ## User Interface
 
