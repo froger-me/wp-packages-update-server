@@ -61,11 +61,12 @@ Authorisation to use these libraries freely provided relevant licenses are inclu
 
 ### Compatibility
 
-* Tested with PHP 7.0.29 - may work with higher PHP versions for the most part (warnings may appear for PHP 7.3)
-* WP Packages Update Server proper uses Plugin Update Checker Library 4.4 and WP Update Server Library 4.4
-* Integration examples use Plugin Update Checker Library 4.9
+* Tested with PHP 8.x - may work with PHP 7.x versions for the most part
+* WP Packages Update Server proper uses Plugin Update Checker Library 5.3 and WP Update Server Library 2.0.1
+* Integration examples use Plugin Update Checker Library 5.3
 
-**Pull requests to update the plugin's Proxy Update Checker Library to ensure compatibility with the latest versions of Plugin Update Checker and WP Update Server Library or to support other PHP versions are now accepted - this plugin is a personal project, receiving payment for its maintenance does not fit into my schedule, and I do not plan to spend extensive amount of time maintaining it except for obvious bugs.**
+**Pull requests to solve any bug, improve performance, and keep libraries up to date are welcome and highly encouraged.**  
+**Requests to debug or troubleshoot specific setups will not be addressed.**
 
 ### Screenshots
 
@@ -122,12 +123,7 @@ Logs max size (in MB)               | number | Maximum size in MB for the `wp-co
 
 ### Remote Sources Tab
 
-If "Enable Package Licenses" is checked, this tab allows administrators to:
-- Clear all the scheduled remote updates
-- Reschedule all the remote updates
-
-These actions are useful to forcefully alter the schedules (maintenance, tests, etc).  
-In addition, the following settings are available:
+This tab allows administrators to configure how Remote Sources are handled with the follwing settings:
 
 Name                                  | Type      | Description
 ------------------------------------- |:---------:|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -137,6 +133,10 @@ Self-hosted Remote Repository Service | checkbox  | Check this only if the Remot
 Packages branch name                  | text      | The branch to download when getting remote packages from the Remote Repository Service.
 Remote Repository Service credentials | text      | Credentials for non-publicly accessible repositories.<br/>In the case of Github and Gitlab, an access token (`token`).<br/>In the case of Bitbucket, the Consumer key and secret separated by a pipe (`consumer_key|consumer_secret`). IMPORTANT: when creating the consumer, "This is a private consumer" must be checked.	
 Remote update check frequency         | select    | How often WP Packages Update Server will poll each Remote Repository for package updates - checking too often may slow down the server (recommended "Once Daily").
+
+In addition, in case Webhooks are not used, the following actions are available to forcefully alter the packages schedules (maintenance, tests, etc):
+- Clear all the scheduled remote updates
+- Reschedule all the remote updates
 
 ### Licenses Tab
 
