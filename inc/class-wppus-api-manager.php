@@ -29,6 +29,8 @@ class WPPUS_API_Manager {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
+
+		wppus_get_admin_template( 'plugin-api-page.php' );
 	}
 
 	public function wppus_admin_tab_links( $links ) {
