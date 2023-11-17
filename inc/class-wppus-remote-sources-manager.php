@@ -1,7 +1,5 @@
 <?php
 
-use YahnisElsts\PluginUpdateChecker\v5p3\OAuthSignature;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -144,7 +142,6 @@ class WPPUS_Remote_Sources_Manager {
 		do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
 	}
 
-
 	public function admin_menu() {
 		$function   = array( $this, 'plugin_page' );
 		$page_title = __( 'WP Packages Update Server - Remote Sources', 'wppus' );
@@ -155,6 +152,7 @@ class WPPUS_Remote_Sources_Manager {
 	}
 
 	public function plugin_page() {
+
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}

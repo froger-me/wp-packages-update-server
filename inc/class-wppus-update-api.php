@@ -158,8 +158,7 @@ class WPPUS_Update_API {
 	}
 
 	protected function init_server( $package_id ) {
-		$config = self::get_config();
-		// @todo doc
+		$config            = self::get_config();
 		$server_class_name = apply_filters(
 			'wppus_server_class_name',
 			'WPPUS_Update_Server',
