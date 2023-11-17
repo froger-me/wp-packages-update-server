@@ -58,6 +58,7 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-manager.php';
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-manager.php';
+	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-api-manager.php';
 
 	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'activate' ) );
 	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'deactivate' ) );
@@ -162,6 +163,10 @@ function wppus_run() {
 
 		if ( ! isset( $objects['license_manager'] ) ) {
 			$objects['license_manager'] = new WPPUS_License_Manager( true );
+		}
+
+		if ( ! isset( $objects['api_manager'] ) ) {
+			$objects['api_manager'] = new WPPUS_API_Manager( true );
 		}
 
 		if ( ! isset( $objects['plugin'] ) ) {
