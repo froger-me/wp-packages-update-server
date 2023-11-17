@@ -346,7 +346,7 @@ class WP_Packages_Update_Server {
 
 	public function add_action_links( $links ) {
 		$link = array(
-			'<a href="' . admin_url( 'admin.php?page=wppus-page' ) . '">' . __( 'Packages overview', 'wppus' ) . '</a>',
+			'<a href="' . admin_url( 'admin.php?page=wppus-page' ) . '">' . __( 'Packages Overview', 'wppus' ) . '</a>',
 			'<a href="' . admin_url( 'admin.php?page=wppus-page-help' ) . '">' . __( 'Help', 'wppus' ) . '</a>',
 		);
 

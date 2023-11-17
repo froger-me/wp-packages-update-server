@@ -217,47 +217,6 @@
 					</p>
 				</td>
 			</tr>
-			<tr>
-				<th>
-					<label for="wppus_license_hmac_key"><?php esc_html_e( 'Signatures Authentication Key', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text secret" type="password" autocomplete="new-password" id="wppus_license_hmac_key" name="wppus_license_hmac_key" value="<?php echo esc_attr( get_option( 'wppus_license_hmac_key', 'hmac_key' ) ); ?>">
-					<p class="description"><?php esc_html_e( 'Ideally a random string, used to authenticate license signatures.', 'wppus' ); ?>
-						<br>
-						<strong><?php esc_html_e( 'WARNING: Changing this value will invalidate all the licence signatures for current remote installations.', 'wppus' ); ?></strong>
-						<br>
-						<?php esc_html_e( 'You may grant a grace period and let webmasters deactivate and re-activate their license(s) by unchecking "Check License Signature?" below.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="wppus_license_crypto_key"><?php esc_html_e( 'Signatures Encryption Key', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text secret" type="password" autocomplete="new-password" id="wppus_license_crypto_key" name="wppus_license_crypto_key" value="<?php echo esc_attr( get_option( 'wppus_license_crypto_key', 'crypto_key' ) ); ?>">
-					<p class="description"><?php esc_html_e( 'Ideally a random string, used to encrypt license signatures.', 'wppus' ); ?>
-						<br>
-						<strong><?php esc_html_e( 'WARNING: Changing this value will invalidate all the licence signatures for current remote installations.', 'wppus' ); ?></strong>
-						<br>
-						<?php esc_html_e( 'You may grant a grace period and let webmasters deactivate and re-activate their license(s) by unchecking "Check License Signature?" below.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="wppus_license_check_signature"><?php esc_html_e( 'Check License Signature?', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input type="checkbox" id="wppus_license_check_signature" name="wppus_license_check_signature" value="1" <?php checked( get_option( 'wppus_license_check_signature', 1 ), 1 ); ?>>
-					<p class="description">
-						<?php esc_html_e( 'Check signatures - can be deactivated if the HMAC Key or the Encryption Key has been recently changed and remote installations have active licenses.', 'wppus' ); ?>
-						<br>
-						<?php esc_html_e( 'Typically, all webmasters would have to deactivate and re-activate their license(s) to re-build their signatures, and this could take time ; it allows to grant a grace period during which license checking is less strict to avoid conflicts.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
 		</table>
 		<?php wp_nonce_field( 'wppus_plugin_options', 'wppus_plugin_options_handler_nonce' ); ?>
 		<p class="submit">

@@ -145,6 +145,11 @@ class WPPUS_License_Server {
 			}
 		}
 
+		if ( is_object( $return ) && apply_filters( 'wppus_license_is_public', true, $return ) ) {
+			unset( $return->hmac_key );
+			unset( $return->crypto_key );
+		}
+
 		do_action( 'wppus_did_read_license', $return );
 
 		return $return;
@@ -204,6 +209,8 @@ class WPPUS_License_Server {
 			$license                    = $this->sanitize_license( $license );
 			$license['allowed_domains'] = maybe_serialize( $license['allowed_domains'] );
 			$license['data']            = wp_json_encode( $license['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+			$license['hmac_key']        = bin2hex( openssl_random_pseudo_bytes( 16 ) );
+			$license['crypto_key']      = bin2hex( openssl_random_pseudo_bytes( 16 ) );
 			$result                     = $wpdb->insert(
 				$wpdb->prefix . 'wppus_licenses',
 				$license
@@ -257,21 +264,26 @@ class WPPUS_License_Server {
 	}
 
 	public function generate_license_signature( $license, $domain ) {
-		$config        = WPPUS_License_API::get_config();
-		$hmac_key      = $config['hmac_key'];
-		$crypto_key    = $config['crypto_key'];
+		$hmac_key      = $license->hmac_key;
+		$crypto_key    = $license->crypto_key;
 		$crypt_payload = array( $domain, $license->package_slug, $license->license_key, $license->id );
 		$signature     = WPPUS_Crypto::encrypt( implode( self::DATA_SEPARATOR, $crypt_payload ), $crypto_key, $hmac_key );
 
 		return $signature;
 	}
 
-	public function is_signature_valid( $license, $license_signature ) {
-		$config     = WPPUS_License_API::get_config();
-		$valid      = false;
-		$crypt      = $license_signature;
-		$hmac_key   = $config['hmac_key'];
-		$crypto_key = $config['crypto_key'];
+	public function is_signature_valid( $license_key, $license_signature ) {
+		$valid = false;
+		$crypt = $license_signature;
+
+		add_filter( 'wppus_license_is_public', '__return_false' );
+
+		$license = $this->read_license( array( 'license_key' => $license_key ) );
+
+		remove_filter( 'wppus_license_is_public', '__return_false' );
+
+		$hmac_key   = $license->hmac_key;
+		$crypto_key = $license->crypto_key;
 
 		if ( ! ( empty( $crypt ) ) ) {
 			$payload = null;

@@ -355,20 +355,6 @@ class WPPUS_License_Manager {
 			update_option( 'wppus_license_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
 		}
 
-		if (
-			! get_option( 'wppus_license_hmac_key' ) ||
-			'hmac_key' === get_option( 'wppus_license_hmac_key' )
-		) {
-			update_option( 'wppus_license_hmac_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
-		if (
-			! get_option( 'wppus_license_crypto_key' ) ||
-			'crypto_key' === get_option( 'wppus_license_crypto_key' )
-		) {
-			update_option( 'wppus_license_crypto_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
 		$charset_collate = '';
 
 		if ( ! empty( $wpdb->charset ) ) {
@@ -395,6 +381,8 @@ class WPPUS_License_Manager {
 			date_expiry date NOT NULL DEFAULT '0000-00-00',
 			package_slug varchar(255) NOT NULL default '',
 			package_type varchar(8) NOT NULL default '',
+			hmac_key varchar(64) NOT NULL,
+			crypto_key varchar(64) NOT NULL,
 			data longtext NOT NULL,
 			PRIMARY KEY  (id),
 			KEY licence_key (license_key)
@@ -527,21 +515,6 @@ class WPPUS_License_Manager {
 				'wppus_license_private_api_ip_whitelist' => array(
 					'value'     => filter_input( INPUT_POST, 'wppus_license_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'condition' => 'ip-list',
-				),
-				'wppus_license_hmac_key'                 => array(
-					'value'                   => filter_input( INPUT_POST, 'wppus_license_hmac_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'display_name'            => __( 'Signatures Authentication Key', 'wppus' ),
-					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-				),
-				'wppus_license_crypto_key'               => array(
-					'value'                   => filter_input( INPUT_POST, 'wppus_license_crypto_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'display_name'            => __( 'Signatures Encryption Key', 'wppus' ),
-					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-				),
-				'wppus_license_check_signature'          => array(
-					'value'        => filter_input( INPUT_POST, 'wppus_license_check_signature', FILTER_VALIDATE_BOOLEAN ),
-					'display_name' => __( 'Check License Signature?', 'wppus' ),
-					'condition'    => 'boolean',
 				),
 			)
 		);

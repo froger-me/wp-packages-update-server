@@ -55,9 +55,6 @@ class WPPUS_License_API {
 		if ( ! self::$config ) {
 			$config = array(
 				'private_api_auth_key' => get_option( 'wppus_license_private_api_auth_key' ),
-				'hmac_key'             => get_option( 'wppus_license_hmac_key', 'hmac' ),
-				'crypto_key'           => get_option( 'wppus_license_crypto_key', 'crypto' ),
-				'check_signature'      => get_option( 'wppus_license_check_signature', 1 ),
 				'ip_whitelist'         => get_option( 'wppus_license_private_api_ip_whitelist' ),
 			);
 
@@ -252,13 +249,17 @@ class WPPUS_License_API {
 	public function activate( $license_data ) {
 		$license      = null;
 		$license_data = apply_filters( 'wppus_activate_license_dirty_payload', $license_data );
+		$result       = array();
 
 		if ( isset( $license_data['id'] ) ) {
 			unset( $license_data['id'] );
 		}
 
+		add_filter( 'wppus_license_is_public', '__return_false' );
+
 		$license = $this->license_server->read_license( $license_data );
-		$result  = array();
+
+		remove_filter( 'wppus_license_is_public', '__return_false' );
 
 		if ( ! isset( $license_data['allowed_domains'] ) ) {
 			$license_data['allowed_domains'] = array();

@@ -191,14 +191,13 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		$valid = false;
 
 		if ( is_object( $license ) && ! is_wp_error( $license ) && 'activated' === $license->status ) {
-			$config = WPPUS_License_API::get_config();
 
-			if ( ! $config['check_signature'] ) {
+			if ( apply_filters( 'wppus_license_bypass_signature', false, $license ) ) {
 				$valid = $this->license_key === $license->license_key;
 			} else {
 				$license_server = new WPPUS_License_Server();
 				$valid          = $this->license_key === $license->license_key &&
-					$license_server->is_signature_valid( $license, $license_signature );
+					$license_server->is_signature_valid( $license->license_key, $license_signature );
 			}
 		}
 

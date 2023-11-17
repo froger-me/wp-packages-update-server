@@ -63,6 +63,8 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_delete\_license\_payload](#wppus_delete_license_payload)
 		* [wppus\_license\_public\_api\_actions](#wppus_license_public_api_actions)
 		* [wppus\_license\_api\_request\_authorized](#wppus_license_api_request_authorized)
+		* [wppus\_license\_bypass\_signature](#wppus_license_bypass_signature)
+		* [wppus\_license\_is\_public](#wppus_license_is_public)
 
 ___
 ## The License Query
@@ -1330,4 +1332,39 @@ Filter whether the License API request is authorized.
 `$payload`
 > (array) the payload of the request  
 
+___
+### wppus_license_bypass_signature
+
+```php
+apply_filters( 'wppus_license_bypass_signature', bool $bypass, object $license );
+```
+
+**Description**  
+Filter whether to bypass the license signature check.  
+Fired during client license API request.
+
+**Parameters**  
+`$bypass`
+> (bool) whether to bypass the license signature check  
+
+`$license`
+> (string) the license object  
+___
+### wppus_license_is_public
+
+```php
+apply_filters( 'wppus_license_is_public', bool $is_public, object $license );
+```
+
+**Description**  
+Filter whether the license object being manipulated is to be publicly exposed.  
+If `$is_public` is truthy, the cryptographic information used for building and authenticating the signature are subsequently stripped from the license object.  
+Fired during client license API request.
+
+**Parameters**  
+`$is_public`
+> (bool) whether the license object being manipulated is to be publicly exposed  
+
+`$license`
+> (string) the license object  
 ___
