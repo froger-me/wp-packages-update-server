@@ -165,7 +165,7 @@ if ( ! function_exists( 'wppus_download_remote_package' ) ) {
 
 if ( ! function_exists( 'wppus_delete_package' ) ) {
 	function wppus_delete_package( $slug ) {
-		$api = WPPUS_Update_Manager::get_instance();
+		$api = WPPUS_Package_Manager::get_instance();
 
 		return (bool) $api->delete_packages_bulk( array( $slug ) );
 	}
@@ -173,11 +173,11 @@ if ( ! function_exists( 'wppus_delete_package' ) ) {
 
 if ( ! function_exists( 'wppus_get_package_info' ) ) {
 	function wppus_get_package_info( $package_slug, $json_encode = true ) {
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-manager.php';
 
-		$result         = $json_encode ? '{}' : array();
-		$update_manager = new WPPUS_Update_Manager();
-		$package_info   = $update_manager->get_package_info( $package_slug );
+		$result          = $json_encode ? '{}' : array();
+		$package_manager = new WPPUS_Package_Manager();
+		$package_info    = $package_manager->get_package_info( $package_slug );
 
 		if ( $package_info ) {
 			$result = $json_encode ? wp_json_encode( $package_info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) : $package_info;
@@ -189,11 +189,11 @@ if ( ! function_exists( 'wppus_get_package_info' ) ) {
 
 if ( ! function_exists( 'wppus_get_batch_package_info' ) ) {
 	function wppus_get_batch_package_info( $search, $json_encode = true ) {
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-manager.php';
 
-		$result         = $json_encode ? '{}' : array();
-		$update_manager = new WPPUS_Update_Manager();
-		$package_info   = $update_manager->get_batch_package_info( $search );
+		$result          = $json_encode ? '{}' : array();
+		$package_manager = new WPPUS_Package_Manager();
+		$package_info    = $package_manager->get_batch_package_info( $search );
 
 		if ( $package_info ) {
 			$result = $json_encode ? wp_json_encode( $package_info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) : $package_info;
@@ -205,15 +205,15 @@ if ( ! function_exists( 'wppus_get_batch_package_info' ) ) {
 
 if ( ! function_exists( 'wppus_download_local_package' ) ) {
 	function wppus_download_local_package( $package_slug, $package_path = null, $exit_or_die = true ) {
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-manager.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-manager.php';
 
-		$update_manager = new WPPUS_Update_Manager();
+		$package_manager = new WPPUS_Package_Manager();
 
 		if ( null === $package_path ) {
 			$package_path = wppus_get_local_package_path( $package_slug );
 		}
 
-		$update_manager->trigger_packages_download( $package_slug, $package_path, $exit_or_die );
+		$package_manager->trigger_packages_download( $package_slug, $package_path, $exit_or_die );
 	}
 }
 

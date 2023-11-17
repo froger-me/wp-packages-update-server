@@ -3,7 +3,7 @@
 } ?>
 <div class="wrap wppus-wrap">
 	<?php WP_Packages_Update_Server::get_instance()->display_settings_header(); ?>
-	<form id="wppus-packages-list" action="" method="post">
+	<form autocomplete="off" id="wppus-packages-list" action="" method="post">
 		<h3><?php esc_html_e( 'Packages', 'wppus' ); ?></h3>
 		<?php $packages_table->search_box( 'Search', 'wppus' ); ?>
 		<?php $packages_table->display(); ?>
@@ -28,7 +28,8 @@
 	</form>
 	<br>
 	<hr>
-	<h3><?php esc_html_e( 'Add packages', 'wppus' ); ?></h3>
+	<?php do_action( 'wppus_template_package_manager_option_before_add_packages' ); ?>
+	<h3><?php esc_html_e( 'Add Packages', 'wppus' ); ?></h3>
 	<table class="form-table wppus-add-packages">
 		<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 		<tr>
@@ -107,8 +108,9 @@
 		</tr>
 	</table>
 	<hr>
-	<h3><?php esc_html_e( 'General Settings', 'wppus' ); ?></h3>
-	<form action="" method="post">
+	<form autocomplete="off" action="" method="post">
+		<?php do_action( 'wppus_template_package_manager_option_before_miscellaneous' ); ?>
+		<h3><?php esc_html_e( 'Miscellaneous', 'wppus' ); ?></h3>
 		<table class="form-table general-options">
 			<tr>
 				<th>

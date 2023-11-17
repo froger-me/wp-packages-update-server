@@ -10,9 +10,9 @@ class WPPUS_Packages_Table extends WP_List_Table {
 	public $nonce_action;
 
 	protected $rows;
-	protected $update_manager;
+	protected $package_manager;
 
-	public function __construct( $update_manager ) {
+	public function __construct( $package_manager ) {
 		parent::__construct(
 			array(
 				'singular' => 'wppus-packages-table',
@@ -21,8 +21,8 @@ class WPPUS_Packages_Table extends WP_List_Table {
 			)
 		);
 
-		$this->nonce_action   = 'bulk-wppus-packages-table';
-		$this->update_manager = $update_manager;
+		$this->nonce_action    = 'bulk-wppus-packages-table';
+		$this->package_manager = $package_manager;
 	}
 
 	public function set_rows( $rows ) {

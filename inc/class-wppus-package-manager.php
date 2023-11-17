@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-class WPPUS_Update_Manager {
+class WPPUS_Package_Manager {
 
 	const WPPUS_DEFAULT_LOGS_MAX_SIZE    = 10;
 	const WPPUS_DEFAULT_CACHE_MAX_SIZE   = 100;
@@ -22,9 +22,6 @@ class WPPUS_Update_Manager {
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
-			$parts     = explode( DIRECTORY_SEPARATOR, untrailingslashit( WPPUS_PLUGIN_PATH ) );
-			$plugin_id = end( $parts ) . '/wp-packages-update-server.php';
-
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 10, 0 );
 			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 10, 1 );
@@ -35,7 +32,6 @@ class WPPUS_Update_Manager {
 			add_action( 'load-toplevel_page_wppus-page', array( $this, 'add_page_options' ), 10, 0 );
 
 			add_filter( 'set-screen-option', array( $this, 'set_page_options' ), 10, 3 );
-			add_filter( 'plugin_action_links_' . $plugin_id, array( $this, 'add_action_links' ), 10, 1 );
 		}
 	}
 
@@ -95,20 +91,11 @@ class WPPUS_Update_Manager {
 		}
 	}
 
-	public function add_action_links( $links ) {
-		$link = array(
-			'<a href="' . admin_url( 'admin.php?page=wppus-page' ) . '">' . __( 'Packages overview', 'wppus' ) . '</a>',
-			'<a href="' . admin_url( 'admin.php?page=wppus-page-help' ) . '">' . __( 'Help', 'wppus' ) . '</a>',
-		);
-
-		return array_merge( $links, $link );
-	}
-
 	public function admin_menu() {
 		$page_title = __( 'WP Packages Update Server', 'wppus' );
 		$capability = 'manage_options';
 		$function   = array( $this, 'plugin_page' );
-		$menu_title = __( 'Overview', 'wppus' );
+		$menu_title = __( 'Packages Overview', 'wppus' );
 
 		add_submenu_page( 'wppus-page', $page_title, $menu_title, $capability, 'wppus-page', $function );
 	}
@@ -140,7 +127,7 @@ class WPPUS_Update_Manager {
 		$this->packages_table->prepare_items();
 
 		wppus_get_admin_template(
-			'plugin-main-page.php',
+			'plugin-packages-page.php',
 			array(
 				'updated'              => $this->plugin_options_handler(),
 				'action_error'         => '',
@@ -159,7 +146,7 @@ class WPPUS_Update_Manager {
 	public function wppus_admin_tab_links( $links ) {
 		$links['main'] = array(
 			admin_url( 'admin.php?page=wppus-page' ),
-			"<span class='dashicons dashicons-welcome-view-site'></span> " . __( 'Overview', 'wppus' ),
+			"<span class='dashicons dashicons-welcome-view-site'></span> " . __( 'Packages Overview', 'wppus' ),
 		);
 
 		return $links;
@@ -425,7 +412,7 @@ class WPPUS_Update_Manager {
 
 		if ( ! empty( $deleted_package_slugs ) ) {
 			// @todo doc
-			do_action( 'wppus_update_manager_deleted_packages_bulk', $deleted_package_slugs );
+			do_action( 'wppus_package_manager_deleted_packages_bulk', $deleted_package_slugs );
 		}
 
 		return empty( $deleted_package_slugs ) ? false : $deleted_package_slugs;
@@ -576,6 +563,15 @@ class WPPUS_Update_Manager {
 					$condition = is_numeric( $option_info['value'] );
 				}
 
+				// @todo doc
+				$condition = apply_filters(
+					'wppus_package_option_update',
+					$condition,
+					$option_name,
+					$option_info,
+					$options
+				);
+
 				if ( $condition ) {
 					update_option( $option_name, $option_info['value'] );
 				} else {
@@ -598,13 +594,15 @@ class WPPUS_Update_Manager {
 			$result = $errors;
 		}
 
+		do_action( 'wppus_package_options_updated', $errors );
+
 		return $result;
 	}
 
 	protected function get_submitted_options() {
 
 		return apply_filters(
-			'wppus_submitted_data_config',
+			'wppus_submitted_package_config',
 			array(
 				'wppus_cache_max_size'   => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_cache_max_size', FILTER_VALIDATE_INT ),
@@ -737,7 +735,7 @@ class WPPUS_Update_Manager {
 			}
 
 			// @todo doc
-			$packages = apply_filters( 'wppus_update_manager_batch_package_info', $packages, $search );
+			$packages = apply_filters( 'wppus_package_manager_batch_package_info', $packages, $search );
 
 			wp_cache_set( 'packages', $packages, 'wppus' );
 		}

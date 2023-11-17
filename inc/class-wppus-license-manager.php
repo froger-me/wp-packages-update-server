@@ -36,7 +36,7 @@ class WPPUS_License_Manager {
 			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 20, 2 );
 			add_action( 'load-wp-packages-update-server_page_wppus-page-licenses', array( $this, 'add_page_options' ), 10, 0 );
 			add_action( 'wppus_udpdate_manager_request_action', array( $this, 'wppus_udpdate_manager_request_action' ), 10, 2 );
-			add_action( 'wppus_update_manager_deleted_packages_bulk', array( $this, 'wppus_update_manager_deleted_packages_bulk' ), 10, 1 );
+			add_action( 'wppus_package_manager_deleted_packages_bulk', array( $this, 'wppus_package_manager_deleted_packages_bulk' ), 10, 1 );
 
 			add_filter( 'set-screen-option', array( $this, 'set_page_options' ), 10, 3 );
 			add_filter( 'wppus_page_wppus_scripts_l10n', array( $this, 'wppus_page_wppus_scripts_l10n' ), 10, 1 );
@@ -169,7 +169,7 @@ class WPPUS_License_Manager {
 		}
 	}
 
-	public function wppus_update_manager_deleted_packages_bulk( $deleted_package_slugs ) {
+	public function wppus_package_manager_deleted_packages_bulk( $deleted_package_slugs ) {
 		$this->change_packages_license_status_bulk( $deleted_package_slugs, false );
 	}
 

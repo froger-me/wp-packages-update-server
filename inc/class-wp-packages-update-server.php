@@ -12,11 +12,16 @@ class WP_Packages_Update_Server {
 		if ( $init_hooks ) {
 
 			if ( ! wppus_is_doing_api_request() ) {
+				$parts     = explode( DIRECTORY_SEPARATOR, untrailingslashit( WPPUS_PLUGIN_PATH ) );
+				$plugin_id = end( $parts ) . '/wp-packages-update-server.php';
+
 				add_action( 'init', array( $this, 'register_activation_notices' ), 99, 0 );
 				add_action( 'init', array( $this, 'maybe_flush' ), 99, 0 );
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 				add_action( 'admin_menu', array( $this, 'admin_menu' ), 5, 0 );
 				add_action( 'admin_menu', array( $this, 'admin_menu_help' ), 99, 0 );
+
+				add_filter( 'plugin_action_links_' . $plugin_id, array( $this, 'add_action_links' ), 10, 1 );
 				add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 99, 1 );
 				add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 99, 2 );
 			}
@@ -337,6 +342,15 @@ class WP_Packages_Update_Server {
 		$states['help'] = 'wppus-page-help' === $page;
 
 		return $states;
+	}
+
+	public function add_action_links( $links ) {
+		$link = array(
+			'<a href="' . admin_url( 'admin.php?page=wppus-page' ) . '">' . __( 'Packages overview', 'wppus' ) . '</a>',
+			'<a href="' . admin_url( 'admin.php?page=wppus-page-help' ) . '">' . __( 'Help', 'wppus' ) . '</a>',
+		);
+
+		return array_merge( $links, $link );
 	}
 
 	protected function display_tabs() {

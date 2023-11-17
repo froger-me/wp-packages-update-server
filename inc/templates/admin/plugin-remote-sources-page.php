@@ -3,7 +3,7 @@
 } ?>
 <div class="wrap wppus-wrap">
 	<?php WP_Packages_Update_Server::get_instance()->display_settings_header(); ?>
-	<form action="" method="post">
+	<form autocomplete="off" action="" method="post">
 		<table class="form-table package-source">
 			<tr>
 				<th>
@@ -87,7 +87,7 @@
 					<label for="wppus_remote_repository_credentials"><?php esc_html_e( 'Remote Repository Service Credentials', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="remote-repository-setting regular-text secret" type="password" id="wppus_remote_repository_credentials" name="wppus_remote_repository_credentials" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_credentials' ) ); ?>">
+					<input class="remote-repository-setting regular-text secret" type="password" autocomplete="new-password" id="wppus_remote_repository_credentials" name="wppus_remote_repository_credentials" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_credentials' ) ); ?>">
 					<p class="description">
 						<?php esc_html_e( 'Credentials for non-publicly accessible repositories.', 'wppus' ); ?>
 						<br>
@@ -131,7 +131,7 @@
 					<label for="wppus_package_private_api_auth_key"><?php esc_html_e( 'Private API Authentication Key', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text secret" type="password" id="wppus_package_private_api_auth_key" name="wppus_package_private_api_auth_key" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_auth_key', 'private_api_auth_key' ) ); ?>">
+					<input class="regular-text secret" type="password" autocomplete="new-password" id="wppus_package_private_api_auth_key" name="wppus_package_private_api_auth_key" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_auth_key', 'private_api_auth_key' ) ); ?>">
 					<p class="description">
 						<?php esc_html_e( 'Ideally a random string - used to authenticate package administration requests (browse, read, edit, add, delete), requests for signed URLs of package, and requests for tokens & true nonces.', 'wppus' ); ?>
 						<br>

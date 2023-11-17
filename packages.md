@@ -61,9 +61,10 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_did\_signed\_url\_package](#wppus_did_signed_url_package)
 		* [wppus\_package\_api\_request](#wppus_package_api_request)
 		* [wppus\_remote\_sources\_options\_updated](#wppus_remote_sources_options_updated)
+		* [wppus\_package\_options\_updated](#wppus_package_options_updated)
 		* [wppus\_check\_remote\_update](#wppus_check_remote_update)
 		* [wppus\_udpdate\_manager\_request\_action](#wppus_udpdate_manager_request_action)
-		* [wppus\_update\_manager\_deleted\_packages\_bulk](#wppus_update_manager_deleted_packages_bulk)
+		* [wppus\_package\_manager\_deleted\_packages\_bulk](#wppus_package_manager_deleted_packages_bulk)
 		* [wppus\_before\_packages\_download\_repack](#wppus_before_packages_download_repack)
 		* [wppus\_triggered\_packages\_download](#wppus_triggered_packages_download)
 		* [wppus\_after\_packages\_download](#wppus_after_packages_download)
@@ -74,7 +75,7 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_webhook\_after\_processing\_request](#wppus_webhook_after_processing_request)
 		* [wppus\_packages\_table\_cell](#wppus_packages_table_cell)
 	* [Filters](#filters)
-		* [wppus\_submitted\_data\_config](#wppus_submitted_data_config)
+		* [wppus\_submitted\_package\_config](#wppus_submitted_package_config)
 		* [wppus\_submitted\_remote\_sources\_config](#wppus_submitted_remote_sources_config)
 		* [wppus\_schedule\_cleanup\_frequency](#wppus_schedule_cleanup_frequency)
 		* [wppus\_check\_remote\_frequency](#wppus_check_remote_frequency)
@@ -103,13 +104,15 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_delete\_packages\_bulk\_paths](#wppus_delete_packages_bulk_paths)
 		* [wppus\_package\_info](#wppus_package_info)
 		* [wppus\_batch\_package\_info\_include](#wppus_batch_package_info_include)
-		* [wppus\_update\_manager\_batch\_package\_info](#wppus_update_manager_batch_package_info)
+		* [wppus\_package\_manager\_batch\_package\_info](#wppus_package_manager_batch_package_info)
 		* [wppus\_check\_remote\_package\_update\_local\_meta](#wppus_check_remote_package_update_local_meta)
 		* [wppus\_check\_remote\_package\_update\_no\_local\_meta\_needs\_update](#wppus_check_remote_package_update_no_local_meta_needs_update)
 		* [wppus\_remove\_package\_result](#wppus_remove_package_result)
 		* [wppus\_update\_server\_action\_download\_handled](#wppus_update_server_action_download_handled)
 		* [wppus\_save\_remote\_to\_local](#wppus_save_remote_to_local)
 		* [wppus\_webhook\_process\_request](#wppus_webhook_process_request)
+		* [wppus\_package\_option\_update](#wppus_package_option_update)
+		* [wppus\_remote\_source\_option\_update](#wppus_remote_source_option_update)
 
 
 
@@ -1436,6 +1439,21 @@ Fired after the options in "Remote Sources" have been updated.
 > (array) an array of containing errors if any  
 
 ___
+
+### wppus_package_options_updated
+
+```php
+do_action( 'wppus_package_options_updated', array $errors );
+```
+
+**Description**  
+Fired after the options in "Packages Overview" have been updated.
+
+**Parameters**  
+`$errors`
+> (array) an array of containing errors if any  
+
+___
 ### wppus_check_remote_update
 
 ```php
@@ -1468,10 +1486,10 @@ Fired if the action sent by the admin interface is not `'delete'` or `'download'
 > (array) the slugs of the packages on which to perform the action  
 
 ___
-### wppus_update_manager_deleted_packages_bulk
+### wppus_package_manager_deleted_packages_bulk
 
 ```php
-do_action( 'wppus_update_manager_deleted_packages_bulk', array $deleted_package_slugs );
+do_action( 'wppus_package_manager_deleted_packages_bulk', array $deleted_package_slugs );
 ```
 
 **Description**  
@@ -1670,18 +1688,18 @@ WP Packages Update Server gives developers the possibility to customise its beha
 **Warning**: the filters below with the mention "Fired during client update API request" need to be used with caution. Although they may be triggered when using the functions above, these filters will possibly be called when client packages request for updates. Registering functions doing heavy computation to these filters when client update API requests are handled can seriously degrade the server's performances.  
 
 ___
-### wppus_submitted_data_config
+### wppus_submitted_package_config
 
 ```php
-apply_filters( 'wppus_submitted_data_config', array $config );
+apply_filters( 'wppus_submitted_package_config', array $config );
 ```
 
 **Description**  
-Filter the submitted plugin data configuration values before saving them.  
+Filter the submitted package configuration values before saving them.  
 
 **Parameters**  
 `$config`
-> (array) the submitted plugin data configuration values
+> (array) the submitted package configuration values
 
 ___
 ### wppus_submitted_remote_sources_config
@@ -2184,10 +2202,10 @@ Filter whether to include the package in the batch of information.
 > (string) the keyword used to search in package's slug and package's name  
 
 ___
-### wppus_update_manager_batch_package_info
+### wppus_package_manager_batch_package_info
 
 ```php
-apply_filters( 'wppus_update_manager_batch_package_info', array $packages_information, string $search );
+apply_filters( 'wppus_package_manager_batch_package_info', array $packages_information, string $search );
 ```
 
 **Description**  
@@ -2332,5 +2350,51 @@ Filter whether to process the Webhook request.
 
 `$config`
 > (array) the webhook configuration  
+
+___
+### wppus_package_option_update
+
+```php
+apply_filters( 'wppus_package_option_update', bool $update, string $option_name, array $option_info, array $options );
+```
+
+**Description**  
+Filter whether to update the packages plugin option.  
+
+**Parameters**  
+`$update`
+> (bool) whether to update the package option  
+
+`$option_name`
+> (string) the name of the option  
+
+`$option_info`
+> (array) the info related to the option  
+
+`$options`
+> (array) the values submitted along with the option  
+
+___
+### wppus_remote_source_option_update
+
+```php
+apply_filters( 'wppus_remote_source_option_update', bool $update, string $option_name, array $option_info, array $options );
+```
+
+**Description**  
+Filter whether to update the remote sources plugin option.  
+
+**Parameters**  
+`$update`
+> (bool) whether to update the remote sources option  
+
+`$option_name`
+> (string) the name of the option  
+
+`$option_info`
+> (array) the info related to the option  
+
+`$options`
+> (array) the values submitted along with the option  
 
 ___
