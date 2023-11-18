@@ -2,7 +2,7 @@
 	exit; // Exit if accessed directly
 } ?>
 <div class="wrap wppus-wrap">
-	<?php WP_Packages_Update_Server::get_instance()->display_settings_header(); ?>
+	<?php WP_Packages_Update_Server::get_instance()->display_settings_header( $result ); ?>
 	<?php if ( get_option( 'wppus_use_licenses' ) ) : ?>
 	<form autocomplete="off" id="wppus-licenses-list" action="" method="post">
 		<h3><?php esc_html_e( 'Licenses', 'wppus' ); ?></h3>
@@ -131,7 +131,7 @@
 										<ul class="wppus-domains-list">
 											<li class='wppus-domain-template'>
 												<button type="button" class="wppus-remove-domain">
-												<span class="wppus-remove-domain-icon" aria-hidden="true"></span>
+												<span class="wppus-remove-icon" aria-hidden="true"></span>
 												</button> <span class="wppus-domain-value"></span>
 											</li>
 										</ul>
@@ -190,30 +190,6 @@
 						<strong><?php esc_html_e( 'It affects all the packages with a "Requires License" license status delivered by this installation of WP Packages Update Server.', 'wppus' ); ?></strong>
 						<br>
 						<strong><?php esc_html_e( 'Settings of the "Licenses" section will be saved only if this option is checked.', 'wppus' ); ?></strong>
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="wppus_license_private_api_auth_key"><?php esc_html_e( 'Private API Authentication Key', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text secret" type="password" autocomplete="new-password" id="wppus_license_private_api_auth_key" name="wppus_license_private_api_auth_key" value="<?php echo esc_attr( get_option( 'wppus_license_private_api_auth_key', 'private_api_auth_key' ) ); ?>">
-					<p class="description"><?php esc_html_e( 'Ideally a random string - used to authenticate license administration requests (browse, read, edit, add, delete).', 'wppus' ); ?>
-						<br>
-						<strong><?php esc_html_e( 'WARNING: Keep this key secret, do not share it with customers!', 'wppus' ); ?></strong>
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="wppus_license_private_api_ip_whitelist"><?php esc_html_e( 'Private API IP Whitelist', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<textarea id="wppus_package_private_api_ip_whitelist" name="wppus_license_private_api_ip_whitelist"><?php echo esc_html( implode( "\n", get_option( 'wppus_license_private_api_ip_whitelist', array() ) ) ); ?></textarea>
-					<p class="description">
-						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authorised to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
-						<?php esc_html_e( 'Leave blank to accept any IP address (not recommended).', 'wprus' ); ?>
 					</p>
 				</td>
 			</tr>

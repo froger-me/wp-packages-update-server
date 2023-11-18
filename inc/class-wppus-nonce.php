@@ -12,7 +12,7 @@ class WPPUS_Nonce {
 	protected static $true_nonce;
 	protected static $expiry_length;
 	protected static $doing_update_api_request = null;
-	protected static $private_auth_key;
+	protected static $private_auth_keys;
 	protected static $auth_header_name;
 
 	public static function activate() {
@@ -80,9 +80,9 @@ class WPPUS_Nonce {
 		add_filter( 'query_vars', array( get_class(), 'query_vars' ), -99, 1 );
 	}
 
-	public static function init_auth( $private_auth_key, $auth_header_name = null ) {
-		self::$private_auth_key = $private_auth_key;
-		self::$auth_header_name = $auth_header_name;
+	public static function init_auth( $private_auth_keys, $auth_header_name = null ) {
+		self::$private_auth_keys = $private_auth_keys;
+		self::$auth_header_name  = $auth_header_name;
 	}
 
 	public static function register_nonce_cleanup() {
@@ -357,22 +357,21 @@ class WPPUS_Nonce {
 					$data['permanent']
 				)
 			) {
-				$expire     = apply_filters(
+				// @todo doc
+				$row->nonce = apply_filters(
 					'wppus_expire_nonce',
-					true,
+					null,
 					$row->nonce,
 					$row->true_nonce,
 					$row->expiry,
 					$data,
 					$row
 				);
-				$row->nonce = $expire ? null : $row->nonce;
 			}
 			// @todo doc
 			$delete_nonce = apply_filters(
 				'wppus_delete_nonce',
 				$row->true_nonce || null === $row->nonce,
-				$row->nonce,
 				$row->true_nonce,
 				$row->expiry,
 				$data,
@@ -447,9 +446,9 @@ class WPPUS_Nonce {
 
 		return apply_filters(
 			'wppus_nonce_authorize',
-			self::$private_auth_key === $key,
+			in_array( $key, self::$private_auth_keys, true ),
 			$key,
-			self::$private_auth_key
+			self::$private_auth_keys
 		);
 	}
 }

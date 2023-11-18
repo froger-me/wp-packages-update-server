@@ -169,7 +169,7 @@ class WPPUS_Remote_Sources_Manager {
 		wppus_get_admin_template(
 			'plugin-remote-sources-page.php',
 			array(
-				'updated'              => $this->plugin_options_handler(),
+				'result'               => $this->plugin_options_handler(),
 				'action_error'         => '',
 				'registered_schedules' => $registered_schedules,
 				'schedules'            => $schedules,

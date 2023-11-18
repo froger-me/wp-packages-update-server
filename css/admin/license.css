@@ -161,22 +161,6 @@ span.wppus-domain-value {
     margin-left: 5px;
 }
 
-span.wppus-remove-domain-icon::before {
-    margin-left: 2px;
-    border-radius: 50%;
-    color: #0073aa;
-    line-height: 1.28;
-    background: 0 0;
-    content: "\f153";
-    display: block;
-    font: 400 16px/20px dashicons;
-    height: 20px;
-    text-align: center;
-    width: 20px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
 #wppus_license_data {
     width: 250px;
 }

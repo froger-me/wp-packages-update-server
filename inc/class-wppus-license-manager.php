@@ -348,13 +348,6 @@ class WPPUS_License_Manager {
 
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		if (
-			! get_option( 'wppus_license_private_api_auth_key' ) ||
-			'private_api_auth_key' === get_option( 'wppus_license_private_api_auth_key' )
-		) {
-			update_option( 'wppus_license_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
 		$charset_collate = '';
 
 		if ( ! empty( $wpdb->charset ) ) {
@@ -502,19 +495,10 @@ class WPPUS_License_Manager {
 		return apply_filters(
 			'wppus_submitted_licenses_config',
 			array(
-				'wppus_use_licenses'                     => array(
+				'wppus_use_licenses' => array(
 					'value'        => filter_input( INPUT_POST, 'wppus_use_licenses', FILTER_VALIDATE_BOOLEAN ),
 					'display_name' => __( 'Enable Package Licenses', 'wppus' ),
 					'condition'    => 'boolean',
-				),
-				'wppus_license_private_api_auth_key'     => array(
-					'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_auth_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
-					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-				),
-				'wppus_license_private_api_ip_whitelist' => array(
-					'value'     => filter_input( INPUT_POST, 'wppus_license_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'condition' => 'ip-list',
 				),
 			)
 		);

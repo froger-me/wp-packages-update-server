@@ -63,14 +63,6 @@ class WP_Packages_Update_Server {
 			update_option( 'wppus_plugin_version', $version );
 		}
 
-		$result = self::maybe_create_or_upgrade_db();
-
-		if ( ! $result ) {
-			$error_message = __( 'Failed to create the necessary database table(s).', 'wppus' );
-
-			die( $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
-
 		set_transient( 'wppus_flush', 1, 60 );
 
 		$result = WPPUS_Data_Manager::maybe_setup_directories();
@@ -172,18 +164,6 @@ class WP_Packages_Update_Server {
 		);
 
 		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	}
-
-	public static function maybe_create_or_upgrade_db() {
-		global $wpdb;
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		if ( ! get_option( 'wppus_package_private_api_auth_key' ) ) {
-			update_option( 'wppus_package_private_api_auth_key', bin2hex( openssl_random_pseudo_bytes( 16 ) ) );
-		}
-
-		return true;
 	}
 
 	public static function maybe_setup_mu_plugin() {
@@ -293,8 +273,34 @@ class WP_Packages_Update_Server {
 		}
 	}
 
-	public function display_settings_header() {
+	public function display_settings_header( $notice ) {
 		echo '<h1>' . esc_html__( 'WP Packages Update Server', 'wppus' ) . '</h1>';
+
+		if ( is_string( $notice ) && ! empty( $notice ) ) {
+			echo '
+				<div class="updated notice notice-success is-dismissible">
+					<p>'
+						. esc_html( $notice ) . '
+					</p>
+				</div>
+			';
+		} elseif ( is_array( $notice ) && ! empty( $notice ) ) {
+			echo '
+				<div class="error notice notice-error is-dismissible">
+					<ul>';
+
+			foreach ( $notice as $key => $message ) {
+				echo '
+				<li id="wppus_option_error_item_' . esc_attr( $key ) . '">'
+					. esc_html( $message ) .
+				'</li>';
+			}
+
+			echo '
+					</ul>
+				</div>';
+		}
+
 		$this->display_tabs();
 	}
 

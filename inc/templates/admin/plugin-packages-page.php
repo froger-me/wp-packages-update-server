@@ -2,7 +2,7 @@
 	exit; // Exit if accessed directly
 } ?>
 <div class="wrap wppus-wrap">
-	<?php WP_Packages_Update_Server::get_instance()->display_settings_header(); ?>
+	<?php WP_Packages_Update_Server::get_instance()->display_settings_header( $result ); ?>
 	<form autocomplete="off" id="wppus-packages-list" action="" method="post">
 		<h3><?php esc_html_e( 'Packages', 'wppus' ); ?></h3>
 		<?php $packages_table->search_box( 'Search', 'wppus' ); ?>

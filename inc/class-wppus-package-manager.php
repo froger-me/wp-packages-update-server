@@ -129,7 +129,7 @@ class WPPUS_Package_Manager {
 		wppus_get_admin_template(
 			'plugin-packages-page.php',
 			array(
-				'updated'              => $this->plugin_options_handler(),
+				'result'               => $this->plugin_options_handler(),
 				'action_error'         => '',
 				'default_cache_size'   => self::WPPUS_DEFAULT_LOGS_MAX_SIZE,
 				'default_logs_size'    => self::WPPUS_DEFAULT_CACHE_MAX_SIZE,

@@ -37,9 +37,10 @@ class WPPUS_Package_API {
 	public static function get_config() {
 
 		if ( ! self::$config ) {
+			$keys   = json_decode( get_option( 'wppus_package_private_api_auth_keys', '{}' ), true );
 			$config = array(
 				'use_remote_repository' => get_option( 'wppus_use_remote_repository' ),
-				'private_api_auth_key'  => get_option( 'wppus_package_private_api_auth_key' ),
+				'private_api_auth_keys' => $keys,
 				'ip_whitelist'          => get_option( 'wppus_package_private_api_ip_whitelist' ),
 			);
 
@@ -464,7 +465,7 @@ class WPPUS_Package_API {
 		}
 
 		$config  = self::get_config();
-		$is_auth = $config['private_api_auth_key'] === $key;
+		$is_auth = in_array( $key, array_keys( $config['private_api_auth_keys'] ), true );
 
 		return $is_auth;
 	}

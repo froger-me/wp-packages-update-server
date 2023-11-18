@@ -2,7 +2,7 @@
 	exit; // Exit if accessed directly
 } ?>
 <div class="wrap wppus-wrap">
-	<?php WP_Packages_Update_Server::get_instance()->display_settings_header(); ?>
+	<?php WP_Packages_Update_Server::get_instance()->display_settings_header( $result ); ?>
 	<form autocomplete="off" action="" method="post">
 		<table class="form-table package-source">
 			<tr>

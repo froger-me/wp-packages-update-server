@@ -1,0 +1,54 @@
+.api-keys-items button {
+    width: 24px;
+    height: 24px;
+    border: none;
+    padding: 0;
+    background: 0 0;
+    cursor: pointer;
+    text-indent: 0;
+}
+
+.api-keys-items {
+    background: #fff;
+    padding: 0.5em;
+    margin-bottom: 0.75em;
+}
+
+.api-keys-items.empty {
+    padding: 0;
+}
+
+.form-table td input[type=text].new-api-key-item-name,
+.form-table td textarea.ip-whitelist,
+.api-keys-items {
+    max-width: 600px;
+}
+
+.api-keys-items .item {
+    display: grid;
+    align-items: center;
+    padding: 0.5em;
+    border-bottom: 1px solid #c3c4c7;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 0 1em;
+    justify-items: center;
+}
+
+.api-keys-items .item:last-child {
+    border: 0;
+}
+
+.api-keys-items .key {
+    word-break: break-all;
+}
+
+.api-keys-items .name {
+    justify-self: left;
+}
+
+@media only screen and (max-width: 782px) {
+
+    .wp-core-ui button.api-keys-add.button {
+        margin-top: 0.5em;
+    }
+}

@@ -174,9 +174,11 @@ function wppus_run() {
 		}
 	}
 
+	$keys = json_decode( get_option( 'wppus_package_private_api_auth_keys', '{}' ), true );
+
 	WPPUS_Nonce::register();
 	WPPUS_Nonce::init_auth(
-		get_option( 'wppus_package_private_api_auth_key' ),
+		array_keys( $keys ),
 		'HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY'
 	);
 

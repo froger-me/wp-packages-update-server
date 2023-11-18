@@ -53,9 +53,10 @@ class WPPUS_License_API {
 	public static function get_config() {
 
 		if ( ! self::$config ) {
+			$keys   = json_decode( get_option( 'wppus_license_private_api_auth_keys', '{}' ), true );
 			$config = array(
-				'private_api_auth_key' => get_option( 'wppus_license_private_api_auth_key' ),
-				'ip_whitelist'         => get_option( 'wppus_license_private_api_ip_whitelist' ),
+				'private_api_auth_keys' => $keys,
+				'ip_whitelist'          => get_option( 'wppus_license_private_api_ip_whitelist' ),
 			);
 
 			self::$config = $config;
@@ -384,7 +385,7 @@ class WPPUS_License_API {
 		}
 
 		$config  = self::get_config();
-		$is_auth = $config['private_api_auth_key'] === $key;
+		$is_auth = in_array( $key, array_keys( $config['private_api_auth_keys'] ), true );
 
 		return $is_auth;
 	}
