@@ -1409,15 +1409,15 @@ ___
 ### wppus_did_download_package
 
 ```php
-do_action( 'wppus_did_download_package', array $result );
+do_action( 'wppus_did_download_package', string $package_slug );
 ```
 
 **Description**  
 Fired after the `download` Package API action.
 
 **Parameters**  
-`$result`
-> (array) the result of the action  
+`$package_slug`
+> (string) the slug of the downloaded package  
 
 ___
 ### wppus_did_signed_url_package

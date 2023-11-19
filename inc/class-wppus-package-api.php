@@ -23,6 +23,7 @@ class WPPUS_Package_API {
 			add_action( 'wppus_saved_remote_package_to_local', array( $this, 'wppus_saved_remote_package_to_local' ), 10, 3 );
 			add_action( 'wppus_pre_delete_package', array( $this, 'wppus_pre_delete_package' ), 10, 2 );
 			add_action( 'wppus_did_delete_package', array( $this, 'wppus_did_delete_package' ), 10, 3 );
+			add_action( 'wppus_did_download_package', array( $this, 'wppus_did_download_package' ), 10, 1 );
 
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 		}
@@ -130,32 +131,6 @@ class WPPUS_Package_API {
 		return $result;
 	}
 
-	public function wppus_pre_delete_package( $package_slug, $package_type ) {
-		wp_cache_set(
-			'wppus_package_deleted_info' . $package_slug . '_' . $package_type,
-			wppus_get_package_info( $package_slug, false ),
-			'wppus'
-		);
-	}
-
-	public function wppus_did_delete_package( $result, $package_slug, $package_type ) {
-		$package_info = wp_cache_get(
-			'wppus_package_deleted_info' . $package_slug . '_' . $package_type,
-			'wppus'
-		);
-
-		if ( $package_info ) {
-			$payload = array(
-				'event'       => 'package_deleted',
-				// translators: %1$s is the package type, %2$s is the pakage slug
-				'description' => sprintf( esc_html__( 'The package of type `%1$s` and slug `%2$s` has been deleted on WPPUS' ), $package_type, $package_slug ),
-				'content'     => $package_info,
-			);
-
-			wppus_schedule_webhook( $payload, 'package' );
-		}
-	}
-
 	public function delete( $package_id, $type ) {
 		do_action( 'wppus_pre_delete_package', $package_id, $type );
 
@@ -184,13 +159,7 @@ class WPPUS_Package_API {
 		}
 
 		wppus_download_local_package( $package_id, $path, false );
-		do_action(
-			'wppus_did_download_package',
-			array(
-				'package_id' => $package_id,
-				'type'       => $type,
-			)
-		);
+		do_action( 'wppus_did_download_package', $package_id );
 
 		exit;
 	}
@@ -289,6 +258,43 @@ class WPPUS_Package_API {
 			'event'       => 'package_updated',
 			// translators: %1$s is the package type, %2$s is the pakage slug
 			'description' => sprintf( esc_html__( 'The package of type `%1$s` and slug `%2$s` has been updated on WPPUS' ), $package_type, $package_slug ),
+			'content'     => wppus_get_package_info( $package_slug, false ),
+		);
+
+		wppus_schedule_webhook( $payload, 'package' );
+	}
+
+	public function wppus_pre_delete_package( $package_slug, $package_type ) {
+		wp_cache_set(
+			'wppus_package_deleted_info' . $package_slug . '_' . $package_type,
+			wppus_get_package_info( $package_slug, false ),
+			'wppus'
+		);
+	}
+
+	public function wppus_did_delete_package( $result, $package_slug, $package_type ) {
+		$package_info = wp_cache_get(
+			'wppus_package_deleted_info' . $package_slug . '_' . $package_type,
+			'wppus'
+		);
+
+		if ( $package_info ) {
+			$payload = array(
+				'event'       => 'package_deleted',
+				// translators: %1$s is the package type, %2$s is the package slug
+				'description' => sprintf( esc_html__( 'The package of type `%1$s` and slug `%2$s` has been deleted on WPPUS' ), $package_type, $package_slug ),
+				'content'     => $package_info,
+			);
+
+			wppus_schedule_webhook( $payload, 'package' );
+		}
+	}
+
+	public function wppus_did_download_package( $package_slug ) {
+		$payload = array(
+			'event'       => 'package_downloaded',
+			// translators: %s is the package slug
+			'description' => sprintf( esc_html__( 'The package of `%s` has been securely downloaded from WPPUS' ), $package_slug ),
 			'content'     => wppus_get_package_info( $package_slug, false ),
 		);
 
