@@ -42,6 +42,12 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$this->repository_check_frequency     = $repository_check_frequency;
 	}
 
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
+	// Misc. -------------------------------------------------------
+
 	public static function unlock_update_from_remote( $slug ) {
 		$locks = get_option( 'wppus_update_from_remote_locks' );
 
@@ -102,9 +108,12 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 						);
 						$local_ready     = $package_manager->clean_package();
 
-						do_action( 'wppus_saved_remote_package_to_local', $local_ready, $info['type'], $safe_slug );
-					} else {
-						php_log( $info, 'Invalid value for $info' );
+						do_action(
+							'wppus_saved_remote_package_to_local',
+							$local_ready,
+							$info['type'],
+							$safe_slug
+						);
 					}
 				} catch ( Exception $e ) {
 					self::unlock_update_from_remote( $safe_slug );
@@ -120,7 +129,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	}
 
 	public function set_type( $type ) {
-		$type = ucfirst( $type );
+		$type = $type ? ucfirst( $type ) : false;
 
 		if ( 'Plugin' === $type || 'Theme' === $type ) {
 			$this->type = $type;
@@ -128,7 +137,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	}
 
 	public function check_remote_package_update( $slug ) {
-		// @todo doc
 		do_action( 'wppus_check_remote_update', $slug );
 
 		$needs_update  = true;
@@ -137,8 +145,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		if ( $local_package instanceof Wpup_Package ) {
 			$package_path = $local_package->getFileName();
 			$local_meta   = WshWordPressPackageParser::parsePackage( $package_path, true );
-			// @todo doc
-			$local_meta = apply_filters(
+			$local_meta   = apply_filters(
 				'wppus_check_remote_package_update_local_meta',
 				$local_meta,
 				$local_package,
@@ -146,7 +153,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			);
 
 			if ( ! $local_meta ) {
-				// @todo doc
 				$needs_update = apply_filters(
 					'wppus_check_remote_package_update_no_local_meta_needs_update',
 					$needs_update,
@@ -203,7 +209,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			$result      = $wp_filesystem->delete( $package_path );
 		}
 
-		// @todo doc
 		$result = apply_filters( 'wppus_remove_package_result', $result, $type, $slug );
 
 		if ( $result ) {
@@ -227,6 +232,12 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		return $result;
 	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
+	// Overrides ---------------------------------------------------
 
 	protected function initRequest( $query = null, $headers = null ) {
 		$request = parent::initRequest( $query, $headers );
@@ -265,10 +276,8 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	}
 
 	protected function actionDownload( Wpup_Request $request ) {
-		// @todo doc
 		do_action( 'wppus_update_server_action_download', $request );
 
-		// @todo doc
 		$handled = apply_filters( 'wppus_update_server_action_download_handled', false, $request );
 
 		if ( ! $handled ) {
@@ -281,9 +290,8 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		global $wp_filesystem;
 
-		$safe_slug = preg_replace( '@[^a-z0-9\-_\.,+!]@i', '', $slug );
-		$filename  = trailingslashit( $this->packageDirectory ) . $safe_slug . '.zip'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		// @todo doc
+		$safe_slug            = preg_replace( '@[^a-z0-9\-_\.,+!]@i', '', $slug );
+		$filename             = trailingslashit( $this->packageDirectory ) . $safe_slug . '.zip'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$save_remote_to_local = apply_filters(
 			'wppus_save_remote_to_local',
 			! $wp_filesystem->is_file( $filename ) || ! $wp_filesystem->is_readable( $filename ),
@@ -339,7 +347,6 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 			}
 
 			if ( ! $cached_value ) {
-				// @todo doc
 				do_action( 'wppus_find_package_no_cache', $safe_slug, $filename, $this->cache );
 			}
 
@@ -356,6 +363,19 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		return $package;
 	}
+
+	protected function actionGetMetadata( Wpup_Request $request ) {
+		$meta                         = $request->package->getMetadata();
+		$meta['download_url']         = $this->generateDownloadUrl( $request->package );
+		$meta                         = $this->filterMetadata( $meta, $request );
+		$meta['request_time_elapsed'] = sprintf( '%.3f', microtime( true ) - $this->startTime ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+		$this->outputAsJson( $meta );
+
+		exit;
+	}
+
+	// Misc. -------------------------------------------------------
 
 	protected function register_remote_check_recurring_event( $slug, $frequency ) {
 		$hook = 'wppus_check_remote_' . $slug;
@@ -378,21 +398,9 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
 	}
 
-	protected function actionGetMetadata( Wpup_Request $request ) {
-		$meta                         = $request->package->getMetadata();
-		$meta['download_url']         = $this->generateDownloadUrl( $request->package );
-		$meta                         = $this->filterMetadata( $meta, $request );
-		$meta['request_time_elapsed'] = sprintf( '%.3f', microtime( true ) - $this->startTime ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-
-		$this->outputAsJson( $meta );
-
-		exit;
-	}
-
 	protected function init_update_checker( $slug ) {
 
 		if ( $this->update_checker ) {
-
 			return;
 		}
 
@@ -451,14 +459,12 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	protected function download_remote_package( $url, $timeout = 300 ) {
 
 		if ( ! $url ) {
-
 			return new WP_Error( 'http_no_url', __( 'Invalid URL provided.', 'wppus' ) );
 		}
 
 		$local_filename = wp_tempnam( $url );
 
 		if ( ! $local_filename ) {
-
 			return new WP_Error( 'http_no_file', __( 'Could not create temporary file.', 'wppus' ) );
 		}
 

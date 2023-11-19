@@ -622,6 +622,10 @@ class WPPUS_Cloud_Storage_Manager {
 
 		global $wp_filesystem;
 
+		if ( $wp_filesystem->is_file( $filename ) ) {
+			return;
+		}
+
 		$config = self::get_config();
 
 		try {
@@ -696,6 +700,7 @@ class WPPUS_Cloud_Storage_Manager {
 			$config            = self::get_config();
 			$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
 			$filename          = $package_directory . $slug . '.zip';
+			$cleanup           = ! $wp_filesystem->is_file( $filename );
 
 			try {
 				$info = wp_cache_get( $slug . '-getObjectInfo', 'wppus' );
@@ -757,7 +762,7 @@ class WPPUS_Cloud_Storage_Manager {
 				}
 			}
 
-			if ( $wp_filesystem->is_file( $filename ) ) {
+			if ( $cleanup && $wp_filesystem->is_file( $filename ) ) {
 				wp_delete_file( $filename );
 			}
 		}

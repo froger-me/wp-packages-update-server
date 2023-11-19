@@ -59,6 +59,10 @@ class WPPUS_License_Server {
 
 	public function __construct() {}
 
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
 	public function build_license( $payload ) {
 		$payload = $this->extend_license_payload( $this->filter_license_payload( $payload ) );
 
@@ -104,8 +108,7 @@ class WPPUS_License_Server {
 		$sql           .= ' ORDER BY ' . $browsing_query['order_by'] . ' LIMIT %d OFFSET %d';
 		$prepare_args[] = $browsing_query['limit'];
 		$prepare_args[] = $browsing_query['offset'];
-
-		$licenses = $wpdb->get_results( $wpdb->prepare( $sql, $prepare_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$licenses       = $wpdb->get_results( $wpdb->prepare( $sql, $prepare_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! empty( $licenses ) ) {
 
@@ -354,8 +357,12 @@ class WPPUS_License_Server {
 	public function dispatch( $response, $response_status_code ) {
 		wp_send_json( $response, $response_status_code );
 
-		exit();
+		exit;
 	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
 
 	protected function build_browsing_query( $payload ) {
 		$payload         = array_intersect_key( $payload, self::$browsing_query );
@@ -460,12 +467,10 @@ class WPPUS_License_Server {
 	}
 
 	protected function filter_license_payload( $payload ) {
-
 		return array_intersect_key( $payload, self::$license_definition );
 	}
 
 	protected function extend_license_payload( $payload ) {
-
 		return array_merge( self::$license_definition, $payload );
 	}
 

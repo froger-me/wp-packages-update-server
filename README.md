@@ -152,7 +152,6 @@ In addition, the following settings are available:
 Name                                    | Type     | Description
 ----------------------------------------|:--------:| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Enable Package Licenses                 | checkbox | Enables this server manages to deliver license-enabled plugins and themes using Software License Manager licenses.<br/>**It affects all the packages with a "Requires License" license status delivered by this installation of WP Packages Update Server. Settings of the "Packages licensing" section will be saved only if this option is checked.**
-Private API Authentication Key          | text     | deally a random string - used to authenticate administration requests (create, update and delete).<br/>**WARNING: Keep this key secret, do not share it with customers!**
 
 ## Performances
 

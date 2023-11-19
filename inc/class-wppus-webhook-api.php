@@ -6,9 +6,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WPPUS_Webhook_API {
 	protected static $doing_update_api_request = null;
+	protected static $instance;
 	protected static $config;
 
+	protected $webhooks;
+
 	public function __construct( $init_hooks = false ) {
+		$this->webhooks = json_decode( get_option( 'wppus_webhooks', '{}' ), true );
 
 		if ( $init_hooks && get_option( 'wppus_remote_repository_use_webhooks' ) ) {
 
@@ -22,47 +26,15 @@ class WPPUS_Webhook_API {
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 			add_filter( 'wppus_webhook_process_request', array( $this, 'wppus_webhook_process_request' ), 10, 2 );
 		}
+
+		add_action( 'wppus_webhook', array( $this, 'fire_webhook' ), 10, 4 );
 	}
 
-	public static function is_doing_api_request() {
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
 
-		if ( null === self::$doing_update_api_request ) {
-			self::$doing_update_api_request = ( false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-webhook' ) );
-		}
-
-		return self::$doing_update_api_request;
-	}
-
-	public static function get_config() {
-
-		if ( ! self::$config ) {
-			$config = array(
-				'use_webhooks'           => get_option( 'wppus_remote_repository_use_webhooks' ),
-				'repository_branch'      => get_option( 'wppus_remote_repository_branch', 'master' ),
-				'repository_check_delay' => intval( get_option( 'wppus_remote_repository_check_delay', 0 ) ),
-				'webhook_secret'         => get_option( 'wppus_remote_repository_webhook_secret' ),
-			);
-
-			if (
-				! is_numeric( $config['repository_check_delay'] ) &&
-				0 <= intval( $config['repository_check_delay'] )
-			) {
-				$config['repository_check_delay'] = 0;
-
-				update_option( 'wppus_remote_repository_check_delay', 0 );
-			}
-
-			if ( empty( $config['webhook_secret'] ) ) {
-				$config['webhook_secret'] = bin2hex( openssl_random_pseudo_bytes( 16 ) );
-
-				update_option( 'wppus_remote_repository_webhook_secret', $config['webhook_secret'] );
-			}
-
-			self::$config = $config;
-		}
-
-		return apply_filters( 'wppus_webhook_config', self::$config );
-	}
+	// WordPress hooks ---------------------------------------------
 
 	public function add_endpoints() {
 		add_rewrite_rule( '^wppus-webhook/(plugin|theme)/(.+)?$', 'index.php?type=$matches[1]&package_id=$matches[2]&__wppus_webhook=1&', 'top' );
@@ -142,6 +114,116 @@ class WPPUS_Webhook_API {
 		return $process;
 	}
 
+	// Misc. -------------------------------------------------------
+
+	public static function is_doing_api_request() {
+
+		if ( null === self::$doing_update_api_request ) {
+			self::$doing_update_api_request = ( false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-webhook' ) );
+		}
+
+		return self::$doing_update_api_request;
+	}
+
+	public static function get_config() {
+
+		if ( ! self::$config ) {
+			$config = array(
+				'use_webhooks'           => get_option( 'wppus_remote_repository_use_webhooks' ),
+				'repository_branch'      => get_option( 'wppus_remote_repository_branch', 'master' ),
+				'repository_check_delay' => intval( get_option( 'wppus_remote_repository_check_delay', 0 ) ),
+				'webhook_secret'         => get_option( 'wppus_remote_repository_webhook_secret' ),
+			);
+
+			if (
+				! is_numeric( $config['repository_check_delay'] ) &&
+				0 <= intval( $config['repository_check_delay'] )
+			) {
+				$config['repository_check_delay'] = 0;
+
+				update_option( 'wppus_remote_repository_check_delay', 0 );
+			}
+
+			if ( empty( $config['webhook_secret'] ) ) {
+				$config['webhook_secret'] = bin2hex( openssl_random_pseudo_bytes( 16 ) );
+
+				update_option( 'wppus_remote_repository_webhook_secret', $config['webhook_secret'] );
+			}
+
+			self::$config = $config;
+		}
+
+		return apply_filters( 'wppus_webhook_config', self::$config );
+	}
+
+	public static function get_instance() {
+
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	public function schedule_webhook( $payload, $event_type ) {
+
+		if ( empty( $this->webhooks ) ) {
+			return;
+		}
+
+		if ( ! isset( $payload['event'], $payload['content'] ) ) {
+			return new WP_Error(
+				__METHOD__,
+				__( 'The webhook payload must contain an event string and a content.', 'wppus' )
+			);
+		}
+
+		$payload['origin']    = get_bloginfo( 'url' );
+		$payload['timestamp'] = time();
+
+		foreach ( $this->webhooks as $url => $info ) {
+
+			if (
+				! isset( $info['secret'], $info['events'] ) ||
+				empty( $info['events'] ) ||
+				! is_array( $info['events'] ) ||
+				! in_array( $event_type, $info['events'], true )
+			) {
+				continue;
+			}
+
+			$body = wp_json_encode( $payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+			$hook = 'wppus_webhook';
+
+			if ( ! wp_next_scheduled( 'wppus_webhook', array( $url, $info, $body, current_action() ) ) ) {
+				$params    = array( $url, $info, $body, current_action() );
+				$timestamp = time();
+
+				wp_schedule_single_event( $timestamp, $hook, $params );
+			}
+		}
+	}
+
+	public function fire_webhook( $url, $info, $body, $action ) {
+		wp_remote_post(
+			$url,
+			array(
+				'method'   => 'POST',
+				'blocking' => false,
+				'headers'  => array(
+					'X-WPPUS-Action'        => $action,
+					'X-WPPUS-Signature'     => 'sha1=' . hash_hmac( 'sha1', $body, $info['secret'] ),
+					'X-WPPUS-Signature-256' => 'sha256=' . hash_hmac( 'sha256', $body, $info['secret'] ),
+				),
+				'body'     => $body,
+			)
+		);
+	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
 	protected function handle_api_request() {
 		global $wp, $wp_filesystem;
 
@@ -167,7 +249,6 @@ class WPPUS_Webhook_API {
 			}
 
 			$payload = $wp_filesystem->get_contents( 'php://input' );
-			// @todo doc
 			$process = apply_filters(
 				'wppus_webhook_process_request',
 				true,
@@ -179,7 +260,6 @@ class WPPUS_Webhook_API {
 			);
 
 			if ( $process ) {
-				// @todo doc
 				do_action(
 					'wppus_webhook_before_processing_request',
 					$payload,
@@ -199,7 +279,6 @@ class WPPUS_Webhook_API {
 					$api->download_remote_package( $package_id, $type, true );
 				}
 
-				// @todo doc
 				do_action(
 					'wppus_webhook_after_processing_request',
 					$payload,

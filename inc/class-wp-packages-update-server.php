@@ -15,8 +15,7 @@ class WP_Packages_Update_Server {
 				$parts     = explode( DIRECTORY_SEPARATOR, untrailingslashit( WPPUS_PLUGIN_PATH ) );
 				$plugin_id = end( $parts ) . '/wp-packages-update-server.php';
 
-				add_action( 'init', array( $this, 'register_activation_notices' ), 99, 0 );
-				add_action( 'init', array( $this, 'maybe_flush' ), 99, 0 );
+				add_action( 'init', array( $this, 'init' ), 99, 0 );
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 				add_action( 'admin_menu', array( $this, 'admin_menu' ), 5, 0 );
 				add_action( 'admin_menu', array( $this, 'admin_menu_help' ), 99, 0 );
@@ -30,14 +29,11 @@ class WP_Packages_Update_Server {
 		}
 	}
 
-	public static function get_instance() {
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
 
-		if ( ! isset( self::$instance ) ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
+	// WordPress hooks ---------------------------------------------
 
 	public static function activate() {
 
@@ -100,109 +96,21 @@ class WP_Packages_Update_Server {
 		require_once WPPUS_PLUGIN_PATH . 'uninstall.php';
 	}
 
-	public static function locate_template( $template_name, $load = false, $required_once = true ) {
-		$name     = str_replace( 'templates/', '', $template_name );
-		$paths    = array(
-			'plugins/wppus/templates/' . $name,
-			'plugins/wppus/' . $name,
-			'wppus/templates/' . $name,
-			'wppus/' . $name,
-		);
-		$template = locate_template( apply_filters( 'wppus_locate_template_paths', $paths ) );
-
-		if ( empty( $template ) ) {
-			$template = WPPUS_PLUGIN_PATH . 'inc/templates/' . $template_name;
-		}
-
-		$template = apply_filters(
-			'wppus_locate_template',
-			$template,
-			$template_name,
-			str_replace( $template_name, '', $template )
-		);
-
-		if ( $load && '' !== $template ) {
-			load_template( $template, $required_once );
-		}
-
-		return $template;
-	}
-
-	public static function locate_admin_template( $template_name, $load = false, $required_once = true ) {
-		$template = apply_filters(
-			'wppus_locate_admin_template',
-			WPPUS_PLUGIN_PATH . 'inc/templates/admin/' . $template_name,
-			$template_name,
-			str_replace( $template_name, '', WPPUS_PLUGIN_PATH . 'inc/templates/admin/' )
-		);
-
-		if ( $load && '' !== $template ) {
-			load_template( $template, $required_once );
-		}
-
-		return $template;
-	}
-
-	public static function setup_mu_plugin_failure_notice() {
-		$class   = 'notice notice-error';
-		$message = sprintf(
-			// translators: %1$s is the path to the mu-plugins directory, %2$s is the path of the source MU Plugin
-			__( 'Permission errors for <code>%1$s</code> - could not setup the endpoint optimizer MU Plugin. You may create the directory if necessary and manually copy <code>%2$s</code> in it (recommended).', 'wppus' ),
-			trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ),
-			wp_normalize_path( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimizer.php' )
-		);
-
-		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	}
-
-	public static function setup_mu_plugin_success_notice() {
-		$class   = 'notice notice-info is-dismissible';
-		$message = sprintf(
-			// translators: %1$s is the path to the mu-plugin
-			__( 'An endpoint optimizer MU Plugin has been confirmed to be installed in <code>%1$s</code>.', 'wppus' ),
-			trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ) . 'wppus-endpoint-optimizer.php'
-		);
-
-		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	}
-
-	public static function maybe_setup_mu_plugin() {
-		global $wp_filesystem;
-
-		$result        = true;
-		$mu_plugin_dir = trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) );
-		$mu_plugin     = $mu_plugin_dir . 'wppus-endpoint-optimizer.php';
-
-		if ( ! $wp_filesystem->is_dir( $mu_plugin_dir ) ) {
-			$result = $wp_filesystem->mkdir( $mu_plugin_dir );
-		}
-
-		if ( $result && ! $wp_filesystem->is_file( $mu_plugin ) ) {
-			$source_mu_plugin = wp_normalize_path( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimizer.php' );
-			$result           = $wp_filesystem->copy( $source_mu_plugin, $mu_plugin );
-		}
-
-		return $result;
-	}
-
-	public function register_activation_notices() {
-
-		if ( filter_input( INPUT_COOKIE, 'wppus_activated_mu_failure', FILTER_UNSAFE_RAW ) ) {
-			setcookie( 'wppus_activated_mu_failure', '', time() - 3600, '/', COOKIE_DOMAIN );
-			add_action( 'admin_notices', array( 'WP_Packages_Update_Server', 'setup_mu_plugin_failure_notice' ), 10, 0 );
-		}
-
-		if ( filter_input( INPUT_COOKIE, 'wppus_activated_mu_success', FILTER_UNSAFE_RAW ) ) {
-			setcookie( 'wppus_activated_mu_success', '', time() - 3600, '/', COOKIE_DOMAIN );
-			add_action( 'admin_notices', array( 'WP_Packages_Update_Server', 'setup_mu_plugin_success_notice' ), 10, 0 );
-		}
-	}
-
-	public function maybe_flush() {
+	public function init() {
 
 		if ( get_transient( 'wppus_flush' ) ) {
 			delete_transient( 'wppus_flush' );
 			flush_rewrite_rules();
+		}
+
+		if ( filter_input( INPUT_COOKIE, 'wppus_activated_mu_failure', FILTER_UNSAFE_RAW ) ) {
+			setcookie( 'wppus_activated_mu_failure', '', time() - 3600, '/', COOKIE_DOMAIN );
+			add_action( 'admin_notices', array( $this, 'setup_mu_plugin_failure_notice' ), 10, 0 );
+		}
+
+		if ( filter_input( INPUT_COOKIE, 'wppus_activated_mu_success', FILTER_UNSAFE_RAW ) ) {
+			setcookie( 'wppus_activated_mu_success', '', time() - 3600, '/', COOKIE_DOMAIN );
+			add_action( 'admin_notices', array( $this, 'setup_mu_plugin_success_notice' ), 10, 0 );
 		}
 	}
 
@@ -273,6 +181,143 @@ class WP_Packages_Update_Server {
 		}
 	}
 
+	public function admin_menu() {
+		$page_title = __( 'WP Packages Update Server', 'wppus' );
+		$menu_title = $page_title;
+		$icon       = 'data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNy44NSAxNS4zMSI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNhNGE0YTQ7fS5jbHMtMntmaWxsOiNhMGE1YWE7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5VbnRpdGxlZC0xPC90aXRsZT48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMCwxMy41NGMyLjIzLDAsNC40NiwwLDYuNjksMCwuNjksMCwxLS4xNSwxLS45MSwwLTIuMzUsMC00LjcxLDAtNy4wNiwwLS42NC0uMi0uODctLjg0LS44NS0xLjEzLDAtMi4yNiwwLTMuMzksMC0uNDQsMC0uNjgtLjExLS42OC0uNjJzLjIzLS42My42OC0uNjJjMS40MSwwLDIuODEsMCw0LjIyLDAsLjgyLDAsMS4yMS40MywxLjIsMS4yNywwLDIuOTMsMCw1Ljg3LDAsOC44LDAsMS0uMjksMS4yNC0xLjI4LDEuMjVxLTIuNywwLTUuNDEsMGMtLjU0LDAtLjg1LjA5LS44NS43NXMuMzUuNzMuODcuNzFjLjgyLDAsMS42NSwwLDIuNDgsMCwuNDgsMCwuNzQuMTguNzUuNjlzLS40LjUxLS43NS41MUg1LjJjLS4zNSwwLS43OC4xMS0uNzUtLjVzLjI4LS43MS43Ni0uN2MuODMsMCwxLjY1LDAsMi40OCwwLC41NCwwLC45NSwwLC45NC0uNzRzLS40OC0uNzEtMS0uNzFIMi41MWMtMS4yMiwwLTEuNS0uMjgtMS41LTEuNTFRMSw5LjE1LDEsNWMwLTEuMTQuMzQtMS40NiwxLjQ5LTEuNDdINi40NGMuNCwwLC43LDAsLjcxLjU3cy0uMjEuNjgtLjcuNjdjLTEuMTMsMC0yLjI2LDAtMy4zOSwwLS41NywwLS44My4xNy0uODIuNzhxMCwzLjYyLDAsNy4yNGMwLC42LjIxLjguOC43OUM1LjM2LDEzLjUyLDcuNjgsMTMuNTQsMTAsMTMuNTRaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0xMy4xLDkuMzhsLTIuNjIsMi41YS44MS44MSwwLDAsMS0xLjEyLDBMNi43NCw5LjM4YS43NC43NCwwLDAsMSwwLTEuMDguODIuODIsMCwwLDEsMS4xMywwTDkuMTMsOS41VjNhLjguOCwwLDAsMSwxLjU5LDBWOS41TDEyLDguM2EuODIuODIsMCwwLDEsMS4xMywwQS43NC43NCwwLDAsMSwxMy4xLDkuMzhaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48L3N2Zz4=';
+
+		add_menu_page( $page_title, $menu_title, 'manage_options', 'wppus-page', '', $icon );
+	}
+
+	public function admin_menu_help() {
+		$function   = array( $this, 'help_page' );
+		$page_title = __( 'WP Packages Update Server - Help', 'wppus' );
+		$menu_title = __( 'Help', 'wppus' );
+		$menu_slug  = 'wppus-page-help';
+
+		add_submenu_page( 'wppus-page', $page_title, $menu_title, 'manage_options', $menu_slug, $function );
+	}
+
+	public function wppus_admin_tab_links( $links ) {
+		$links['help'] = array(
+			admin_url( 'admin.php?page=wppus-page-help' ),
+			"<span class='dashicons dashicons-editor-help'></span> " . __( 'Help', 'wppus' ),
+		);
+
+		return $links;
+	}
+
+	public function wppus_admin_tab_states( $states, $page ) {
+		$states['help'] = 'wppus-page-help' === $page;
+
+		return $states;
+	}
+
+	public function add_action_links( $links ) {
+		$link = array(
+			'<a href="' . admin_url( 'admin.php?page=wppus-page' ) . '">' . __( 'Packages Overview', 'wppus' ) . '</a>',
+			'<a href="' . admin_url( 'admin.php?page=wppus-page-help' ) . '">' . __( 'Help', 'wppus' ) . '</a>',
+		);
+
+		return array_merge( $links, $link );
+	}
+
+	// Misc. -------------------------------------------------------
+
+	public static function get_instance() {
+
+		if ( ! isset( self::$instance ) ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	public static function locate_template( $template_name, $load = false, $required_once = true ) {
+		$name     = str_replace( 'templates/', '', $template_name );
+		$paths    = array(
+			'plugins/wppus/templates/' . $name,
+			'plugins/wppus/' . $name,
+			'wppus/templates/' . $name,
+			'wppus/' . $name,
+		);
+		$template = locate_template( apply_filters( 'wppus_locate_template_paths', $paths ) );
+
+		if ( empty( $template ) ) {
+			$template = WPPUS_PLUGIN_PATH . 'inc/templates/' . $template_name;
+		}
+
+		$template = apply_filters(
+			'wppus_locate_template',
+			$template,
+			$template_name,
+			str_replace( $template_name, '', $template )
+		);
+
+		if ( $load && '' !== $template ) {
+			load_template( $template, $required_once );
+		}
+
+		return $template;
+	}
+
+	public static function locate_admin_template( $template_name, $load = false, $required_once = true ) {
+		$template = apply_filters(
+			'wppus_locate_admin_template',
+			WPPUS_PLUGIN_PATH . 'inc/templates/admin/' . $template_name,
+			$template_name,
+			str_replace( $template_name, '', WPPUS_PLUGIN_PATH . 'inc/templates/admin/' )
+		);
+
+		if ( $load && '' !== $template ) {
+			load_template( $template, $required_once );
+		}
+
+		return $template;
+	}
+
+	public static function maybe_setup_mu_plugin() {
+		global $wp_filesystem;
+
+		$result        = true;
+		$mu_plugin_dir = trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) );
+		$mu_plugin     = $mu_plugin_dir . 'wppus-endpoint-optimizer.php';
+
+		if ( ! $wp_filesystem->is_dir( $mu_plugin_dir ) ) {
+			$result = $wp_filesystem->mkdir( $mu_plugin_dir );
+		}
+
+		if ( $result && ! $wp_filesystem->is_file( $mu_plugin ) ) {
+			$source_mu_plugin = wp_normalize_path( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimizer.php' );
+			$result           = $wp_filesystem->copy( $source_mu_plugin, $mu_plugin );
+		}
+
+		return $result;
+	}
+
+	public function setup_mu_plugin_failure_notice() {
+		$class   = 'notice notice-error';
+		$message = sprintf(
+			// translators: %1$s is the path to the mu-plugins directory, %2$s is the path of the source MU Plugin
+			__( 'Permission errors for <code>%1$s</code> - could not setup the endpoint optimizer MU Plugin. You may create the directory if necessary and manually copy <code>%2$s</code> in it (recommended).', 'wppus' ),
+			trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ),
+			wp_normalize_path( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimizer.php' )
+		);
+
+		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	public function setup_mu_plugin_success_notice() {
+		$class   = 'notice notice-info is-dismissible';
+		$message = sprintf(
+			// translators: %1$s is the path to the mu-plugin
+			__( 'An endpoint optimizer MU Plugin has been confirmed to be installed in <code>%1$s</code>.', 'wppus' ),
+			trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ) . 'wppus-endpoint-optimizer.php'
+		);
+
+		printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
 	public function display_settings_header( $notice ) {
 		echo '<h1>' . esc_html__( 'WP Packages Update Server', 'wppus' ) . '</h1>';
 
@@ -304,23 +349,6 @@ class WP_Packages_Update_Server {
 		$this->display_tabs();
 	}
 
-	public function admin_menu() {
-		$page_title = __( 'WP Packages Update Server', 'wppus' );
-		$menu_title = $page_title;
-		$icon       = 'data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNy44NSAxNS4zMSI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiNhNGE0YTQ7fS5jbHMtMntmaWxsOiNhMGE1YWE7fTwvc3R5bGU+PC9kZWZzPjx0aXRsZT5VbnRpdGxlZC0xPC90aXRsZT48cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Ik0xMCwxMy41NGMyLjIzLDAsNC40NiwwLDYuNjksMCwuNjksMCwxLS4xNSwxLS45MSwwLTIuMzUsMC00LjcxLDAtNy4wNiwwLS42NC0uMi0uODctLjg0LS44NS0xLjEzLDAtMi4yNiwwLTMuMzksMC0uNDQsMC0uNjgtLjExLS42OC0uNjJzLjIzLS42My42OC0uNjJjMS40MSwwLDIuODEsMCw0LjIyLDAsLjgyLDAsMS4yMS40MywxLjIsMS4yNywwLDIuOTMsMCw1Ljg3LDAsOC44LDAsMS0uMjksMS4yNC0xLjI4LDEuMjVxLTIuNywwLTUuNDEsMGMtLjU0LDAtLjg1LjA5LS44NS43NXMuMzUuNzMuODcuNzFjLjgyLDAsMS42NSwwLDIuNDgsMCwuNDgsMCwuNzQuMTguNzUuNjlzLS40LjUxLS43NS41MUg1LjJjLS4zNSwwLS43OC4xMS0uNzUtLjVzLjI4LS43MS43Ni0uN2MuODMsMCwxLjY1LDAsMi40OCwwLC41NCwwLC45NSwwLC45NC0uNzRzLS40OC0uNzEtMS0uNzFIMi41MWMtMS4yMiwwLTEuNS0uMjgtMS41LTEuNTFRMSw5LjE1LDEsNWMwLTEuMTQuMzQtMS40NiwxLjQ5LTEuNDdINi40NGMuNCwwLC43LDAsLjcxLjU3cy0uMjEuNjgtLjcuNjdjLTEuMTMsMC0yLjI2LDAtMy4zOSwwLS41NywwLS44My4xNy0uODIuNzhxMCwzLjYyLDAsNy4yNGMwLC42LjIxLjguOC43OUM1LjM2LDEzLjUyLDcuNjgsMTMuNTQsMTAsMTMuNTRaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0xMy4xLDkuMzhsLTIuNjIsMi41YS44MS44MSwwLDAsMS0xLjEyLDBMNi43NCw5LjM4YS43NC43NCwwLDAsMSwwLTEuMDguODIuODIsMCwwLDEsMS4xMywwTDkuMTMsOS41VjNhLjguOCwwLDAsMSwxLjU5LDBWOS41TDEyLDguM2EuODIuODIsMCwwLDEsMS4xMywwQS43NC43NCwwLDAsMSwxMy4xLDkuMzhaIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMSAtMi4xOSkiLz48L3N2Zz4=';
-
-		add_menu_page( $page_title, $menu_title, 'manage_options', 'wppus-page', '', $icon );
-	}
-
-	public function admin_menu_help() {
-		$function   = array( $this, 'help_page' );
-		$page_title = __( 'WP Packages Update Server - Help', 'wppus' );
-		$menu_title = __( 'Help', 'wppus' );
-		$menu_slug  = 'wppus-page-help';
-
-		add_submenu_page( 'wppus-page', $page_title, $menu_title, 'manage_options', $menu_slug, $function );
-	}
-
 	public function help_page() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -335,29 +363,9 @@ class WP_Packages_Update_Server {
 		);
 	}
 
-	public function wppus_admin_tab_links( $links ) {
-		$links['help'] = array(
-			admin_url( 'admin.php?page=wppus-page-help' ),
-			"<span class='dashicons dashicons-editor-help'></span> " . __( 'Help', 'wppus' ),
-		);
-
-		return $links;
-	}
-
-	public function wppus_admin_tab_states( $states, $page ) {
-		$states['help'] = 'wppus-page-help' === $page;
-
-		return $states;
-	}
-
-	public function add_action_links( $links ) {
-		$link = array(
-			'<a href="' . admin_url( 'admin.php?page=wppus-page' ) . '">' . __( 'Packages Overview', 'wppus' ) . '</a>',
-			'<a href="' . admin_url( 'admin.php?page=wppus-page-help' ) . '">' . __( 'Help', 'wppus' ) . '</a>',
-		);
-
-		return array_merge( $links, $link );
-	}
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
 
 	protected function display_tabs() {
 		$states = $this->get_tab_states();

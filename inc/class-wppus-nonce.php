@@ -15,6 +15,14 @@ class WPPUS_Nonce {
 	protected static $private_auth_keys;
 	protected static $auth_header_name;
 
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
+	// API action --------------------------------------------------
+
+	// WordPress hooks ---------------------------------------------
+
 	public static function activate() {
 		$result = self::maybe_create_or_upgrade_db();
 
@@ -25,84 +33,19 @@ class WPPUS_Nonce {
 		}
 	}
 
-	public static function deactivate() {}
+	public static function deactivate() {
+		wp_clear_scheduled_hook( 'wppus_nonce_cleanup' );
+	}
 
 	public static function uninstall() {}
 
-	public static function maybe_create_or_upgrade_db() {
-		global $wpdb;
-
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		$charset_collate = '';
-
-		if ( ! empty( $wpdb->charset ) ) {
-			$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
-		}
-
-		if ( ! empty( $wpdb->collate ) ) {
-			$charset_collate .= " COLLATE {$wpdb->collate}";
-		}
-
-		$table = $wpdb->prefix . 'wppus_nonce';
-		$sql   =
-			'CREATE TABLE ' . $table . " (
-				id int(12) NOT NULL auto_increment,
-				nonce varchar(255) NOT NULL,
-				true_nonce tinyint(2) NOT NULL DEFAULT '1',
-				expiry int(12) NOT NULL,
-				data longtext NOT NULL,
-				PRIMARY KEY (id),
-				KEY nonce (nonce)
-			)" . $charset_collate . ';';
-
-		dbDelta( $sql );
-
-		$table = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . 'wppus_nonce' . "'" );
-
-		if ( $wpdb->prefix . 'wppus_nonce' !== $table ) {
-			return false;
-		}
-
-		return true;
-	}
-
-	public static function register() {
-
-		if ( ! self::is_doing_api_request() ) {
-			add_action( 'init', array( get_class(), 'add_endpoints' ), 10, 0 );
-			add_action( 'wp', array( get_class(), 'register_nonce_cleanup' ) );
-			add_action( 'wppus_nonce_cleanup', array( get_class(), 'clear_nonces' ) );
-		}
-
-		add_action( 'parse_request', array( get_class(), 'parse_request' ), -99, 0 );
-
-		add_filter( 'query_vars', array( get_class(), 'query_vars' ), -99, 1 );
-	}
-
-	public static function init_auth( $private_auth_keys, $auth_header_name = null ) {
-		self::$private_auth_keys = $private_auth_keys;
-		self::$auth_header_name  = $auth_header_name;
-	}
-
-	public static function register_nonce_cleanup() {
+	public static function wp() {
 		$d = new DateTime( 'now', new DateTimeZone( wp_timezone_string() ) );
 
 		if ( ! wp_next_scheduled( 'wppus_nonce_cleanup' ) ) {
 			$d->setTime( 0, 0, 0 );
 			wp_schedule_event( $d->getTimestamp(), 'daily', 'wppus_nonce_cleanup' );
 		}
-	}
-
-	public static function is_doing_api_request() {
-
-		if ( null === self::$doing_update_api_request ) {
-			self::$doing_update_api_request =
-				false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-token' ) &&
-				false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-nonce' );
-		}
-
-		return self::$doing_update_api_request;
 	}
 
 	public static function add_endpoints() {
@@ -159,7 +102,6 @@ class WPPUS_Nonce {
 				}
 			}
 
-			// @todo doc
 			$code     = apply_filters( 'wppus_nonce_api_code', $code, $wp->query_vars );
 			$response = apply_filters( 'wppus_nonce_api_response', $response, $code, $wp->query_vars );
 
@@ -182,6 +124,77 @@ class WPPUS_Nonce {
 		return $query_vars;
 	}
 
+	// Overrides ---------------------------------------------------
+
+	// Misc. -------------------------------------------------------
+
+	public static function maybe_create_or_upgrade_db() {
+		global $wpdb;
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+		$charset_collate = '';
+
+		if ( ! empty( $wpdb->charset ) ) {
+			$charset_collate = "DEFAULT CHARACTER SET {$wpdb->charset}";
+		}
+
+		if ( ! empty( $wpdb->collate ) ) {
+			$charset_collate .= " COLLATE {$wpdb->collate}";
+		}
+
+		$table = $wpdb->prefix . 'wppus_nonce';
+		$sql   =
+			'CREATE TABLE ' . $table . " (
+				id int(12) NOT NULL auto_increment,
+				nonce varchar(255) NOT NULL,
+				true_nonce tinyint(2) NOT NULL DEFAULT '1',
+				expiry int(12) NOT NULL,
+				data longtext NOT NULL,
+				PRIMARY KEY (id),
+				KEY nonce (nonce)
+			)" . $charset_collate . ';';
+
+		dbDelta( $sql );
+
+		$table = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . 'wppus_nonce' . "'" );
+
+		if ( $wpdb->prefix . 'wppus_nonce' !== $table ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public static function register() {
+
+		if ( ! self::is_doing_api_request() ) {
+			add_action( 'init', array( get_class(), 'add_endpoints' ), 10, 0 );
+			add_action( 'wp', array( get_class(), 'wp' ) );
+			add_action( 'wppus_nonce_cleanup', array( get_class(), 'wppus_nonce_cleanup' ) );
+		}
+
+		add_action( 'parse_request', array( get_class(), 'parse_request' ), -99, 0 );
+
+		add_filter( 'query_vars', array( get_class(), 'query_vars' ), -99, 1 );
+	}
+
+	public static function init_auth( $private_auth_keys, $auth_header_name = null ) {
+		self::$private_auth_keys = $private_auth_keys;
+		self::$auth_header_name  = $auth_header_name;
+	}
+
+	public static function is_doing_api_request() {
+
+		if ( null === self::$doing_update_api_request ) {
+			self::$doing_update_api_request =
+				false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-token' ) &&
+				false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-nonce' );
+		}
+
+		return self::$doing_update_api_request;
+	}
+
 	public static function create_nonce(
 		$true_nonce = true,
 		$expiry_length = self::DEFAULT_EXPIRY_LENGTH,
@@ -189,7 +202,6 @@ class WPPUS_Nonce {
 		$return_type = self::NONCE_ONLY,
 		$store = true
 	) {
-		// @todo doc
 		$nonce = apply_filters(
 			'wppus_created_nonce',
 			false,
@@ -276,7 +288,7 @@ class WPPUS_Nonce {
 		return (bool) $result;
 	}
 
-	public static function clear_nonces() {
+	public static function wppus_nonce_cleanup() {
 
 		if ( defined( 'WP_SETUP_CONFIG' ) || defined( 'WP_INSTALLING' ) ) {
 			return;
@@ -297,13 +309,18 @@ class WPPUS_Nonce {
 			) OR
 			JSON_VALID(`data`) = 0;";
 		$sql_args = array( time() - self::DEFAULT_EXPIRY_LENGTH );
-		// @todo doc
 		$sql      = apply_filters( 'wppus_clear_nonces_query', $sql, $sql_args );
 		$sql_args = apply_filters( 'wppus_clear_nonces_query_args', $sql_args, $sql );
 		$result   = $wpdb->query( $wpdb->prepare( $sql, $sql_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return (bool) $result;
 	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
+	// API action --------------------------------------------------
 
 	protected static function generate_token_api_response( $payload ) {
 		$token = self::create_nonce(
@@ -331,6 +348,8 @@ class WPPUS_Nonce {
 		return $nonce;
 	}
 
+	// Misc. -------------------------------------------------------
+
 	protected static function fetch_nonce( $value ) {
 		global $wpdb;
 
@@ -357,7 +376,6 @@ class WPPUS_Nonce {
 					$data['permanent']
 				)
 			) {
-				// @todo doc
 				$row->nonce = apply_filters(
 					'wppus_expire_nonce',
 					null,
@@ -368,7 +386,6 @@ class WPPUS_Nonce {
 					$row
 				);
 			}
-			// @todo doc
 			$delete_nonce = apply_filters(
 				'wppus_delete_nonce',
 				$row->true_nonce || null === $row->nonce,
@@ -382,7 +399,6 @@ class WPPUS_Nonce {
 				self::delete_nonce( $value );
 			}
 
-			// @todo doc
 			$nonce = apply_filters(
 				'wppus_fetch_nonce',
 				$row->nonce,

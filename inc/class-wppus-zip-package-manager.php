@@ -18,6 +18,72 @@ class WPPUS_Zip_Package_Manager {
 		$this->packages_dir          = $packages_dir;
 	}
 
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
+	public static function unzip_package( $source, $destination ) {
+		return unzip_file( $source, $destination );
+	}
+
+	public static function zip_package( $source, $destination, $container_dir = '' ) {
+		global $wp_filesystem;
+
+		$zip = new ZipArchive();
+
+		if ( ! $zip->open( $destination, ZIPARCHIVE::CREATE ) ) {
+			return false;
+		}
+
+		if ( ! empty( $container_dir ) ) {
+			$container_dir = trailingslashit( $container_dir );
+		}
+
+		$source = str_replace( '\\', '/', realpath( $source ) );
+
+		if ( $wp_filesystem->is_dir( $source ) ) {
+			$it = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator(
+					$source,
+					FilesystemIterator::SKIP_DOTS
+				)
+			);
+
+			$it->rewind();
+
+			while ( $it->valid() ) {
+				$inner_it = $it->getInnerIterator();
+
+				if ( $inner_it instanceof RecursiveDirectoryIterator ) {
+					$file      = str_replace( '\\', '/', $it->key() );
+					$file_name = $inner_it->getSubPathName();
+
+					if ( true === $wp_filesystem->is_dir( $file ) ) {
+						$dir_name = $container_dir . trailingslashit( $file_name );
+
+						$zip->addEmptyDir( $dir_name );
+					} elseif ( true === $wp_filesystem->is_file( $file ) ) {
+						$zip->addFromString( $container_dir . $file_name, $wp_filesystem->get_contents( $file ) );
+					}
+				}
+
+				$it->next();
+			}
+		} elseif (
+			$wp_filesystem->is_file( $source ) &&
+			'.' !== $source &&
+			'..' !== $source
+		) {
+			$file_name = str_replace( ' ', '', basename( $source ) );
+
+			if ( ! empty( $file_name ) ) {
+				$zip->addFromString( $file_name, $wp_filesystem->get_contents( $source ) );
+			}
+		}
+
+		return $zip->close();
+	}
+
 	public function clean_package() {
 		WP_Filesystem();
 
@@ -97,6 +163,10 @@ class WPPUS_Zip_Package_Manager {
 		return $return;
 	}
 
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
 	protected function repack_package() {
 		WP_Filesystem();
 
@@ -167,69 +237,5 @@ class WPPUS_Zip_Package_Manager {
 		}
 
 		return $return;
-	}
-
-	public static function unzip_package( $source, $destination ) {
-
-		return unzip_file( $source, $destination );
-	}
-
-	public static function zip_package( $source, $destination, $container_dir = '' ) {
-		global $wp_filesystem;
-
-		$zip = new ZipArchive();
-
-		if ( ! $zip->open( $destination, ZIPARCHIVE::CREATE ) ) {
-
-			return false;
-		}
-
-		if ( ! empty( $container_dir ) ) {
-			$container_dir = trailingslashit( $container_dir );
-		}
-
-		$source = str_replace( '\\', '/', realpath( $source ) );
-
-		if ( $wp_filesystem->is_dir( $source ) ) {
-			$it = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator(
-					$source,
-					FilesystemIterator::SKIP_DOTS
-				)
-			);
-
-			$it->rewind();
-
-			while ( $it->valid() ) {
-				$inner_it = $it->getInnerIterator();
-
-				if ( $inner_it instanceof RecursiveDirectoryIterator ) {
-					$file      = str_replace( '\\', '/', $it->key() );
-					$file_name = $inner_it->getSubPathName();
-
-					if ( true === $wp_filesystem->is_dir( $file ) ) {
-						$dir_name = $container_dir . trailingslashit( $file_name );
-
-						$zip->addEmptyDir( $dir_name );
-					} elseif ( true === $wp_filesystem->is_file( $file ) ) {
-						$zip->addFromString( $container_dir . $file_name, $wp_filesystem->get_contents( $file ) );
-					}
-				}
-
-				$it->next();
-			}
-		} elseif (
-			$wp_filesystem->is_file( $source ) &&
-			'.' !== $source &&
-			'..' !== $source
-		) {
-			$file_name = str_replace( ' ', '', basename( $source ) );
-
-			if ( ! empty( $file_name ) ) {
-				$zip->addFromString( $file_name, $wp_filesystem->get_contents( $source ) );
-			}
-		}
-
-		return $zip->close();
 	}
 }

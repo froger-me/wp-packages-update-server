@@ -20,45 +20,195 @@ class WPPUS_Package_API {
 			}
 
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
+			add_action( 'wppus_saved_remote_package_to_local', array( $this, 'wppus_saved_remote_package_to_local' ), 10, 3 );
 
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 		}
 	}
 
-	public static function is_doing_api_request() {
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
 
-		if ( null === self::$doing_update_api_request ) {
-			self::$doing_update_api_request = ( false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-package-api' ) );
+	// API action --------------------------------------------------
+
+	public function browse( $query ) {
+		$result          = false;
+		$query           = empty( $query ) || ! is_string( $query ) ? array() : json_decode( wp_unslash( $query ), true );
+		$query['search'] = isset( $query['search'] ) ? trim( esc_html( $query['search'] ) ) : false;
+		$result          = wppus_get_batch_package_info( $query['search'], false );
+		$result['count'] = is_array( $result ) ? count( $result ) : 0;
+		$result          = apply_filters( 'wppus_package_browse', $result, $query );
+
+		do_action( 'wppus_did_browse_package', $result );
+
+		if ( empty( $result ) ) {
+			$result = array( 'count' => 0 );
 		}
 
-		return self::$doing_update_api_request;
+		if ( isset( $result['count'] ) && 0 === $result['count'] ) {
+			$this->http_response_code = 404;
+		}
+
+		return $result;
 	}
 
-	public static function get_config() {
+	public function read( $package_id, $type ) {
+		$result = wppus_get_package_info( $package_id, false );
 
-		if ( ! self::$config ) {
-			$keys   = json_decode( get_option( 'wppus_package_private_api_auth_keys', '{}' ), true );
-			$config = array(
-				'use_remote_repository' => get_option( 'wppus_use_remote_repository' ),
-				'private_api_auth_keys' => $keys,
-				'ip_whitelist'          => get_option( 'wppus_package_private_api_ip_whitelist' ),
+		if (
+			! is_array( $result ) ||
+			! isset( $result['type'] ) ||
+			$type !== $result['type']
+		) {
+			$result = false;
+		} else {
+			unset( $result['file_path'] );
+		}
+
+		$result = apply_filters( 'wppus_package_read', $result, $package_id, $type );
+
+		do_action( 'wppus_did_read_package', $result );
+
+		if ( ! $result ) {
+			$this->http_response_code = 404;
+		}
+
+		return $result;
+	}
+
+	public function edit( $package_id, $type ) {
+		$result = false;
+		$config = self::get_config();
+
+		if ( $config['use_remote_repository'] ) {
+			$result = wppus_download_remote_package( $package_id, $type );
+			$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
+			$result = apply_filters( 'wppus_package_edit', $result, $package_id, $type );
+
+			if ( $result ) {
+				do_action( 'wppus_did_edit_package', $result );
+			}
+		}
+
+		if ( ! $result ) {
+			$this->http_response_code = 400;
+		}
+
+		return $result;
+	}
+
+	public function add( $package_id, $type ) {
+		$result = false;
+		$config = self::get_config();
+
+		if ( $config['use_remote_repository'] ) {
+			$result = wppus_get_package_info( $package_id, false );
+
+			if ( ! empty( $result ) ) {
+				$result = false;
+			} else {
+				$result = wppus_download_remote_package( $package_id, $type );
+				$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
+			}
+
+			$result = apply_filters( 'wppus_package_add', $result, $package_id, $type );
+
+			if ( $result ) {
+				do_action( 'wppus_did_add_package', $result );
+			}
+
+			if ( ! $result ) {
+				$this->http_response_code = 409;
+			}
+		} else {
+			$this->http_response_code = 400;
+		}
+
+		return $result;
+	}
+
+	public function delete( $package_id, $type ) {
+		$result = (bool) wppus_delete_package( $package_id );
+		$result = apply_filters( 'wppus_package_delete', $result, $package_id, $type );
+
+		if ( $result ) {
+			do_action( 'wppus_did_delete_package', $result );
+		} else {
+			$this->http_response_code = 404;
+		}
+
+		return $result;
+	}
+
+	public function download( $package_id, $type ) {
+		$path = wppus_get_local_package_path( $package_id );
+
+		if ( ! $path ) {
+
+			if ( ! $this->add( $package_id, $type ) ) {
+				return array(
+					'message' => __( 'Package not found', 'wppus' ),
+				);
+			}
+		}
+
+		wppus_download_local_package( $package_id, $path, false );
+		do_action(
+			'wppus_did_download_package',
+			array(
+				'package_id' => $package_id,
+				'type'       => $type,
+			)
+		);
+
+		exit;
+	}
+
+	public function signed_url( $package_id, $type ) {
+		$package_id = filter_var( $package_id, FILTER_SANITIZE_URL );
+		$type       = filter_var( $type, FILTER_SANITIZE_URL );
+		$token      = apply_filters( 'wppus_package_signed_url_token', false, $package_id, $type );
+
+		if ( ! $token ) {
+			$token = wppus_create_nonce(
+				false,
+				HOUR_IN_SECONDS,
+				array(
+					'actions'    => array( 'download' ),
+					'type'       => $type,
+					'package_id' => $package_id,
+				),
 			);
-
-			self::$config = $config;
 		}
 
-		//@todo doc
-		return apply_filters( 'wppus_package_api_config', self::$config );
-	}
+		$result = apply_filters(
+			'wppus_package_signed_url',
+			array(
+				'url'    => add_query_arg(
+					array(
+						'token'  => $token,
+						'action' => 'download',
+					),
+					home_url( 'wppus-package-api/' . $type . '/' . $package_id . '/' )
+				),
+				'token'  => $token,
+				'expiry' => wppus_get_nonce_expiry( $token ),
+			),
+			$package_id,
+			$type
+		);
 
-	public static function get_instance() {
-
-		if ( ! self::$instance ) {
-			self::$instance = new self();
+		if ( $result ) {
+			do_action( 'wppus_did_signed_url_package', $result );
+		} else {
+			$this->http_response_code = 404;
 		}
 
-		return self::$instance;
+		return $result;
 	}
+
+	// WordPress hooks ---------------------------------------------
 
 	public function add_endpoints() {
 		add_rewrite_rule(
@@ -99,199 +249,63 @@ class WPPUS_Package_API {
 		return $query_vars;
 	}
 
-	public function browse( $query ) {
-		$result          = false;
-		$query           = empty( $query ) || ! is_string( $query ) ? array() : json_decode( wp_unslash( $query ), true );
-		$query['search'] = isset( $query['search'] ) ? trim( esc_html( $query['search'] ) ) : false;
-		$result          = wppus_get_batch_package_info( $query['search'], false );
-		$result['count'] = is_array( $result ) ? count( $result ) : 0;
+	public function wppus_saved_remote_package_to_local( $local_ready, $package_type, $package_slug ) {
 
-		//@todo doc
-		$result = apply_filters( 'wppus_package_browse', $result, $query );
-
-		//@todo doc
-		do_action( 'wppus_did_browse_package', $result );
-
-		if ( empty( $result ) ) {
-			$result = array( 'count' => 0 );
+		if ( ! $local_ready ) {
+			return;
 		}
 
-		if ( isset( $result['count'] ) && 0 === $result['count'] ) {
-			$this->http_response_code = 404;
-		}
-
-		return $result;
-	}
-
-	public function read( $package_id, $type ) {
-		$result = wppus_get_package_info( $package_id, false );
-
-		if (
-			! is_array( $result ) ||
-			! isset( $result['type'] ) ||
-			$type !== $result['type']
-		) {
-			$result = false;
-		} else {
-			unset( $result['file_path'] );
-		}
-
-		//@todo doc
-		$result = apply_filters( 'wppus_package_read', $result, $package_id, $type );
-
-		//@todo doc
-		do_action( 'wppus_did_read_package', $result );
-
-		if ( ! $result ) {
-			$this->http_response_code = 404;
-		}
-
-		return $result;
-	}
-
-	public function edit( $package_id, $type ) {
-		$result = false;
-		$config = self::get_config();
-
-		if ( $config['use_remote_repository'] ) {
-			$result = wppus_download_remote_package( $package_id, $type );
-			$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
-			//@todo doc
-			$result = apply_filters( 'wppus_package_edit', $result, $package_id, $type );
-
-			if ( $result ) {
-				//@todo doc
-				do_action( 'wppus_did_edit_package', $result );
-			}
-		}
-
-		if ( ! $result ) {
-			$this->http_response_code = 400;
-		}
-
-		return $result;
-	}
-
-	public function add( $package_id, $type ) {
-		$result = false;
-		$config = self::get_config();
-
-		if ( $config['use_remote_repository'] ) {
-			$result = wppus_get_package_info( $package_id, false );
-
-			if ( ! empty( $result ) ) {
-				$result = false;
-			} else {
-				$result = wppus_download_remote_package( $package_id, $type );
-				$result = $result ? wppus_get_package_info( $package_id, false ) : $result;
-			}
-
-			//@todo doc
-			$result = apply_filters( 'wppus_package_add', $result, $package_id, $type );
-
-			if ( $result ) {
-				//@todo doc
-				do_action( 'wppus_did_add_package', $result );
-			}
-
-			if ( ! $result ) {
-				$this->http_response_code = 409;
-			}
-		} else {
-			$this->http_response_code = 400;
-		}
-
-		return $result;
-	}
-
-	public function delete( $package_id, $type ) {
-		$result = (bool) wppus_delete_package( $package_id );
-		//@todo doc
-		$result = apply_filters( 'wppus_package_delete', $result, $package_id, $type );
-
-		if ( $result ) {
-			//@todo doc
-			do_action( 'wppus_did_delete_package', $result );
-		} else {
-			$this->http_response_code = 404;
-		}
-
-		return $result;
-	}
-
-	public function download( $package_id, $type ) {
-		$path = wppus_get_local_package_path( $package_id );
-
-		if ( ! $path ) {
-
-			if ( ! $this->add( $package_id, $type ) ) {
-				return array(
-					'message' => __( 'Package not found', 'wppus' ),
-				);
-			}
-		}
-
-		wppus_download_local_package( $package_id, $path, false );
-		//@todo doc
-		do_action(
-			'wppus_did_download_package',
-			array(
-				'package_id' => $package_id,
-				'type'       => $type,
-			)
+		$payload = array(
+			'event'       => 'package_updated',
+			// translators: %1$s is the package type, %2$s is the pakage slug
+			'description' => sprintf( esc_html__( 'The package of type `%1$s` and slug `%2$s` has been updated on WPPUS' ), $package_type, $package_slug ),
+			'content'     => wppus_get_package_info( $package_slug, false ),
 		);
 
-		exit;
+		wppus_schedule_webhook( $payload, 'package' );
 	}
 
-	public function signed_url( $package_id, $type ) {
-		$package_id = filter_var( $package_id, FILTER_SANITIZE_URL );
-		$type       = filter_var( $type, FILTER_SANITIZE_URL );
-		//@todo doc
-		$token = apply_filters( 'wppus_package_signed_url_token', false, $package_id, $type );
+	// Misc. -------------------------------------------------------
 
-		if ( ! $token ) {
-			$token = wppus_create_nonce(
-				false,
-				HOUR_IN_SECONDS,
-				array(
-					'actions'    => array( 'download' ),
-					'type'       => $type,
-					'package_id' => $package_id,
-				),
+	public static function is_doing_api_request() {
+
+		if ( null === self::$doing_update_api_request ) {
+			self::$doing_update_api_request = ( false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-package-api' ) );
+		}
+
+		return self::$doing_update_api_request;
+	}
+
+	public static function get_config() {
+
+		if ( ! self::$config ) {
+			$keys   = json_decode( get_option( 'wppus_package_private_api_auth_keys', '{}' ), true );
+			$config = array(
+				'use_remote_repository' => get_option( 'wppus_use_remote_repository' ),
+				'private_api_auth_keys' => $keys,
+				'ip_whitelist'          => get_option( 'wppus_package_private_api_ip_whitelist' ),
 			);
+
+			self::$config = $config;
 		}
 
-		//@todo doc
-		$result = apply_filters(
-			'wppus_package_signed_url',
-			array(
-				'url'    => add_query_arg(
-					array(
-						'token'  => $token,
-						'action' => 'download',
-					),
-					home_url( 'wppus-package-api/' . $type . '/' . $package_id . '/' )
-				),
-				'token'  => $token,
-				'expiry' => wppus_get_nonce_expiry( $token ),
-			),
-			$package_id,
-			$type
-		);
-
-		if ( $result ) {
-			//@todo doc
-			do_action( 'wppus_did_signed_url_package', $result );
-		} else {
-			$this->http_response_code = 404;
-		}
-
-		return $result;
+		return apply_filters( 'wppus_package_api_config', self::$config );
 	}
+
+	public static function get_instance() {
+
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
 
 	protected function is_api_public( $method ) {
-		// @TODO doc
 		$public_api    = apply_filters(
 			'wppus_package_public_api_actions',
 			array( 'download' )
@@ -326,7 +340,6 @@ class WPPUS_Package_API {
 					$payload = $wp->query_vars;
 				}
 
-				//@todo doc
 				$authorized = apply_filters(
 					'wppus_package_api_request_authorized',
 					(
@@ -347,7 +360,6 @@ class WPPUS_Package_API {
 				);
 
 				if ( $authorized ) {
-					// @todo doc
 					do_action( 'wppus_package_api_request', $method, $payload );
 
 					if ( method_exists( $this, $method ) ) {

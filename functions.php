@@ -392,3 +392,19 @@ if ( ! function_exists( 'wppus_clear_nonces' ) ) {
 		return WPPUS_Nonce::clear_nonces();
 	}
 }
+
+if ( ! function_exists( 'wppus_schedule_webhook' ) ) {
+	function wppus_schedule_webhook( $payload, $event_type ) {
+		$api = WPPUS_Webhook_API::get_instance();
+
+		return $api->schedule_webhook( $payload, $event_type );
+	}
+}
+
+if ( ! function_exists( 'wppus_fire_webhook' ) ) {
+	function wppus_fire_webhook( $url, $info, $body, $action ) {
+		$api = WPPUS_Webhook_API::get_instance();
+
+		return $api->fire_webhook( $url, $info, $body, $action );
+	}
+}

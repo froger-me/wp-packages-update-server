@@ -25,24 +25,11 @@ class WPPUS_Remote_Sources_Manager {
 		}
 	}
 
-	public static function clear_schedules() {
-		$manager = new self();
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
 
-		return $manager->clear_remote_check_scheduled_hooks();
-	}
-
-	public static function register_schedules() {
-		$manager = new self();
-		$result  = false;
-
-		// @todo doc
-		if ( apply_filters( 'wppus_use_recurring_schedule', true ) ) {
-			$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
-			$result    = $manager->reschedule_remote_check_recurring_events( $frequency );
-		}
-
-		return $result;
-	}
+	// WordPress hooks ---------------------------------------------
 
 	public function register_remote_check_scheduled_hooks() {
 		$result = false;
@@ -71,46 +58,6 @@ class WPPUS_Remote_Sources_Manager {
 		return $result;
 	}
 
-	public function reschedule_remote_check_recurring_events( $frequency ) {
-
-		if ( WPPUS_Update_API::is_doing_api_request() ) {
-
-			return false;
-		}
-
-		$slugs = $this->get_package_slugs();
-
-		if ( ! empty( $slugs ) ) {
-
-			foreach ( $slugs as $slug ) {
-				$hook = 'wppus_check_remote_' . $slug;
-
-				$this->clear_remote_check_schedule( $slug );
-
-				if ( ! wp_next_scheduled( $hook, array( $slug, null, false ) ) ) {
-					$params    = array( $slug, null, false );
-					$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
-					$timestamp = time();
-					$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
-
-					do_action(
-						'wppus_scheduled_check_remote_event',
-						$result,
-						$slug,
-						$timestamp,
-						$frequency,
-						$hook,
-						$params
-					);
-				}
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
 	public function clear_remote_check_scheduled_hooks() {
 		$result = false;
 
@@ -134,14 +81,6 @@ class WPPUS_Remote_Sources_Manager {
 		return $result;
 	}
 
-	public function clear_remote_check_schedule( $slug ) {
-		$params         = array( $slug, null, false );
-		$scheduled_hook = 'wppus_check_remote_' . $slug;
-
-		wp_clear_scheduled_hook( $scheduled_hook, $params );
-		do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
-	}
-
 	public function admin_menu() {
 		$function   = array( $this, 'plugin_page' );
 		$page_title = __( 'WP Packages Update Server - Remote Sources', 'wppus' );
@@ -149,37 +88,6 @@ class WPPUS_Remote_Sources_Manager {
 		$menu_slug  = 'wppus-page-remote-sources';
 
 		add_submenu_page( 'wppus-page', $page_title, $menu_title, 'manage_options', $menu_slug, $function );
-	}
-
-	public function plugin_page() {
-
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
-
-		$registered_schedules = wp_get_schedules();
-		$schedules            = array();
-
-		foreach ( $registered_schedules as $key => $schedule ) {
-			$schedules[ $schedule['display'] ] = array(
-				'slug' => $key,
-			);
-		}
-
-		wppus_get_admin_template(
-			'plugin-remote-sources-page.php',
-			array(
-				'result'               => $this->plugin_options_handler(),
-				'action_error'         => '',
-				'registered_schedules' => $registered_schedules,
-				'schedules'            => $schedules,
-				'hide_check_frequency' => ! apply_filters(
-					'wppus_use_recurring_schedule',
-					true
-				),
-				'packages_dir'         => WPPUS_Data_Manager::get_data_dir( 'packages' ),
-			)
-		);
 	}
 
 	public function wppus_admin_tab_links( $links ) {
@@ -236,7 +144,7 @@ class WPPUS_Remote_Sources_Manager {
 			$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
 
 			if ( 'schedules' === $type ) {
-				$result = self::clear_schedules();
+				$result = $this->clear_remote_check_scheduled_hooks();
 			}
 		}
 
@@ -367,6 +275,109 @@ class WPPUS_Remote_Sources_Manager {
 		} else {
 			wp_send_json_error( $result );
 		}
+	}
+
+	// Misc. -------------------------------------------------------
+
+	public static function clear_schedules() {
+		$manager = new self();
+
+		return $manager->clear_remote_check_scheduled_hooks();
+	}
+
+	public static function register_schedules() {
+		$manager = new self();
+		$result  = false;
+
+		if ( apply_filters( 'wppus_use_recurring_schedule', true ) ) {
+			$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
+			$result    = $manager->reschedule_remote_check_recurring_events( $frequency );
+		}
+
+		return $result;
+	}
+
+	public function reschedule_remote_check_recurring_events( $frequency ) {
+
+		if ( WPPUS_Update_API::is_doing_api_request() ) {
+
+			return false;
+		}
+
+		$slugs = $this->get_package_slugs();
+
+		if ( ! empty( $slugs ) ) {
+
+			foreach ( $slugs as $slug ) {
+				$hook = 'wppus_check_remote_' . $slug;
+
+				$this->clear_remote_check_schedule( $slug );
+
+				if ( ! wp_next_scheduled( $hook, array( $slug, null, false ) ) ) {
+					$params    = array( $slug, null, false );
+					$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
+					$timestamp = time();
+					$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+
+					do_action(
+						'wppus_scheduled_check_remote_event',
+						$result,
+						$slug,
+						$timestamp,
+						$frequency,
+						$hook,
+						$params
+					);
+				}
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public function plugin_page() {
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+
+		$registered_schedules = wp_get_schedules();
+		$schedules            = array();
+
+		foreach ( $registered_schedules as $key => $schedule ) {
+			$schedules[ $schedule['display'] ] = array(
+				'slug' => $key,
+			);
+		}
+
+		wppus_get_admin_template(
+			'plugin-remote-sources-page.php',
+			array(
+				'result'               => $this->plugin_options_handler(),
+				'action_error'         => '',
+				'registered_schedules' => $registered_schedules,
+				'schedules'            => $schedules,
+				'hide_check_frequency' => ! apply_filters(
+					'wppus_use_recurring_schedule',
+					true
+				),
+				'packages_dir'         => WPPUS_Data_Manager::get_data_dir( 'packages' ),
+			)
+		);
+	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
+	protected function clear_remote_check_schedule( $slug ) {
+		$params         = array( $slug, null, false );
+		$scheduled_hook = 'wppus_check_remote_' . $slug;
+
+		wp_clear_scheduled_hook( $scheduled_hook, $params );
+		do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
 	}
 
 	protected function plugin_options_handler() {

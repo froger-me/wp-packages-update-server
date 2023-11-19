@@ -13,6 +13,129 @@ jQuery(document).ready(function ($) {
         return hexString;
     }
 
+    $('.webhook-multiple').each(function (idx, el) {
+        el = $(el);
+
+        var data = JSON.parse(el.find('.webhook-values').val());
+        var urlNew = el.find('.new-webhook-item-url');
+        var secretNew = el.find('.new-webhook-item-secret');
+        var allEvents = el.find('input[data-webhook-event="all"]');
+        var packageEvents = el.find('input[data-webhook-event="package"]');
+        var licenseEvents = el.find('input[data-webhook-event="license"]');
+        var addButton = el.find('.webhook-add').get(0);
+        var itemsContainer = el.find('.webhook-items').get(0);
+
+        if ( 0 === data.length ) {
+            data = {};
+        }
+
+        addButton.onclick = function () {
+            addButton.disabled  = 'disabled';
+            data[urlNew.val()] = {
+                'secret': secretNew.val(),
+                'events': []
+            };
+
+            if (packageEvents) {
+                data[urlNew.val()].events.push(packageEvents.data('webhook-event'));
+            }
+
+            if (licenseEvents) {
+                data[urlNew.val()].events.push(licenseEvents.data('webhook-event'));
+            }
+
+            console.log(data);
+
+            urlNew.val('');
+            secretNew.val('');
+            allEvents.prop('checked', true);
+            allEvents.trigger('change');
+            renderItems();
+        };
+
+        function validateInput() {
+            var inputValue = urlNew.get(0).value.trim();
+            var isEnabled = inputValue !== '' && !Object.values(data).some(function (item) {
+                return item === inputValue;
+            });
+            var urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+\/?)|localhost(:\d+)?(\/[\w-]+)*\/?(\?\S*)?$/;
+
+            isEnabled = isEnabled && urlPattern.test(inputValue) && (1 <= secretNew.val().length);
+            addButton.disabled = !isEnabled;
+        }
+
+        function renderItems() {
+            itemsContainer.innerHTML = '';
+
+            Object.keys(data).forEach(function (index) {
+                var itemContainer = document.createElement('div');
+                var urlContainer = document.createElement('span');
+                var urlText = document.createElement('span');
+                var secretText = document.createElement('span');
+                var eventsText = document.createElement('span');
+                var deleteButton = document.createElement('button');
+
+                itemContainer.className = 'item';
+                urlText.textContent = index;
+                urlText.title = index;
+                urlText.classList = 'url';
+                urlContainer.classList = 'url-container';
+                secretText.textContent = data[index].secret;
+                secretText.classList = 'secret';
+                eventsText.textContent = '(' + data[index].events.join(', ') + ')';
+                eventsText.classList = 'events';
+                deleteButton.type = 'button';
+                deleteButton.innerHTML = '<span class="wppus-remove-icon" aria-hidden="true"></span>';
+                deleteButton.onclick = function () {
+
+                    if (confirm(Wppus_l10n.deleteApiWebhookConfirm)) {
+                        delete data[index];
+                        renderItems();
+                    }
+                };
+
+                urlContainer.appendChild(urlText);
+                urlContainer.appendChild(eventsText);
+                itemContainer.appendChild(urlContainer);
+                itemContainer.appendChild(secretText);
+                itemContainer.appendChild(deleteButton);
+                itemsContainer.appendChild(itemContainer);
+            });
+
+            if ( 0 === Object.keys(data).length ) {
+                itemsContainer.classList.add('empty');
+            } else {
+                itemsContainer.classList.remove('empty');
+            }
+        }
+
+        urlNew.on('input', validateInput);
+        secretNew.on('input', validateInput);
+        el.find('.webhook-event-types input[type="checkbox"]').on('change', function () {
+
+            if (allEvents.prop('checked')) {
+                packageEvents.prop('checked', true);
+                packageEvents.prop('disabled', true);
+                licenseEvents.prop('checked', true);
+                licenseEvents.prop('disabled', true);
+            } else {
+                packageEvents.prop('disabled', false);
+                licenseEvents.prop('disabled', false);
+            }
+        });
+
+        // Initial rendering
+        allEvents.prop('checked', true);
+        allEvents.trigger('change');
+        renderItems();
+
+        $('input[type="submit"]').on('click', function (e) {
+            e.preventDefault();
+            el.find('.webhook-values').val(JSON.stringify(data));
+            $(this).closest('form').submit();
+        });
+    });
+
     $('.api-keys-multiple').each(function (idx, el) {
         el = $(el);
 
@@ -51,7 +174,7 @@ jQuery(document).ready(function ($) {
                 deleteButton.innerHTML = '<span class="wppus-remove-icon" aria-hidden="true"></span>';
                 deleteButton.onclick = function () {
 
-                    if (confirm(Wppus_l10n.deleteApiConfirm)) {
+                    if (confirm(Wppus_l10n.deleteApiKeyConfirm)) {
                         delete data[index];
                         renderItems();
                     }
@@ -63,7 +186,6 @@ jQuery(document).ready(function ($) {
                 itemsContainer.appendChild(itemContainer);
             });
 
-            console.log(Object.keys(data).length);
             if ( 0 === Object.keys(data).length ) {
                 itemsContainer.classList.add('empty');
             } else {

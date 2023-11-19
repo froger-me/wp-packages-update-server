@@ -23,9 +23,11 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 		$this->nonce_action = 'bulk-wppus-licenses-table';
 	}
 
-	public function set_rows( $rows ) {
-		$this->rows = $rows;
-	}
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
+	// Overrides ---------------------------------------------------
 
 	public function get_columns() {
 
@@ -198,6 +200,18 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 			}
 		}
 	}
+
+	// Misc. -------------------------------------------------------
+
+	public function set_rows( $rows ) {
+		$this->rows = $rows;
+	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
+	// Overrides ---------------------------------------------------
 
 	protected function row_actions( $actions, $always_visible = false ) {
 		$action_count = count( $actions );

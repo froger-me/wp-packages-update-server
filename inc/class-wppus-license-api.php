@@ -41,106 +41,11 @@ class WPPUS_License_API {
 		}
 	}
 
-	public static function is_doing_api_request() {
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
 
-		if ( null === self::$doing_update_api_request ) {
-			self::$doing_update_api_request = ( false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-license-api' ) );
-		}
-
-		return self::$doing_update_api_request;
-	}
-
-	public static function get_config() {
-
-		if ( ! self::$config ) {
-			$keys   = json_decode( get_option( 'wppus_license_private_api_auth_keys', '{}' ), true );
-			$config = array(
-				'private_api_auth_keys' => $keys,
-				'ip_whitelist'          => get_option( 'wppus_license_private_api_ip_whitelist' ),
-			);
-
-			self::$config = $config;
-		}
-
-		return apply_filters( 'wppus_license_api_config', self::$config );
-	}
-
-	public static function get_instance() {
-
-		if ( ! self::$instance ) {
-			self::$instance = new self();
-		}
-
-		return self::$instance;
-	}
-
-	public function add_endpoints() {
-		add_rewrite_rule( '^wppus-license-api/*$', 'index.php?$matches[1]&__wppus_license_api=1&', 'top' );
-		add_rewrite_rule( '^wppus-license-api$', 'index.php?&__wppus_license_api=1&', 'top' );
-	}
-
-	public function parse_request() {
-		global $wp;
-
-		if ( isset( $wp->query_vars['__wppus_license_api'] ) ) {
-			$this->handle_api_request();
-		}
-	}
-
-	public function query_vars( $query_vars ) {
-		$query_vars = array_merge(
-			$query_vars,
-			array(
-				'__wppus_license_api',
-				'action',
-				'api_auth_key',
-				'browse_query',
-				'update_license_key',
-				'update_license_signature',
-			),
-			array_keys( WPPUS_License_Server::$license_definition )
-		);
-
-		return $query_vars;
-	}
-
-	public function wppus_handle_update_request_params( $params ) {
-		global $wp;
-
-		$vars                                = $wp->query_vars;
-		$request_params['license_key']       = isset( $vars['update_license_key'] ) ?
-			trim( $vars['update_license_key'] ) :
-			null;
-		$request_params['license_signature'] = isset( $vars['update_license_signature'] ) ?
-				trim( $vars['update_license_signature'] ) :
-				null;
-
-		return $params;
-	}
-
-	public function wppus_server_class_name( $class_name, $package_id ) {
-		$use_licenses        = get_option( 'wppus_use_licenses' );
-		$package_use_license = false;
-
-		if ( $use_licenses ) {
-			$licensed_package_slugs = apply_filters(
-				'wppus_licensed_package_slugs',
-				get_option( 'wppus_licensed_package_slugs', array() )
-			);
-
-			if ( in_array( $package_id, $licensed_package_slugs, true ) ) {
-				$package_use_license = true;
-			}
-		}
-
-		if ( $package_use_license && $use_licenses ) {
-			require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-update-server.php';
-
-			$class_name = 'WPPUS_License_Update_Server';
-		}
-
-		return $class_name;
-	}
+	// API action --------------------------------------------------
 
 	public function browse( $query ) {
 		$payload = json_decode( wp_unslash( $query ), true );
@@ -363,6 +268,115 @@ class WPPUS_License_API {
 
 		return $result;
 	}
+
+	// WordPress hooks ---------------------------------------------
+
+	public function add_endpoints() {
+		add_rewrite_rule( '^wppus-license-api/*$', 'index.php?$matches[1]&__wppus_license_api=1&', 'top' );
+		add_rewrite_rule( '^wppus-license-api$', 'index.php?&__wppus_license_api=1&', 'top' );
+	}
+
+	public function parse_request() {
+		global $wp;
+
+		if ( isset( $wp->query_vars['__wppus_license_api'] ) ) {
+			$this->handle_api_request();
+		}
+	}
+
+	public function query_vars( $query_vars ) {
+		$query_vars = array_merge(
+			$query_vars,
+			array(
+				'__wppus_license_api',
+				'action',
+				'api_auth_key',
+				'browse_query',
+				'update_license_key',
+				'update_license_signature',
+			),
+			array_keys( WPPUS_License_Server::$license_definition )
+		);
+
+		return $query_vars;
+	}
+
+	public function wppus_handle_update_request_params( $params ) {
+		global $wp;
+
+		$vars                                = $wp->query_vars;
+		$request_params['license_key']       = isset( $vars['update_license_key'] ) ?
+			trim( $vars['update_license_key'] ) :
+			null;
+		$request_params['license_signature'] = isset( $vars['update_license_signature'] ) ?
+				trim( $vars['update_license_signature'] ) :
+				null;
+
+		return $params;
+	}
+
+	public function wppus_server_class_name( $class_name, $package_id ) {
+		$use_licenses        = get_option( 'wppus_use_licenses' );
+		$package_use_license = false;
+
+		if ( $use_licenses ) {
+			$licensed_package_slugs = apply_filters(
+				'wppus_licensed_package_slugs',
+				get_option( 'wppus_licensed_package_slugs', array() )
+			);
+
+			if ( in_array( $package_id, $licensed_package_slugs, true ) ) {
+				$package_use_license = true;
+			}
+		}
+
+		if ( $package_use_license && $use_licenses ) {
+			require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-update-server.php';
+
+			$class_name = 'WPPUS_License_Update_Server';
+		}
+
+		return $class_name;
+	}
+
+	// Misc. -------------------------------------------------------
+
+	public static function is_doing_api_request() {
+
+		if ( null === self::$doing_update_api_request ) {
+			self::$doing_update_api_request = ( false !== strpos( $_SERVER['REQUEST_URI'], 'wppus-license-api' ) );
+		}
+
+		return self::$doing_update_api_request;
+	}
+
+	public static function get_config() {
+
+		if ( ! self::$config ) {
+			$keys   = json_decode( get_option( 'wppus_license_private_api_auth_keys', '{}' ), true );
+			$config = array(
+				'private_api_auth_keys' => $keys,
+				'ip_whitelist'          => get_option( 'wppus_license_private_api_ip_whitelist' ),
+			);
+
+			self::$config = $config;
+		}
+
+		return apply_filters( 'wppus_license_api_config', self::$config );
+	}
+
+	public static function get_instance() {
+
+		if ( ! self::$instance ) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
 
 	protected function authorize() {
 		$key = false;

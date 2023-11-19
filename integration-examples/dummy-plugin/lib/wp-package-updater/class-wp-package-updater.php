@@ -154,36 +154,11 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			}
 		}
 
-		public function locate_template( $template_name, $load = false, $required_once = true ) {
-			$template = apply_filters(
-				'wppu_' . $this->package_id . '_locate_template',
-				$this->package_path . 'lib/wp-package-updater/templates/' . $template_name,
-				$template_name,
-				str_replace( $template_name, '', $this->package_path . 'lib/wp-package-updater/templates/' )
-			);
+		/*******************************************************************
+		 * Public methods
+		 *******************************************************************/
 
-			if ( $load && '' !== $template ) {
-				load_template( $template, $required_once );
-			}
-
-			return $template;
-		}
-
-		public function get_template( $template_name, $args = array(), $load = true, $required_once = false ) {
-			$template_name = apply_filters( 'wppu_' . $this->package_id . '_get_template_name', $template_name, $args );
-			$template_args = apply_filters( 'wppu_' . $this->package_id . '_get_template_args', $args, $template_name );
-
-			if ( ! empty( $template_args ) ) {
-
-				foreach ( $template_args as $key => $arg ) {
-					$key = is_numeric( $key ) ? 'var_' . $key : $key;
-
-					set_query_var( $key, $arg );
-				}
-			}
-
-			return $this->locate_template( $template_name, $load, $required_once );
-		}
+		// WordPress hooks ---------------------------------------------
 
 		public function wp_prepare_themes_for_js( $prepared_themes ) {
 
@@ -242,15 +217,6 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			$submenu['themes.php'] = $reordered_menu; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 			return $menu_ord;
-		}
-
-		public function theme_license_settings() {
-
-			if ( ! current_user_can( 'manage_options' ) ) {
-				wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			}
-
-			$this->print_license_form_theme_page();
 		}
 
 		public function add_admin_scripts( $hook ) {
@@ -345,20 +311,6 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			return $query_args;
 		}
 
-		public function print_license_form_theme_page() {
-			$theme = wp_get_theme();
-			$title = __( 'Theme License - ', 'wp-package-updater' ) . $theme->get( 'Name' );
-
-			$this->get_template(
-				'theme-page-license.php',
-				array(
-					'form'  => $this->get_license_form(),
-					'title' => $title,
-					'theme' => $theme,
-				)
-			);
-		}
-
 		public function print_license_under_plugin( $plugin_file = null, $plugin_data = null, $status = null ) {
 			$this->get_template(
 				'plugin-page-license-row.php',
@@ -444,6 +396,98 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 
 				printf( '<div class="%1$s"><p>%2$s</p></div>', $class, $error ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
+		}
+
+		// Misc. -------------------------------------------------------
+
+		public function locate_template( $template_name, $load = false, $required_once = true ) {
+			$template = apply_filters(
+				'wppu_' . $this->package_id . '_locate_template',
+				$this->package_path . 'lib/wp-package-updater/templates/' . $template_name,
+				$template_name,
+				str_replace( $template_name, '', $this->package_path . 'lib/wp-package-updater/templates/' )
+			);
+
+			if ( $load && '' !== $template ) {
+				load_template( $template, $required_once );
+			}
+
+			return $template;
+		}
+
+		public function get_template( $template_name, $args = array(), $load = true, $required_once = false ) {
+			$template_name = apply_filters( 'wppu_' . $this->package_id . '_get_template_name', $template_name, $args );
+			$template_args = apply_filters( 'wppu_' . $this->package_id . '_get_template_args', $args, $template_name );
+
+			if ( ! empty( $template_args ) ) {
+
+				foreach ( $template_args as $key => $arg ) {
+					$key = is_numeric( $key ) ? 'var_' . $key : $key;
+
+					set_query_var( $key, $arg );
+				}
+			}
+
+			return $this->locate_template( $template_name, $load, $required_once );
+		}
+
+		public function theme_license_settings() {
+
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_die( __( 'Sorry, you are not allowed to access this page.' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			}
+
+			$theme = wp_get_theme();
+			$title = __( 'Theme License - ', 'wp-package-updater' ) . $theme->get( 'Name' );
+
+			$this->get_template(
+				'theme-page-license.php',
+				array(
+					'form'  => $this->get_license_form(),
+					'title' => $title,
+					'theme' => $theme,
+				)
+			);
+		}
+
+		/*******************************************************************
+		 * Protected methods
+		 *******************************************************************/
+
+		protected static function is_plugin_file( $absolute_path ) {
+			$plugin_dir    = wp_normalize_path( WP_PLUGIN_DIR );
+			$mu_plugin_dir = wp_normalize_path( WPMU_PLUGIN_DIR );
+
+			if ( ( 0 === strpos( $absolute_path, $plugin_dir ) ) || ( 0 === strpos( $absolute_path, $mu_plugin_dir ) ) ) {
+
+				return true;
+			}
+
+			if ( ! is_file( $absolute_path ) ) {
+				return false;
+			}
+
+			if ( function_exists( 'get_file_data' ) ) {
+				$headers = get_file_data( $absolute_path, array( 'Name' => 'Plugin Name' ), 'plugin' );
+
+				return ! empty( $headers['Name'] );
+			}
+
+			return false;
+		}
+
+		protected static function get_theme_directory_name( $absolute_path ) {
+
+			if ( is_file( $absolute_path ) ) {
+				$absolute_path = dirname( $absolute_path );
+			}
+
+			if ( file_exists( $absolute_path . '/style.css' ) ) {
+
+				return basename( $absolute_path );
+			}
+
+			return null;
 		}
 
 		protected function do_query_license( $query_type ) {
@@ -580,42 +624,6 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			);
 
 			return ob_get_clean();
-		}
-
-		protected static function is_plugin_file( $absolute_path ) {
-			$plugin_dir    = wp_normalize_path( WP_PLUGIN_DIR );
-			$mu_plugin_dir = wp_normalize_path( WPMU_PLUGIN_DIR );
-
-			if ( ( 0 === strpos( $absolute_path, $plugin_dir ) ) || ( 0 === strpos( $absolute_path, $mu_plugin_dir ) ) ) {
-
-				return true;
-			}
-
-			if ( ! is_file( $absolute_path ) ) {
-				return false;
-			}
-
-			if ( function_exists( 'get_file_data' ) ) {
-				$headers = get_file_data( $absolute_path, array( 'Name' => 'Plugin Name' ), 'plugin' );
-
-				return ! empty( $headers['Name'] );
-			}
-
-			return false;
-		}
-
-		protected static function get_theme_directory_name( $absolute_path ) {
-
-			if ( is_file( $absolute_path ) ) {
-				$absolute_path = dirname( $absolute_path );
-			}
-
-			if ( file_exists( $absolute_path . '/style.css' ) ) {
-
-				return basename( $absolute_path );
-			}
-
-			return null;
 		}
 
 		protected function set_type() {

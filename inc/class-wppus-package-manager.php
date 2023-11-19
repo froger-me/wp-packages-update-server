@@ -24,13 +24,13 @@ class WPPUS_Package_Manager {
 		if ( $init_hooks ) {
 			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 10, 0 );
-			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 10, 1 );
-			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 10, 2 );
 			add_action( 'wp_ajax_wppus_force_clean', array( $this, 'force_clean' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_prime_package_from_remote', array( $this, 'prime_package_from_remote' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_manual_package_upload', array( $this, 'manual_package_upload' ), 10, 0 );
 			add_action( 'load-toplevel_page_wppus-page', array( $this, 'add_page_options' ), 10, 0 );
 
+			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 10, 1 );
+			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 10, 2 );
 			add_filter( 'set-screen-option', array( $this, 'set_page_options' ), 10, 3 );
 		}
 	}
@@ -83,7 +83,6 @@ class WPPUS_Package_Manager {
 					} elseif ( $delete_all_packages ) {
 						$this->delete_packages_bulk();
 					} else {
-						// @todo doc
 						do_action( 'wppus_udpdate_manager_request_action', $action, $packages );
 					}
 				}
@@ -352,8 +351,11 @@ class WPPUS_Package_Manager {
 		$package_names         = array();
 		$deleted_package_slugs = array();
 		$delete_all            = false;
-		// @todo doc
-		$package_paths = apply_filters( 'wppus_delete_packages_bulk_paths', $package_paths, $package_slugs );
+		$package_paths         = apply_filters(
+			'wppus_delete_packages_bulk_paths',
+			$package_paths,
+			$package_slugs
+		);
 
 		if ( ! empty( $package_paths ) ) {
 
@@ -411,7 +413,6 @@ class WPPUS_Package_Manager {
 		}
 
 		if ( ! empty( $deleted_package_slugs ) ) {
-			// @todo doc
 			do_action( 'wppus_package_manager_deleted_packages_bulk', $deleted_package_slugs );
 		}
 
@@ -458,7 +459,6 @@ class WPPUS_Package_Manager {
 		$archive_name   = 'archive-' . time();
 		$archive_path   = trailingslashit( $temp_directory ) . $archive_name . '.zip';
 
-		// @todo doc
 		do_action( 'wppus_before_packages_download_repack', $archive_name, $archive_path, $package_slugs );
 
 		foreach ( $package_slugs as $package_slug ) {
@@ -496,7 +496,6 @@ class WPPUS_Package_Manager {
 		$result = 'N/A';
 
 		if ( ! WPPUS_Data_Manager::is_valid_data_dir( $type ) ) {
-
 			return $result;
 		}
 
@@ -534,13 +533,11 @@ class WPPUS_Package_Manager {
 			header( 'Content-Transfer-Encoding: binary' );
 			header( 'Content-Length: ' . filesize( $archive_path ) );
 
-			// @todo doc
 			do_action( 'wppus_triggered_packages_download', $archive_name, $archive_path );
 
 			echo $wp_filesystem->get_contents( $archive_path ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
-		// @todo doc
 		do_action( 'wppus_after_packages_download', $archive_name, $archive_path );
 
 		if ( $exit_or_die ) {
@@ -563,7 +560,6 @@ class WPPUS_Package_Manager {
 					$condition = is_numeric( $option_info['value'] );
 				}
 
-				// @todo doc
 				$condition = apply_filters(
 					'wppus_package_option_update',
 					$condition,
@@ -641,7 +637,6 @@ class WPPUS_Package_Manager {
 
 			$package_directory = WPPUS_Data_Manager::get_data_dir( 'packages' );
 
-			// @todo doc
 			do_action( 'wppus_get_package_info', $package_info, $slug, $package_directory . $slug . '.zip' );
 
 			if ( $wp_filesystem->exists( $package_directory . $slug . '.zip' ) ) {
@@ -663,7 +658,6 @@ class WPPUS_Package_Manager {
 			wp_cache_set( 'package_info_' . $slug, $package_info, 'wppus' );
 		}
 
-		// @todo doc
 		$package_info = apply_filters( 'wppus_package_info', $package_info, $slug );
 
 		return $package_info;
@@ -719,8 +713,12 @@ class WPPUS_Package_Manager {
 								}
 							}
 
-							// @todo doc
-							$include = apply_filters( 'wppus_batch_package_info_include', $include, $meta, $search );
+							$include = apply_filters(
+								'wppus_batch_package_info_include',
+								$include,
+								$meta,
+								$search
+							);
 
 							if ( $include ) {
 								$packages[ $meta['slug'] ]                       = $meta;
@@ -734,7 +732,6 @@ class WPPUS_Package_Manager {
 				}
 			}
 
-			// @todo doc
 			$packages = apply_filters( 'wppus_package_manager_batch_package_info', $packages, $search );
 
 			wp_cache_set( 'packages', $packages, 'wppus' );
@@ -760,7 +757,6 @@ class WPPUS_Package_Manager {
 			}
 
 			if ( ! $cached_value ) {
-				// @todo doc
 				do_action( 'wppus_find_package_no_cache', $slug, $filename, $cache );
 			}
 

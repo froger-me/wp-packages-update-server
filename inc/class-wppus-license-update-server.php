@@ -33,6 +33,16 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		$this->repository_service_url = $repository_service_url;
 	}
 
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
+	// Overrides ---------------------------------------------------
+
 	protected function initRequest( $query = null, $headers = null ) {
 		$request = parent::initRequest( $query, $headers );
 
@@ -113,6 +123,8 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 
 		return self::addQueryArg( $query, $this->serverUrl ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
+
+	// Misc. -------------------------------------------------------
 
 	protected function get_license_error_message( $license ) {
 

@@ -16,6 +16,7 @@ class WPPUS_Webhook_Manager {
 			add_action( 'wppus_template_remote_source_manager_option_before_recurring_check', array( $this, 'wppus_template_remote_source_manager_option_before_recurring_check' ), 10, 0 );
 
 			add_filter( 'wppus_submitted_remote_sources_config', array( $this, 'wppus_submitted_remote_sources_config' ), 10, 1 );
+			add_filter( 'wppus_submitted_api_config', array( $this, 'wppus_submitted_api_config' ), 10, 1 );
 			add_filter( 'wppus_remote_source_option_update', array( $this, 'wppus_remote_source_option_update' ), 10, 3 );
 			add_filter( 'wppus_page_wppus_scripts_l10n', array( $this, 'wppus_page_wppus_scripts_l10n' ), 10, 1 );
 			add_filter( 'wppus_use_recurring_schedule', array( $this, 'wppus_use_recurring_schedule' ), 10, 1 );
@@ -109,9 +110,70 @@ class WPPUS_Webhook_Manager {
 		return $condition;
 	}
 
+	public function wppus_submitted_api_config( $config ) {
+
+		$config = array_merge(
+			$config,
+			array(
+				'wppus_webhooks' => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_webhooks', FILTER_UNSAFE_RAW ),
+					'display_name'            => __( 'Webhooks', 'wppus' ),
+					'failure_display_message' => __( 'Not a valid payload', 'wppus' ),
+					'condition'               => 'webhooks',
+				),
+			)
+		);
+
+		return $config;
+	}
+
+	public function wppus_api_option_update( $condition, $option_name, $option_info ) {
+
+		if ( 'webhooks' === $option_info['condition'] ) {
+			$inputs = json_decode( $option_info['value'], true );
+
+			if ( empty( $option_info['value'] ) || json_last_error() ) {
+				$option_info['value'] = '{}';
+			} else {
+				$filtered = array();
+
+				foreach ( $inputs as $url => $values ) {
+					$url    = filter_var( $url, FILTER_SANITIZE_URL );
+					$events = filter_var(
+						$values['events'],
+						FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+						FILTER_REQUIRE_ARRAY
+					);
+					$secret = filter_var(
+						$values['secret'],
+						FILTER_SANITIZE_FULL_SPECIAL_CHARS
+					);
+
+					if ( ! $url || empty( $events ) || ! $secret ) {
+						$filtered = new stdClass();
+
+						break;
+					}
+
+					$filtered[ $url ] = array(
+						'secret' => $secret,
+						'events' => $events,
+					);
+				}
+
+				$option_info['value'] = wp_json_encode(
+					$filtered,
+					JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+				);
+			}
+		}
+
+		return $condition;
+	}
+
 	public function wppus_template_remote_source_manager_option_before_recurring_check() {
 		wppus_get_admin_template(
-			'webhook-options.php',
+			'remote-webhook-options.php',
 			array(
 				'use_webhooks' => get_option( 'wppus_remote_repository_use_webhooks' ),
 			)

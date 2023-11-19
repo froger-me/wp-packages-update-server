@@ -806,15 +806,11 @@ ___
 ### wppus_cleared_license_schedule
 
 ```php
-do_action( 'wppus_cleared_license_schedule', string $scheduled_hook );
+do_action( 'wppus_cleared_license_schedule' );
 ```
 
 **Description**  
 Fired after the license maintenance event has been unscheduled.
-
-**Parameters**  
-`$scheduled_hook`
-> (string) the license event hook that has been unscheduled
 
 ___
 ### wppus_scheduled_license_event

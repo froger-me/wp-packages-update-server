@@ -18,6 +18,12 @@ class WPPUS_API_Manager {
 		}
 	}
 
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
+	// WordPress hooks ---------------------------------------------
+
 	public function admin_enqueue_scripts( $hook ) {
 		$debug = (bool) ( constant( 'WP_DEBUG' ) );
 
@@ -46,9 +52,15 @@ class WPPUS_API_Manager {
 	}
 
 	public function wppus_page_wppus_scripts_l10n( $l10n ) {
-		$l10n['deleteApiConfirm'] = array(
+		$l10n['deleteApiKeyConfirm']     = array(
 			__( 'You are about to delete an API key.', 'wppus' ),
 			__( 'If you proceed, the remote systems using it will not be able to access the API anymore.', 'wppus' ),
+			"\n",
+			__( 'Are you sure you want to do this?', 'wppus' ),
+		);
+		$l10n['deleteApiWebhookConfirm'] = array(
+			__( 'You are about to delete a Webhook.', 'wppus' ),
+			__( 'If you proceed, the remote URL will not receive the configured events anymore.', 'wppus' ),
 			"\n",
 			__( 'Are you sure you want to do this?', 'wppus' ),
 		);
@@ -64,6 +76,23 @@ class WPPUS_API_Manager {
 
 		add_submenu_page( 'wppus-page', $page_title, $menu_title, 'manage_options', $menu_slug, $function );
 	}
+
+	public function wppus_admin_tab_links( $links ) {
+		$links['api'] = array(
+			admin_url( 'admin.php?page=wppus-page-api' ),
+			"<span class='dashicons dashicons-rest-api'></span> " . __( 'API & Webhooks', 'wppus' ),
+		);
+
+		return $links;
+	}
+
+	public function wppus_admin_tab_states( $states, $page ) {
+		$states['api'] = 'wppus-page-api' === $page;
+
+		return $states;
+	}
+
+	// Misc. -------------------------------------------------------
 
 	public function plugin_page() {
 
@@ -81,20 +110,9 @@ class WPPUS_API_Manager {
 		);
 	}
 
-	public function wppus_admin_tab_links( $links ) {
-		$links['api'] = array(
-			admin_url( 'admin.php?page=wppus-page-api' ),
-			"<span class='dashicons dashicons-rest-api'></span> " . __( 'API & Webhooks', 'wppus' ),
-		);
-
-		return $links;
-	}
-
-	public function wppus_admin_tab_states( $states, $page ) {
-		$states['api'] = 'wppus-page-api' === $page;
-
-		return $states;
-	}
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
 
 	protected function plugin_options_handler() {
 		$errors = array();
@@ -128,16 +146,13 @@ class WPPUS_API_Manager {
 						} else {
 							$option_info['value'] = array();
 						}
-					} elseif ( 'json' === $option_info['condition'] ) {
+					} elseif ( 'api-keys' === $option_info['condition'] ) {
 						$inputs = json_decode( $option_info['value'], true );
 
 						if ( empty( $option_info['value'] ) || json_last_error() ) {
 							$option_info['value'] = '{}';
 						} else {
 							$filtered = array();
-
-							php_log( $inputs );
-							php_log( $_POST );
 
 							foreach ( $inputs as $key => $value ) {
 								$filtered_key   = filter_var(
@@ -166,7 +181,6 @@ class WPPUS_API_Manager {
 					}
 				}
 
-				// @todo doc
 				$condition = apply_filters(
 					'wppus_api_option_update',
 					$condition,
@@ -197,14 +211,12 @@ class WPPUS_API_Manager {
 			$result = $errors;
 		}
 
-		// @todo doc
 		do_action( 'wppus_api_options_updated', $errors );
 
 		return $result;
 	}
 
 	protected function get_submitted_options() {
-
 		return apply_filters(
 			'wppus_submitted_api_config',
 			array(
@@ -212,7 +224,7 @@ class WPPUS_API_Manager {
 					'value'                   => filter_input( INPUT_POST, 'wppus_package_private_api_auth_keys', FILTER_UNSAFE_RAW ),
 					'display_name'            => __( 'Package API Authentication Keys', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid payload', 'wppus' ),
-					'condition'               => 'json',
+					'condition'               => 'api-keys',
 				),
 				'wppus_package_private_api_ip_whitelist' => array(
 					'value'     => filter_input( INPUT_POST, 'wppus_package_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
@@ -222,7 +234,7 @@ class WPPUS_API_Manager {
 					'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_auth_keys', FILTER_UNSAFE_RAW ),
 					'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-					'condition'               => 'json',
+					'condition'               => 'api-keys',
 				),
 				'wppus_license_private_api_ip_whitelist' => array(
 					'value'     => filter_input( INPUT_POST, 'wppus_license_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),

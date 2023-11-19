@@ -30,13 +30,14 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_expire\_nonce](#wppus_expire_nonce)
 		* [wppus\_delete\_nonce](#wppus_delete_nonce-2)
 		* [wppus\_fetch\_nonce](#wppus_fetch_nonce)
+		* [wppus\_nonce\_authorize](#wppus_nonce_authorize)
 
 ## Nonce API
 
 The nonce API is accessible via `POST` and `GET` requests on the `/wppus-token/` endpoint to acquire a reusable token, and `/wppus-nonce/` to acquire a true nonce.  
 It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well.
 
-Authorization is granted with either the `HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY` header in `POST` (recommended) or with the `api_auth_key` parameter for both `POST` and `GET` ; the key is the Private API Authentication Key of the Packages API by default (authorization key and header may be overriden with the `wppus_init_nonce_auth` [function](#wppus_init_nonce_auth)).  
+Authorization is granted with either the `HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY` header in `POST` (recommended) or with the `api_auth_key` parameter for both `POST` and `GET` ; the key is any of the Private API Authentication Keys of the Packages API by default (accepted authorization keys and header may be overriden with the `wppus_init_nonce_auth` [function](#wppus_init_nonce_auth)).  
 **Using `GET` requests directly in the browser, whether through the URL bar or JavaScript, is strongly discouraged due to security concerns** ; it should be avoided at all cost to prevent the inadvertent exposure of the authorization key.
 
 In case the Private API Authentication Key is invalid, the API will return the following response (message's language depending on availabe translations), with HTTP response code set to `403`:
@@ -187,16 +188,16 @@ ___
 #### wppus_init_nonce_auth
 
 ```php
-wppus_init_nonce_auth( string $private_auth_key, string|null $auth_header_name = null )
+wppus_init_nonce_auth( array $private_auth_keys, string|null $auth_header_name = null )
 ```
 
 **Description**  
-Set the Private Authorization Key and the Authorization Header name used to request nonces via the `wppus-token` and `wppus-nonce` endpoints.  
+Set the Private Authorization Keys and the Authorization Header name used to request nonces via the `wppus-token` and `wppus-nonce` endpoints.  
 If the Authentication Header name is not set, the `api_auth_key` variable set in `POST` method is used instead when requesting nonces.
 
 **Parameters**  
-`$private_auth_key`
-> (string) the Private Authorization Key  
+`$private_auth_keys`
+> (array) the Private Authorization Keys  
 
 `$auth_header_name`
 > (string|null) the Authorization Header name  
@@ -543,5 +544,25 @@ Filter the value of the nonce after it has been fetched from the database.
 
 `$row`
 > (object) the database record corresponding to the nonce  
+
+___
+### wppus_nonce_authorize
+
+```php
+apply_filters( 'wppus_nonce_authorize', $authorized, $received_key, $private_auth_keys );
+```
+
+**Description**  
+Filter whether the request for a nonce is authorized.
+
+**Parameters**  
+`$authorized`
+> (bool) whether the request is authorized  
+
+`$received_key`
+> (string) the key use to attempt the authorization  
+
+`$private_auth_keys`
+> (array) the valid authorization keys  
 
 ___

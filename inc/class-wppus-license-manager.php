@@ -19,8 +19,7 @@ class WPPUS_License_Manager {
 			if ( $use_licenses ) {
 				$this->license_server = new WPPUS_License_Server();
 
-				add_action( 'init', array( $this, 'register_license_events' ), 10, 0 );
-				add_action( 'init', array( $this, 'register_license_schedules' ), 10, 0 );
+				add_action( 'init', array( $this, 'init' ), 10, 0 );
 				add_action( 'wppus_packages_table_cell', array( $this, 'wppus_packages_table_cell' ), 10, 4 );
 
 				add_filter( 'wppus_packages_table_columns', array( $this, 'wppus_packages_table_columns' ), 10, 1 );
@@ -30,7 +29,7 @@ class WPPUS_License_Manager {
 			}
 
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 5, 1 );
-			add_action( 'admin_init', array( $this, 'init_request' ), 10, 0 );
+			add_action( 'admin_init', array( $this, 'admin_init' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 20, 0 );
 			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 20, 1 );
 			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 20, 2 );
@@ -43,6 +42,12 @@ class WPPUS_License_Manager {
 		}
 	}
 
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
+	// WordPress hooks ---------------------------------------------
+
 	public static function activate() {
 		$result = self::maybe_create_or_upgrade_db();
 
@@ -52,46 +57,18 @@ class WPPUS_License_Manager {
 			die( $error_message ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
-		$manager = new self();
+		$manager   = new self();
+		$frequency = apply_filters( 'wppus_schedule_license_frequency', 'hourly' );
 
-		$manager->register_schedules();
+		$manager->register_license_schedules( $frequency );
 	}
 
 	public static function deactivate() {
-		$manager = new self();
-
-		$manager->clear_schedules();
-	}
-
-	public function clear_schedules() {
-		return $this->clear_license_schedules();
-	}
-
-	public function register_schedules() {
-		$frequency = apply_filters( 'wppus_schedule_license_frequency', 'hourly' );
-
-		return $this->register_license_schedules( $frequency );
-	}
-
-	public function expire_licenses() {
-		$this->license_server->switch_expired_licenses_status();
-	}
-
-	public function register_license_schedules() {
-		$scheduled_hook = array( $this, 'expire_licenses' );
-
-		add_action( 'wppus_expire_licenses', $scheduled_hook, 10, 2 );
-		do_action( 'wppus_registered_license_schedule', $scheduled_hook );
-	}
-
-	public function clear_license_schedules() {
-		$scheduled_hook = array( $this, 'expire_licenses' );
-
 		wp_clear_scheduled_hook( 'wppus_expire_licenses' );
-		do_action( 'wppus_cleared_license_schedule', $scheduled_hook );
+		do_action( 'wppus_cleared_license_schedule' );
 	}
 
-	public function register_license_events() {
+	public function init() {
 		$hook = 'wppus_expire_licenses';
 
 		if ( ! wp_next_scheduled( $hook ) ) {
@@ -101,9 +78,11 @@ class WPPUS_License_Manager {
 
 			do_action( 'wppus_scheduled_license_event', $result, $timestamp, $frequency, $hook );
 		}
+
+		$this->register_license_schedules();
 	}
 
-	public function init_request() {
+	public function admin_init() {
 
 		if ( is_admin() && ! wp_doing_ajax() && ! wp_doing_cron() ) {
 			$this->licences_table = new WPPUS_Licenses_Table();
@@ -300,6 +279,34 @@ class WPPUS_License_Manager {
 		add_submenu_page( $parent_slug, $page_title, $menu_title, $capability, $menu_slug, $function );
 	}
 
+	public function wppus_admin_tab_links( $links ) {
+		$links['licenses'] = array(
+			admin_url( 'admin.php?page=wppus-page-licenses' ),
+			"<span class='dashicons dashicons-admin-network'></span> " . __( 'Licenses', 'wppus' ),
+		);
+
+		return $links;
+	}
+
+	public function wppus_admin_tab_states( $states, $page ) {
+		$states['licenses'] = 'wppus-page-licenses' === $page;
+
+		return $states;
+	}
+
+	// Misc. -------------------------------------------------------
+
+	public function expire_licenses() {
+		$this->license_server->switch_expired_licenses_status();
+	}
+
+	public function register_license_schedules() {
+		$scheduled_hook = array( $this, 'expire_licenses' );
+
+		add_action( 'wppus_expire_licenses', $scheduled_hook, 10, 2 );
+		do_action( 'wppus_registered_license_schedule', $scheduled_hook );
+	}
+
 	public function plugin_page() {
 
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -328,20 +335,9 @@ class WPPUS_License_Manager {
 		);
 	}
 
-	public function wppus_admin_tab_links( $links ) {
-		$links['licenses'] = array(
-			admin_url( 'admin.php?page=wppus-page-licenses' ),
-			"<span class='dashicons dashicons-admin-network'></span> " . __( 'Licenses', 'wppus' ),
-		);
-
-		return $links;
-	}
-
-	public function wppus_admin_tab_states( $states, $page ) {
-		$states['licenses'] = 'wppus-page-licenses' === $page;
-
-		return $states;
-	}
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
 
 	protected static function maybe_create_or_upgrade_db() {
 		global $wpdb;

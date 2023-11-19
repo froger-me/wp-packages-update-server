@@ -24,21 +24,31 @@ class WPPUS_Data_Manager {
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
-			add_action( 'init', array( $this, 'register_cleanup_events' ), 10, 0 );
-			add_action( 'init', array( $this, 'register_cleanup_schedules' ), 10, 0 );
+			add_action( 'init', array( $this, 'init' ), 10, 0 );
 		}
 	}
 
-	public static function clear_schedules() {
-		$manager = new self();
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
 
-		$manager->clear_cleanup_schedules();
+	// WordPress hooks ---------------------------------------------
+
+	public function init() {
+		self::register_cleanup_events();
+		self::register_cleanup_schedules();
+	}
+
+	// Overrides ---------------------------------------------------
+
+	// Misc. -------------------------------------------------------
+
+	public static function clear_schedules() {
+		self::clear_cleanup_schedules();
 	}
 
 	public static function register_schedules() {
-		$manager = new self();
-
-		$manager->register_cleanup_events();
+		self::register_cleanup_events();
 	}
 
 	public static function maybe_setup_directories() {
@@ -110,13 +120,35 @@ class WPPUS_Data_Manager {
 		return $is_valid;
 	}
 
-	public static function maybe_cleanup_data_dir( $type, $force ) {
+	public static function maybe_cleanup( $type, $force = false ) {
+
+		if ( in_array( $type, self::$transient_data_db, true ) ) {
+			$method_name = 'maybe_cleanup_' . $type;
+
+			if ( method_exists( get_called_class(), $method_name ) && ! $force ) {
+				return static::$method_name();
+			} else {
+				return delete_option( 'wppus_' . $type );
+			}
+		}
+
+		if ( self::is_valid_data_dir( $type ) ) {
+			return self::maybe_cleanup_data_dir( $type, $force );
+		}
+
+		return false;
+	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
+	protected static function maybe_cleanup_data_dir( $type, $force ) {
 		WP_Filesystem();
 
 		global $wp_filesystem;
 
 		if ( ! $wp_filesystem ) {
-
 			return false;
 		}
 
@@ -160,101 +192,6 @@ class WPPUS_Data_Manager {
 		return false;
 	}
 
-	public static function maybe_cleanup( $type, $force = false ) {
-
-		if ( in_array( $type, self::$transient_data_db, true ) ) {
-			$method_name = 'maybe_cleanup_' . $type;
-
-			if ( method_exists( get_called_class(), $method_name ) && ! $force ) {
-
-				return static::$method_name();
-			} else {
-
-				return delete_option( 'wppus_' . $type );
-			}
-		}
-
-		if ( self::is_valid_data_dir( $type ) ) {
-
-			return self::maybe_cleanup_data_dir( $type, $force );
-		}
-
-		return false;
-	}
-
-	public function register_cleanup_schedules() {
-
-		if ( wppus_is_doing_update_api_request() ) {
-
-			return false;
-		}
-
-		$cleanable_datatypes = array_merge( self::$transient_data_dirs, self::$transient_data_db );
-
-		foreach ( $cleanable_datatypes as $type ) {
-			$params = array( $type );
-
-			if ( 'tmp' === $type ) {
-				$params[] = true;
-			}
-
-			$hook = array( 'WPPUS_Data_Manager', 'maybe_cleanup' );
-
-			add_action( 'wppus_cleanup', $hook, 10, 2 );
-			do_action( 'wppus_registered_cleanup_schedule', $type, $params );
-		}
-	}
-
-	public function register_cleanup_events() {
-		$cleanable_datatypes = array_merge( self::$transient_data_dirs, self::$transient_data_db );
-
-		foreach ( $cleanable_datatypes as $type ) {
-			$params = array( $type );
-			$hook   = 'wppus_cleanup';
-
-			if ( 'tmp' === $type ) {
-				$params[] = true;
-			}
-
-			if ( ! wp_next_scheduled( $hook, $params ) ) {
-				$frequency = apply_filters( 'wppus_schedule_cleanup_frequency', 'hourly', $type );
-				$timestamp = time();
-				$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
-
-				do_action(
-					'wppus_scheduled_cleanup_event',
-					$result,
-					$type,
-					$timestamp,
-					$frequency,
-					$hook,
-					$params
-				);
-			}
-		}
-	}
-
-	public function clear_cleanup_schedules() {
-
-		if ( wppus_is_doing_update_api_request() ) {
-
-			return false;
-		}
-
-		$cleanable_datatypes = array_merge( self::$transient_data_dirs, self::$transient_data_db );
-
-		foreach ( $cleanable_datatypes as $type ) {
-			$params = array( $type );
-
-			if ( 'tmp' === $type ) {
-				$params[] = true;
-			}
-
-			wp_clear_scheduled_hook( 'wppus_cleanup', $params );
-			do_action( 'wppus_cleared_cleanup_schedule', $type, $params );
-		}
-	}
-
 	protected static function maybe_cleanup_update_from_remote_locks() {
 		$locks = get_option( 'wppus_update_from_remote_locks' );
 
@@ -291,8 +228,7 @@ class WPPUS_Data_Manager {
 		global $wp_filesystem;
 
 		if ( ! $wp_filesystem ) {
-
-			return;
+			return false;
 		}
 
 		$contents = "Order deny,allow\nDeny from all";
@@ -301,5 +237,76 @@ class WPPUS_Data_Manager {
 		$wp_filesystem->touch( $htaccess );
 
 		return $wp_filesystem->put_contents( $htaccess, $contents, 0644 );
+	}
+
+	protected static function clear_cleanup_schedules() {
+
+		if ( wppus_is_doing_update_api_request() ) {
+			return;
+		}
+
+		$cleanable_datatypes = array_merge( self::$transient_data_dirs, self::$transient_data_db );
+
+		foreach ( $cleanable_datatypes as $type ) {
+			$params = array( $type );
+
+			if ( 'tmp' === $type ) {
+				$params[] = true;
+			}
+
+			wp_clear_scheduled_hook( 'wppus_cleanup', $params );
+			do_action( 'wppus_cleared_cleanup_schedule', $type, $params );
+		}
+	}
+
+	protected static function register_cleanup_schedules() {
+
+		if ( wppus_is_doing_update_api_request() ) {
+			return false;
+		}
+
+		$cleanable_datatypes = array_merge( self::$transient_data_dirs, self::$transient_data_db );
+
+		foreach ( $cleanable_datatypes as $type ) {
+			$params = array( $type );
+
+			if ( 'tmp' === $type ) {
+				$params[] = true;
+			}
+
+			$hook = array( 'WPPUS_Data_Manager', 'maybe_cleanup' );
+
+			add_action( 'wppus_cleanup', $hook, 10, 2 );
+			do_action( 'wppus_registered_cleanup_schedule', $type, $params );
+		}
+	}
+
+	protected static function register_cleanup_events() {
+		$cleanable_datatypes = array_merge( self::$transient_data_dirs, self::$transient_data_db );
+
+		foreach ( $cleanable_datatypes as $type ) {
+			$params = array( $type );
+			$hook   = 'wppus_cleanup';
+
+			if ( 'tmp' === $type ) {
+				$params[] = true;
+			}
+
+			if ( ! wp_next_scheduled( $hook, $params ) ) {
+				$frequency = apply_filters( 'wppus_schedule_cleanup_frequency', 'hourly', $type );
+				$timestamp = time();
+				$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+
+				do_action(
+					'wppus_scheduled_cleanup_event',
+					$result,
+					$type,
+					$timestamp,
+					$frequency,
+					$hook,
+					$params
+				);
+			}
+		}
 	}
 }

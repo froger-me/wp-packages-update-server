@@ -25,12 +25,13 @@ class WPPUS_Packages_Table extends WP_List_Table {
 		$this->package_manager = $package_manager;
 	}
 
-	public function set_rows( $rows ) {
-		$this->rows = $rows;
-	}
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
+	// Overrides ---------------------------------------------------
 
 	public function get_columns() {
-		// @todo doc
 		$columns = apply_filters(
 			'wppus_packages_table_columns',
 			array(
@@ -53,7 +54,6 @@ class WPPUS_Packages_Table extends WP_List_Table {
 	}
 
 	public function get_sortable_columns() {
-		// @todo doc
 		$columns = apply_filters(
 			'wppus_packages_table_sortable_columns',
 			array(
@@ -67,24 +67,6 @@ class WPPUS_Packages_Table extends WP_List_Table {
 		);
 
 		return $columns;
-	}
-
-	public function uasort_reorder( $a, $b ) {
-		$orderby = ( ! empty( $_GET['orderby'] ) ) ? $_GET['orderby'] : 'name'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$order   = ( ! empty( $_GET['order'] ) ) ? $_GET['order'] : 'asc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$result  = 0;
-
-		if ( 'version' === $orderby ) {
-			$result = version_compare( $a[ $orderby ], $b[ $orderby ] );
-		} elseif ( 'file_size' === $orderby ) {
-			$result = $a[ $orderby ] - $b[ $orderby ];
-		} elseif ( 'file_last_modified' === $orderby ) {
-			$result = $a[ $orderby ] - $b[ $orderby ];
-		} else {
-			$result = strcmp( $a[ $orderby ], $b[ $orderby ] );
-		}
-
-		return ( 'asc' === $order ) ? $result : -$result;
 	}
 
 	public function prepare_items() {
@@ -147,6 +129,36 @@ class WPPUS_Packages_Table extends WP_List_Table {
 			}
 		}
 	}
+
+	// Misc. -------------------------------------------------------
+
+	public function set_rows( $rows ) {
+		$this->rows = $rows;
+	}
+
+	public function uasort_reorder( $a, $b ) {
+		$orderby = ( ! empty( $_GET['orderby'] ) ) ? $_GET['orderby'] : 'name'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$order   = ( ! empty( $_GET['order'] ) ) ? $_GET['order'] : 'asc'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$result  = 0;
+
+		if ( 'version' === $orderby ) {
+			$result = version_compare( $a[ $orderby ], $b[ $orderby ] );
+		} elseif ( 'file_size' === $orderby ) {
+			$result = $a[ $orderby ] - $b[ $orderby ];
+		} elseif ( 'file_last_modified' === $orderby ) {
+			$result = $a[ $orderby ] - $b[ $orderby ];
+		} else {
+			$result = strcmp( $a[ $orderby ], $b[ $orderby ] );
+		}
+
+		return ( 'asc' === $order ) ? $result : -$result;
+	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
+	// Overrides ---------------------------------------------------
 
 	protected function extra_tablenav( $which ) {
 

@@ -25,6 +25,41 @@ class WPPUS_Update_API {
 		}
 	}
 
+	/*******************************************************************
+	 * Public methods
+	 *******************************************************************/
+
+	// WordPress hooks ---------------------------------------------
+
+	public function add_endpoints() {
+		add_rewrite_rule( '^wppus-update-api/*$', 'index.php?$matches[1]&__wppus_update_api=1&', 'top' );
+	}
+
+	public function parse_request() {
+		global $wp;
+
+		if ( isset( $wp->query_vars['__wppus_update_api'] ) ) {
+			$this->handle_api_request();
+		}
+	}
+
+	public function query_vars( $query_vars ) {
+		$query_vars = array_merge(
+			$query_vars,
+			array(
+				'__wppus_update_api',
+				'action',
+				'token',
+				'package_id',
+				'update_type',
+			)
+		);
+
+		return $query_vars;
+	}
+
+	// Misc. -------------------------------------------------------
+
 	public static function is_doing_api_request() {
 
 		if ( null === self::$doing_update_api_request ) {
@@ -106,32 +141,9 @@ class WPPUS_Update_API {
 		return $result;
 	}
 
-	public function add_endpoints() {
-		add_rewrite_rule( '^wppus-update-api/*$', 'index.php?$matches[1]&__wppus_update_api=1&', 'top' );
-	}
-
-	public function parse_request() {
-		global $wp;
-
-		if ( isset( $wp->query_vars['__wppus_update_api'] ) ) {
-			$this->handle_api_request();
-		}
-	}
-
-	public function query_vars( $query_vars ) {
-		$query_vars = array_merge(
-			$query_vars,
-			array(
-				'__wppus_update_api',
-				'action',
-				'token',
-				'package_id',
-				'update_type',
-			)
-		);
-
-		return $query_vars;
-	}
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
 
 	protected function handle_api_request() {
 		global $wp;

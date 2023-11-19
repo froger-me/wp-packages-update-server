@@ -91,7 +91,6 @@ function wppus_run() {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-api.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
 
-		// @todo doc
 		do_action( 'wppus_no_license_api_includes' );
 
 		$is_api_request = (
@@ -101,7 +100,6 @@ function wppus_run() {
 		);
 	}
 
-	// @todo doc
 	$is_api_request = apply_filters( 'wppus_is_api_request', $is_api_request );
 
 	if ( ! $is_api_request ) {
@@ -113,7 +111,6 @@ function wppus_run() {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-packages-table.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-licenses-table.php';
 
-		// @todo doc
 		do_action( 'wppus_no_api_includes' );
 	}
 
