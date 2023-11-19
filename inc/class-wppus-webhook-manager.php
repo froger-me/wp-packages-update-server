@@ -20,6 +20,7 @@ class WPPUS_Webhook_Manager {
 			add_filter( 'wppus_remote_source_option_update', array( $this, 'wppus_remote_source_option_update' ), 10, 3 );
 			add_filter( 'wppus_page_wppus_scripts_l10n', array( $this, 'wppus_page_wppus_scripts_l10n' ), 10, 1 );
 			add_filter( 'wppus_use_recurring_schedule', array( $this, 'wppus_use_recurring_schedule' ), 10, 1 );
+			add_filter( 'wppus_need_reschedule_remote_check_recurring_events', array( $this, 'wppus_need_reschedule_remote_check_recurring_events' ), 10, 1 );
 		}
 	}
 
@@ -99,6 +100,17 @@ class WPPUS_Webhook_Manager {
 
 	public function wppus_remote_source_option_update( $condition, $option_name, $option_info ) {
 
+		if ( 'wppus_remote_repository_use_webhooks' === $option_name ) {
+			wp_cache_set(
+				'wppus_remote_repository_use_webhooks',
+				array(
+					'new' => $option_info['value'],
+					'old' => get_option( 'wppus_remote_repository_use_webhooks' ),
+				),
+				'wppus'
+			);
+		}
+
 		if ( 'non-empty' === $option_info['condition'] ) {
 			$condition = ! empty( $option_info['value'] );
 		}
@@ -108,6 +120,16 @@ class WPPUS_Webhook_Manager {
 		}
 
 		return $condition;
+	}
+
+	public function wppus_need_reschedule_remote_check_recurring_events( $need_reschedule ) {
+		$states = wp_cache_get( 'wppus_remote_repository_use_webhooks', 'wppus' );
+
+		if ( is_array( $states ) && $states['old'] && ! $states['new'] ) {
+			$need_reschedule = true;
+		}
+
+		return $need_reschedule;
 	}
 
 	public function wppus_submitted_api_config( $config ) {

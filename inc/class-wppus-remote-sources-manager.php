@@ -512,6 +512,12 @@ class WPPUS_Remote_Sources_Manager {
 					$new_wppus_remote_repository_check_frequency
 				);
 			}
+
+			if ( apply_filters( 'wppus_need_reschedule_remote_check_recurring_events', false ) ) {
+				$this->reschedule_remote_check_recurring_events(
+					$new_wppus_remote_repository_check_frequency
+				);
+			}
 		} else {
 			$this->clear_remote_check_scheduled_hooks();
 			set_transient( 'wppus_flush', 1, 60 );

@@ -56,6 +56,7 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_did\_read\_package](#wppus_did_read_package)
 		* [wppus\_did\_edit\_package](#wppus_did_edit_package)
 		* [wppus\_did\_add\_package](#wppus_did_add_package)
+		* [wppus\_pre\_delete\_package](#wppus_pre_delete_package)
 		* [wppus\_did\_delete\_package](#wppus_did_delete_package)
 		* [wppus\_did\_download\_package](#wppus_did_download_package)
 		* [wppus\_did\_signed\_url\_package](#wppus_did_signed_url_package)
@@ -64,6 +65,8 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_package\_options\_updated](#wppus_package_options_updated)
 		* [wppus\_check\_remote\_update](#wppus_check_remote_update)
 		* [wppus\_udpdate\_manager\_request\_action](#wppus_udpdate_manager_request_action)
+		* [wppus\_package\_manager\_pre\_delete\_package](#wppus_package_manager_pre_delete_package)
+		* [wppus\_package\_manager\_pre\_delete\_packages\_bulk](#wppus_package_manager_pre_delete_packages_bulk)
 		* [wppus\_package\_manager\_deleted\_packages\_bulk](#wppus_package_manager_deleted_packages_bulk)
 		* [wppus\_before\_packages\_download\_repack](#wppus_before_packages_download_repack)
 		* [wppus\_triggered\_packages\_download](#wppus_triggered_packages_download)
@@ -1366,18 +1369,41 @@ Fired after the `add` Package API action.
 > (array) the result of the action  
 
 ___
-### wppus_did_delete_package
+### wppus_pre_delete_package
 
 ```php
-do_action( 'wppus_did_delete_package', array $result );
+do_action( 'wppus_pre_delete_package', string $package_slug, string $type );
 ```
 
 **Description**  
-Fired after the `delete` Package API action.
+Fired before the `delete` Package API action.  
+
+**Parameters**  
+`$package_slug`
+> (string) the slug of the package to be deleted  
+
+`$type`
+> (string) the type of the package to be deleted  
+
+___
+### wppus_did_delete_package
+
+```php
+do_action( 'wppus_did_delete_package', bool $result, string $package_slug, string $type );
+```
+
+**Description**  
+Fired after the `delete` Package API action.  
 
 **Parameters**  
 `$result`
-> (array) the result of the action  
+> (bool) the result of the `delete` operation  
+
+`$package_slug`
+> (string) the slug of the deleted package  
+
+`$type`
+> (string) the type of the deleted package  
 
 ___
 ### wppus_did_download_package
@@ -1484,6 +1510,34 @@ Fired if the action sent by the admin interface is not `'delete'` or `'download'
 
 `$package_slugs`
 > (array) the slugs of the packages on which to perform the action  
+
+___
+### wppus_package_manager_pre_delete_package
+
+```php
+do_action( 'wppus_package_manager_pre_delete_package', array $package_slug );
+```
+
+**Description**  
+Fired before a package is deleted as part of a bulk from the file system.
+
+**Parameters**  
+`$package_slug`
+> (array) the slug of the package to be deleted  
+
+___
+### wppus_package_manager_pre_delete_packages_bulk
+
+```php
+do_action( 'wppus_package_manager_pre_delete_packages_bulk', array $package_slugs );
+```
+
+**Description**  
+Fired before packages are deleted in bulk from the file system.
+
+**Parameters**  
+`$package_slugs`
+> (array) the slugs of the packages to be deleted  
 
 ___
 ### wppus_package_manager_deleted_packages_bulk
@@ -1962,7 +2016,7 @@ ___
 ### wppus_package_delete
 
 ```php
-apply_filters( 'wppus_package_delete', array $result, string $package_slug, string $type );
+apply_filters( 'wppus_package_delete', bool $result, string $package_slug, string $type );
 ```
 
 **Description**  
@@ -1970,7 +2024,7 @@ Filter the result of the `delete` operation of the Package API.
 
 **Parameters**  
 `$result`
-> (array) the result of the `delete` operation  
+> (bool) the result of the `delete` operation  
 
 `$package_slug`
 > (string) the slug of the deleted package  

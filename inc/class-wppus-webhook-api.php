@@ -196,7 +196,7 @@ class WPPUS_Webhook_API {
 			$hook = 'wppus_webhook';
 
 			if ( ! wp_next_scheduled( 'wppus_webhook', array( $url, $info, $body, current_action() ) ) ) {
-				$params    = array( $url, $info, $body, current_action() );
+				$params    = array( $url, $info['secret'], $body, current_action() );
 				$timestamp = time();
 
 				wp_schedule_single_event( $timestamp, $hook, $params );
@@ -204,16 +204,16 @@ class WPPUS_Webhook_API {
 		}
 	}
 
-	public function fire_webhook( $url, $info, $body, $action ) {
-		wp_remote_post(
+	public function fire_webhook( $url, $secret, $body, $action ) {
+		return wp_remote_post(
 			$url,
 			array(
 				'method'   => 'POST',
 				'blocking' => false,
 				'headers'  => array(
 					'X-WPPUS-Action'        => $action,
-					'X-WPPUS-Signature'     => 'sha1=' . hash_hmac( 'sha1', $body, $info['secret'] ),
-					'X-WPPUS-Signature-256' => 'sha256=' . hash_hmac( 'sha256', $body, $info['secret'] ),
+					'X-WPPUS-Signature'     => 'sha1=' . hash_hmac( 'sha1', $body, $secret ),
+					'X-WPPUS-Signature-256' => 'sha256=' . hash_hmac( 'sha256', $body, $secret ),
 				),
 				'body'     => $body,
 			)

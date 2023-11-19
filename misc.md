@@ -16,9 +16,12 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 			* [wppus\_validate\_nonce](#wppus_validate_nonce)
 			* [wppus\_delete\_nonce](#wppus_delete_nonce)
 			* [wppus\_delete\_nonce](#wppus_delete_nonce-1)
+			* [wppus\_schedule\_webhook](#wppus_schedule_webhook)
+			* [wppus\_fire\_webhook](#wppus_fire_webhook)
 	* [Actions](#actions)
 		* [wppus\_no\_api\_includes](#wppus_no_api_includes)
 		* [wppus\_no\_license\_api\_includes](#wppus_no_license_api_includes)
+		* [wppus\_remote\_sources\_options\_updated](#wppus_remote_sources_options_updated)
 	* [Filters](#filters)
 		* [wppus\_is\_api\_request](#wppus_is_api_request)
 		* [wppus\_page\_wppus\_scripts\_l10n](#wppus_page_wppus_scripts_l10n)
@@ -31,6 +34,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_delete\_nonce](#wppus_delete_nonce-2)
 		* [wppus\_fetch\_nonce](#wppus_fetch_nonce)
 		* [wppus\_nonce\_authorize](#wppus_nonce_authorize)
+		* [wppus\_api\_option\_update](#wppus_api_option_update)
 
 ## Nonce API
 
@@ -305,6 +309,59 @@ Clear expired nonces from the system.
 > (bool) whether some nonces were cleared  
 
 ___
+#### wppus_schedule_webhook
+
+```php
+wppus_schedule_webhook( array $payload, string $event_type )
+```
+
+**Description**  
+Schedule an event notification to be sent to registered Webhook URLs at next cron run.  
+
+**Parameters**  
+`$payload`
+> (array) the data used to schedule the notification with the following format:  
+```php
+$payload = array(
+	'event'       => 'event_name',                                // required - the name of the event that triggered the notification
+	'description' => 'A description of what the event is about.', // optional - Description of the notification
+	'content'     => 'The data of the payload',                   // required - the data to be consumed by the recipient
+);
+```
+
+`$event_type`
+> (string) the type of event ; the payload will only be delivered to URLs subscribed to this type  
+
+**Return value**
+> (null|WP_error) `null` in case of success, a `WP_Error` otherwise  
+
+___
+#### wppus_fire_webhook
+
+```php
+wppus_fire_webhook( string $url, string $secret, string $body, string $action )
+```
+
+**Description**  
+Immediately send a event notification to `$url`, signed with `$secret` in `X-WPPUS-Signature` and `X-WPPUS-Signature-256`, with `$action` in `X-WPPUS-Action`.  
+
+**Parameters**  
+`$url`
+> (string) the destination of the notification  
+
+`$secret`
+> (string) the secret used to sign the notification  
+
+`$body`
+> (string) the JSON string sent in the notification  
+
+`$action`
+> (string) the WordPress action responsible for fireing the webhook  
+
+**Return value**
+> (array|WP_Error) the response of the request in case of success, a `WP_Error` otherwise  
+
+___
 ## Actions
 
 WP Packages Update Server gives developers the possibility to have their plugins react to some events with a series of custom actions.  
@@ -329,6 +386,20 @@ do_action( 'wppus_no_license_api_includes' );
 
 **Description**  
 Fired when the plugin is including files and the current request is not made by a client plugin or theme interacting with the plugin's license API.
+
+___
+### wppus_remote_sources_options_updated
+
+```php
+do_action( 'wppus_api_options_updated', array $errors );
+```
+
+**Description**  
+Fired after the options in "API & Webhooks" have been updated.
+
+**Parameters**  
+`$errors`
+> (array) an array of containing errors if any  
 
 ___
 ## Filters
@@ -564,5 +635,28 @@ Filter whether the request for a nonce is authorized.
 
 `$private_auth_keys`
 > (array) the valid authorization keys  
+
+___
+### wppus_api_option_update
+
+```php
+apply_filters( 'wppus_api_option_update', bool $update, string $option_name, array $option_info, array $options );
+```
+
+**Description**  
+Filter whether to update the API plugin option.  
+
+**Parameters**  
+`$update`
+> (bool) whether to update the API option  
+
+`$option_name`
+> (string) the name of the option  
+
+`$option_info`
+> (array) the info related to the option  
+
+`$options`
+> (array) the values submitted along with the option  
 
 ___

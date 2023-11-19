@@ -202,8 +202,16 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$package_path = trailingslashit( $this->packageDirectory ) . $slug . '.zip'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$result       = false;
 		$type         = false;
+		$cache_key    = false;
 
 		if ( $wp_filesystem->is_file( $package_path ) ) {
+			$cache_key = 'metadata-b64-' . $slug . '-'
+				. md5(
+					$package_path . '|'
+					. filesize( $package_path ) . '|'
+					. filemtime( $package_path )
+				);
+
 			$parsed_info = WshWordPressPackageParser::parsePackage( $package_path, true );
 			$type        = ucfirst( $parsed_info['type'] );
 			$result      = $wp_filesystem->delete( $package_path );
@@ -211,21 +219,17 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		$result = apply_filters( 'wppus_remove_package_result', $result, $type, $slug );
 
-		if ( $result ) {
+		if ( $result && $cache_key ) {
 
 			if ( ! $this->cache ) {
 				$this->cache = new Wpup_FileCache( WPPUS_Data_Manager::get_data_dir( 'cache' ) );
 			}
 
-			if (
-				$wp_filesystem->is_file( $package_path ) &&
-				$wp_filesystem->is_readable( $package_path )
-			) {
-				$cache_key = 'metadata-b64-' . $slug . '-'
-					. md5( $package_path . '|' . filesize( $package_path ) . '|' . filemtime( $package_path ) );
+			$this->cache->clear( $cache_key );
+		}
 
-				$this->cache->clear( $cache_key );
-			}
+		if ( $result ) {
+			wp_unschedule_hook( 'wppus_check_remote_' . $slug );
 		}
 
 		do_action( 'wppus_removed_package', $result, $type, $slug );

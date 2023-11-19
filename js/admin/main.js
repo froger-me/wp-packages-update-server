@@ -102,12 +102,13 @@ jQuery(document).ready(function ($) {
 
 	});
 
-	$('#wppus_prime_package_slug').on('keyup', function() {
-		var textinput = $(this);
+	var primeLocked = false;
 
-		if (0 < textinput.val().length) {
+	$('#wppus_prime_package_slug').on('input', function() {
+
+		if (0 < $(this).val().length && !primeLocked) {
 			$('#wppus_prime_package_trigger').removeAttr('disabled');
-		} else {
+		} else if (!primeLocked) {
 			$('#wppus_prime_package_trigger').attr('disabled', 'disabled');
 		}
 	});
@@ -125,6 +126,8 @@ jQuery(document).ready(function ($) {
 		button.attr('disabled', 'disabled');
 		button.next().css('visibility', 'visible');
 
+		primeLocked = true;
+
 		$.ajax({
 			url: Wppus.ajax_url,
 			data: data,
@@ -140,6 +143,8 @@ jQuery(document).ready(function ($) {
 					});
 					/* jshint ignore:end */
 
+					primeLocked = false;
+
 					button.removeAttr('disabled');
 					button.next().css('visibility', 'hidden');
 					window.alert(message);
@@ -149,6 +154,11 @@ jQuery(document).ready(function ($) {
 			},
 			error: function (jqXHR, textStatus) {
 				Wppus.debug && console.log(textStatus);
+
+				primeLocked = false;
+
+				button.removeAttr('disabled');
+				button.next().css('visibility', 'hidden');
 			}
 		});
 

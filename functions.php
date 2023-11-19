@@ -389,22 +389,41 @@ if ( ! function_exists( 'wppus_clear_nonces' ) ) {
 	function wppus_clear_nonces() {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 
-		return WPPUS_Nonce::clear_nonces();
+		return WPPUS_Nonce::wppus_nonce_cleanup();
 	}
 }
 
 if ( ! function_exists( 'wppus_schedule_webhook' ) ) {
 	function wppus_schedule_webhook( $payload, $event_type ) {
-		$api = WPPUS_Webhook_API::get_instance();
 
-		return $api->schedule_webhook( $payload, $event_type );
+		if ( isset( $payload['event'], $payload['content'] ) ) {
+			$api = WPPUS_Webhook_API::get_instance();
+
+			return $api->schedule_webhook( $payload, $event_type );
+		}
+
+		return new WP_Error(
+			__FUNCTION__,
+			__( 'The webhook payload must contain an event string and a content.', 'wppus' )
+		);
 	}
 }
 
 if ( ! function_exists( 'wppus_fire_webhook' ) ) {
-	function wppus_fire_webhook( $url, $info, $body, $action ) {
-		$api = WPPUS_Webhook_API::get_instance();
+	function wppus_fire_webhook( $url, $secret, $body, $action ) {
 
-		return $api->fire_webhook( $url, $info, $body, $action );
+		if (
+			filter_var( $url, FILTER_VALIDATE_URL ) &&
+			null !== json_decode( $body )
+		) {
+			$api = WPPUS_Webhook_API::get_instance();
+
+			return $api->fire_webhook( $url, $secret, $body, $action );
+		}
+
+		return new WP_Error(
+			__FUNCTION__,
+			__( '$url must be a valid url and $body must be a JSON string.', 'wppus' )
+		);
 	}
 }
