@@ -89,9 +89,18 @@
 							<input type="text" class="new-webhook-item-url" placeholder="<?php esc_attr_e( 'Payload URL' ); ?>">
 							<input type="text" class="new-webhook-item-secret" placeholder="<?php echo esc_attr( 'secret-key' ); ?>">
 							<div class="webhook-event-types">
-								<label><input type="checkbox" data-webhook-event="all"> <?php esc_html_e( 'All events', 'wppus' ); ?></label>
-								<?php foreach ( $webhook_events as $event => $label ) : ?>
-								<label><input type="checkbox" data-webhook-event="<?php echo esc_attr( $event ); ?>"> <?php echo esc_html( $label ); ?></label>
+								<div class="webhook-event-container">
+									<label><input type="checkbox" data-webhook-event="all"> <?php esc_html_e( 'All events', 'wppus' ); ?></label>
+								</div>
+								<?php foreach ( $webhook_events as $top_event => $values ) : ?>
+								<div class="webhook-event-container">
+									<label><input type="checkbox" class="top-level" data-webhook-event="<?php echo esc_attr( $top_event ); ?>"> <?php echo esc_html( $values['label'] ); ?></label>
+									<?php if ( isset( $values['events'] ) && ! empty( $values['events'] ) ) : ?>
+										<?php foreach ( $values['events'] as $event => $label ) : ?>
+										<label><input type="checkbox" class="child" data-webhook-event="<?php echo esc_attr( $event ); ?>"> <?php echo esc_html( $label ); ?></label>
+										<?php endforeach; ?>
+									<?php endif; ?>
+								</div>
 								<?php endforeach; ?>
 							</div>
 							<button disabled="disabled" class="webhook-add button" type="button"><?php esc_html_e( 'Add a Webhook' ); ?></button>

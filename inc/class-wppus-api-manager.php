@@ -109,8 +109,14 @@ class WPPUS_API_Manager {
 				'webhook_events' => apply_filters(
 					'wppus_api_webhook_events',
 					array(
-						'package' => __( 'Package events', 'wppus' ),
-						'license' => __( 'License events', 'wppus' ),
+						'package' => array(
+							'label'  => __( 'Package events', 'wppus' ),
+							'evetns' => array(),
+						),
+						'license' => array(
+							'label'  => __( 'License events', 'wppus' ),
+							'evetns' => array(),
+						),
 					)
 				),
 			)
