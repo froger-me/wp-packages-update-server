@@ -105,7 +105,14 @@ class WPPUS_API_Manager {
 		wppus_get_admin_template(
 			'plugin-api-page.php',
 			array(
-				'result' => $result,
+				'result'         => $result,
+				'webhook_events' => apply_filters(
+					'wppus_api_webhook_events',
+					array(
+						'package' => __( 'Package events', 'wppus' ),
+						'license' => __( 'License events', 'wppus' ),
+					)
+				),
 			)
 		);
 	}

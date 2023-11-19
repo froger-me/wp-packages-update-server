@@ -90,8 +90,9 @@
 							<input type="text" class="new-webhook-item-secret" placeholder="<?php echo esc_attr( 'secret-key' ); ?>">
 							<div class="webhook-event-types">
 								<label><input type="checkbox" data-webhook-event="all"> <?php esc_html_e( 'All events', 'wppus' ); ?></label>
-								<label><input type="checkbox" data-webhook-event="package"> <?php esc_html_e( 'Package events', 'wppus' ); ?></label>
-								<label><input type="checkbox" data-webhook-event="license"> <?php esc_html_e( 'License events', 'wppus' ); ?></label>
+								<?php foreach ( $webhook_events as $event => $label ) : ?>
+								<label><input type="checkbox" data-webhook-event="<?php echo esc_attr( $event ); ?>"> <?php echo esc_html( $label ); ?></label>
+								<?php endforeach; ?>
 							</div>
 							<button disabled="disabled" class="webhook-add button" type="button"><?php esc_html_e( 'Add a Webhook' ); ?></button>
 						</div>

@@ -20,8 +20,6 @@ jQuery(document).ready(function ($) {
         var urlNew = el.find('.new-webhook-item-url');
         var secretNew = el.find('.new-webhook-item-secret');
         var allEvents = el.find('input[data-webhook-event="all"]');
-        var packageEvents = el.find('input[data-webhook-event="package"]');
-        var licenseEvents = el.find('input[data-webhook-event="license"]');
         var addButton = el.find('.webhook-add').get(0);
         var itemsContainer = el.find('.webhook-items').get(0);
 
@@ -36,13 +34,13 @@ jQuery(document).ready(function ($) {
                 'events': []
             };
 
-            if (packageEvents) {
-                data[urlNew.val()].events.push(packageEvents.data('webhook-event'));
-            }
+            el.find('.webhook-event-types input[type="checkbox"]').each(function (idx, checkbox) {
+                checkbox = $(checkbox);
 
-            if (licenseEvents) {
-                data[urlNew.val()].events.push(licenseEvents.data('webhook-event'));
-            }
+                if ('all' !== checkbox.data('webhook-event') && checkbox.prop('checked')) {
+                    data[urlNew.val()].events.push(checkbox.data('webhook-event'));
+                }
+            });
 
             console.log(data);
 
@@ -114,13 +112,11 @@ jQuery(document).ready(function ($) {
         el.find('.webhook-event-types input[type="checkbox"]').on('change', function () {
 
             if (allEvents.prop('checked')) {
-                packageEvents.prop('checked', true);
-                packageEvents.prop('disabled', true);
-                licenseEvents.prop('checked', true);
-                licenseEvents.prop('disabled', true);
+                el.find('.webhook-event-types input[type="checkbox"]').prop('checked', true);
+                el.find('.webhook-event-types input[type="checkbox"]').prop('disabled', true);
+                allEvents.prop('disabled', false);
             } else {
-                packageEvents.prop('disabled', false);
-                licenseEvents.prop('disabled', false);
+                el.find('.webhook-event-types input[type="checkbox"]').prop('disabled', false);
             }
         });
 
