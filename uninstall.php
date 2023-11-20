@@ -10,18 +10,18 @@ WP_Filesystem();
 
 global $wp_filesystem;
 
-$package_directory = trailingslashit( $wp_filesystem->wp_content_dir() . 'wppus' ) . 'packages';
+$cron = get_option( 'cron' );
 
-if ( $wp_filesystem->is_dir( $package_directory ) ) {
-	$package_paths = glob( trailingslashit( $package_directory ) . '*.zip' );
+foreach ( $cron as $job ) {
 
-	if ( ! empty( $package_paths ) ) {
+	if ( is_array( $job ) ) {
+		$keys = array_keys( $job );
 
-		foreach ( $package_paths as $package_path ) {
-			$package_path_parts = explode( DIRECTORY_SEPARATOR, $package_path );
-			$safe_slug          = str_replace( '.zip', '', end( $package_path_parts ) );
+		foreach ( $keys as $key ) {
 
-			wp_clear_scheduled_hook( 'wppus_check_remote_' . $safe_slug, array( $safe_slug ) );
+			if ( 0 === strpos( $key, 'wppus_' ) ) {
+				wp_unschedule_hook( $key );
+			}
 		}
 	}
 }
@@ -42,4 +42,6 @@ $sql           = "DELETE FROM $wpdb->options WHERE `option_name` LIKE %s";
 $wpdb->query( $wpdb->prepare( $sql, '%' . $option_prefix . '%' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 $sql = "DROP TABLE IF EXISTS {$wpdb->prefix}wppus_licenses;";
+$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+$sql = "DROP TABLE IF EXISTS {$wpdb->prefix}wppus_nonce;";
 $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
