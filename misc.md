@@ -129,7 +129,7 @@ ___
 Webhooks's payload is sent in JSON format via a POST request and is signed with a `secret-key` secret key using `sha1` algorithm and `sha256` algorithm.  
 The resulting hashes are made available in the `X-WPPUS-Signature` and `X-WPPUS-Signature-256` headers respectively.  
 
-Below is an example of how to consume a Webhook on another installation of WordPress with a plugin (the can however be consumed by any system):
+Below is an example of how to consume a Webhook on another installation of WordPress with a plugin (webhooks can however be consumed by any system):
 
 ```php
 <?php
@@ -138,7 +138,7 @@ Plugin Name: WPPUS Webhook Consumer
 Plugin URI: https://domain.tld/wppus-webhook-consumer/
 Description: Consume WPPUS Webhooks.
 Version: 1.0
-Author: A Developper
+Author: A Developer
 Author URI: https://domain.tld/
 Text Domain: wppus-consumer
 Domain Path: /languages
@@ -158,7 +158,8 @@ Domain Path: /languages
 add_action( 'plugins_loaded', function() {
 	global $wp_filesystem;
 	
-	$secret = getenv( 'WPPUS_HOOK_SECRET' ); // We assume the secret is stored in environment variables
+	// We assume the secret is stored in environment variables
+	$secret = getenv( 'WPPUS_HOOK_SECRET' );
 
 	if ( empty( $wp_filesystem ) ) {
 		require_once ABSPATH . '/wp-admin/includes/file.php';

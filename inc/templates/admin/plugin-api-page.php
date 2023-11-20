@@ -108,7 +108,7 @@
 						<input type="hidden" class="webhook-values" id="wppus_webhooks" name="wppus_webhooks" value="<?php echo esc_attr( get_option( 'wppus_webhooks', '{}' ) ); ?>">
 					</div>
 					<p class="description">
-						<?php esc_html_e( 'Webhooks are event notifications sent to URLs of your choice with a payload of data for third party services integration.', 'wppus' ); ?>
+						<?php esc_html_e( 'Webhooks are event notifications sent to arbitrary URLs at next cronjob (1 min. latest after the event occured, depending on the server configuration) with a payload of data for third party services integration.', 'wppus' ); ?>
 						<br>
 						<?php
 						printf(
