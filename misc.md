@@ -5,6 +5,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 
 * [WP Packages Update Server - Miscellaneous - Developer documentation](#wp-packages-update-server---miscellaneous---developer-documentation)
 	* [Nonce API](#nonce-api)
+	* [Consuming Webhooks](#consuming-webhooks)
 	* [Functions](#functions)
 		* [php\_log](#php_log)
 		* [cidr\_match](#cidr_match)
@@ -37,6 +38,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_api\_option\_update](#wppus_api_option_update)
 		* [wppus\_api\_webhook\_events](#wppus_api_webhook_events)
 
+___
 ## Nonce API
 
 The nonce API is accessible via `POST` and `GET` requests on the `/wppus-token/` endpoint to acquire a reusable token, and `/wppus-nonce/` to acquire a true nonce.  
@@ -121,6 +123,93 @@ Response `$data` - **success**:
 	}
 }
 ```
+___
+## Consuming Webhooks
+
+Webhooks's payload is sent in JSON format via a POST request and is signed with a `secret-key` secret key using `sha1` algorithm and `sha256` algorithm.  
+The resulting hashes are made available in the `X-WPPUS-Signature` and `X-WPPUS-Signature-256` headers respectively.  
+
+Below is an example of how to consume a Webhook on another installation of WordPress with a plugin (the can however be consumed by any system):
+
+```php
+<?php
+/*
+Plugin Name: WPPUS Webhook Consumer
+Plugin URI: https://domain.tld/wppus-webhook-consumer/
+Description: Consume WPPUS Webhooks.
+Version: 1.0
+Author: A Developper
+Author URI: https://domain.tld/
+Text Domain: wppus-consumer
+Domain Path: /languages
+*/
+
+/* This is a simple example.
+ * We would normally want to use a proper class, add an endpoint,
+ * use the `parse_request` action, and `query_vars` filter
+ * and check the `query_vars` attribute of the global `$wp` variable
+ * to identify the destination of the Webhook.
+ *
+ * Here instead we will attempt to `json_decode` the payload and
+ * look for the `event` attribute to proceed.
+ *
+ * Also note that we only check for the actually secure `sha256` signature.
+ */
+add_action( 'plugins_loaded', function() {
+	global $wp_filesystem;
+	
+	$secret = getenv( 'WPPUS_HOOK_SECRET' ); // We assume the secret is stored in environment variables
+
+	if ( empty( $wp_filesystem ) ) {
+		require_once ABSPATH . '/wp-admin/includes/file.php';
+
+		WP_Filesystem();
+	}
+	
+	$payload = $wp_filesystem->get_contents( 'php://input' );
+	$json    = json_decode( $payload );
+	
+	if ( $json && isset( $json->event ) ) {
+		// Get the signature from headers
+		$sign = isset( $_SERVER['HTTP_X_WPPUS_SIGNATURE_256'] ) ?
+			$_SERVER['HTTP_X_WPPUS_SIGNATURE_256'] :
+			false;
+
+		if ( $sign ) {
+			// Check our payload against the signature
+			$sign_parts = explode( '=', $sign );
+			$sign       = 2 === count( $sign_parts ) ? end( $sign_parts ) : false;
+			$algo       = ( $sign ) ? reset( $sign_parts ) : false;
+			$valid      = $sign && hash_equals( hash_hmac( $algo, $payload, $secret ), $sign );
+			
+			if ( $valid ) {
+				error_log( 'The payload was successfully authenticated.' );
+				// Log the headers and the body of the request
+				// Typically, at this stage the client would use the consumed payload
+				error_log(
+					print_r(
+						array(
+							'headers' => array(
+								'X-WPPUS-Action'        => $_SERVER['HTTP_X_WPPUS_ACTION'],
+								'X-WPPUS-Signature'     => $_SERVER['HTTP_X_WPPUS_SIGNATURE'],
+								'X-WPPUS-Signature-256' => $_SERVER['HTTP_X_WPPUS_SIGNATURE_256'],
+							),
+							'body' => $payload,
+						),
+						true
+					)
+				);
+			} else {
+				error_log( 'The payload could not be authenticated.' );
+			}
+		} else {
+			error_log( 'Signature not found.' );
+		}
+	}
+}, 10, 0 );
+
+```
+___
 ## Functions
 
 The functions listed below are made publicly available by the plugin for theme and plugin developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).  
