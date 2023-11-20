@@ -119,7 +119,7 @@ class WPPUS_License_Server {
 			}
 		}
 
-		do_action( 'wppus_did_browse_licenses', $licenses );
+		do_action( 'wppus_did_browse_licenses', $licenses, $payload );
 
 		return $licenses;
 	}
@@ -153,7 +153,7 @@ class WPPUS_License_Server {
 			unset( $return->crypto_key );
 		}
 
-		do_action( 'wppus_did_read_license', $return );
+		do_action( 'wppus_did_read_license', $return, $payload );
 
 		return $return;
 	}
@@ -167,9 +167,10 @@ class WPPUS_License_Server {
 		if ( true === $validation ) {
 			global $wpdb;
 
-			$field   = isset( $payload['id'] ) ? 'id' : 'license_key';
-			$where   = array( $field => $payload[ $field ] );
-			$payload = $this->sanitize_license( $payload );
+			$field    = isset( $payload['id'] ) ? 'id' : 'license_key';
+			$where    = array( $field => $payload[ $field ] );
+			$payload  = $this->sanitize_license( $payload );
+			$original = $this->read_license( $where );
 
 			if ( isset( $payload['allowed_domains'] ) ) {
 				$payload['allowed_domains'] = maybe_serialize( $payload['allowed_domains'] );
@@ -194,7 +195,7 @@ class WPPUS_License_Server {
 			}
 		}
 
-		do_action( 'wppus_did_edit_license', $return );
+		do_action( 'wppus_did_edit_license', $return, $payload, $original );
 
 		return $return;
 	}
@@ -228,7 +229,7 @@ class WPPUS_License_Server {
 			}
 		}
 
-		do_action( 'wppus_did_add_license', $return );
+		do_action( 'wppus_did_add_license', $return, $payload );
 
 		return $return;
 	}
@@ -261,7 +262,7 @@ class WPPUS_License_Server {
 			}
 		}
 
-		do_action( 'wppus_did_delete_license', $return );
+		do_action( 'wppus_did_delete_license', $return, $payload );
 
 		return $return;
 	}
@@ -527,26 +528,26 @@ class WPPUS_License_Server {
 		$return = true;
 
 		if ( ! is_array( $license ) ) {
-			$errors[] = __( 'An unexpected error has occured. Please try again. If the problem persists, please contact the author of the plugin.', 'wppus' );
+			$errors['unexpected'] = __( 'An unexpected error has occured. Please try again. If the problem persists, please contact the author of the plugin.', 'wppus' );
 		} else {
 			$date_regex = '/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/';
 
 			if ( $partial ) {
 
 				if ( ! isset( $license['id'] ) && ! isset( $license['license_key'] ) ) {
-					$errors[] = __( 'An ID or a license key is required to identify the license.', 'wppus' );
+					$errors['missing_id_or_key'] = __( 'An ID or a license key is required to identify the license.', 'wppus' );
 				}
 
 				if ( isset( $license['id'] ) ) {
 
 					if ( ! is_numeric( $license['id'] ) ) {
-						$errors[] = __( 'The license key is required and must be a string.', 'wppus' );
+						$errors['missing_id'] = __( 'The ID is required and must be an integer.', 'wppus' );
 					} else {
 						$sql    = "SELECT COUNT(*) FROM {$wpdb->prefix}wppus_licenses WHERE id = %s;";
 						$exists = ( '1' === $wpdb->get_var( $wpdb->prepare( $sql, $license['id'] ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 						if ( ! $exists ) {
-							$errors[] = __( 'The license cannot be found.', 'wppus' );
+							$errors['license_not_found'] = __( 'The license cannot be found.', 'wppus' );
 						}
 					}
 				} else {
@@ -554,7 +555,7 @@ class WPPUS_License_Server {
 					$exists = ( '1' === $wpdb->get_var( $wpdb->prepare( $sql, $license['license_key'] ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 					if ( ! $exists ) {
-						$errors[] = __( 'The license cannot be found.', 'wppus' );
+						$errors['license_not_found'] = __( 'The license cannot be found.', 'wppus' );
 					}
 				}
 			}
@@ -567,13 +568,13 @@ class WPPUS_License_Server {
 					empty( $license['license_key'] )
 				)
 			) {
-				$errors[] = __( 'The license key is required and must be a string.', 'wppus' );
+				$errors['invalid_key'] = __( 'The license key is required and must be a string.', 'wppus' );
 			} elseif ( ! $partial && isset( $license['license_key'] ) ) {
 				$sql    = "SELECT COUNT(*) FROM {$wpdb->prefix}wppus_licenses WHERE license_key = %s;";
 				$exists = ( '0' !== $wpdb->get_var( $wpdb->prepare( $sql, $license['license_key'] ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 				if ( $exists ) {
-					$errors[] = __( 'A value already exists for the given license key. Each key must be unique.', 'wppus' );
+					$errors['key_exists'] = __( 'A value already exists for the given license key. Each key must be unique.', 'wppus' );
 				}
 			}
 
@@ -585,7 +586,7 @@ class WPPUS_License_Server {
 					$license['max_allowed_domains'] < 1
 				)
 			) {
-				$errors[] = __( 'The number of allowed domains is required and must be greater than 1.', 'wppus' );
+				$errors['max_allowed_domains_missing'] = __( 'The number of allowed domains is required and must be greater than 1.', 'wppus' );
 			}
 
 			if (
@@ -593,7 +594,7 @@ class WPPUS_License_Server {
 				! isset( $license['status'] ) ) &&
 				! in_array( $license['status'], self::$license_statuses, true )
 			) {
-				$errors[] = __( 'The license status is invalid.', 'wppus' );
+				$errors['invalid_status'] = __( 'The license status is invalid.', 'wppus' );
 			}
 
 			if (
@@ -601,7 +602,7 @@ class WPPUS_License_Server {
 				! isset( $license['email'] ) ) &&
 				! filter_var( $license['email'] )
 			) {
-				$errors[] = __( 'The registered email is required and must be a valid email address.', 'wppus' );
+				$errors['invalid_email'] = __( 'The registered email is required and must be a valid email address.', 'wppus' );
 			}
 
 			if (
@@ -612,7 +613,7 @@ class WPPUS_License_Server {
 					! preg_match( $date_regex, $license['date_created'] )
 				)
 			) {
-				$errors[] = __( 'The creation date is required and must follow the following format: YYYY-MM-DD', 'wppus' );
+				$errors['invalid_date_created'] = __( 'The creation date is required and must follow the following format: YYYY-MM-DD', 'wppus' );
 			}
 
 			if (
@@ -623,7 +624,7 @@ class WPPUS_License_Server {
 					! preg_match( $date_regex, $license['date_renewed'] )
 				)
 			) {
-				$errors[] = __( 'The renewal date must follow the following format: YYYY-MM-DD', 'wppus' );
+				$errors['invalid_date_renewal'] = __( 'The renewal date must follow the following format: YYYY-MM-DD', 'wppus' );
 			}
 
 			if (
@@ -634,7 +635,7 @@ class WPPUS_License_Server {
 					! preg_match( $date_regex, $license['date_expiry'] )
 				)
 			) {
-				$errors[] = __( 'The expiry date must follow the following format: YYYY-MM-DD', 'wppus' );
+				$errors['invalid_date_expiry'] = __( 'The expiry date must follow the following format: YYYY-MM-DD', 'wppus' );
 			}
 
 			if (
@@ -645,7 +646,7 @@ class WPPUS_License_Server {
 					! preg_match( '/[a-z0-9-]*/', $license['package_slug'] )
 				)
 			) {
-				$errors[] = __( 'The package slug is required and must contain only alphanumeric characters or dashes.', 'wppus' );
+				$errors['invalid_package_slug'] = __( 'The package slug is required and must contain only alphanumeric characters or dashes.', 'wppus' );
 			}
 
 			if (
@@ -654,7 +655,7 @@ class WPPUS_License_Server {
 				'plugin' !== $license['package_type'] &&
 				'theme' !== $license['package_type']
 			) {
-				$errors[] = __( 'The package type is required and must be "plugin" or "theme".', 'wppus' );
+				$errors['invalid_package_type'] = __( 'The package type is required and must be "plugin" or "theme".', 'wppus' );
 			}
 
 			if (
@@ -663,7 +664,7 @@ class WPPUS_License_Server {
 				! empty( $license['owner_name'] ) &&
 				! is_string( $license['owner_name'] )
 			) {
-				$errors[] = __( 'The license owner name must be a string.', 'wppus' );
+				$errors['invalid_license_owner'] = __( 'The license owner name must be a string.', 'wppus' );
 			}
 
 			if (
@@ -672,7 +673,7 @@ class WPPUS_License_Server {
 				! empty( $license['company_name'] ) &&
 				! is_string( $license['company_name'] )
 			) {
-				$errors[] = __( 'The company name must be a string.', 'wppus' );
+				$errors['invalid_company_name'] = __( 'The company name must be a string.', 'wppus' );
 			}
 
 			if (
@@ -681,7 +682,7 @@ class WPPUS_License_Server {
 				! empty( $license['txn_id'] ) &&
 				! is_string( $license['txn_id'] )
 			) {
-				$errors[] = __( 'The transaction ID must be a string.', 'wppus' );
+				$errors['invalid_txn_id'] = __( 'The transaction ID must be a string.', 'wppus' );
 			}
 
 			if ( ! ( $partial && ! isset( $license['allowed_domains'] ) ) ) {
@@ -693,7 +694,7 @@ class WPPUS_License_Server {
 					foreach ( $license['allowed_domains'] as $key => $value ) {
 
 						if ( ! filter_var( 'admin@' . $value, FILTER_VALIDATE_EMAIL ) ) {
-							$errors[] = __( 'All allowed domains values must be valid domains or subdomains without protocol.', 'wppus' );
+							$errors['invalid_domain'] = __( 'All allowed domains values must be valid domains or subdomains without protocol.', 'wppus' );
 
 							break;
 						}

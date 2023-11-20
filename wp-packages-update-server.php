@@ -51,6 +51,7 @@ require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-data-manager.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-cloud-storage-manager.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-api.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-api.php';
+require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-api.php';
 
 if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing_api_request() ) {
 	require_once WPPUS_PLUGIN_PATH . 'inc/class-wp-packages-update-server.php';
@@ -88,7 +89,6 @@ function wppus_run() {
 		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server/loader.php';
 		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server-extended/loader.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-server.php';
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-api.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
 
 		do_action( 'wppus_no_license_api_includes' );
@@ -121,14 +121,14 @@ function wppus_run() {
 		$objects['license_api'] = new WPPUS_License_API( true, false );
 	}
 
+	if ( ! isset( $objects['webhook_api'] ) ) {
+		$objects['webhook_api'] = new WPPUS_Webhook_API( true );
+	}
+
 	if ( ! $priority_api_request ) {
 
 		if ( ! isset( $objects['update_api'] ) ) {
 			$objects['update_api'] = new WPPUS_Update_API( true );
-		}
-
-		if ( ! isset( $objects['webhook_api'] ) ) {
-			$objects['webhook_api'] = new WPPUS_Webhook_API( true );
 		}
 
 		if ( ! isset( $objects['package_api'] ) ) {

@@ -32,11 +32,18 @@ class WPPUS_License_API {
 				}
 
 				add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
+				add_action( 'wppus_pre_activate_license', array( $this, 'wppus_bypass_did_edit_license_action' ), 10, 0 );
+				add_action( 'wppus_did_activate_license', array( $this, 'wppus_did_license_action' ), 10, 2 );
+				add_action( 'wppus_pre_deactivate_license', array( $this, 'wppus_bypass_did_edit_license_action' ), 10, 0 );
+				add_action( 'wppus_did_deactivate_license', array( $this, 'wppus_did_license_action' ), 10, 2 );
+				add_action( 'wppus_did_add_license', array( $this, 'wppus_did_license_action' ), 10, 2 );
+				add_action( 'wppus_did_edit_license', array( $this, 'wppus_did_license_action' ), 10, 3 );
+				add_action( 'wppus_did_delete_license', array( $this, 'wppus_did_license_action' ), 10, 2 );
 
 				add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 				add_filter( 'wppus_handle_update_request_params', array( $this, 'wppus_handle_update_request_params' ), 0, 1 );
 				add_filter( 'wppus_server_class_name', array( $this, 'wppus_server_class_name' ), 0, 2 );
-
+				add_filter( 'wppus_api_webhook_events', array( $this, 'wppus_api_webhook_events' ), 0, 1 );
 			}
 		}
 	}
@@ -44,6 +51,84 @@ class WPPUS_License_API {
 	/*******************************************************************
 	 * Public methods
 	 *******************************************************************/
+
+	public function wppus_api_webhook_events( $webhook_events ) {
+
+		if ( isset( $webhook_events['license'], $webhook_events['license']['events'] ) ) {
+			$webhook_events['license']['events']['license_activate']   = __( 'License activated', 'wppus' );
+			$webhook_events['license']['events']['license_deactivate'] = __( 'License deactivated', 'wppus' );
+			$webhook_events['license']['events']['license_add']        = __( 'License added', 'wppus' );
+			$webhook_events['license']['events']['license_edit']       = __( 'License edited', 'wppus' );
+			$webhook_events['license']['events']['license_delete']     = __( 'License deleted', 'wppus' );
+		}
+
+		return $webhook_events;
+	}
+
+	public function wppus_bypass_did_edit_license_action() {
+		remove_action( 'wppus_did_edit_license', array( $this, 'wppus_did_license_action' ), 10 );
+	}
+
+	public function wppus_did_license_action( $result, $payload, $original = null ) {
+		$format = '';
+		$event  = 'license_' . str_replace( array( 'wppus_did_', '_license' ), array( '', '' ), current_action() );
+
+		if ( ! is_object( $result ) ) {
+			// translators: %s is operation slug
+			$description = sprintf( esc_html__( 'An error occured for License operation `%s` on WPPUS.' ), $event );
+			$content     = array(
+				'error'   => true,
+				'result'  => $result,
+				'payload' => $payload,
+			);
+		} else {
+			$content = null !== $original ?
+				array(
+					'new'      => $result,
+					'original' => $original,
+				) :
+				$result;
+
+			switch ( $event ) {
+				case 'license_edit':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been edited on WPPUS' );
+					break;
+				case 'license_add':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been added on WPPUS' );
+					break;
+				case 'license_delete':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deleted on WPPUS' );
+					break;
+				case 'license_activate':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been activated on WPPUS' );
+					break;
+				case 'license_deactivate':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deactivated on WPPUS' );
+					break;
+				default:
+					return;
+			}
+
+			$description = sprintf(
+				$format,
+				$result->license_key,
+				$result->id
+			);
+		}
+
+		$payload = array(
+			'event'       => $event,
+			'description' => $description,
+			'content'     => $content,
+		);
+
+		wppus_schedule_webhook( $payload, 'license' );
+	}
 
 	// API action --------------------------------------------------
 
@@ -167,6 +252,8 @@ class WPPUS_License_API {
 
 		remove_filter( 'wppus_license_is_public', '__return_false' );
 
+		do_action( 'wppus_pre_activate_license', $license );
+
 		if ( ! isset( $license_data['allowed_domains'] ) ) {
 			$license_data['allowed_domains'] = array();
 		} elseif ( ! is_array( $license_data['allowed_domains'] ) ) {
@@ -203,7 +290,7 @@ class WPPUS_License_API {
 
 		$result = apply_filters( 'wppus_activate_license_result', $result, $license_data, $license );
 
-		do_action( 'wppus_did_activate_license', $result );
+		do_action( 'wppus_did_activate_license', $result, $license_data );
 
 		if ( ! is_object( $result ) ) {
 			$this->http_response_code = 400;
@@ -222,6 +309,8 @@ class WPPUS_License_API {
 
 		$license = $this->license_server->read_license( $license_data );
 		$result  = array();
+
+		do_action( 'wppus_pre_deactivate_license', $license );
 
 		if ( ! isset( $license_data['allowed_domains'] ) ) {
 			$license_data['allowed_domains'] = array();
@@ -260,7 +349,7 @@ class WPPUS_License_API {
 
 		$result = apply_filters( 'wppus_deactivate_license_result', $result, $license_data, $license );
 
-		do_action( 'wppus_did_deactivate_license', $result );
+		do_action( 'wppus_did_deactivate_license', $result, $license_data );
 
 		if ( ! is_object( $result ) ) {
 			$this->http_response_code = 400;

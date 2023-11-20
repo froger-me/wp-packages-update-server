@@ -64,6 +64,13 @@ class WPPUS_API_Manager {
 			"\n",
 			__( 'Are you sure you want to do this?', 'wppus' ),
 		);
+		$l10n['eventApiCountSingular']   = array(
+			__( '(1 item)', 'wppus' ),
+		);
+		$l10n['eventApiCountPlural']     = array(
+			// translators: %d is the number of items
+			__( '(%d items)', 'wppus' ),
+		);
 
 		return $l10n;
 	}
@@ -111,11 +118,11 @@ class WPPUS_API_Manager {
 					array(
 						'package' => array(
 							'label'  => __( 'Package events', 'wppus' ),
-							'evetns' => array(),
+							'events' => array(),
 						),
 						'license' => array(
 							'label'  => __( 'License events', 'wppus' ),
-							'evetns' => array(),
+							'events' => array(),
 						),
 					)
 				),

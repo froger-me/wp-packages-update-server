@@ -26,6 +26,7 @@ class WPPUS_Package_API {
 			add_action( 'wppus_did_download_package', array( $this, 'wppus_did_download_package' ), 10, 1 );
 
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
+			add_filter( 'wppus_api_webhook_events', array( $this, 'wppus_api_webhook_events' ), 10, 1 );
 		}
 	}
 
@@ -299,6 +300,17 @@ class WPPUS_Package_API {
 		);
 
 		wppus_schedule_webhook( $payload, 'package' );
+	}
+
+	public function wppus_api_webhook_events( $webhook_events ) {
+
+		if ( isset( $webhook_events['package'], $webhook_events['package']['events'] ) ) {
+			$webhook_events['package']['events']['package_update']   = __( 'Package added or updated', 'wppus' );
+			$webhook_events['package']['events']['package_delete']   = __( 'Package deleted', 'wppus' );
+			$webhook_events['package']['events']['package_download'] = __( 'Package downloaded via a signed URL', 'wppus' );
+		}
+
+		return $webhook_events;
 	}
 
 	// Misc. -------------------------------------------------------

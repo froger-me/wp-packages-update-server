@@ -89,15 +89,15 @@
 							<input type="text" class="new-webhook-item-url" placeholder="<?php esc_attr_e( 'Payload URL' ); ?>">
 							<input type="text" class="new-webhook-item-secret" placeholder="<?php echo esc_attr( 'secret-key' ); ?>">
 							<div class="webhook-event-types">
-								<div class="webhook-event-container">
+								<div class="webhook-event-container all">
 									<label><input type="checkbox" data-webhook-event="all"> <?php esc_html_e( 'All events', 'wppus' ); ?></label>
 								</div>
 								<?php foreach ( $webhook_events as $top_event => $values ) : ?>
 								<div class="webhook-event-container">
-									<label><input type="checkbox" class="top-level" data-webhook-event="<?php echo esc_attr( $top_event ); ?>"> <?php echo esc_html( $values['label'] ); ?></label>
+									<label class="top-level"><input type="checkbox" data-webhook-event="<?php echo esc_attr( $top_event ); ?>"> <?php echo esc_html( $values['label'] ); ?></label>
 									<?php if ( isset( $values['events'] ) && ! empty( $values['events'] ) ) : ?>
 										<?php foreach ( $values['events'] as $event => $label ) : ?>
-										<label><input type="checkbox" class="child" data-webhook-event="<?php echo esc_attr( $event ); ?>"> <?php echo esc_html( $label ); ?></label>
+										<label class="child"><input type="checkbox" data-webhook-event="<?php echo esc_attr( $event ); ?>"> <?php echo esc_html( $label ); ?></label>
 										<?php endforeach; ?>
 									<?php endif; ?>
 								</div>
@@ -113,7 +113,7 @@
 						<?php
 						printf(
 							// translators: %1$s is <code>secret</code>, %2$s is <code>X-WPPUS-Signature</code>, %3$s is <code>X-WPPUS-Signature-256</code>
-							esc_html__( 'To allow the recipient to authenticate the notifications, the payload is signed with a %1$s secret key using sha1 algorithm and sha256 algorithm ; the resulting hashes are made available in the %2$s and %3$s headers respectively.', 'wppus' ),
+							esc_html__( 'To allow the recipients to authenticate the notifications, the payload is signed with a %1$s secret key using sha1 algorithm and sha256 algorithm ; the resulting hashes are made available in the %2$s and %3$s headers respectively.', 'wppus' ),
 							'<code>secret-key</code>',
 							'<code>X-WPPUS-Signature</code>',
 							'<code>X-WPPUS-Signature-256</code>'

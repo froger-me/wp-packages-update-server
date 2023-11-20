@@ -20,6 +20,8 @@ jQuery(document).ready(function ($) {
         var urlNew = el.find('.new-webhook-item-url');
         var secretNew = el.find('.new-webhook-item-secret');
         var allEvents = el.find('input[data-webhook-event="all"]');
+        var packageEvents = el.find('input[data-webhook-event="package"]');
+        var licenseEvents = el.find('input[data-webhook-event="license"]');
         var addButton = el.find('.webhook-add').get(0);
         var itemsContainer = el.find('.webhook-items').get(0);
 
@@ -33,6 +35,24 @@ jQuery(document).ready(function ($) {
                 'secret': secretNew.val(),
                 'events': []
             };
+
+            if (packageEvents.prop('checked')) {
+                packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', false);
+            }
+
+            if (licenseEvents.prop('checked')) {
+                licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', false);
+            }
+
+            if (packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').length === packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]:checked').length) {
+                packageEvents.prop('checked', true);
+                packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', false);
+            }
+
+            if (licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').length === licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]:checked').length) {
+                licenseEvents.prop('checked', true);
+                licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', false);
+            }
 
             el.find('.webhook-event-types input[type="checkbox"]').each(function (idx, checkbox) {
                 checkbox = $(checkbox);
@@ -67,7 +87,6 @@ jQuery(document).ready(function ($) {
 
             Object.keys(data).forEach(function (index) {
                 var itemContainer = document.createElement('div');
-                var urlContainer = document.createElement('span');
                 var urlText = document.createElement('span');
                 var secretText = document.createElement('span');
                 var eventsText = document.createElement('span');
@@ -77,10 +96,10 @@ jQuery(document).ready(function ($) {
                 urlText.textContent = index;
                 urlText.title = index;
                 urlText.classList = 'url';
-                urlContainer.classList = 'url-container';
                 secretText.textContent = data[index].secret;
                 secretText.classList = 'secret';
-                eventsText.textContent = '(' + data[index].events.join(', ') + ')';
+                eventsText.textContent = (1 === data[index].events.length) ? Wppus_l10n.eventApiCountSingular : Wppus_l10n.eventApiCountPlural.replace('%d', data[index].events.length)
+                eventsText.title = '(' + data[index].events.join(', ') + ')';
                 eventsText.classList = 'events';
                 deleteButton.type = 'button';
                 deleteButton.innerHTML = '<span class="wppus-remove-icon" aria-hidden="true"></span>';
@@ -92,9 +111,8 @@ jQuery(document).ready(function ($) {
                     }
                 };
 
-                urlContainer.appendChild(urlText);
-                urlContainer.appendChild(eventsText);
-                itemContainer.appendChild(urlContainer);
+                itemContainer.appendChild(eventsText);
+                itemContainer.appendChild(urlText);
                 itemContainer.appendChild(secretText);
                 itemContainer.appendChild(deleteButton);
                 itemsContainer.appendChild(itemContainer);
@@ -117,6 +135,16 @@ jQuery(document).ready(function ($) {
                 allEvents.prop('disabled', false);
             } else {
                 el.find('.webhook-event-types input[type="checkbox"]').prop('disabled', false);
+
+                if (packageEvents.prop('checked')) {
+                    packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', true);
+                    packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('disabled', true);
+                }
+
+                if (licenseEvents.prop('checked')) {
+                    licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', true);
+                    licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('disabled', true);
+                }
             }
         });
 

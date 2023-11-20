@@ -66,6 +66,7 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_check\_remote\_update](#wppus_check_remote_update)
 		* [wppus\_udpdate\_manager\_request\_action](#wppus_udpdate_manager_request_action)
 		* [wppus\_package\_manager\_pre\_delete\_package](#wppus_package_manager_pre_delete_package)
+		* [wppus\_package\_manager\_deleted\_package](#wppus_package_manager_deleted_package)
 		* [wppus\_package\_manager\_pre\_delete\_packages\_bulk](#wppus_package_manager_pre_delete_packages_bulk)
 		* [wppus\_package\_manager\_deleted\_packages\_bulk](#wppus_package_manager_deleted_packages_bulk)
 		* [wppus\_before\_packages\_download\_repack](#wppus_before_packages_download_repack)
@@ -1515,7 +1516,7 @@ ___
 ### wppus_package_manager_pre_delete_package
 
 ```php
-do_action( 'wppus_package_manager_pre_delete_package', array $package_slug );
+do_action( 'wppus_package_manager_pre_delete_package', string $package_slug );
 ```
 
 **Description**  
@@ -1523,7 +1524,21 @@ Fired before a package is deleted as part of a bulk from the file system.
 
 **Parameters**  
 `$package_slug`
-> (array) the slug of the package to be deleted  
+> (string) the slug of the package to be deleted  
+
+___
+### wppus_package_manager_deleted_package
+
+```php
+do_action( 'wppus_package_manager_deleted_package', string $package_slug );
+```
+
+**Description**  
+Fired after a package was deleted as part of a bulk from the file system.
+
+**Parameters**  
+`$package_slug`
+> (string) the slug of the deleted package  
 
 ___
 ### wppus_package_manager_pre_delete_packages_bulk

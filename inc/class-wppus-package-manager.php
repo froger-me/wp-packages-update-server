@@ -29,7 +29,7 @@ class WPPUS_Package_Manager {
 			add_action( 'wp_ajax_wppus_manual_package_upload', array( $this, 'manual_package_upload' ), 10, 0 );
 			add_action( 'load-toplevel_page_wppus-page', array( $this, 'add_page_options' ), 10, 0 );
 			add_action( 'wppus_package_manager_pre_delete_package', array( $this, 'wppus_package_manager_pre_delete_package' ), 10, 1 );
-			add_action( 'wppus_package_manager_deleted_packages_bulk', array( $this, 'wppus_package_manager_deleted_packages_bulk' ), 10, 1 );
+			add_action( 'wppus_package_manager_deleted_package', array( $this, 'wppus_package_manager_deleted_package' ), 10, 1 );
 
 			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 10, 1 );
 			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 10, 2 );
@@ -38,7 +38,7 @@ class WPPUS_Package_Manager {
 	}
 
 	/*******************************************************************
-	 * Protected methods
+	 * Public methods
 	 *******************************************************************/
 
 	// WordPress hooks ---------------------------------------------
@@ -320,23 +320,18 @@ class WPPUS_Package_Manager {
 		$info                  = $info ? $info : array();
 		$info[ $package_slug ] = wppus_get_package_info( $package_slug, false );
 
-		php_log( $info );
-
 		wp_cache_set( 'wppus_package_manager_pre_delete_package_info', $info, 'wppus' );
 	}
 
-	public function wppus_package_manager_deleted_packages_bulk( $deleted_package_slugs ) {
-		$packages_info = wp_cache_get( 'wppus_package_manager_pre_delete_package_info', 'wppus' );
+	public function wppus_package_manager_deleted_package( $package_slug ) {
+		$package_info = wp_cache_get( 'wppus_package_manager_pre_delete_package_info', 'wppus' );
 
-		if ( $packages_info ) {
+		if ( $package_info ) {
 			$payload = array(
-				'event'       => 'package_deleted_bulk',
+				'event'       => 'package_deleted',
 				// translators: %s is the package slugs
-				'description' => sprintf( esc_html__( 'The following packages have been deleted on WPPUS: %s' ), implode( ', ', $deleted_package_slugs ) ),
-				'content'     => array(
-					'deleted_package_slugs' => $deleted_package_slugs,
-					'info'                  => $packages_info,
-				),
+				'description' => sprintf( esc_html__( 'The package of type `%1$s` and slug `%2$s` has been deleted on WPPUS' ), $package_info['type'], $package_slug ),
+				'content'     => $package_info,
 			);
 
 			wppus_schedule_webhook( $payload, 'package' );
@@ -442,6 +437,8 @@ class WPPUS_Package_Manager {
 					do_action( 'wppus_package_manager_pre_delete_package', $slug );
 
 					$result = $update_server->remove_package( $slug );
+
+					do_action( 'wppus_package_manager_deleted_package', $slug );
 
 					$update_server_class::unlock_update_from_remote( $slug );
 				}

@@ -182,24 +182,39 @@ class WPPUS_Webhook_API {
 		$payload['timestamp'] = time();
 
 		foreach ( $this->webhooks as $url => $info ) {
+			$fire = false;
 
 			if (
-				! isset( $info['secret'], $info['events'] ) ||
-				empty( $info['events'] ) ||
-				! is_array( $info['events'] ) ||
-				! in_array( $event_type, $info['events'], true )
+				isset( $info['secret'], $info['events'] ) &&
+				! empty( $info['events'] ) &&
+				is_array( $info['events'] )
 			) {
-				continue;
+
+				if ( in_array( $event_type, $info['events'], true ) ) {
+					$fire = true;
+				} else {
+
+					foreach ( $info['events'] as $event ) {
+
+						if ( $event === $payload['event'] && 0 === strpos( $event, $event_type ) ) {
+							$fire = true;
+
+							break;
+						}
+					}
+				}
 			}
 
-			$body = wp_json_encode( $payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
-			$hook = 'wppus_webhook';
+			if ( $fire ) {
+				$body = wp_json_encode( $payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+				$hook = 'wppus_webhook';
 
-			if ( ! wp_next_scheduled( 'wppus_webhook', array( $url, $info, $body, current_action() ) ) ) {
-				$params    = array( $url, $info['secret'], $body, current_action() );
-				$timestamp = time();
+				if ( ! wp_next_scheduled( 'wppus_webhook', array( $url, $info, $body, current_action() ) ) ) {
+					$params    = array( $url, $info['secret'], $body, current_action() );
+					$timestamp = time();
 
-				wp_schedule_single_event( $timestamp, $hook, $params );
+					wp_schedule_single_event( $timestamp, $hook, $params );
+				}
 			}
 		}
 	}

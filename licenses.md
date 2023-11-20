@@ -39,7 +39,9 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_did\_add\_license](#wppus_did_add_license)
 		* [wppus\_did\_delete\_license](#wppus_did_delete_license)
 		* [wppus\_did\_check\_license](#wppus_did_check_license)
+		* [wppus\_pre\_activate\_license](#wppus_pre_activate_license)
 		* [wppus\_did\_activate\_license](#wppus_did_activate_license)
+		* [wppus\_pre\_deactivate\_license](#wppus_pre_deactivate_license)
 		* [wppus\_did\_deactivate\_license](#wppus_did_deactivate_license)
 		* [wppus\_license\_api\_request](#wppus_license_api_request)
 	* [Filters](#filters)
@@ -857,7 +859,7 @@ ___
 ### wppus_did_browse_licenses
 
 ```php
-do_action( 'wppus_did_browse_licenses', array $licenses );
+do_action( 'wppus_did_browse_licenses', array $licenses, array $payload );
 ```
 
 **Description**  
@@ -868,11 +870,14 @@ Fired during client license API request.
 `$licenses`
 > (array) the license records retrieved or an empty array
 
+`$payload`
+> (array) the payload of the request  
+
 ___
 ### wppus_did_read_license
 
 ```php
-do_action( 'wppus_did_read_license', array $result );
+do_action( 'wppus_did_read_license', mixed $result, array $payload );
 ```
 
 **Description**  
@@ -883,11 +888,14 @@ Fired during client license API request.
 `$result`
 > (mixed) the result of the operation - a license object record or an empty array
 
+`$payload`
+> (array) the payload of the request  
+
 ___
 ### wppus_did_edit_license
 
 ```php
-do_action( 'wppus_did_edit_license', array $result );
+do_action( 'wppus_did_edit_license', mixed $result, array $payload, mixed $original );
 ```
 
 **Description**  
@@ -898,11 +906,16 @@ Fired during client license API request.
 `$result`
 > (mixed) the result of the operation - a license record object or an array of errors
 
+`$payload`
+> (array) the payload of the request  
+
+`$result`
+> (mixed) the original record to edit - a license record object or an array of errors
 ___
 ### wppus_did_add_license
 
 ```php
-do_action( 'wppus_did_add_license', array $result );
+do_action( 'wppus_did_add_license', mixed $result, array $payload );
 ```
 
 **Description**  
@@ -913,11 +926,14 @@ Fired during client license API request.
 `$result`
 > (mixed) the result of the operation - a license record object or an array of errors
 
+`$payload`
+> (array) the payload of the request  
+
 ___
 ### wppus_did_delete_license
 
 ```php
-do_action( 'wppus_did_delete_license', array $result );
+do_action( 'wppus_did_delete_license', mixed $result, array $payload );
 ```
 
 **Description**  
@@ -928,11 +944,14 @@ Fired during client license API request.
 `$result`
 > (mixed) the result of the operation - a license record object or an empty array
 
+`$payload`
+> (array) the payload of the request  
+
 ___
 ### wppus_did_check_license
 
 ```php
-do_action( 'wppus_did_check_license', array $result );
+do_action( 'wppus_did_check_license', mixed $result, array $payload );
 ```
 
 **Description**  
@@ -943,11 +962,29 @@ Fired during client license API request.
 `$result`
 > (mixed) the result of the operation - a license record object or an associative array with non-existant license key
 
+`$payload`
+> (array) the payload of the request  
+
+___
+### wppus_pre_activate_license
+
+```php
+do_action( 'wppus_pre_activate_license', mixed $license );
+```
+
+**Description**  
+Fired before activating a License.
+Fired during client license API request.
+
+**Parameters**  
+`$license`
+> (mixed) the license to activate as an object in case it exists (see the response of the License API action [read](#read) - the object is the decoded value of the JSON string) or an empty array otherwise
+
 ___
 ### wppus_did_activate_license
 
 ```php
-do_action( 'wppus_did_activate_license', array $result );
+do_action( 'wppus_did_activate_license', mixed $result, array $payload );
 ```
 
 **Description**  
@@ -958,11 +995,29 @@ Fired during client license API request.
 `$result`
 > (mixed) the result of the operation - a license record object, an associative array with the illegal status, an associative array with the domain already active for the license record, or an associative array with the maximum number of domains reached for the license record
 
+`$payload`
+> (array) the payload of the request  
+
+___
+### wppus_pre_deactivate_license
+
+```php
+do_action( 'wppus_pre_deactivate_license', mixed $license );
+```
+
+**Description**  
+Fired before deactivating a License.
+Fired during client license API request.
+
+**Parameters**  
+`$license`
+> (mixed) the license to deactivate as an object in case it exists (see the response of the License API action [read](#read) - the object is the decoded value of the JSON string) or an empty array otherwise
+
 ___
 ### wppus_did_deactivate_license
 
 ```php
-do_action( 'wppus_did_deactivate_license', array $result );
+do_action( 'wppus_did_deactivate_license', mixed $result, array $payload );
 ```
 
 **Description**  
@@ -972,6 +1027,9 @@ Fired during client license API request.
 **Parameters**  
 `$result`
 > (mixed) the result of the operation - a license record object, an associative array with the illegal status, or an associative array with the domain already inactive for the license record
+
+`$payload`
+> (array) the payload of the request  
 
 ___
 ### wppus_license_api_request
