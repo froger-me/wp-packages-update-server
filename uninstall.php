@@ -38,12 +38,14 @@ wp_clear_scheduled_hook( 'wppus_cleanup', array( 'logs' ) );
 wp_clear_scheduled_hook( 'wppus_cleanup', array( 'tmp' ) );
 wp_clear_scheduled_hook( 'wppus_cleanup', array( 'update_from_remote_locks' ) );
 
-$option_prefix = 'wppus_';
-$sql           = "DELETE FROM $wpdb->options WHERE `option_name` LIKE %s";
+$sql = "DELETE FROM $wpdb->options WHERE `option_name` LIKE %s";
 
-$wpdb->query( $wpdb->prepare( $sql, '%' . $option_prefix . '%' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+$wpdb->query( $wpdb->prepare( $sql, '%wppus_%' ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 $sql = "DROP TABLE IF EXISTS {$wpdb->prefix}wppus_licenses;";
+
 $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
 $sql = "DROP TABLE IF EXISTS {$wpdb->prefix}wppus_nonce;";
+
 $wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
