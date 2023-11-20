@@ -60,6 +60,8 @@ class WPPUS_License_API {
 			$webhook_events['license']['events']['license_add']        = __( 'License added', 'wppus' );
 			$webhook_events['license']['events']['license_edit']       = __( 'License edited', 'wppus' );
 			$webhook_events['license']['events']['license_delete']     = __( 'License deleted', 'wppus' );
+			$webhook_events['license']['events']['license_require']    = __( 'License becomes required for a package', 'wppus' );
+			$webhook_events['license']['events']['license_unrequire']  = __( 'License becomes not required a for package', 'wppus' );
 		}
 
 		return $webhook_events;

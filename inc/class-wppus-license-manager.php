@@ -36,6 +36,8 @@ class WPPUS_License_Manager {
 			add_action( 'load-wp-packages-update-server_page_wppus-page-licenses', array( $this, 'add_page_options' ), 10, 0 );
 			add_action( 'wppus_udpdate_manager_request_action', array( $this, 'wppus_udpdate_manager_request_action' ), 10, 2 );
 			add_action( 'wppus_package_manager_deleted_packages_bulk', array( $this, 'wppus_package_manager_deleted_packages_bulk' ), 10, 1 );
+			add_action( 'wppus_added_license_check', array( $this, 'wppus_license_check_action' ), 10, 1 );
+			add_action( 'wppus_removed_license_check', array( $this, 'wppus_license_check_action' ), 10, 1 );
 
 			add_filter( 'set-screen-option', array( $this, 'set_page_options' ), 10, 3 );
 			add_filter( 'wppus_page_wppus_scripts_l10n', array( $this, 'wppus_page_wppus_scripts_l10n' ), 10, 1 );
@@ -45,6 +47,37 @@ class WPPUS_License_Manager {
 	/*******************************************************************
 	 * Public methods
 	 *******************************************************************/
+
+	public function wppus_license_check_action( $package_slug ) {
+		$event = ( false !== strpos( current_action(), 'added' ) ) ? 'license_require' : 'license_unrequire';
+
+		switch ( $event ) {
+			case 'license_require':
+				// translators: %s is the package slug
+				$format = esc_html__( 'The package `%1$s` was set to require a license on WPPUS' );
+				break;
+			case 'license_unrequire':
+				// translators: %s is the package slug
+				$format = esc_html__( 'The package `%1$s` was set to not require a license on WPPUS' );
+				break;
+			default:
+				return;
+		}
+
+		$content     = wppus_get_package_info( $package_slug, false );
+		$description = sprintf(
+			$format,
+			$package_slug
+		);
+
+		$payload = array(
+			'event'       => $event,
+			'description' => $description,
+			'content'     => $content,
+		);
+
+		wppus_schedule_webhook( $payload, 'license' );
+	}
 
 	// WordPress hooks ---------------------------------------------
 

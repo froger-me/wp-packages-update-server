@@ -94,10 +94,10 @@
 								</div>
 								<?php foreach ( $webhook_events as $top_event => $values ) : ?>
 								<div class="webhook-event-container">
-									<label class="top-level"><input type="checkbox" data-webhook-event="<?php echo esc_attr( $top_event ); ?>"> <?php echo esc_html( $values['label'] ); ?></label>
+									<label class="top-level"><input type="checkbox" data-webhook-event="<?php echo esc_attr( $top_event ); ?>"> <?php echo esc_html( $values['label'] ); ?> <code>(<?php echo esc_html( $top_event ); ?>)</code></label>
 									<?php if ( isset( $values['events'] ) && ! empty( $values['events'] ) ) : ?>
 										<?php foreach ( $values['events'] as $event => $label ) : ?>
-										<label class="child"><input type="checkbox" data-webhook-event="<?php echo esc_attr( $event ); ?>"> <?php echo esc_html( $label ); ?></label>
+										<label class="child"><input type="checkbox" data-webhook-event="<?php echo esc_attr( $event ); ?>"> <?php echo esc_html( $label ); ?> <code>(<?php echo esc_html( $event ); ?>)</code></label>
 										<?php endforeach; ?>
 									<?php endif; ?>
 								</div>
