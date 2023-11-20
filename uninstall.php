@@ -27,9 +27,11 @@ foreach ( $cron as $job ) {
 }
 
 $wppus_mu_plugin = trailingslashit( wp_normalize_path( WPMU_PLUGIN_DIR ) ) . 'wppus-endpoint-optimizer.php';
+$wppus_dir       = trailingslashit( $wp_filesystem->wp_content_dir() . 'wppus' );
 
 $wp_filesystem->delete( $wppus_mu_plugin );
 $wp_filesystem->delete( $wppus_mu_plugin . '.backup' );
+$wp_filesystem->delete( $wppus_mdir, true );
 
 wp_clear_scheduled_hook( 'wppus_cleanup', array( 'cache' ) );
 wp_clear_scheduled_hook( 'wppus_cleanup', array( 'logs' ) );
