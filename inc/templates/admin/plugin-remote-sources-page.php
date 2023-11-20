@@ -122,32 +122,7 @@
 						<br/>
 						<?php esc_html_e( 'The request checks whether the service is reachable and if the request can be authenticated.', 'wppus' ); ?>
 						<br/>
-						<strong><?php esc_html_e( 'Tests are not supported for Bitbucket ; if you use Bitbucket, save your settings & try to prime a package in the Overview page.', 'wppus' ); ?></strong>
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="wppus_package_private_api_auth_key"><?php esc_html_e( 'Private API Authentication Key', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input class="regular-text secret" type="password" autocomplete="new-password" id="wppus_package_private_api_auth_key" name="wppus_package_private_api_auth_key" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_auth_key', 'private_api_auth_key' ) ); ?>">
-					<p class="description">
-						<?php esc_html_e( 'Ideally a random string - used to authenticate package administration requests (browse, read, edit, add, delete), requests for signed URLs of package, and requests for tokens & true nonces.', 'wppus' ); ?>
-						<br>
-						<strong><?php esc_html_e( 'WARNING: Keep this key secret, do not share it with customers!', 'wppus' ); ?></strong>
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="wppus_package_private_api_ip_whitelist"><?php esc_html_e( 'Private API IP Whitelist', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<textarea id="wppus_package_private_api_ip_whitelist" name="wppus_package_private_api_ip_whitelist"><?php echo esc_html( implode( "\n", get_option( 'wppus_package_private_api_ip_whitelist', array() ) ) ); ?></textarea>
-					<p class="description">
-						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authorised to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
-						<?php esc_html_e( 'Leave blank to accept any IP address (not recommended).', 'wprus' ); ?>
+						<strong><?php esc_html_e( 'Tests are not supported for Bitbucket ; if you use Bitbucket, save your settings & try to prime a package in the "Packages Overview" tab.', 'wppus' ); ?></strong>
 					</p>
 				</td>
 			</tr>

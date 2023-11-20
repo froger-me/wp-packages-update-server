@@ -2,16 +2,15 @@
 	exit; // Exit if accessed directly
 } ?>
 <div class="wrap wppus-wrap">
-	<?php WP_Packages_Update_Server::get_instance()->display_settings_header(); ?>
+	<?php WP_Packages_Update_Server::get_instance()->display_settings_header( '' ); ?>
 	<h2><?php esc_html_e( 'Provide updates with WP Packages Update Server - packages requirements', 'wppus' ); ?></h2>
 	<p>
 		<?php
 		printf(
-			// translators: %1$s is <code>functions.php</code>, %2$s is <code>lib</code>, %3$s is a link to WP Package Updater
-			esc_html__( 'To link your packages to WP Packages Update Server, and maybe to prevent webmasters from getting updates of your plugins and themes unless they have a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the %1$s file (for themes), and provide the necessary libraries in a %2$s directory at the root of the package - see %3$s for more information.', 'wppus' ),
+			// translators: %1$s is <code>functions.php</code>, %2$s is <code>lib</code>
+			esc_html__( 'To link your packages to WP Packages Update Server, and maybe to prevent webmasters from getting updates of your plugins and themes unless they have a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the %1$s file (for themes), and provide the necessary libraries in a %2$s directory at the root of the package.', 'wppus' ),
 			'<code>functions.php</code>',
-			'<code>lib</code>',
-			'<a target="_blank" href="https://github.com/froger-me/wp-package-updater">' . esc_html( 'WP Package Updater' ) . '</a> '
+			'<code>lib</code>'
 		);
 		?>
 	</p>
@@ -51,7 +50,7 @@
 		<?php
 		printf(
 			// translators: %1$s is <code>optimisation/wppus-endpoint-optimiser.php</code>, %2$s is the MU Plugin's path
-			esc_html__( 'To solve this, the file <code>%1$s</code> has been automatically copied to <code>%2$s</code>. This effectively creates a Must Use Plugin running before everything else and preventing themes and other plugins from being executed when an update request or a license API request is received by WP Packages Update Server.', 'wppus' ),
+			esc_html__( 'To solve this, the file %1$s has been automatically copied to %2$s. This effectively creates a Must Use Plugin running before everything else and preventing themes and other plugins from being executed when an update request or a license API request is received by WP Packages Update Server.', 'wppus' ),
 			'<code>' . esc_html( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimiser.php' ) . '</code>',
 			'<code>' . esc_html( dirname( dirname( WPPUS_PLUGIN_PATH ) ) . '/mu-plugins/wppus-endpoint-optimiser.php' ) . '</code>',
 		);

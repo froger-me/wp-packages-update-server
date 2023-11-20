@@ -406,24 +406,6 @@ class WPPUS_Remote_Sources_Manager {
 						$option_info['value'] = ( $option_info['value'] );
 					}
 
-					if ( 'ip-list' === $option_info['condition'] ) {
-						$condition = true;
-
-						if ( ! empty( $option_info['value'] ) ) {
-							$option_info['value'] = array_filter( array_map( 'trim', explode( "\n", $option_info['value'] ) ) );
-							$option_info['value'] = array_unique(
-								array_map(
-									function ( $ip ) {
-										return preg_match( '/\//', $ip ) ? $ip : $ip . '/32';
-									},
-									$option_info['value']
-								)
-							);
-						} else {
-							$option_info['value'] = array();
-						}
-					}
-
 					if ( 'known frequency' === $option_info['condition'] ) {
 						$schedules      = wp_get_schedules();
 						$schedule_slugs = array_keys( $schedules );
@@ -566,15 +548,6 @@ class WPPUS_Remote_Sources_Manager {
 					'display_name'            => __( 'Remote Update Check Frequency', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid option', 'wppus' ),
 					'condition'               => 'known frequency',
-				),
-				'wppus_package_private_api_auth_key'      => array(
-					'value'                   => filter_input( INPUT_POST, 'wppus_package_private_api_auth_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
-					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
-				),
-				'wppus_package_private_api_ip_whitelist'  => array(
-					'value'     => filter_input( INPUT_POST, 'wppus_package_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
-					'condition' => 'ip-list',
 				),
 			)
 		);

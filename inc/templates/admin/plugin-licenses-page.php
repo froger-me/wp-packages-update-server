@@ -188,8 +188,6 @@
 						<?php esc_html_e( 'Check to activate license-enabled plugins and themes packages delivery.', 'wppus' ); ?>
 						<br>
 						<strong><?php esc_html_e( 'It affects all the packages with a "Requires License" license status delivered by this installation of WP Packages Update Server.', 'wppus' ); ?></strong>
-						<br>
-						<strong><?php esc_html_e( 'Settings of the "Licenses" section will be saved only if this option is checked.', 'wppus' ); ?></strong>
 					</p>
 				</td>
 			</tr>

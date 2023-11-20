@@ -34,7 +34,7 @@
 				<td>
 					<textarea class="ip-whitelist" id="wppus_package_private_api_ip_whitelist" name="wppus_package_private_api_ip_whitelist"><?php echo esc_html( implode( "\n", get_option( 'wppus_package_private_api_ip_whitelist', array() ) ) ); ?></textarea>
 					<p class="description">
-						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authorised to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
+						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authoriszed to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
 						<?php esc_html_e( 'Leave blank to accept any IP address (not recommended).', 'wprus' ); ?>
 					</p>
 				</td>
@@ -71,7 +71,7 @@
 				<td>
 					<textarea class="ip-whitelist" id="wppus_license_private_api_ip_whitelist" name="wppus_license_private_api_ip_whitelist"><?php echo esc_html( implode( "\n", get_option( 'wppus_license_private_api_ip_whitelist', array() ) ) ); ?></textarea>
 					<p class="description">
-						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authorised to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
+						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authoriszed to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
 						<?php esc_html_e( 'Leave blank to accept any IP address (not recommended).', 'wprus' ); ?>
 					</p>
 				</td>

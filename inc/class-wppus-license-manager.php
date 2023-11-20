@@ -471,25 +471,6 @@ class WPPUS_License_Manager {
 						$condition            = true;
 						$option_info['value'] = ( $option_info['value'] );
 					}
-
-					if ( 'ip-list' === $option_info['condition'] ) {
-						$condition = true;
-
-						if ( ! empty( $option_info['value'] ) ) {
-							$option_info['value'] = array_filter( array_map( 'trim', explode( "\n", $option_info['value'] ) ) );
-							$option_info['value'] = array_unique(
-								array_map(
-									function ( $ip ) {
-
-										return preg_match( '/\//', $ip ) ? $ip : $ip . '/32';
-									},
-									$option_info['value']
-								)
-							);
-						} else {
-							$option_info['value'] = array();
-						}
-					}
 				}
 
 				if ( $condition ) {
