@@ -317,9 +317,7 @@ class WPPUS_Package_Manager {
 	}
 
 	public function wppus_package_manager_pre_delete_package( $package_slug ) {
-		$info                  = wp_cache_get( 'wppus_package_manager_pre_delete_package_info', 'wppus' );
-		$info                  = $info ? $info : array();
-		$info[ $package_slug ] = wppus_get_package_info( $package_slug, false );
+		$info = wppus_get_package_info( $package_slug, false );
 
 		wp_cache_set( 'wppus_package_manager_pre_delete_package_info', $info, 'wppus' );
 	}
@@ -330,7 +328,7 @@ class WPPUS_Package_Manager {
 		if ( $package_info ) {
 			$payload = array(
 				'event'       => 'package_deleted',
-				// translators: %s is the package slugs
+				// translators: %1$s is the package type, %2$s is the package slug
 				'description' => sprintf( esc_html__( 'The package of type `%1$s` and slug `%2$s` has been deleted on WPPUS' ), $package_info['type'], $package_slug ),
 				'content'     => $package_info,
 			);
