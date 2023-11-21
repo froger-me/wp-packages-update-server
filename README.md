@@ -6,17 +6,18 @@
 		* [Special Thanks](#special-thanks)
 		* [Compatibility](#compatibility)
 		* [Screenshots](#screenshots)
-			* [Overview](#overview-1)
+			* [Packages Overview](#packages-overview)
 			* [Remote Sources](#remote-sources)
 			* [Licenses](#licenses)
+			* [API \& Webhooks](#api--webhooks)
 			* [Client - plugin screens](#client---plugin-screens)
 			* [Client - theme screens](#client---theme-screens)
 			* [Client - updates screen](#client---updates-screen)
 	* [User Interface](#user-interface)
-		* [Packages Overview](#packages-overview)
+		* [Packages Overview](#packages-overview-1)
 		* [Remote Sources](#remote-sources-1)
 		* [Licenses](#licenses-1)
-		* [API \& Webhooks](#api--webhooks)
+		* [API \& Webhooks](#api--webhooks-1)
 	* [Performances](#performances)
 		* [Benchmark](#benchmark)
 		* [Update API](#update-api)
@@ -69,32 +70,36 @@ Authorisation to use these libraries freely provided relevant licenses are inclu
 
 Note: the screenshots are updated on a regular basis, but the actual interface may vary slightly.
 
-#### Overview
+#### Packages Overview
 
-<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-1.png" alt="Overview" width="100%">
+<img src="https://anyape.com/resources/wppus/screenshots/packages-overview.png" alt="Packages Overview" width="100%">
 
 #### Remote Sources
 
-<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-2.png" alt="Remote Sources" width="100%">
+<img src="https://anyape.com/resources/wppus/screenshots/remote-sources.png" alt="Remote Sources" width="100%">
 
 #### Licenses
 
-<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-3.png" alt="Licenses" width="100%">
+<img src="https://anyape.com/resources/wppus/screenshots/licenses.png" alt="Licenses" width="100%">
+
+#### API & Webhooks
+
+<img src="https://anyape.com/resources/wppus/screenshots/api.png" alt="API & Webhooks" width="100%">
 
 #### Client - plugin screens
 
-<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-4.png" alt="Plugins" width="100%">
-<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-5.png" alt="Plugin Details" width="100%">
+<img src="https://anyape.com/resources/wppus/screenshots/admin_plugins.png" alt="Plugins" width="100%">
+<img src="https://anyape.com/resources/wppus/screenshots/admin_plugins-2.png" alt="Plugin Details" width="100%">
 
 #### Client - theme screens
 
-<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-6.png" alt="Themes" width="100%">
-<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-7.png" alt="Theme Details" width="100%">
-<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-8.png" alt="Theme License" width="100%">
+<img src="https://anyape.com/resources/wppus/screenshots/admin_themes.png" alt="Themes" width="100%">
+<img src="https://anyape.com/resources/wppus/screenshots/admin_themes-2.png" alt="Theme Details" width="100%">
+<img src="https://anyape.com/resources/wppus/screenshots/admin_themes-3.png" alt="Theme License" width="100%">
 
 #### Client - updates screen
 
-<img src="https://ps.w.org/wp-plugin-update-server/assets/screenshot-9.png" alt="Updates" width="100%">
+<img src="https://anyape.com/resources/wppus/screenshots/admin_update-core.png" alt="Updates" width="100%">
 
 ## User Interface
 
