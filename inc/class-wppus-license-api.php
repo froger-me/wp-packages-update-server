@@ -242,6 +242,7 @@ class WPPUS_License_API {
 	public function activate( $license_data ) {
 		$license      = null;
 		$license_data = apply_filters( 'wppus_activate_license_dirty_payload', $license_data );
+		$request_slug = isset( $license_data['package_slug'] ) ? $license_data['package_slug'] : false;
 		$result       = array();
 
 		if ( isset( $license_data['id'] ) ) {
@@ -264,7 +265,7 @@ class WPPUS_License_API {
 			$license_data['allowed_domains'] = array( reset( $license_data['allowed_domains'] ) );
 		}
 
-		if ( is_object( $license ) && ! empty( $license_data['allowed_domains'] ) ) {
+		if ( is_object( $license ) && ! empty( $license_data['allowed_domains'] ) && $request_slug === $license->package_slug ) {
 			$domain_count = count( $license_data['allowed_domains'] ) + count( $license->allowed_domains );
 
 			if ( 'expired' === $license->status || 'blocked' === $license->status ) {
@@ -304,6 +305,7 @@ class WPPUS_License_API {
 	public function deactivate( $license_data ) {
 		$license      = null;
 		$license_data = apply_filters( 'wppus_deactivate_license_dirty_payload', $license_data );
+		$request_slug = isset( $license_data['package_slug'] ) ? $license_data['package_slug'] : false;
 
 		if ( isset( $license_data['id'] ) ) {
 			unset( $license_data['id'] );
@@ -320,7 +322,7 @@ class WPPUS_License_API {
 			$license_data['allowed_domains'] = array( $license_data['allowed_domains'] );
 		}
 
-		if ( is_object( $license ) && ! empty( $license_data['allowed_domains'] ) ) {
+		if ( is_object( $license ) && ! empty( $license_data['allowed_domains'] ) && $request_slug === $license->package_slug ) {
 
 			if ( 'expired' === $license->status ) {
 				$result['status']      = $license->status;
@@ -383,8 +385,8 @@ class WPPUS_License_API {
 				'action',
 				'api_auth_key',
 				'browse_query',
-				'update_license_key',
-				'update_license_signature',
+				'license_key',
+				'license_signature',
 			),
 			array_keys( WPPUS_License_Server::$license_definition )
 		);
@@ -396,11 +398,11 @@ class WPPUS_License_API {
 		global $wp;
 
 		$vars                                = $wp->query_vars;
-		$request_params['license_key']       = isset( $vars['update_license_key'] ) ?
-			trim( $vars['update_license_key'] ) :
+		$request_params['license_key']       = isset( $vars['license_key'] ) ?
+			trim( $vars['license_key'] ) :
 			null;
-		$request_params['license_signature'] = isset( $vars['update_license_signature'] ) ?
-				trim( $vars['update_license_signature'] ) :
+		$request_params['license_signature'] = isset( $vars['license_signature'] ) ?
+				trim( $vars['license_signature'] ) :
 				null;
 
 		return $params;

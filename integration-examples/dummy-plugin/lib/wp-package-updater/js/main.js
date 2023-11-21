@@ -21,23 +21,23 @@ jQuery(document).ready(function ($) {
 
 				if (response.success) {
 					licenseContainer.find('.current-license').html(licenseContainer.find('.license').val());
-					licenseContainer.find('.current-license-error').hide();
-					licenseContainer.find('.license-message').show();
-					$( '.license-error-' + licenseContainer.data('package_slug') + '.notice' ).hide();
+					licenseContainer.find('.current-license-error').addClass('hidden');
+					licenseContainer.find('.license-message').removeClass('hidden');
+					$( '.license-error-' + licenseContainer.data('package_slug') + '.notice' ).addClass('hidden');
 				} else {
 					var errorContainer = licenseContainer.find('.current-license-error');
 
 					errorContainer.html(response.data[0].message + '<br/>');
-					errorContainer.show();
-					licenseContainer.find('.license-message').show();
+					errorContainer.removeClass('hidden');
+					licenseContainer.find('.license-message').removeClass('hidden');
 				}
 
 				if ('' === licenseContainer.find('.current-license').html()) {
-					licenseContainer.find('.current-license-label').hide();
-					licenseContainer.find('.current-license').hide();
+					licenseContainer.find('.current-license-label').addClass('hidden');
+					licenseContainer.find('.current-license').addClass('hidden');
 				} else {
-					licenseContainer.find('.current-license-label').show();
-					licenseContainer.find('.current-license').show();
+					licenseContainer.find('.current-license-label').removeClass('hidden');
+					licenseContainer.find('.current-license').removeClass('hidden');
 				}
 			}
 		});
@@ -62,22 +62,22 @@ jQuery(document).ready(function ($) {
 
 				if (response.success) {
 					licenseContainer.find('.current-license').html('');
-					licenseContainer.find('.current-license-error').hide();
-					licenseContainer.find('.license-message').hide();
+					licenseContainer.find('.current-license-error').addClass('hidden');
+					licenseContainer.find('.license-message').addClass('hidden');
 				} else {
 					var errorContainer = licenseContainer.find('.current-license-error');
 
 					errorContainer.html(response.data[0].message + '<br/>');
-					errorContainer.show();
-					licenseContainer.find('.license-message').show();
+					errorContainer.removeClass('hidden');
+					licenseContainer.find('.license-message').removeClass('hidden');
 				}
 
 				if ('' === licenseContainer.find('.current-license').html()) {
-					licenseContainer.find('.current-license-label').hide();
-					licenseContainer.find('.current-license').hide();
+					licenseContainer.find('.current-license-label').addClass('hidden');
+					licenseContainer.find('.current-license').addClass('hidden');
 				} else {
-					licenseContainer.find('.current-license-label').show();
-					licenseContainer.find('.current-license').show();
+					licenseContainer.find('.current-license-label').removeClass('hidden');
+					licenseContainer.find('.current-license').removeClass('hidden');
 				}
 			}
 		});

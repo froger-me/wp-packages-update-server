@@ -1,11 +1,10 @@
 <?php
 /**
  * WP Package Updater
- * Plugins and themes update library to enable with WP Plugin Update Server
+ * Plugins and themes update library to enable with WP Packages Update Server
  *
  * @author Alexandre Froger
- * @version 1.4.2
- * @see https://github.com/froger-me/wp-package-updater
+ * @version 1.5
  * @copyright Alexandre Froger - https://www.froger.me
  */
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -22,11 +21,11 @@ use YahnisElsts\PluginUpdateChecker\v5p3\Plugin\UpdateChecker;
 
 /**
 * Copy/paste this section to your main plugin file or theme's functions.php and uncomment the sections below
-* where appropriate to enable updates with WP Plugin Update Server.
+* where appropriate to enable updates with WP Packages Update Server.
 *
 * WARNING - READ FIRST:
 * Before deploying the plugin or theme, make sure to change the following value
-* - https://your-update-server.com  => The URL of the server where WP Plugin Update Server is installed.
+* - https://your-update-server.com  => The URL of the server where WP Packages Update Server is installed.
 * - $prefix_updater                 => Change this variable's name with your plugin or theme prefix
 **/
 
@@ -276,6 +275,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 						.plugin-update .license-change {
 							flex-direction: row;
 							align-items: center;
+							margin: 1em 0;
 						}
 
 						.license-message {
@@ -301,8 +301,8 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				$license_signature = get_option( 'license_signature_' . $this->package_slug );
 
 				if ( $license ) {
-					$query_args['update_license_key']       = rawurlencode( $license );
-					$query_args['update_license_signature'] = rawurlencode( $license_signature );
+					$query_args['license_key']       = rawurlencode( $license );
+					$query_args['license_signature'] = rawurlencode( $license_signature );
 				}
 			}
 
@@ -377,7 +377,6 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		public function set_license_error_notice_content( $package_info, $result ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 
 			if ( isset( $package_info->license_error ) && ! empty( $package_info->license_error ) ) {
-
 				$license_data = $this->handle_license_errors( $package_info->license_error );
 
 				update_option( 'wppu_' . $this->package_slug . '_license_error', $package_info->name . ': ' . $license_data->message );

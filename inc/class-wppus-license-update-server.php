@@ -75,8 +75,8 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 			)
 		) {
 			$args                 = array(
-				'update_license_key'       => $request->license_key,
-				'update_license_signature' => $request->license_signature,
+				'license_key'       => $request->license_key,
+				'license_signature' => $request->license_signature,
 			);
 			$meta['download_url'] = self::addQueryArg( $args, $meta['download_url'] );
 		} else {
@@ -112,11 +112,11 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 
 	protected function generateDownloadUrl( Wpup_Package $package ) {
 		$query = array(
-			'action'                   => 'download',
-			'token'                    => wppus_create_nonce(),
-			'package_id'               => $package->slug,
-			'update_license_key'       => $this->license_key,
-			'update_license_signature' => $this->license_signature,
+			'action'            => 'download',
+			'token'             => wppus_create_nonce(),
+			'package_id'        => $package->slug,
+			'license_key'       => $this->license_key,
+			'license_signature' => $this->license_signature,
 		);
 
 		return self::addQueryArg( $query, $this->serverUrl ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
