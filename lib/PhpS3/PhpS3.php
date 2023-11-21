@@ -410,7 +410,7 @@ class PhpS3
     * @param string $keyPairId AWS Key Pair ID
     * @param string $signingKey Private Key
     * @param boolean $isFile Load private key from file, set to false to load string
-    * @return mixed | boolean
+    * @return mixed|boolean
     */
     public static function setSigningKey($keyPairId, $signingKey, $isFile = true)
     {
@@ -483,7 +483,7 @@ class PhpS3
     * Get a list of buckets
     *
     * @param boolean $detailed Returns detailed bucket list when true
-    * @return array | false
+    * @return array|false
     */
     public static function listBuckets($detailed = false)
     {
@@ -552,7 +552,7 @@ class PhpS3
     * @param string $maxKeys Max keys (maximum number of keys to return)
     * @param string $delimiter Delimiter
     * @param boolean $returnCommonPrefixes Set to true to return CommonPrefixes
-    * @return array | false
+    * @return array|false
     */
     public static function getBucket(
         $bucket,
@@ -784,7 +784,7 @@ class PhpS3
     *
     * @param string $file Input file
     * @param mixed $md5sum Use MD5 hash (supply a string if you want to use your own)
-    * @return array | false
+    * @return array|false
     */
     public static function inputFile($file, $md5sum = true)
     {
@@ -821,7 +821,7 @@ class PhpS3
     * @param string $resource Input resource to read from
     * @param integer $bufferSize Input byte size
     * @param string $md5sum MD5 hash to send (optional)
-    * @return array | false
+    * @return array|false
     */
     public static function inputResource(&$resource, $bufferSize = false, $md5sum = '')
     {
@@ -1098,7 +1098,7 @@ class PhpS3
     * @param string $bucket Bucket name
     * @param string $uri Object URI
     * @param boolean $returnInfo Return response information
-    * @return mixed | false
+    * @return mixed|false
     */
     public static function getObjectInfo($bucket, $uri, $returnInfo = true)
     {
@@ -1146,7 +1146,7 @@ class PhpS3
     * @param array $metaHeaders Optional array of x-amz-meta-* headers
     * @param array $requestHeaders Optional array of request headers (content type, disposition, etc.)
     * @param constant $storageClass Storage class constant
-    * @return mixed | false
+    * @return mixed|false
     */
     public static function copyObject(
         $srcBucket,
@@ -1387,7 +1387,7 @@ class PhpS3
     * Note: To enable logging, you also need to grant write access to the log group
     *
     * @param string $bucket Bucket name
-    * @return array | false
+    * @return array|false
     */
     public static function getBucketLogging($bucket)
     {
@@ -1445,7 +1445,7 @@ class PhpS3
     * Get a bucket's location
     *
     * @param string $bucket Bucket name
-    * @return string | false
+    * @return string|false
     */
     public static function getBucketLocation($bucket)
     {
@@ -1571,7 +1571,7 @@ class PhpS3
     *
     * @param string $bucket Bucket name
     * @param string $uri Object URI
-    * @return mixed | false
+    * @return mixed|false
     */
     public static function getAccessControlPolicy($bucket, $uri = '')
     {
@@ -2231,7 +2231,7 @@ class PhpS3
     * @param string $defaultRootObject Default root object
     * @param string $originAccessIdentity Origin access identity
     * @param array $trustedSigners Array of trusted signers
-    * @return array | false
+    * @return array|false
     */
     public static function createDistribution(
         $bucket,
@@ -2307,7 +2307,7 @@ class PhpS3
     * Get CloudFront distribution info
     *
     * @param string $distributionId Distribution ID from listDistributions()
-    * @return array | false
+    * @return array|false
     */
     public static function getDistribution($distributionId)
     {
@@ -2370,7 +2370,7 @@ class PhpS3
     * Update a CloudFront distribution
     *
     * @param array $dist Distribution array info identical to output of getDistribution()
-    * @return array | false
+    * @return array|false
     */
     public static function updateDistribution($dist)
     {
@@ -3297,7 +3297,7 @@ final class PhpS3Request // @codingStandardsIgnoreLine
     /**
     * Get the S3 response
     *
-    * @return object | false
+    * @return object|false
     */
     public function getResponse()
     {
