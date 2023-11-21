@@ -69,6 +69,7 @@ class WPPUS_Cloud_Storage_Manager {
 				add_filter( 'wppus_remote_sources_manager_get_package_slugs', array( $this, 'wppus_remote_sources_manager_get_package_slugs' ), 10, 4 );
 				add_filter( 'wppus_remove_package_result', array( $this, 'wppus_remove_package_result' ), 10, 3 );
 				add_filter( 'wppus_delete_packages_bulk_paths', array( $this, 'wppus_delete_packages_bulk_paths' ), 10, 1 );
+				add_filter( 'wppus_webhook_package_exists', array( $this, 'wppus_webhook_package_exists' ), 10, 3 );
 			}
 		}
 	}
@@ -250,6 +251,29 @@ class WPPUS_Cloud_Storage_Manager {
 		}
 
 		return $package_paths;
+	}
+
+	public function wppus_webhook_package_exists( $package_exists, $payload, $slug ) {
+		$config = self::get_config();
+
+		try {
+			$info = wp_cache_get( $slug . '-getObjectInfo', 'wppus' );
+
+			if ( false === $info ) {
+				$info = self::$cloud_storage->getObjectInfo(
+					$config['storage_unit'],
+					self::$virtual_dir . '/' . $slug . '.zip',
+				);
+
+				wp_cache_set( $slug . '-getObjectInfo', $info, 'wppus' );
+			}
+
+			return (bool) $info;
+		} catch ( PhpS3Exception $e ) {
+			php_log( $e );
+
+			return $package_exists;
+		}
 	}
 
 	public function wppus_remove_package_result( $result, $type, $slug ) {

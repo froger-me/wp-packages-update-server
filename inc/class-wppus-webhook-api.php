@@ -267,8 +267,16 @@ class WPPUS_Webhook_API {
 				$package_exists = $wp_filesystem->exists( $package_path );
 			}
 
-			$payload = $wp_filesystem->get_contents( 'php://input' );
-			$process = apply_filters(
+			$payload        = $wp_filesystem->get_contents( 'php://input' );
+			$package_exists = apply_filters(
+				'wppus_webhook_package_exists',
+				$package_exists,
+				$payload,
+				$package_id,
+				$type,
+				$config
+			);
+			$process        = apply_filters(
 				'wppus_webhook_process_request',
 				true,
 				$payload,
@@ -288,14 +296,25 @@ class WPPUS_Webhook_API {
 					$config
 				);
 
-				if ( $package_exists && $delay ) {
-					$this->clear_remote_check_schedule( $package_id, $type );
-					$this->register_remote_check_single_event( $package_id, $type, $delay );
+				$hook = 'wppus_check_remote_' . $package_id;
+
+				wp_unschedule_hook( $hook );
+				do_action( 'wppus_cleared_check_remote_schedule', $package_id, $hook );
+
+				if ( $package_exists ) {
+
+					if ( ! wp_next_scheduled( $hook, array( $package_id, $type, true ) ) ) {
+						$params    = array( $package_id, $type, true );
+						$delay     = apply_filters( 'wppus_check_remote_delay', $delay, $package_id );
+						$timestamp = ( $delay ) ? time() + ( abs( intval( $delay ) ) * MINUTE_IN_SECONDS ) : time();
+						$result    = wp_schedule_single_event( $timestamp, $hook, $params );
+
+						do_action( 'wppus_scheduled_check_remote_event', $result, $package_id, $timestamp, false, $hook, $params );
+					}
 				} else {
 					$api = WPPUS_Update_API::get_instance();
 
-					$this->clear_remote_check_schedule( $package_id, $type );
-					$api->download_remote_package( $package_id, $type, true );
+					$api->download_remote_package( $package_id, $type );
 				}
 
 				do_action(
@@ -313,27 +332,6 @@ class WPPUS_Webhook_API {
 		}
 
 		do_action( 'wppus_webhook_after_handling_request', $config );
-	}
-
-	protected function register_remote_check_single_event( $slug, $type, $delay ) {
-		$hook = 'wppus_check_remote_' . $slug;
-
-		if ( ! wp_next_scheduled( $hook, array( $slug, $type, true ) ) ) {
-			$params    = array( $slug, $type, true );
-			$delay     = apply_filters( 'wppus_check_remote_delay', $delay, $slug );
-			$timestamp = time() + ( abs( intval( $delay ) ) * MINUTE_IN_SECONDS );
-			$result    = wp_schedule_single_event( $timestamp, $hook, $params );
-
-			do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, false, $hook, $params );
-		}
-	}
-
-	protected function clear_remote_check_schedule( $slug, $type ) {
-		$params         = array( $slug, $type, true );
-		$scheduled_hook = 'wppus_check_remote_' . $slug;
-
-		wp_clear_scheduled_hook( $scheduled_hook, $params );
-		do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
 	}
 
 	protected function validate_request( $config ) {
