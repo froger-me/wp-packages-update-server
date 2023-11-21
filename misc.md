@@ -4,39 +4,39 @@
 WP Packages Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin. Below is the documentation to interface with miscellaneous aspects of WP Packages Update Server. 
 
 * [WP Packages Update Server - Miscellaneous - Developer documentation](#wp-packages-update-server---miscellaneous---developer-documentation)
-	* [Nonce API](#nonce-api)
-	* [Consuming Webhooks](#consuming-webhooks)
-	* [Functions](#functions)
-		* [php\_log](#php_log)
-		* [cidr\_match](#cidr_match)
-		* [wppus\_is\_doing\_api\_request](#wppus_is_doing_api_request)
-			* [wppus\_is\_doing\_webhook\_api\_request](#wppus_is_doing_webhook_api_request)
-			* [wppus\_init\_nonce\_auth](#wppus_init_nonce_auth)
-			* [wppus\_create\_nonce](#wppus_create_nonce)
-			* [wppus\_get\_nonce\_expiry](#wppus_get_nonce_expiry)
-			* [wppus\_validate\_nonce](#wppus_validate_nonce)
-			* [wppus\_delete\_nonce](#wppus_delete_nonce)
-			* [wppus\_delete\_nonce](#wppus_delete_nonce-1)
-			* [wppus\_schedule\_webhook](#wppus_schedule_webhook)
-			* [wppus\_fire\_webhook](#wppus_fire_webhook)
-	* [Actions](#actions)
-		* [wppus\_no\_api\_includes](#wppus_no_api_includes)
-		* [wppus\_no\_license\_api\_includes](#wppus_no_license_api_includes)
-		* [wppus\_remote\_sources\_options\_updated](#wppus_remote_sources_options_updated)
-	* [Filters](#filters)
-		* [wppus\_is\_api\_request](#wppus_is_api_request)
-		* [wppus\_page\_wppus\_scripts\_l10n](#wppus_page_wppus_scripts_l10n)
-		* [wppus\_nonce\_api\_code](#wppus_nonce_api_code)
-		* [wppus\_nonce\_api\_response](#wppus_nonce_api_response)
-		* [wppus\_created\_nonce](#wppus_created_nonce)
-		* [wppus\_clear\_nonces\_query](#wppus_clear_nonces_query)
-		* [wppus\_clear\_nonces\_query\_args](#wppus_clear_nonces_query_args)
-		* [wppus\_expire\_nonce](#wppus_expire_nonce)
-		* [wppus\_delete\_nonce](#wppus_delete_nonce-2)
-		* [wppus\_fetch\_nonce](#wppus_fetch_nonce)
-		* [wppus\_nonce\_authorize](#wppus_nonce_authorize)
-		* [wppus\_api\_option\_update](#wppus_api_option_update)
-		* [wppus\_api\_webhook\_events](#wppus_api_webhook_events)
+    * [Nonce API](#nonce-api)
+    * [Consuming Webhooks](#consuming-webhooks)
+    * [Functions](#functions)
+        * [php\_log](#php_log)
+        * [cidr\_match](#cidr_match)
+        * [wppus\_is\_doing\_api\_request](#wppus_is_doing_api_request)
+            * [wppus\_is\_doing\_webhook\_api\_request](#wppus_is_doing_webhook_api_request)
+            * [wppus\_init\_nonce\_auth](#wppus_init_nonce_auth)
+            * [wppus\_create\_nonce](#wppus_create_nonce)
+            * [wppus\_get\_nonce\_expiry](#wppus_get_nonce_expiry)
+            * [wppus\_validate\_nonce](#wppus_validate_nonce)
+            * [wppus\_delete\_nonce](#wppus_delete_nonce)
+            * [wppus\_delete\_nonce](#wppus_delete_nonce-1)
+            * [wppus\_schedule\_webhook](#wppus_schedule_webhook)
+            * [wppus\_fire\_webhook](#wppus_fire_webhook)
+    * [Actions](#actions)
+        * [wppus\_no\_api\_includes](#wppus_no_api_includes)
+        * [wppus\_no\_license\_api\_includes](#wppus_no_license_api_includes)
+        * [wppus\_remote\_sources\_options\_updated](#wppus_remote_sources_options_updated)
+    * [Filters](#filters)
+        * [wppus\_is\_api\_request](#wppus_is_api_request)
+        * [wppus\_page\_wppus\_scripts\_l10n](#wppus_page_wppus_scripts_l10n)
+        * [wppus\_nonce\_api\_code](#wppus_nonce_api_code)
+        * [wppus\_nonce\_api\_response](#wppus_nonce_api_response)
+        * [wppus\_created\_nonce](#wppus_created_nonce)
+        * [wppus\_clear\_nonces\_query](#wppus_clear_nonces_query)
+        * [wppus\_clear\_nonces\_query\_args](#wppus_clear_nonces_query_args)
+        * [wppus\_expire\_nonce](#wppus_expire_nonce)
+        * [wppus\_delete\_nonce](#wppus_delete_nonce-2)
+        * [wppus\_fetch\_nonce](#wppus_fetch_nonce)
+        * [wppus\_nonce\_authorize](#wppus_nonce_authorize)
+        * [wppus\_api\_option\_update](#wppus_api_option_update)
+        * [wppus\_api\_webhook\_events](#wppus_api_webhook_events)
 
 ___
 ## Nonce API
@@ -111,9 +111,9 @@ Response `$data` - **success**:
 ```json
 {
 	"nonce": "nonce_value",
-    "true_nonce": true|false,
-    "expiry": 9999999999,
-    "data": {
+	"true_nonce": true|false,
+	"expiry": 9999999999,
+	"data": {
 		"key1": "value1",
 		"key2": "value2",
 		"key3": {
