@@ -46,7 +46,7 @@ class WPPUS_Webhook_API {
 		if ( isset( $wp->query_vars['__wppus_webhook'] ) ) {
 			$this->handle_api_request();
 
-			die();
+			exit;
 		}
 	}
 
@@ -89,7 +89,6 @@ class WPPUS_Webhook_API {
 		$payload = json_decode( $payload, true );
 
 		if ( ! $payload ) {
-
 			return false;
 		}
 
@@ -245,7 +244,12 @@ class WPPUS_Webhook_API {
 		$config = self::get_config();
 
 		do_action( 'wppus_webhook_before_handling_request', $config );
-		$this->init_filestystem();
+
+		if ( empty( $wp_filesystem ) ) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+
+			WP_Filesystem();
+		}
 
 		if ( $this->validate_request( $config ) ) {
 			$package_id        = isset( $wp->query_vars['package_id'] ) ?
@@ -360,15 +364,5 @@ class WPPUS_Webhook_API {
 		}
 
 		return apply_filters( 'wppus_webhook_validate_request', $valid, $sign, $config );
-	}
-
-	protected function init_filestystem() {
-		global $wp_filesystem;
-
-		if ( empty( $wp_filesystem ) ) {
-			require_once ABSPATH . '/wp-admin/includes/file.php';
-
-			WP_Filesystem();
-		}
 	}
 }

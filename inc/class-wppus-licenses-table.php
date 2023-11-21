@@ -30,7 +30,6 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 	// Overrides ---------------------------------------------------
 
 	public function get_columns() {
-
 		return array(
 			'cb'               => '<input type="checkbox" />',
 			'col_id'           => __( 'ID', 'wppus' ),
@@ -45,12 +44,10 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 	}
 
 	public function column_default( $item, $column_name ) {
-
 		return $item[ $column_name ];
 	}
 
 	public function get_sortable_columns() {
-
 		return array(
 			'col_id'           => array( 'id', false ),
 			'col_status'       => array( 'status', false ),

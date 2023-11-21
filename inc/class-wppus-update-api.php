@@ -5,11 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 class WPPUS_Update_API {
-	protected $update_server;
-
 	protected static $doing_update_api_request = null;
 	protected static $instance;
 	protected static $config;
+
+	protected $update_server;
 
 	public function __construct( $init_hooks = false ) {
 

@@ -415,7 +415,6 @@ class WPPUS_License_Manager {
 		$table_name = $wpdb->get_var( "SHOW TABLES LIKE '" . $wpdb->prefix . "wppus_licenses'" );
 
 		if ( $wpdb->prefix . 'wppus_licenses' !== $table_name ) {
-
 			return false;
 		}
 
@@ -475,7 +474,6 @@ class WPPUS_License_Manager {
 
 				if ( $condition ) {
 					update_option( $option_name, $option_info['value'] );
-
 				} else {
 					$errors[ $option_name ] = sprintf(
 						// translators: %1$s is the option display name, %2$s is the condition for update

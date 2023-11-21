@@ -1,8 +1,5 @@
 <?php
 
-use PhpS3\PhpS3;
-use PhpS3\PhpS3Exception;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }

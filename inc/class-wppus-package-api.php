@@ -230,7 +230,7 @@ class WPPUS_Package_API {
 		if ( isset( $wp->query_vars['__wppus_package_api'] ) ) {
 			$this->handle_api_request();
 
-			die();
+			exit;
 		}
 	}
 

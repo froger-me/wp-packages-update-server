@@ -10,7 +10,6 @@ class WPPUS_Crypto {
 		$crypt_key = hex2bin( hash( 'sha256', $crypt_key ) );
 
 		if ( mb_strlen( $crypt_key, '8bit' ) !== 32 ) {
-
 			throw new Exception( 'Needs a 256-bit key!' );
 		}
 
@@ -37,7 +36,6 @@ class WPPUS_Crypto {
 		$crypt_key = hex2bin( hash( 'sha256', $crypt_key ) );
 
 		if ( mb_strlen( $crypt_key, '8bit' ) !== 32 ) {
-
 			throw new Exception( 'Needs a 256-bit key!' );
 		}
 
@@ -70,19 +68,16 @@ class WPPUS_Crypto {
 	public static function hmac_verify( $original_val, $new_val ) {
 
 		if ( function_exists( 'hash_equals' ) ) {
-
 			return hash_equals( $original_val, $new_val );
 		}
 
 		if ( ! is_string( $original_val ) || ! is_string( $new_val ) ) {
-
 			return false;
 		}
 
 		$original_length = mb_strlen( $original_val );
 
 		if ( mb_strlen( $new_val ) !== $original_length ) {
-
 			return false;
 		}
 
@@ -96,12 +91,10 @@ class WPPUS_Crypto {
 	}
 
 	public static function base64url_encode( $s ) {
-
 		return str_replace( '/', self::SLASH_REPLACE, base64_encode( $s ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 	}
 
 	public static function base64url_decode( $s ) {
-
 		return base64_decode( str_replace( self::SLASH_REPLACE, '/', $s ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 	}
 }

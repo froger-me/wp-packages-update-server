@@ -496,7 +496,6 @@ class WPPUS_License_API {
 	}
 
 	protected function is_api_public( $method ) {
-		// @TODO doc
 		$public_api    = apply_filters(
 			'wppus_license_public_api_actions',
 			array(
@@ -552,7 +551,6 @@ class WPPUS_License_API {
 					);
 
 					if ( $authorized ) {
-						// @todo doc
 						do_action( 'wppus_license_api_request', $method, $payload );
 
 						if ( method_exists( $this, $method ) ) {

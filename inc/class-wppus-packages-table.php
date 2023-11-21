@@ -49,7 +49,6 @@ class WPPUS_Packages_Table extends WP_List_Table {
 	}
 
 	public function column_default( $item, $column_name ) {
-
 		return $item[ $column_name ];
 	}
 
@@ -185,7 +184,6 @@ class WPPUS_Packages_Table extends WP_List_Table {
 	}
 
 	protected function get_bulk_actions() {
-		// @todo doc
 		$actions = apply_filters(
 			'wppus_packages_table_bulk_actions',
 			array(

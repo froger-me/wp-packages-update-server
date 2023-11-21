@@ -300,7 +300,6 @@ class WPPUS_Remote_Sources_Manager {
 	public function reschedule_remote_check_recurring_events( $frequency ) {
 
 		if ( WPPUS_Update_API::is_doing_api_request() ) {
-
 			return false;
 		}
 
@@ -418,7 +417,6 @@ class WPPUS_Remote_Sources_Manager {
 						$condition  = (bool) preg_match( $repo_regex, $path );
 					}
 
-					// @todo doc
 					$condition = apply_filters(
 						'wppus_remote_source_option_update',
 						$condition,
@@ -505,14 +503,12 @@ class WPPUS_Remote_Sources_Manager {
 			set_transient( 'wppus_flush', 1, 60 );
 		}
 
-		// @todo doc
 		do_action( 'wppus_remote_sources_options_updated', $errors );
 
 		return $result;
 	}
 
 	protected function get_submitted_options() {
-
 		return apply_filters(
 			'wppus_submitted_remote_sources_config',
 			array(
@@ -579,7 +575,6 @@ class WPPUS_Remote_Sources_Manager {
 				}
 			}
 
-			// @todo doc
 			$slugs = apply_filters( 'wppus_remote_sources_manager_get_package_slugs', $slugs );
 
 			wp_cache_set( 'package_slugs', $slugs, 'wppus' );

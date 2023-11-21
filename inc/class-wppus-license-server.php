@@ -26,15 +26,13 @@ class WPPUS_License_Server {
 		'package_type'        => '',
 		'data'                => array(),
 	);
-
-	public static $browsing_query = array(
+	public static $browsing_query     = array(
 		'relationship' => 'AND',
 		'limit'        => 10,
 		'offset'       => 0,
 		'order_by'     => 'date_created',
 		'criteria'     => array(),
 	);
-
 	public static $browsing_operators = array(
 		'=',
 		'>',
@@ -48,8 +46,7 @@ class WPPUS_License_Server {
 		'LIKE',
 		'NOT LIKE',
 	);
-
-	public static $license_statuses = array(
+	public static $license_statuses   = array(
 		'pending',
 		'activated',
 		'deactivated',

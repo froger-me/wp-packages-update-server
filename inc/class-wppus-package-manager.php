@@ -10,11 +10,12 @@ class WPPUS_Package_Manager {
 	const WPPUS_DEFAULT_CACHE_MAX_SIZE   = 100;
 	const WPPUS_DEFAULT_ARCHIVE_MAX_SIZE = 20;
 
-	protected static $instance;
 	public static $filesystem_clean_types = array(
 		'cache',
 		'logs',
 	);
+
+	protected static $instance;
 
 	protected $packages_table;
 	protected $rows = array();
@@ -405,7 +406,6 @@ class WPPUS_Package_Manager {
 				}
 			}
 		} else {
-
 			return;
 		}
 
@@ -464,7 +464,6 @@ class WPPUS_Package_Manager {
 		global $wp_filesystem;
 
 		if ( ! $wp_filesystem ) {
-
 			return null;
 		}
 
@@ -513,7 +512,6 @@ class WPPUS_Package_Manager {
 		$zip = new ZipArchive();
 
 		if ( ! $zip->open( $archive_path, ZIPARCHIVE::CREATE ) ) {
-
 			return false;
 		}
 
@@ -568,7 +566,6 @@ class WPPUS_Package_Manager {
 			global $wp_filesystem;
 
 			if ( ! $wp_filesystem ) {
-
 				return;
 			}
 
@@ -609,7 +606,6 @@ class WPPUS_Package_Manager {
 			global $wp_filesystem;
 
 			if ( ! $wp_filesystem ) {
-
 				return;
 			}
 
