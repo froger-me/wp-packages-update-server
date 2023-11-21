@@ -114,6 +114,7 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_remove\_package\_result](#wppus_remove_package_result)
 		* [wppus\_update\_server\_action\_download\_handled](#wppus_update_server_action_download_handled)
 		* [wppus\_save\_remote\_to\_local](#wppus_save_remote_to_local)
+		* [wppus\_webhook\_package\_exists](#wppus_webhook_package_exists)
 		* [wppus\_webhook\_process\_request](#wppus_webhook_process_request)
 		* [wppus\_package\_option\_update](#wppus_package_option_update)
 		* [wppus\_remote\_source\_option\_update](#wppus_remote_source_option_update)
@@ -1089,7 +1090,7 @@ ___
 ### wppus_cleared_check_remote_schedule
 
 ```php
-do_action( 'wppus_cleared_check_remote_schedule', string $slug, string $scheduled_hook, array $params );
+do_action( 'wppus_cleared_check_remote_schedule', string $slug, string $scheduled_hook );
 ```
 
 **Description**  
@@ -1102,9 +1103,6 @@ Fired during client update API request.
 
 `$scheduled_hook`
 > (string) the remote check event hook that has been unscheduled  
-
-`$params`
-> (array) the parameters that were passed to the actions registered to the remote check event    
 
 ___
 ### wppus_scheduled_cleanup_event
@@ -2390,6 +2388,33 @@ Fired during client update API request.
 
 `$check_remote`
 > (bool) `true` if the Remote Repository Service is about to be checked and the package downloaded, `false` if the local cache is about to be used  
+
+___
+### wppus_webhook_package_exists
+
+```php
+apply_filters( 'wppus_webhook_package_exists', bool $package_exists, array $payload, string $package_slug, string $type, array $config );
+```
+
+**Description**  
+Filter whether the package exists on the file system before processing the Webhook.  
+
+**Parameters**  
+`$package_exists`
+> (bool) whether the package exists on the file system  
+
+`$payload`
+> (array) the payload of the request  
+
+`$package_slug`
+> (string) the slug of the package  
+
+`$type`
+> (string) the type of the package  
+
+
+`$config`
+> (array) the webhook configuration  
 
 ___
 ### wppus_webhook_process_request
