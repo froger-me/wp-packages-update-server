@@ -68,10 +68,9 @@ class WPPUS_Remote_Sources_Manager {
 
 				foreach ( $slugs as $slug ) {
 					$scheduled_hook = 'wppus_check_remote_' . $slug;
-					$params         = array( $slug, null, false );
 
-					wp_clear_scheduled_hook( $scheduled_hook, $params );
-					do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
+					wp_unschedule_hook( $scheduled_hook );
+					do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook );
 				}
 
 				$result = true;
@@ -308,26 +307,25 @@ class WPPUS_Remote_Sources_Manager {
 		if ( ! empty( $slugs ) ) {
 
 			foreach ( $slugs as $slug ) {
-				$hook = 'wppus_check_remote_' . $slug;
+				$hook      = 'wppus_check_remote_' . $slug;
+				$params    = array( $slug, null, false );
+				$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
+				$timestamp = time();
 
-				$this->clear_remote_check_schedule( $slug );
+				wp_unschedule_hook( $hook );
+				do_action( 'wppus_cleared_check_remote_schedule', $slug, $hook );
 
-				if ( ! wp_next_scheduled( $hook, array( $slug, null, false ) ) ) {
-					$params    = array( $slug, null, false );
-					$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
-					$timestamp = time();
-					$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+				$result = wp_schedule_event( $timestamp, $frequency, $hook, $params );
 
-					do_action(
-						'wppus_scheduled_check_remote_event',
-						$result,
-						$slug,
-						$timestamp,
-						$frequency,
-						$hook,
-						$params
-					);
-				}
+				do_action(
+					'wppus_scheduled_check_remote_event',
+					$result,
+					$slug,
+					$timestamp,
+					$frequency,
+					$hook,
+					$params
+				);
 			}
 
 			return true;
@@ -370,14 +368,6 @@ class WPPUS_Remote_Sources_Manager {
 	/*******************************************************************
 	 * Protected methods
 	 *******************************************************************/
-
-	protected function clear_remote_check_schedule( $slug ) {
-		$params         = array( $slug, null, false );
-		$scheduled_hook = 'wppus_check_remote_' . $slug;
-
-		wp_clear_scheduled_hook( $scheduled_hook, $params );
-		do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook, $params );
-	}
 
 	protected function plugin_options_handler() {
 		$errors = array();

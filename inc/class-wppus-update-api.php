@@ -20,6 +20,8 @@ class WPPUS_Update_API {
 			}
 
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
+			add_action( 'wppus_checked_remote_package_update', array( $this, 'wppus_checked_remote_package_update' ), 10, 3 );
+			add_action( 'wppus_removed_package', array( $this, 'wppus_removed_package' ), 10, 3 );
 
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 		}
@@ -56,6 +58,34 @@ class WPPUS_Update_API {
 		);
 
 		return $query_vars;
+	}
+
+	public function wppus_checked_remote_package_update( $needs_update, $type, $slug ) {
+		$config = self::get_config();
+
+		if (
+			apply_filters( 'wppus_use_recurring_schedule', true ) &&
+			$config['use_remote_repository'] &&
+			$config['repository_service_url']
+		) {
+			$hook = 'wppus_check_remote_' . $slug;
+
+			if ( ! wp_next_scheduled( $hook, array( $slug, null, false ) ) ) {
+				$params    = array( $slug, null, false );
+				$frequency = apply_filters( 'wppus_check_remote_frequency', $config['repository_check_frequency'], $slug );
+				$timestamp = time();
+				$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+
+				do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, $frequency, $hook, $params );
+			}
+		}
+	}
+
+	public function wppus_removed_package( $result, $type, $slug ) {
+
+		if ( $result ) {
+			wp_unschedule_hook( 'wppus_check_remote_' . $slug );
+		}
 	}
 
 	// Misc. -------------------------------------------------------
@@ -119,11 +149,8 @@ class WPPUS_Update_API {
 	}
 
 	public function check_remote_update( $slug, $type ) {
-
-		if ( ! $this->update_server instanceof WPPUS_Update_Server ) {
-			$this->init_server( $slug );
-			$this->update_server->set_type( $type );
-		}
+		$this->init_server( $slug );
+		$this->update_server->set_type( $type );
 
 		return $this->update_server->check_remote_package_update( $slug );
 	}
@@ -134,7 +161,7 @@ class WPPUS_Update_API {
 		$this->init_server( $slug );
 		$this->update_server->set_type( $type );
 
-		if ( $force || $this->check_remote_update( $slug, $type ) ) {
+		if ( $force || $this->update_server->check_remote_package_update( $slug ) ) {
 			$result = $this->update_server->save_remote_package_to_local( $slug );
 		}
 
@@ -186,7 +213,6 @@ class WPPUS_Update_API {
 			$config['repository_branch'],
 			$config['repository_credentials'],
 			$config['repository_service_self_hosted'],
-			$config['repository_check_frequency']
 		);
 		$this->update_server = apply_filters(
 			'wppus_update_server',

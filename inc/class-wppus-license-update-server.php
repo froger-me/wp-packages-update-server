@@ -17,7 +17,6 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		$repository_branch,
 		$repository_credentials,
 		$repository_service_self_hosted,
-		$repository_check_frequency
 	) {
 		parent::__construct(
 			$use_remote_repository,
@@ -27,7 +26,6 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 			$repository_branch,
 			$repository_credentials,
 			$repository_service_self_hosted,
-			$repository_check_frequency
 		);
 
 		$this->repository_service_url = $repository_service_url;
