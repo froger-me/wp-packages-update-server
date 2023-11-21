@@ -172,7 +172,7 @@ This tab allows administrators to:
 This tab allows administrators to configure:
 - the Package API to administrer packages (browse, read, edit, add, delete), request for expirable signed URLs of packages to allow secure downloads, and requests for tokens & true nonces.
 - the License API to administer licenses (browse, read, edit, add, delete) and check, activate or deactivate licenses.
-- the list of URLs notifified via Webhooks, with the following available events:
+- the list of URLs notified via Webhooks, with the following available events:
 	-  Package events `(package)`
 		- Package added or updated `(package_update)`
 		- Package deleted `(package_delete)`
