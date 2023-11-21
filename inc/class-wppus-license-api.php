@@ -536,6 +536,8 @@ class WPPUS_License_API {
 					}
 				} else {
 					$payload = $wp->query_vars;
+
+					unset( $payload['id'] );
 				}
 
 				if ( ! $malformed_request ) {

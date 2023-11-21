@@ -410,8 +410,7 @@ ___
 ```php
 $params = array(
 	'action'       => 'read',         // Action to perform when calling the License API (required)
-	'id'           => '99',           // The id of the license to read (optional if license_key is provided)
-	'license_key'  => 'test-license', // The key of the license to read (optional if id is provided)
+	'license_key'  => 'test-license', // The key of the license to read
 	'api_auth_key' => 'secret',       // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```
@@ -449,8 +448,7 @@ ___
 ```php
 $params = array(
 	'action'              => 'edit',              // Action to perform when calling the License API (required)
-	'id'                  => '99',                // The id of the license to edit (optional if license_key is provided)
-	'license_key'         => 'test-license-new',  // The key of the license to edit (optional if id is provided, required along with id if this is the value to be edited)
+	'license_key'         => 'test-license-new',  // The key of the license to edit (required - used to identify the record to edit)
 	'max_allowed_domains' => '99',                // The maximum number of domains allowed to use the license - minimum 1 (required)
 	'allowed_domains'     => array(               // Domains currently allowed to use the license (optional)
 		'different1.example.com',
@@ -569,8 +567,7 @@ ___
 ```php
 $params = array(
 	'action'       => 'delete',       // Action to perform when calling the License API (required)
-	'id'           => '99',           // The id of the license to delete (optional if license_key is provided)
-	'license_key'  => 'test-license', // The key of the license to delete (optional if id is provided)
+	'license_key'  => 'test-license', // The key of the license to delete
 	'api_auth_key' => 'secret',       // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-API-Key headers if absent)
 );
 ```

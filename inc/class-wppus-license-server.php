@@ -63,9 +63,7 @@ class WPPUS_License_Server {
 	public function build_license( $payload ) {
 		$payload = $this->extend_license_payload( $this->filter_license_payload( $payload ) );
 
-		if ( isset( $payload['id'] ) ) {
-			unset( $payload['id'] );
-		}
+		unset( $payload['id'] );
 
 		return $this->cleanup_license_payload( $payload );
 	}
@@ -531,14 +529,17 @@ class WPPUS_License_Server {
 
 			if ( $partial ) {
 
-				if ( ! isset( $license['id'] ) && ! isset( $license['license_key'] ) ) {
-					$errors['missing_id_or_key'] = __( 'An ID or a license key is required to identify the license.', 'wppus' );
+				if ( ! isset( $license['id'] ) ) {
+
+					if ( ! isset( $license['license_key'] ) ) {
+						$errors['missing_key'] = __( 'A license key is required to identify the license.', 'wppus' );
+					}
 				}
 
 				if ( isset( $license['id'] ) ) {
 
 					if ( ! is_numeric( $license['id'] ) ) {
-						$errors['missing_id'] = __( 'The ID is required and must be an integer.', 'wppus' );
+						$errors['invalid_id'] = __( 'The ID must be an integer.', 'wppus' );
 					} else {
 						$sql    = "SELECT COUNT(*) FROM {$wpdb->prefix}wppus_licenses WHERE id = %s;";
 						$exists = ( '1' === $wpdb->get_var( $wpdb->prepare( $sql, $license['id'] ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -558,8 +559,7 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['license_key'] ) ) &&
+				! ( $partial && ! isset( $license['license_key'] ) ) &&
 				(
 					! is_string( $license['license_key'] ) ||
 					empty( $license['license_key'] )
@@ -576,8 +576,7 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['max_allowed_domains'] ) ) &&
+				! ( $partial && ! isset( $license['max_allowed_domains'] ) ) &&
 				(
 					! is_numeric( $license['max_allowed_domains'] ) ||
 					$license['max_allowed_domains'] < 1
@@ -587,24 +586,21 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['status'] ) ) &&
+				! ( $partial && ! isset( $license['status'] ) ) &&
 				! in_array( $license['status'], self::$license_statuses, true )
 			) {
 				$errors['invalid_status'] = __( 'The license status is invalid.', 'wppus' );
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['email'] ) ) &&
+				! ( $partial && ! isset( $license['email'] ) ) &&
 				! filter_var( $license['email'] )
 			) {
 				$errors['invalid_email'] = __( 'The registered email is required and must be a valid email address.', 'wppus' );
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['date_created'] ) ) &&
+				! ( $partial && ! isset( $license['date_created'] ) ) &&
 				(
 					empty( $license['date_created'] ) ||
 					! preg_match( $date_regex, $license['date_created'] )
@@ -614,8 +610,7 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['date_renewed'] ) ) &&
+				! ( $partial && ! isset( $license['date_renewed'] ) ) &&
 				(
 					! empty( $license['date_renewed'] ) &&
 					! preg_match( $date_regex, $license['date_renewed'] )
@@ -625,8 +620,7 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['date_expiry'] ) ) &&
+				! ( $partial && ! isset( $license['date_expiry'] ) ) &&
 				(
 					! empty( $license['date_expiry'] ) &&
 					! preg_match( $date_regex, $license['date_expiry'] )
@@ -636,8 +630,7 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['package_slug'] ) ) &&
+				! ( $partial && ! isset( $license['package_slug'] ) ) &&
 				(
 					empty( $license['package_slug'] ) ||
 					! preg_match( '/[a-z0-9-]*/', $license['package_slug'] )
@@ -647,8 +640,7 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['package_type'] ) ) &&
+				! ( $partial && ! isset( $license['package_type'] ) ) &&
 				'plugin' !== $license['package_type'] &&
 				'theme' !== $license['package_type']
 			) {
@@ -656,8 +648,7 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['owner_name'] ) ) &&
+				! ( $partial && ! isset( $license['owner_name'] ) ) &&
 				! empty( $license['owner_name'] ) &&
 				! is_string( $license['owner_name'] )
 			) {
@@ -665,8 +656,7 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['company_name'] ) ) &&
+				! ( $partial && ! isset( $license['company_name'] ) ) &&
 				! empty( $license['company_name'] ) &&
 				! is_string( $license['company_name'] )
 			) {
@@ -674,8 +664,7 @@ class WPPUS_License_Server {
 			}
 
 			if (
-				! ( $partial &&
-				! isset( $license['txn_id'] ) ) &&
+				! ( $partial && ! isset( $license['txn_id'] ) ) &&
 				! empty( $license['txn_id'] ) &&
 				! is_string( $license['txn_id'] )
 			) {
