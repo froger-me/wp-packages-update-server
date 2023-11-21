@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WP Plugin Update Server\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-20 22:12+0000\n"
+"POT-Creation-Date: 2023-11-21 11:03+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
@@ -15,7 +15,6 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/"
 
 #: inc/templates/admin/plugin-packages-page.php:77
-#: inc/templates/admin/plugin-main-page.php:76
 msgid " (discouraged)"
 msgstr ""
 
@@ -41,14 +40,12 @@ msgid "(required)"
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:22
-#: inc/templates/admin/plugin-main-page.php:22
 msgid ""
 "- All packages deleted from this interface will have their license status "
 "set to \"Does not Require License\" when added again."
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:18
-#: inc/templates/admin/plugin-main-page.php:18
 msgid ""
 "- If packages linked to a Remote Repository are deleted using this interface,"
 " they will be added again to the list automatically whenever a client checks "
@@ -56,7 +53,6 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:16
-#: inc/templates/admin/plugin-main-page.php:16
 msgid ""
 "- It is not necessary to prime or upload packages linked to a Remote "
 "Repository for them to appear in this list: they will be automatically added "
@@ -64,7 +60,6 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:24
-#: inc/templates/admin/plugin-main-page.php:24
 msgid ""
 "- Packages removed directly on the file system will keep their previously "
 "set license status when added again."
@@ -74,12 +69,12 @@ msgstr ""
 msgid "401 Unauthorized"
 msgstr ""
 
-#: inc/class-wppus-license-server.php:577
+#: inc/class-wppus-license-server.php:574
 msgid ""
 "A value already exists for the given license key. Each key must be unique."
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:260
+#: inc/class-wppus-licenses-table.php:257
 msgid "Activate"
 msgstr ""
 
@@ -89,14 +84,13 @@ msgstr ""
 
 #. %s is <code>$packages_dir</code>
 #: inc/templates/admin/plugin-packages-page.php:87
-#: inc/templates/admin/plugin-main-page.php:86
 #, php-format
 msgid ""
 "Add a package zip archive to the %s directory. The archive needs to be a "
 "valid WordPress plugin or theme package."
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:253
+#: inc/class-wppus-licenses-table.php:250
 #: inc/templates/admin/plugin-licenses-page.php:15
 msgid "Add License"
 msgstr ""
@@ -105,16 +99,11 @@ msgstr ""
 msgid "Add Packages"
 msgstr ""
 
-#: inc/templates/admin/plugin-main-page.php:31
-msgid "Add packages"
-msgstr ""
-
 #: inc/templates/admin/plugin-licenses-page.php:159
 msgid "Advanced - JSON-formatted custom data to add to the license."
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:53
-#: inc/templates/admin/webhook-options.php:53
 msgid ""
 "After changing this setting, make sure to update the Webhooks secrets in the "
 "repository service."
@@ -136,7 +125,7 @@ msgstr ""
 msgid "Alexandre Froger"
 msgstr ""
 
-#: inc/class-wppus-license-server.php:697
+#: inc/class-wppus-license-server.php:694
 msgid ""
 "All allowed domains values must be valid domains or subdomains without "
 "protocol."
@@ -158,7 +147,7 @@ msgid ""
 "this?"
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:615
+#: inc/class-wppus-license-manager.php:613
 msgid "All the licenses have been deleted."
 msgstr ""
 
@@ -174,17 +163,17 @@ msgid ""
 "%1$s</code>."
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:353
+#: inc/class-wppus-cloud-storage-manager.php:377
 msgid ""
 "An error occured when attempting to communicate with the Cloud Storage "
 "Service. Please check all the settings and try again."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:538
+#: inc/class-wppus-license-server.php:535
 msgid "An ID or a license key is required to identify the license."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:531
+#: inc/class-wppus-license-server.php:528
 msgid ""
 "An unexpected error has occured. Please try again. If the problem persists, "
 "please contact the author of the plugin."
@@ -194,10 +183,8 @@ msgstr ""
 msgid "API & Webhooks"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:610
-#: inc/class-wppus-package-manager.php:778
+#: inc/class-wppus-package-manager.php:772
 #: inc/templates/admin/plugin-packages-page.php:117
-#: inc/templates/admin/plugin-main-page.php:115
 msgid "Archive max size (in MB)"
 msgstr ""
 
@@ -217,7 +204,7 @@ msgstr ""
 msgid "Authentication Keys"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:262
+#: inc/class-wppus-licenses-table.php:259
 msgid "Block"
 msgstr ""
 
@@ -225,10 +212,8 @@ msgstr ""
 msgid "Blocked"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:598
-#: inc/class-wppus-package-manager.php:766
+#: inc/class-wppus-package-manager.php:760
 #: inc/templates/admin/plugin-packages-page.php:128
-#: inc/templates/admin/plugin-main-page.php:126
 msgid "Cache max size (in MB)"
 msgstr ""
 
@@ -241,7 +226,6 @@ msgid "cancel"
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:11
-#: inc/templates/admin/webhook-options.php:11
 msgid ""
 "Check this if you wish for each repository of the Remote Repository Service "
 "to call a Webhook when updates are pushed."
@@ -262,7 +246,6 @@ msgid "Check to activate license-enabled plugins and themes packages delivery."
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:82
-#: inc/templates/admin/plugin-main-page.php:81
 msgid "Choose package archive"
 msgstr ""
 
@@ -278,31 +261,31 @@ msgstr ""
 msgid "Cloud Storage"
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:132
+#: inc/class-wppus-cloud-storage-manager.php:133
 #: inc/templates/admin/cloud-storage-options.php:27
 msgid "Cloud Storage Access Key"
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:144
+#: inc/class-wppus-cloud-storage-manager.php:145
 #: inc/templates/admin/cloud-storage-options.php:49
 msgid "Cloud Storage Endpoint"
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:156
+#: inc/class-wppus-cloud-storage-manager.php:157
 #: inc/templates/admin/cloud-storage-options.php:78
 msgid "Cloud Storage Region"
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:138
+#: inc/class-wppus-cloud-storage-manager.php:139
 #: inc/templates/admin/cloud-storage-options.php:38
 msgid "Cloud Storage Secret Key"
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:323
+#: inc/class-wppus-cloud-storage-manager.php:347
 msgid "Cloud Storage Service was reached sucessfully."
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:150
+#: inc/class-wppus-cloud-storage-manager.php:151
 #: inc/templates/admin/cloud-storage-options.php:67
 msgid "Cloud Storage Unit"
 msgstr ""
@@ -311,11 +294,11 @@ msgstr ""
 msgid "Company"
 msgstr ""
 
-#: inc/class-wppus-update-server.php:472
+#: inc/class-wppus-update-server.php:431
 msgid "Could not create temporary file."
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:42
+#: inc/class-wppus-licenses-table.php:41
 msgid "Creation Date"
 msgstr ""
 
@@ -339,7 +322,7 @@ msgstr ""
 msgid "Date Renewed"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:261
+#: inc/class-wppus-licenses-table.php:258
 msgid "Deactivate"
 msgstr ""
 
@@ -348,26 +331,25 @@ msgid "Deactivated"
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:37
-#: inc/templates/admin/webhook-options.php:37
 msgid ""
 "Delay in minutes after which WP Packages Update Server will poll the Remote "
 "Repository for package updates when the Webhook has been called."
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:264
+#: inc/class-wppus-licenses-table.php:261
 msgid "Delete"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:253
+#: inc/class-wppus-licenses-table.php:250
 msgid "Delete All Licenses"
 msgstr ""
 
-#: inc/class-wppus-packages-table.php:163
+#: inc/class-wppus-packages-table.php:174
 msgid "Delete All Packages"
 msgstr ""
 
 #. %1$s is the path to the plugin's data directory
-#: inc/class-wppus-data-manager.php:97
+#: inc/class-wppus-data-manager.php:95
 #, php-format
 msgid "Directory <code>%1$s</code> is not a valid WPPUS data directory."
 msgstr ""
@@ -385,13 +367,13 @@ msgstr ""
 msgid "Domains currently allowed to use this license."
 msgstr ""
 
-#: inc/class-wppus-packages-table.php:181
+#: inc/class-wppus-packages-table.php:191
 #: inc/templates/admin/packages-table-row.php:21
 msgid "Download"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:246
-#: inc/class-wppus-packages-table.php:157
+#: inc/class-wppus-licenses-table.php:243
+#: inc/class-wppus-packages-table.php:168
 msgid ""
 "Download: Archive max size exceeded - try to adjust it in the settings below."
 msgstr ""
@@ -413,7 +395,7 @@ msgstr ""
 msgid "Edit License"
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:510
+#: inc/class-wppus-license-manager.php:508
 #: inc/templates/admin/plugin-licenses-page.php:183
 msgid "Enable Package Licenses"
 msgstr ""
@@ -424,65 +406,60 @@ msgid ""
 "before delivering updates."
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:132
+#: inc/class-wppus-remote-sources-manager.php:131
 msgid "Error - an unknown error has occured"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:178
-#: inc/class-wppus-package-manager.php:148
+#: inc/class-wppus-package-manager.php:149
 msgid "Error - check the directory is writable"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:125
-#: inc/class-wppus-remote-sources-manager.php:156
+#: inc/class-wppus-remote-sources-manager.php:124
+#: inc/class-wppus-remote-sources-manager.php:155
 msgid "Error - check the packages directory is readable and not empty"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:226
-#: inc/class-wppus-package-manager.php:196
+#: inc/class-wppus-package-manager.php:197
 msgid ""
 "Error - could not get remote package. Check if a repository with this slug "
 "exists and has a valid file structure."
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:207
-#: inc/class-wppus-package-manager.php:177
+#: inc/class-wppus-package-manager.php:178
 msgid ""
 "Error - could not get remote package. Missing package slug - please reload "
 "the page and try again."
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:213
-#: inc/class-wppus-package-manager.php:183
+#: inc/class-wppus-package-manager.php:184
 msgid ""
 "Error - could not get remote package. The page has expired - please reload "
 "the page and try again."
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:341
-#: inc/class-wppus-package-manager.php:311
+#: inc/class-wppus-package-manager.php:312
 msgid "Error - could not upload the package. "
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:261
+#: inc/class-wppus-remote-sources-manager.php:260
 msgid ""
 "Error - Please check the provided Remote Repository Service Credentials."
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:255
+#: inc/class-wppus-remote-sources-manager.php:254
 msgid "Error - Please check the provided Remote Repository Service URL."
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:358
-#: inc/class-wppus-remote-sources-manager.php:268
+#: inc/class-wppus-cloud-storage-manager.php:382
+#: inc/class-wppus-remote-sources-manager.php:267
 msgid "Error - Received invalid data ; please reload the page and try again."
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:320
+#: inc/class-wppus-cloud-storage-manager.php:344
 msgid "Error - Storage Unit not found"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:197
+#: inc/class-wppus-remote-sources-manager.php:196
 msgid ""
 "Error - Test Remote Repository Access is not supported for Bitbucket. Please "
 "save your settings and try to prime a package in the Overview page."
@@ -508,7 +485,7 @@ msgstr ""
 msgid "Example of valid value: package-slug"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:263
+#: inc/class-wppus-licenses-table.php:260
 msgid "Expire"
 msgstr ""
 
@@ -516,7 +493,7 @@ msgstr ""
 msgid "Expired"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:43
+#: inc/class-wppus-licenses-table.php:42
 #: inc/templates/admin/plugin-licenses-page.php:79
 msgid "Expiry Date"
 msgstr ""
@@ -533,24 +510,21 @@ msgstr ""
 msgid "Failed to create the necessary database table(s)."
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:607
+#: inc/class-wppus-license-manager.php:605
 msgid "Failed to insert the license record in the database."
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:594
+#: inc/class-wppus-license-manager.php:592
 msgid "Failed to update the license record in the database."
 msgstr ""
 
-#: inc/class-wppus-packages-table.php:41
+#: inc/class-wppus-packages-table.php:42
 msgid "File Name"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:174
-#: inc/class-wppus-package-manager.php:144
+#: inc/class-wppus-package-manager.php:145
 #: inc/templates/admin/plugin-packages-page.php:131
 #: inc/templates/admin/plugin-packages-page.php:148
-#: inc/templates/admin/plugin-main-page.php:129
-#: inc/templates/admin/plugin-main-page.php:146
 msgid "Force Clean"
 msgstr ""
 
@@ -562,13 +536,8 @@ msgstr ""
 msgid "Force Register Schedules"
 msgstr ""
 
-#: inc/templates/admin/plugin-main-page.php:110
-msgid "General Settings"
-msgstr ""
-
 #. %s is <code>$packages_dir</code>
 #: inc/templates/admin/plugin-packages-page.php:45
-#: inc/templates/admin/plugin-main-page.php:44
 #, php-format
 msgid ""
 "Get an archive of a package from a Remote Repository an put it in the %s "
@@ -576,7 +545,6 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:40
-#: inc/templates/admin/plugin-main-page.php:39
 msgid "Get remote package"
 msgstr ""
 
@@ -605,12 +573,11 @@ msgstr ""
 msgid "https://github.com/froger-me/wp-packages-update-server/"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:36
+#: inc/class-wppus-licenses-table.php:35
 msgid "ID"
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:49
-#: inc/templates/admin/webhook-options.php:49
 msgid ""
 "Ideally a random string, the secret string included in the request by the "
 "repository service when calling the Webhook."
@@ -664,7 +631,6 @@ msgstr ""
 
 #. %1$s is <code>package-slug.zip</code>, %2$s is <code>package-slug.php</code>
 #: inc/templates/admin/plugin-packages-page.php:95
-#: inc/templates/admin/plugin-main-page.php:94
 #, php-format
 msgid ""
 "In the case of a plugin the main plugin file must have the same name as the "
@@ -673,7 +639,6 @@ msgstr ""
 
 #. %1$s is <code>package-slug</code>, %2$s is <code>package-slug.php</code>
 #: inc/templates/admin/plugin-packages-page.php:60
-#: inc/templates/admin/plugin-main-page.php:59
 #, php-format
 msgid ""
 "In the case of a plugin, the main plugin file must have the same name as the "
@@ -703,7 +668,7 @@ msgstr ""
 msgid "Invalid signature"
 msgstr ""
 
-#: inc/class-wppus-update-server.php:466
+#: inc/class-wppus-update-server.php:425
 msgid "Invalid URL provided."
 msgstr ""
 
@@ -725,12 +690,11 @@ msgid ""
 "delivered by this installation of WP Packages Update Server."
 msgstr ""
 
-#: inc/class-wppus-packages-table.php:43
+#: inc/class-wppus-packages-table.php:44
 msgid "Last Modified "
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:38
-#: inc/templates/admin/webhook-options.php:38
 msgid ""
 "Leave at 0 to schedule a package update during the cron run happening "
 "immediately after the Webhook was called."
@@ -744,7 +708,7 @@ msgstr ""
 msgid "License added"
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:604
+#: inc/class-wppus-license-manager.php:602
 msgid "License added successfully."
 msgstr ""
 
@@ -760,7 +724,7 @@ msgstr ""
 msgid "License becomes required for a package"
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:608
+#: inc/class-wppus-license-manager.php:606
 msgid "License creation failed."
 msgstr ""
 
@@ -776,7 +740,7 @@ msgstr ""
 msgid "License edited"
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:591
+#: inc/class-wppus-license-manager.php:589
 msgid "License edited successfully."
 msgstr ""
 
@@ -784,12 +748,12 @@ msgstr ""
 msgid "License events"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:37
+#: inc/class-wppus-licenses-table.php:36
 #: inc/templates/admin/plugin-licenses-page.php:20
 msgid "License Key"
 msgstr ""
 
-#: inc/class-wppus-license-update-server.php:187
+#: inc/class-wppus-license-update-server.php:185
 msgid "License key details retrieved."
 msgstr ""
 
@@ -814,7 +778,7 @@ msgstr ""
 msgid "License status will need to be re-applied manually for all packages."
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:595
+#: inc/class-wppus-license-manager.php:593
 msgid "License update failed."
 msgstr ""
 
@@ -828,10 +792,8 @@ msgstr ""
 msgid "Licenses per page"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:604
-#: inc/class-wppus-package-manager.php:772
+#: inc/class-wppus-package-manager.php:766
 #: inc/templates/admin/plugin-packages-page.php:145
-#: inc/templates/admin/plugin-main-page.php:143
 msgid "Logs max size (in MB)"
 msgstr ""
 
@@ -843,13 +805,11 @@ msgid ""
 "scheduled wp-cron events."
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:266
-#: inc/class-wppus-package-manager.php:236
+#: inc/class-wppus-package-manager.php:237
 msgid "Make sure the uploaded file is a zip archive."
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:305
-#: inc/class-wppus-package-manager.php:275
+#: inc/class-wppus-package-manager.php:276
 msgid "Make sure the uploaded file is not empty."
 msgstr ""
 
@@ -866,7 +826,6 @@ msgid "Max. Allowed Domains"
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:122
-#: inc/templates/admin/plugin-main-page.php:120
 msgid "Maximum file size when uploading or downloading packages."
 msgstr ""
 
@@ -874,8 +833,6 @@ msgstr ""
 #. %s is <code>logs_dir_path</code>
 #: inc/templates/admin/plugin-packages-page.php:136
 #: inc/templates/admin/plugin-packages-page.php:153
-#: inc/templates/admin/plugin-main-page.php:134
-#: inc/templates/admin/plugin-main-page.php:151
 #, php-format
 msgid ""
 "Maximum size in MB for the %s directory. If the size of the directory grows "
@@ -908,41 +865,37 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:599
-#: inc/class-wppus-update-manager.php:605
-#: inc/class-wppus-update-manager.php:611
+#: inc/class-wppus-package-manager.php:761
 #: inc/class-wppus-package-manager.php:767
 #: inc/class-wppus-package-manager.php:773
-#: inc/class-wppus-package-manager.php:779
 msgid "Not a valid number"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:549
-#: inc/class-wppus-webhook-manager.php:86
+#: inc/class-wppus-remote-sources-manager.php:535
+#: inc/class-wppus-webhook-manager.php:83
 msgid "Not a valid option"
 msgstr ""
 
-#: inc/class-wppus-webhook-manager.php:143 inc/class-wppus-api-manager.php:246
+#: inc/class-wppus-webhook-manager.php:140 inc/class-wppus-api-manager.php:246
 msgid "Not a valid payload"
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:133
-#: inc/class-wppus-cloud-storage-manager.php:139
-#: inc/class-wppus-cloud-storage-manager.php:145
-#: inc/class-wppus-cloud-storage-manager.php:151
-#: inc/class-wppus-cloud-storage-manager.php:157
-#: inc/class-wppus-remote-sources-manager.php:539
-#: inc/class-wppus-remote-sources-manager.php:544
-#: inc/class-wppus-webhook-manager.php:92 inc/class-wppus-api-manager.php:256
+#: inc/class-wppus-cloud-storage-manager.php:134
+#: inc/class-wppus-cloud-storage-manager.php:140
+#: inc/class-wppus-cloud-storage-manager.php:146
+#: inc/class-wppus-cloud-storage-manager.php:152
+#: inc/class-wppus-cloud-storage-manager.php:158
+#: inc/class-wppus-remote-sources-manager.php:525
+#: inc/class-wppus-remote-sources-manager.php:530
+#: inc/class-wppus-webhook-manager.php:89 inc/class-wppus-api-manager.php:256
 msgid "Not a valid string"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:527
+#: inc/class-wppus-remote-sources-manager.php:513
 msgid "Not a valid URL"
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:26
-#: inc/templates/admin/webhook-options.php:26
 msgid ""
 "Note that WP Packages Update Server does not rely on the content of the "
 "payload to schedule a package download, so any type of event can be used to "
@@ -950,7 +903,6 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:104
-#: inc/templates/admin/plugin-main-page.php:103
 msgid ""
 "Note: a manually uploaded package that does not have its counterpart in a "
 "Remote Repository will need to be re-uploaded manually to provide updates "
@@ -958,14 +910,12 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:68
-#: inc/templates/admin/plugin-main-page.php:67
 msgid ""
 "Note: packages will be overwritten automatically regularly with their "
 "counterpart from the Remote Repository if a newer version exists."
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:13
-#: inc/templates/admin/plugin-main-page.php:13
 msgid "Notes:"
 msgstr ""
 
@@ -973,21 +923,20 @@ msgstr ""
 msgid "open an issue on Github"
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:559
+#: inc/class-wppus-license-manager.php:557
 msgid ""
 "Operation failed: all the selected licenses have passed their expiry date, "
 "or already have the selected status - IDs: "
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:549
+#: inc/class-wppus-license-manager.php:547
 msgid "Operation failed: an unexpected error occured (invalid license status)."
 msgstr ""
 
 #. %1$s is the option display name, %2$s is the condition for update
-#: inc/class-wppus-license-manager.php:482
-#: inc/class-wppus-remote-sources-manager.php:453
-#: inc/class-wppus-api-manager.php:217 inc/class-wppus-update-manager.php:571
-#: inc/class-wppus-package-manager.php:737
+#: inc/class-wppus-license-manager.php:480
+#: inc/class-wppus-remote-sources-manager.php:441
+#: inc/class-wppus-api-manager.php:217 inc/class-wppus-package-manager.php:731
 #, php-format
 msgid "Option %1$s was not updated. Reason: %2$s"
 msgstr ""
@@ -1020,12 +969,12 @@ msgstr ""
 msgid "Package events"
 msgstr ""
 
-#: inc/class-wppus-packages-table.php:38
+#: inc/class-wppus-packages-table.php:39
 msgid "Package Name"
 msgstr ""
 
 #: inc/class-wppus-package-api.php:157
-#: inc/class-wppus-cloud-storage-manager.php:597
+#: inc/class-wppus-cloud-storage-manager.php:621
 msgid "Package not found"
 msgstr ""
 
@@ -1033,35 +982,32 @@ msgstr ""
 msgid "Package Private API"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:41
+#: inc/class-wppus-licenses-table.php:40
 #: inc/templates/admin/plugin-licenses-page.php:38
 msgid "Package Slug"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:40
+#: inc/class-wppus-licenses-table.php:39
 #: inc/templates/admin/plugin-licenses-page.php:29
 msgid "Package Type"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:98 inc/class-wppus-update-manager.php:149
 #: inc/templates/admin/plugin-packages-page.php:7
-#: inc/templates/admin/plugin-main-page.php:7
 msgid "Packages"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:538
+#: inc/class-wppus-remote-sources-manager.php:524
 #: inc/templates/admin/plugin-remote-sources-page.php:76
 msgid "Packages Branch Name"
 msgstr ""
 
 #: inc/class-wp-packages-update-server.php:218
-#: inc/class-wppus-package-manager.php:96
-#: inc/class-wppus-package-manager.php:119
+#: inc/class-wppus-package-manager.php:97
+#: inc/class-wppus-package-manager.php:120
 msgid "Packages Overview"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:106
-#: inc/class-wppus-package-manager.php:104
+#: inc/class-wppus-package-manager.php:105
 msgid "Packages per page"
 msgstr ""
 
@@ -1071,7 +1017,7 @@ msgid ""
 "response from this server."
 msgstr ""
 
-#: inc/class-wppus-webhook-manager.php:64
+#: inc/class-wppus-webhook-manager.php:61
 msgid ""
 "Packages with a Remote Repository will be added again automatically whenever "
 "a client asks for updates, or when its Webhook is called."
@@ -1113,7 +1059,6 @@ msgid "Plugin"
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:37
-#: inc/templates/admin/plugin-main-page.php:36
 msgid "Prime a package using a Remote Repository (recommended)"
 msgstr ""
 
@@ -1129,54 +1074,51 @@ msgstr ""
 msgid "Registered Domains"
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:38
+#: inc/class-wppus-licenses-table.php:37
 #: inc/templates/admin/plugin-licenses-page.php:92
 msgid "Registered Email"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:238
-#: inc/class-wppus-package-manager.php:208
+#: inc/class-wppus-package-manager.php:209
 msgid "Reload the page and try again."
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:32
-#: inc/templates/admin/webhook-options.php:32
 msgid "Remote Download Delay"
 msgstr ""
 
-#: inc/class-wppus-webhook-manager.php:85
+#: inc/class-wppus-webhook-manager.php:82
 msgid "Remote download delay"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:543
+#: inc/class-wppus-remote-sources-manager.php:529
 #: inc/templates/admin/plugin-remote-sources-page.php:87
 msgid "Remote Repository Service Credentials"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:526
+#: inc/class-wppus-remote-sources-manager.php:512
 #: inc/templates/admin/plugin-remote-sources-page.php:35
 msgid "Remote Repository Service URL"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:251
+#: inc/class-wppus-remote-sources-manager.php:250
 msgid "Remote Repository Service was reached sucessfully."
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:44
-#: inc/templates/admin/webhook-options.php:44
 msgid "Remote Repository Webhook Secret"
 msgstr ""
 
-#: inc/class-wppus-webhook-manager.php:91
+#: inc/class-wppus-webhook-manager.php:88
 msgid "Remote repository Webhook Secret"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:87
-#: inc/class-wppus-remote-sources-manager.php:96
+#: inc/class-wppus-remote-sources-manager.php:86
+#: inc/class-wppus-remote-sources-manager.php:95
 msgid "Remote Sources"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:548
+#: inc/class-wppus-remote-sources-manager.php:534
 msgid "Remote Update Check Frequency"
 msgstr ""
 
@@ -1215,7 +1157,6 @@ msgstr ""
 #: inc/templates/admin/plugin-api-page.php:149
 #: inc/templates/admin/plugin-licenses-page.php:170
 #: inc/templates/admin/plugin-licenses-page.php:197
-#: inc/templates/admin/plugin-main-page.php:162
 msgid "Save"
 msgstr ""
 
@@ -1230,11 +1171,11 @@ msgid ""
 "with a test client installation of WordPress."
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:581
+#: inc/class-wppus-license-manager.php:579
 msgid "Selected licenses deleted - IDs: "
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:533
+#: inc/class-wppus-remote-sources-manager.php:519
 #: inc/templates/admin/plugin-remote-sources-page.php:65
 msgid "Self-hosted Remote Repository Service"
 msgstr ""
@@ -1247,7 +1188,7 @@ msgstr ""
 msgid "Send a test request to the Remote Repository Service."
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:259
+#: inc/class-wppus-licenses-table.php:256
 msgid "Set to Pending"
 msgstr ""
 
@@ -1257,20 +1198,19 @@ msgid ""
 "is checked."
 msgstr ""
 
-#: inc/class-wppus-packages-table.php:42
+#: inc/class-wppus-packages-table.php:43
 msgid "Size"
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:254
-#: inc/class-wppus-package-manager.php:224
+#: inc/class-wppus-package-manager.php:225
 msgid "Something very wrong happened."
 msgstr ""
 
-#: inc/class-wppus-licenses-table.php:39
+#: inc/class-wppus-licenses-table.php:38
 msgid "Status"
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:557
+#: inc/class-wppus-license-manager.php:555
 msgid ""
 "Status of the selected licenses updated successfully where applicable - IDs "
 "of updated licenses: "
@@ -1309,7 +1249,7 @@ msgstr ""
 msgid "The Access Key provided by the Cloud Storage service provider."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:691
+#: inc/class-wppus-license-server.php:688
 msgid "The allowed domains must be an array."
 msgstr ""
 
@@ -1319,7 +1259,7 @@ msgid ""
 "Repository Service."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:676
+#: inc/class-wppus-license-server.php:673
 msgid "The company name must be a string."
 msgstr ""
 
@@ -1327,7 +1267,7 @@ msgstr ""
 msgid "The company of the owner of this license."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:616
+#: inc/class-wppus-license-server.php:613
 msgid ""
 "The creation date is required and must follow the following format: YYYY-MM-"
 "DD"
@@ -1341,7 +1281,7 @@ msgid ""
 "Service."
 msgstr ""
 
-#: inc/class-wppus-update-server.php:266
+#: inc/class-wppus-update-server.php:259
 msgid "The download URL token has expired."
 msgstr ""
 
@@ -1349,7 +1289,7 @@ msgstr ""
 msgid "The email registered with this license."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:638
+#: inc/class-wppus-license-server.php:635
 msgid "The expiry date must follow the following format: YYYY-MM-DD"
 msgstr ""
 
@@ -1365,24 +1305,24 @@ msgstr ""
 msgid "The full name of the owner of the license."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:544
+#: inc/class-wppus-license-server.php:541
 msgid "The ID is required and must be an integer."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:550
-#: inc/class-wppus-license-server.php:558
+#: inc/class-wppus-license-server.php:547
+#: inc/class-wppus-license-server.php:555
 msgid "The license cannot be found."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:571
+#: inc/class-wppus-license-server.php:568
 msgid "The license key is required and must be a string."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:667
+#: inc/class-wppus-license-server.php:664
 msgid "The license owner name must be a string."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:597
+#: inc/class-wppus-license-server.php:594
 msgid "The license status is invalid."
 msgstr ""
 
@@ -1399,17 +1339,17 @@ msgid ""
 "active with %3$s or keep %4$s from themes included with %5$s set to %6$s."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:589
+#: inc/class-wppus-license-server.php:586
 msgid "The number of allowed domains is required and must be greater than 1."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:649
+#: inc/class-wppus-license-server.php:646
 msgid ""
 "The package slug is required and must contain only alphanumeric characters "
 "or dashes."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:658
+#: inc/class-wppus-license-server.php:655
 msgid "The package type is required and must be \"plugin\" or \"theme\"."
 msgstr ""
 
@@ -1435,17 +1375,16 @@ msgid ""
 "service provider."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:605
+#: inc/class-wppus-license-server.php:602
 msgid "The registered email is required and must be a valid email address."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:627
+#: inc/class-wppus-license-server.php:624
 msgid "The renewal date must follow the following format: YYYY-MM-DD"
 msgstr ""
 
 #. %s is <code>package-slug</code>
 #: inc/templates/admin/plugin-packages-page.php:52
-#: inc/templates/admin/plugin-main-page.php:51
 msgid ""
 "The repository name should be  and all the files should be located at the "
 "root of the repository."
@@ -1467,7 +1406,7 @@ msgstr ""
 msgid "The Secret Key provided by the Cloud Storage service provider."
 msgstr ""
 
-#: inc/class-wppus-license-server.php:685
+#: inc/class-wppus-license-server.php:682
 msgid "The transaction ID must be a string."
 msgstr ""
 
@@ -1477,8 +1416,7 @@ msgid ""
 "it is unique in the database."
 msgstr ""
 
-#: inc/class-wppus-update-manager.php:314
-#: inc/class-wppus-package-manager.php:284
+#: inc/class-wppus-package-manager.php:285
 msgid ""
 "The uploaded package is not a valid WordPress package, or if it is a plugin, "
 "the main plugin file could not be found."
@@ -1488,7 +1426,7 @@ msgstr ""
 msgid "The URL of the Remote Repository Service where packages are hosted."
 msgstr ""
 
-#: functions.php:407 inc/class-wppus-webhook-api.php:177
+#: functions.php:407 inc/class-wppus-webhook-api.php:176
 msgid "The webhook payload must contain an event string and a content."
 msgstr ""
 
@@ -1502,10 +1440,9 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:492
-#: inc/class-wppus-remote-sources-manager.php:463
-#: inc/class-wppus-api-manager.php:227 inc/class-wppus-update-manager.php:581
-#: inc/class-wppus-package-manager.php:747
+#: inc/class-wppus-license-manager.php:490
+#: inc/class-wppus-remote-sources-manager.php:451
+#: inc/class-wppus-api-manager.php:227 inc/class-wppus-package-manager.php:741
 msgid ""
 "There was an error validating the form. It may be outdated. Please reload "
 "the page."
@@ -1547,7 +1484,7 @@ msgstr ""
 msgid "Transaction ID"
 msgstr ""
 
-#: inc/class-wppus-packages-table.php:40
+#: inc/class-wppus-packages-table.php:41
 msgid "Type"
 msgstr ""
 
@@ -1560,7 +1497,7 @@ msgstr ""
 msgid "Unauthorized GET method"
 msgstr ""
 
-#: inc/class-wppus-license-api.php:524
+#: inc/class-wppus-license-api.php:525
 msgid "Unauthorized GET method."
 msgstr ""
 
@@ -1581,21 +1518,19 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:75
-#: inc/templates/admin/plugin-main-page.php:74
 msgid "Upload a package"
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:82
-#: inc/templates/admin/plugin-main-page.php:81
 msgid "Upload package"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:521
+#: inc/class-wppus-remote-sources-manager.php:507
 #: inc/templates/admin/plugin-remote-sources-page.php:10
 msgid "Use a Remote Repository Service"
 msgstr ""
 
-#: inc/class-wppus-cloud-storage-manager.php:127
+#: inc/class-wppus-cloud-storage-manager.php:128
 #: inc/templates/admin/cloud-storage-options.php:9
 msgid "Use Cloud Storage"
 msgstr ""
@@ -1608,9 +1543,8 @@ msgid ""
 "packages."
 msgstr ""
 
-#: inc/class-wppus-webhook-manager.php:80
+#: inc/class-wppus-webhook-manager.php:77
 #: inc/templates/admin/remote-webhook-options.php:6
-#: inc/templates/admin/webhook-options.php:6
 msgid "Use Webhooks"
 msgstr ""
 
@@ -1634,7 +1568,6 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:66
-#: inc/templates/admin/plugin-main-page.php:65
 msgid ""
 "Using this method adds the package to the list if not present or forcefully "
 "downloads its latest version from the Remote Repository and overwrites the "
@@ -1642,7 +1575,6 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/plugin-packages-page.php:101
-#: inc/templates/admin/plugin-main-page.php:100
 msgid ""
 "Using this method adds the package to the list if not present or overwrites "
 "the existing package."
@@ -1654,18 +1586,18 @@ msgid ""
 "Storage service provider."
 msgstr ""
 
-#: inc/class-wppus-packages-table.php:39
+#: inc/class-wppus-packages-table.php:40
 msgid "Version"
 msgstr ""
 
 #. %s is the virtual folder
-#: inc/class-wppus-cloud-storage-manager.php:341
+#: inc/class-wppus-cloud-storage-manager.php:365
 #, php-format
 msgid "Virtual folder \"%s\" found."
 msgstr ""
 
 #. %s is the virtual folder
-#: inc/class-wppus-cloud-storage-manager.php:330
+#: inc/class-wppus-cloud-storage-manager.php:354
 #, php-format
 msgid "Virtual folder \"%s\" was created successfully."
 msgstr ""
@@ -1684,7 +1616,6 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:51
-#: inc/templates/admin/webhook-options.php:51
 msgid ""
 "WARNING: Changing this value will invalidate all the existing Webhooks set "
 "up on all package repositories."
@@ -1701,8 +1632,8 @@ msgid "WARNING: Only add URLs you trust!"
 msgstr ""
 
 #. %s is the virtual folder
-#: inc/class-wppus-cloud-storage-manager.php:335
-#: inc/class-wppus-cloud-storage-manager.php:386
+#: inc/class-wppus-cloud-storage-manager.php:359
+#: inc/class-wppus-cloud-storage-manager.php:410
 #, php-format
 msgid ""
 "WARNING: Unable to create Virtual folder \"%s\". The Cloud Storage feature "
@@ -1711,14 +1642,13 @@ msgstr ""
 
 #. %1$s is the webhook URL, %2$s is <code>package-type</code>, %3$s is <code>plugin</code>, %4$s is <code>theme</code>, %5$s is <code>package-slug</code>
 #: inc/templates/admin/remote-webhook-options.php:17
-#: inc/templates/admin/webhook-options.php:17
 #, php-format
 msgid ""
 "Webhook URL: %1$s - where %2$s is the package type ( %3$s or %4$s ) and %5$s "
 "is the slug of the package needing updates."
 msgstr ""
 
-#: inc/class-wppus-webhook-manager.php:142
+#: inc/class-wppus-webhook-manager.php:139
 #: inc/templates/admin/plugin-api-page.php:81
 msgid "Webhooks"
 msgstr ""
@@ -1731,7 +1661,6 @@ msgid ""
 msgstr ""
 
 #: inc/templates/admin/remote-webhook-options.php:12
-#: inc/templates/admin/webhook-options.php:12
 msgid ""
 "When checked, WP Packages Update Server will not regularly poll repositories "
 "for package version changes, but relies on events sent by the repositories "
@@ -1754,7 +1683,7 @@ msgstr ""
 #. Name of the plugin
 #: inc/class-wp-packages-update-server.php:185
 #: inc/class-wp-packages-update-server.php:322
-#: inc/class-wppus-update-manager.php:95 inc/class-wppus-package-manager.php:93
+#: inc/class-wppus-package-manager.php:94
 msgid "WP Packages Update Server"
 msgstr ""
 
@@ -1770,17 +1699,16 @@ msgstr ""
 msgid "WP Packages Update Server - Licenses"
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:86
+#: inc/class-wppus-remote-sources-manager.php:85
 msgid "WP Packages Update Server - Remote Sources"
 msgstr ""
 
-#: inc/class-wppus-license-manager.php:462
+#: inc/class-wppus-license-manager.php:461
 msgid "WP Packages Update Server license options successfully updated."
 msgstr ""
 
-#: inc/class-wppus-remote-sources-manager.php:395
-#: inc/class-wppus-api-manager.php:145 inc/class-wppus-update-manager.php:556
-#: inc/class-wppus-package-manager.php:714
+#: inc/class-wppus-remote-sources-manager.php:384
+#: inc/class-wppus-api-manager.php:145 inc/class-wppus-package-manager.php:708
 msgid "WP Packages Update Server options successfully updated"
 msgstr ""
 
