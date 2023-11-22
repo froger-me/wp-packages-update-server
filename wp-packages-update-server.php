@@ -171,13 +171,13 @@ function wppus_run() {
 		}
 	}
 
-	$keys = array_merge(
-		json_decode( get_option( 'wppus_package_private_api_keys', '{}' ), true ),
-		json_decode( get_option( 'wppus_license_private_api_keys', '{}' ), true ),
-	);
-
 	WPPUS_Nonce::register();
-	WPPUS_Nonce::init_auth( $keys );
+	WPPUS_Nonce::init_auth(
+		array_merge(
+			json_decode( get_option( 'wppus_package_private_api_keys', '{}' ), true ),
+			json_decode( get_option( 'wppus_license_private_api_keys', '{}' ), true ),
+		)
+	);
 
 	do_action( 'wppus_ready', $objects );
 }
