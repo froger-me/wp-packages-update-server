@@ -4,11 +4,11 @@
 <div class="wrap wppus-wrap">
 	<?php WP_Packages_Update_Server::get_instance()->display_settings_header( $result ); ?>
 	<form autocomplete="off" id="wppus-api-settings" action="" method="post">
-		<h3><?php esc_html_e( 'Package Private API', 'wppus' ); ?></h3>
+		<h3><?php esc_html_e( 'Package API', 'wppus' ); ?></h3>
 		<table class="form-table">
 			<tr>
 				<th>
-					<label for="wppus_package_private_api_auth_keys"><?php esc_html_e( 'Authentication Keys', 'wppus' ); ?></label>
+					<label for="wppus_package_private_api_keys"><?php esc_html_e( 'Private API Keys', 'wppus' ); ?></label>
 				</th>
 				<td>
 					<div class="api-keys-multiple">
@@ -18,7 +18,7 @@
 							<input type="text" class="new-api-key-item-id" placeholder="<?php esc_attr_e( 'Package Key ID' ); ?>">
 							<button disabled="disabled" class="api-keys-add button" type="button"><?php esc_html_e( 'Add a Package API Key' ); ?></button>
 						</div>
-						<input type="hidden" class="api-key-values" id="wppus_package_private_api_auth_keys" name="wppus_package_private_api_auth_keys" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_auth_keys', '{}' ) ); ?>">
+						<input type="hidden" class="api-key-values" id="wppus_package_private_api_keys" name="wppus_package_private_api_keys" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_keys', '{}' ) ); ?>">
 					</div>
 					<p class="description">
 						<?php esc_html_e( 'Used to get tokens for package administration requests (browse, read, edit, add, delete) and requests of signed URLs of package.', 'wppus' ); ?>
@@ -50,11 +50,11 @@
 			</tr>
 		</table>
 		<hr>
-		<h3><?php esc_html_e( 'License Private API', 'wppus' ); ?></h3>
+		<h3><?php esc_html_e( 'License API', 'wppus' ); ?></h3>
 		<table class="form-table">
 			<tr>
 				<th>
-					<label for="wppus_license_private_api_auth_keys"><?php esc_html_e( 'Authentication Keys', 'wppus' ); ?></label>
+					<label for="wppus_license_private_api_keys"><?php esc_html_e( 'Private API Keys', 'wppus' ); ?></label>
 				</th>
 				<td>
 					<div class="api-keys-multiple">
@@ -64,7 +64,7 @@
 							<input type="text" class="new-api-key-item-id" placeholder="<?php esc_attr_e( 'License Key ID' ); ?>">
 							<button disabled="disabled" class="api-keys-add button" type="button"><?php esc_html_e( 'Add a License API Key' ); ?></button>
 						</div>
-						<input type="hidden" class="api-key-values" id="wppus_license_private_api_auth_keys" name="wppus_license_private_api_auth_keys" value="<?php echo esc_attr( get_option( 'wppus_license_private_api_auth_keys', '{}' ) ); ?>">
+						<input type="hidden" class="api-key-values" id="wppus_license_private_api_keys" name="wppus_license_private_api_keys" value="<?php echo esc_attr( get_option( 'wppus_license_private_api_keys', '{}' ) ); ?>">
 					</div>
 					<p class="description">
 						<?php esc_html_e( 'Used to get tokens for license administration requests (browse, read, edit, add, delete).', 'wppus' ); ?>

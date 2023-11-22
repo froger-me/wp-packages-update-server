@@ -340,10 +340,10 @@ if ( ! function_exists( 'wppus_get_admin_template' ) ) {
 }
 
 if ( ! function_exists( 'wppus_init_nonce_auth' ) ) {
-	function wppus_init_nonce_auth( $private_auth_key, $auth_header_names = array() ) {
+	function wppus_init_nonce_auth( $private_auth_key ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 
-		WPPUS_Nonce::init_auth( $private_auth_key, $auth_header_names );
+		WPPUS_Nonce::init_auth( $private_auth_key );
 	}
 }
 

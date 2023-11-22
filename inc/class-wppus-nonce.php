@@ -12,8 +12,7 @@ class WPPUS_Nonce {
 	protected static $true_nonce;
 	protected static $expiry_length;
 	protected static $doing_update_api_request = null;
-	protected static $private_auth_keys;
-	protected static $auth_header_names;
+	protected static $private_keys;
 
 	/*******************************************************************
 	 * Public methods
@@ -116,7 +115,8 @@ class WPPUS_Nonce {
 			$query_vars,
 			array(
 				'__wppus_nonce_api',
-				'api_auth_key',
+				'api_signature',
+				'api_credentials',
 				'action',
 				'expiry_length',
 				'data',
@@ -181,9 +181,8 @@ class WPPUS_Nonce {
 		add_filter( 'query_vars', array( get_class(), 'query_vars' ), -99, 1 );
 	}
 
-	public static function init_auth( $private_auth_keys, $auth_header_names = array() ) {
-		self::$private_auth_keys = $private_auth_keys;
-		self::$auth_header_names = $auth_header_names;
+	public static function init_auth( $private_keys ) {
+		self::$private_keys = $private_keys;
 	}
 
 	public static function is_doing_api_request() {
@@ -462,38 +461,70 @@ class WPPUS_Nonce {
 	}
 
 	protected static function authorize() {
-		$key = false;
+		$sign         = false;
+		$key_id       = false;
+		$timestamp    = 0;
+		$auth         = false;
+		$credentials  = array();
+		$current_time = time();
 
-		if ( is_array( self::$auth_header_names ) && ! empty( self::$auth_header_names ) ) {
-
-			foreach ( self::$auth_header_names as $header_name ) {
-
-				if (
-					isset( $_SERVER[ $header_name ] ) &&
-					! empty( $_SERVER[ $header_name ] )
-				) {
-					$key = $_SERVER[ $header_name ];
-				}
-			}
-		}
-
-		if ( ! $key ) {
+		if (
+			isset( $_SERVER['HTTP_X_WPPUS_API_SIGNATURE'] ) &&
+			! empty( $_SERVER['HTTP_X_WPPUS_API_SIGNATURE'] )
+		) {
+			$sign = $_SERVER['HTTP_X_WPPUS_API_SIGNATURE'];
+		} else {
 			global $wp;
 
 			if (
-				isset( $wp->query_vars['api_auth_key'] ) &&
-				is_string( $wp->query_vars['api_auth_key'] ) &&
-				! empty( $wp->query_vars['api_auth_key'] )
+				isset( $wp->query_vars['api_signature'] ) &&
+				is_string( $wp->query_vars['api_signature'] ) &&
+				! empty( $wp->query_vars['api_signature'] )
 			) {
-				$key = $wp->query_vars['api_auth_key'];
+				$sign = $wp->query_vars['api_signature'];
 			}
+		}
+
+		if (
+			isset( $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] ) &&
+			! empty( $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] )
+		) {
+			$credentials = explode( '|', $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] );
+		} else {
+			global $wp;
+
+			if (
+				isset( $wp->query_vars['api_credentials'] ) &&
+				is_string( $wp->query_vars['api_credentials'] ) &&
+				! empty( $wp->query_vars['api_credentials'] )
+			) {
+				$credentials = explode( '|', $wp->query_vars['api_credentials'] );
+			}
+		}
+
+		if ( 2 === count( $credentials ) ) {
+			$timestamp = intval( reset( $credentials ) );
+			$key_id    = end( $credentials );
+		}
+
+		if ( $current_time < $timestamp || $timestamp < ( $current_time - MINUTE_IN_SECONDS ) ) {
+			$timestamp = false;
+		}
+
+		if ( $sign && $timestamp && $key_id && isset( self::$private_keys[ $key_id ] ) ) {
+			$time_sign = hash_hmac( 'sha256', $timestamp, self::$private_keys[ $key_id ]['key'], true );
+			$hash      = hash_hmac( 'sha256', base64_encode( $key_id ), $time_sign ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+			$auth      = hash_equals( $hash, $sign );
 		}
 
 		return apply_filters(
 			'wppus_nonce_authorize',
-			in_array( $key, self::$private_auth_keys, true ),
-			$key,
-			self::$private_auth_keys
+			$auth,
+			array(
+				'credentials' => $timestamp . '|' . $key_id,
+				'signature'   => $sign,
+			),
+			self::$private_keys
 		);
 	}
 }

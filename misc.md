@@ -46,12 +46,37 @@ ___
 The nonce API is accessible via `POST` and `GET` requests on the `/wppus-token/` endpoint to acquire a reusable token, and `/wppus-nonce/` to acquire a true nonce.  
 It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well.
 
-Authorization is granted with either the `HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY` and `HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY` headers in `POST` (recommended) or with the `api_auth_key` and `api` parameters for both `POST` and `GET`.  
-If not using headers, the `api` parameter value must be provided with one of `package` or `license` to specify the target API. The `api_auth_key` and the value of the header is any of the respective Private API Authentication Keys by default.
-Accepted authorization keys and header may be overriden with the `wppus_init_nonce_auth` [function](#wppus_init_nonce_auth)).  
-**Using `GET` requests directly in the browser, whether through the URL bar or JavaScript, is strongly discouraged due to security concerns** ; it should be avoided at all cost to prevent the inadvertent exposure of the authorization key.  
+Authorization is granted with either the `HTTP_X_WPPUS_API_CREDENTIALS` and `HTTP_X_WPPUS_API_SIGNATURE` headers or with the `api_credentials` and `api_signature` parameters.  
+If requesting a token for an existing API, the `api` parameter value must be provided with one of `package` or `license` to specify the target API.  
+The credentials and the signature are valid for 1 minute ; building them is the responsibility of the third-party client making use of the API - an implementation in PHP is provided below.  
+**Using `GET` requests directly in the browser, whether through the URL bar or JavaScript, is strongly discouraged due to security concerns** ; it should be avoided at all cost to prevent the inadvertent exposure of the credentials and signature.  
 
-In case the Private API Authentication Key is invalid, the API will return the following response (message's language depending on availabe translations), with HTTP response code set to `403`:
+Building API credentials and API signature:
+
+```php
+if ( ! function_exists( 'build_wppus_nonce_api_signature' ) ) {
+	/**
+	* Generate credentials and signature for WPPUS Nonce API
+	*
+	* @param string $api_key_id The ID of the Private API Key
+	* @param string $api_key The Private API Key - will not be sent over the Internet
+	* @return array An array with keys `credentials` and `signature`
+	*/
+	function build_wppus_nonce_api_signature( $api_key_id, $api_key ) {
+		$timestamp   = time();
+		$credentials = $timestamp . '|' . $api_key_id;
+		$time_sign   = hash_hmac( 'sha256', $timestamp, $api_key, true );
+		$signature   = hash_hmac( 'sha256', base64_encode( $api_key_id ), $time_sign );
+
+		return array(
+			'credentials' => $credentials,
+			'signature'   => $signature,
+		);
+	}
+}
+```
+
+In case the Private API Key is invalid, the API will return the following response (message's language depending on availabe translations), with HTTP response code set to `403`:
 
 Response `$data` - forbidden access:
 ```json
@@ -107,8 +132,9 @@ $params = array(
 			'subkey2' => 'subval2'
 		),
 	),
-	'api_auth_key'  => 'secret',          // The Private API Authentication Key (optional - must be provided in case X-WPPUS-Private-Package-API-Key or X-WPPUS-Private-License-API-Key headers - or overriden header name - is absent)
-	'api'           => 'license|package', // The target API (optional - must be provided in case X-WPPUS-Private-Package-API-Key or X-WPPUS-Private-License-API-Key headers - or overriden header name - is absent)
+	'api_credentials' => '9999999999|private_key_id', // The credentials acting as public key `timestamp|key_id`, where `timestamp` is a past timestamp no older than 1 minutes, and `key_id` is the ID corresponding to the Private API Key (optional - must be provided in case X-WPPUS-API-Credentials header is absent)
+	'api_signature'   => 'complex_signature',         // The signature built using the Private API Key (optional - must be provided in case X-WPPUS-API-Signature header is absent)
+	'api'             => 'api_name',                  // The target API (required if requesting a nonce for the existing APIs ; one of `package` or `license`)
 );
 ```
 
@@ -288,19 +314,27 @@ ___
 #### wppus_init_nonce_auth
 
 ```php
-wppus_init_nonce_auth( array $private_auth_keys, array $auth_header_names = array() )
+wppus_init_nonce_auth( array $private_keys )
 ```
 
 **Description**  
-Set the Private Authorization Keys and the Authorization Header names used to request nonces via the `wppus-token` and `wppus-nonce` endpoints.  
-If the Authentication Header names are not set, the `api_auth_key` variable set in `POST` method is used instead when requesting nonces.
+Set the private keys to check against when requesting nonces via the `wppus-token` and `wppus-nonce` endpoints.  
 
 **Parameters**  
-`$private_auth_keys`
-> (array) the Private Authorization Keys  
-
-`$auth_header_names`
-> (array) an array of the Authorization Header names  
+`$private_keys`
+> (array) the private keys with the following format:  
+```php
+$private_keys = array(
+	'private_key_id_1' => array(
+		'key' => 'private_key_1',
+		// ... other values are ignored
+	),
+	'private_key_id_2' => array(
+		'key' => 'private_key_2',
+		// ... other values are ignored
+	),
+);
+```
 
 ___
 #### wppus_create_nonce

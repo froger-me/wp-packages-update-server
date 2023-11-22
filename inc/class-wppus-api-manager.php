@@ -250,8 +250,8 @@ class WPPUS_API_Manager {
 		return apply_filters(
 			'wppus_submitted_api_config',
 			array(
-				'wppus_package_private_api_auth_keys'    => array(
-					'value'                   => filter_input( INPUT_POST, 'wppus_package_private_api_auth_keys', FILTER_UNSAFE_RAW ),
+				'wppus_package_private_api_keys'         => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_package_private_api_keys', FILTER_UNSAFE_RAW ),
 					'display_name'            => __( 'Package API Authentication Keys', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid payload', 'wppus' ),
 					'condition'               => 'api-keys',
@@ -260,8 +260,8 @@ class WPPUS_API_Manager {
 					'value'     => filter_input( INPUT_POST, 'wppus_package_private_api_ip_whitelist', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
 					'condition' => 'ip-list',
 				),
-				'wppus_license_private_api_auth_keys'    => array(
-					'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_auth_keys', FILTER_UNSAFE_RAW ),
+				'wppus_license_private_api_keys'         => array(
+					'value'                   => filter_input( INPUT_POST, 'wppus_license_private_api_keys', FILTER_UNSAFE_RAW ),
 					'display_name'            => __( 'Private API Authentication Key', 'wppus' ),
 					'failure_display_message' => __( 'Not a valid string', 'wppus' ),
 					'condition'               => 'api-keys',

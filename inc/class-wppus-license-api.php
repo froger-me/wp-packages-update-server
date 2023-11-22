@@ -44,7 +44,7 @@ class WPPUS_License_API {
 				add_filter( 'wppus_handle_update_request_params', array( $this, 'wppus_handle_update_request_params' ), 0, 1 );
 				add_filter( 'wppus_server_class_name', array( $this, 'wppus_server_class_name' ), 0, 2 );
 				add_filter( 'wppus_api_webhook_events', array( $this, 'wppus_api_webhook_events' ), 0, 1 );
-				add_filter( 'wppus_nonce_api_payload', array( $this, 'wppus_nonce_api_payload' ), 0, 2 );
+				add_filter( 'wppus_nonce_api_payload', array( $this, 'wppus_nonce_api_payload' ), 0, 1 );
 			}
 		}
 	}
@@ -306,6 +306,7 @@ class WPPUS_License_API {
 				'action',
 				'api',
 				'api_token',
+				'api_credentials',
 				'browse_query',
 				'license_key',
 				'license_signature',
@@ -469,45 +470,39 @@ class WPPUS_License_API {
 		return $nonce;
 	}
 
-	public function wppus_nonce_api_payload( $payload, $method ) {
-		$key    = false;
-		$config = self::get_config();
+	public function wppus_nonce_api_payload( $payload ) {
+		global $wp;
 
-		if (
-			isset( $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'] ) &&
-			! empty( $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'] )
-		) {
-			$key = $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'];
-		} else {
-			global $wp;
-
-			if (
-				isset( $wp->query_vars['api_auth_key'], $wp->query_vars['api'] ) &&
-				is_string( $wp->query_vars['api_auth_key'] ) &&
-				! empty( $wp->query_vars['api_auth_key'] ) &&
-				'license' === $wp->query_vars['api']
-			) {
-				$key = $wp->query_vars['api_auth_key'];
-			}
+		if ( ! isset( $wp->query_vars['api'] ) || 'license' !== $wp->query_vars['api'] ) {
+			return $payload;
 		}
 
-		if ( $key && ! empty( $config['private_api_auth_keys'] ) ) {
+		$key_id      = false;
+		$credentials = array();
+		$config      = self::get_config();
 
-			foreach ( $config['private_api_auth_keys'] as $id => $values ) {
+		if (
+			isset( $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] ) &&
+			! empty( $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] )
+		) {
+			$credentials = explode( '|', $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] );
+		} elseif (
+			isset( $wp->query_vars['api_credentials'], $wp->query_vars['api'] ) &&
+			is_string( $wp->query_vars['api_credentials'] ) &&
+			! empty( $wp->query_vars['api_credentials'] )
+		) {
+			$credentials = explode( '|', $wp->query_vars['api_credentials'] );
+		}
 
-				if ( isset( $values['key'] ) && $key === $values['key'] ) {
-					$payload['data']['license_api'] = array(
-						'id'     => $id,
-						'access' => isset( $values['access'] ) ? $values['access'] : array(),
-					);
+		if ( 2 === count( $credentials ) ) {
+			$key_id = end( $credentials );
+		}
 
-					if ( 'token' === $method ) {
-						$payload['expiry_length'] = DAY_IN_SECONDS;
-					}
-
-					break;
-				}
-			}
+		if ( $key_id && isset( $config['private_api_auth_keys'][ $key_id ]['key'] ) ) {
+			$payload['data']['license_api'] = array(
+				'id'     => $key_id,
+				'access' => isset( $values['access'] ) ? $values['access'] : array(),
+			);
 		}
 
 		return $payload;
@@ -527,7 +522,7 @@ class WPPUS_License_API {
 	public static function get_config() {
 
 		if ( ! self::$config ) {
-			$keys   = json_decode( get_option( 'wppus_license_private_api_auth_keys', '{}' ), true );
+			$keys   = json_decode( get_option( 'wppus_license_private_api_keys', '{}' ), true );
 			$config = array(
 				'private_api_auth_keys' => $keys,
 				'ip_whitelist'          => get_option( 'wppus_license_private_api_ip_whitelist' ),
