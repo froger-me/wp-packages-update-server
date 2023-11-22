@@ -21,12 +21,12 @@
 						<input type="hidden" class="api-key-values" id="wppus_package_private_api_keys" name="wppus_package_private_api_keys" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_keys', '{}' ) ); ?>">
 					</div>
 					<p class="description">
-						<?php esc_html_e( 'Used to get tokens for package administration requests (browse, read, edit, add, delete) and requests of signed URLs of package.', 'wppus' ); ?>
+						<?php esc_html_e( 'Used to get tokens for package administration requests (browse, read, edit, add, delete) and requests of signed URLs used to download packages.', 'wppus' ); ?>
 						<br>
 						<?php
 						printf(
 							// translators: %1$s is <code>-</code>, %2$s is <code>_</code>
-							esc_html__( 'The Package Key ID must contain on numbers, letters, %1$s and %2$s.', 'wppus' ),
+							esc_html__( 'The Package Key ID must contain only numbers, letters, %1$s and %2$s.', 'wppus' ),
 							'<code>-</code>',
 							'<code>_</code>',
 						);
@@ -72,7 +72,7 @@
 						<?php
 						printf(
 							// translators: %1$s is <code>-</code>, %2$s is <code>_</code>
-							esc_html__( 'The License Key ID must contain on numbers, letters, %1$s and %2$s.', 'wppus' ),
+							esc_html__( 'The License Key ID must contain only numbers, letters, %1$s and %2$s.', 'wppus' ),
 							'<code>-</code>',
 							'<code>_</code>',
 						);
