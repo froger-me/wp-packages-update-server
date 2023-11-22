@@ -207,7 +207,10 @@ class WPPUS_License_Server {
 			$license['id']              = null;
 			$license                    = $this->sanitize_license( $license );
 			$license['allowed_domains'] = maybe_serialize( $license['allowed_domains'] );
-			$license['data']            = wp_json_encode( $license['data'], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+			$license['data']            = wp_json_encode(
+				$license['data'],
+				JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+			);
 			$license['hmac_key']        = bin2hex( openssl_random_pseudo_bytes( 16 ) );
 			$license['crypto_key']      = bin2hex( openssl_random_pseudo_bytes( 16 ) );
 			$result                     = $wpdb->insert(

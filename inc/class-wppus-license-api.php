@@ -8,6 +8,8 @@ class WPPUS_License_API {
 
 	protected $license_server;
 	protected $http_response_code = null;
+	protected $api_key_id;
+	protected $api_access;
 
 	protected static $doing_update_api_request = null;
 	protected static $instance;
@@ -61,6 +63,26 @@ class WPPUS_License_API {
 		switch ( json_last_error() ) {
 			case JSON_ERROR_NONE:
 				$result = $this->license_server->browse_licenses( $payload );
+
+				if (
+					is_array( $result ) &&
+					! empty( $result ) &&
+					$this->api_access &&
+					$this->api_key_id &&
+					! in_array( 'other', $this->api_access, true )
+				) {
+
+					foreach ( $result as $index => $license ) {
+
+						if (
+							! isset( $license['data'], $license['data']['api_owner'] ) ||
+							$license['data']['api_owner'] !== $this->api_key_id
+						) {
+							unset( $result[ $index ] );
+						}
+					}
+				}
+
 				break;
 			case JSON_ERROR_DEPTH:
 				$result = 'JSON parse error - Maximum stack depth exceeded';
@@ -112,6 +134,10 @@ class WPPUS_License_API {
 
 	public function add( $license_data ) {
 		$result = $this->license_server->add_license( $license_data );
+
+		if ( $this->api_key_id ) {
+			$license_data['data']['api_owner'] = $this->api_key_id;
+		}
 
 		if ( is_object( $result ) ) {
 			$result->result  = 'success';
@@ -396,23 +422,23 @@ class WPPUS_License_API {
 
 			switch ( $event ) {
 				case 'license_edit':
-					// translators: %1$s is the license key, %2$s is the licence ID
+					// translators: %1$s is the license key, %2$s is the license ID
 					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been edited on WPPUS' );
 					break;
 				case 'license_add':
-					// translators: %1$s is the license key, %2$s is the licence ID
+					// translators: %1$s is the license key, %2$s is the license ID
 					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been added on WPPUS' );
 					break;
 				case 'license_delete':
-					// translators: %1$s is the license key, %2$s is the licence ID
+					// translators: %1$s is the license key, %2$s is the license ID
 					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deleted on WPPUS' );
 					break;
 				case 'license_activate':
-					// translators: %1$s is the license key, %2$s is the licence ID
+					// translators: %1$s is the license key, %2$s is the license ID
 					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been activated on WPPUS' );
 					break;
 				case 'license_deactivate':
-					// translators: %1$s is the license key, %2$s is the licence ID
+					// translators: %1$s is the license key, %2$s is the license ID
 					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deactivated on WPPUS' );
 					break;
 				default:
@@ -458,7 +484,9 @@ class WPPUS_License_API {
 						in_array( $action, $values['access'], true )
 					)
 				) {
-					$valid = true;
+					$this->api_key_id = $id;
+					$this->api_access = $values['access'];
+					$valid            = true;
 				}
 			}
 		}
@@ -547,7 +575,7 @@ class WPPUS_License_API {
 	 * Protected methods
 	 *******************************************************************/
 
-	protected function authorize_private() {
+	protected function authorize_private( $action, $payload ) {
 		$token   = false;
 		$is_auth = false;
 
@@ -571,6 +599,41 @@ class WPPUS_License_API {
 		add_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_private' ), 10, 4 );
 
 		$is_auth = wppus_validate_nonce( $token );
+
+		if ( $this->api_key_id && $this->api_access ) {
+
+			if ( 'browse' === $action ) {
+				if (
+					! in_array( 'all', $this->api_access, true ) ||
+					! in_array( $action, $this->api_access, true )
+				) {
+					$is_auth = false;
+				}
+			} elseif ( 'add' === $action ) {
+
+				if (
+					! in_array( 'all', $this->api_access, true ) ||
+					! in_array( $action, $this->api_access, true )
+				) {
+					$is_auth = false;
+				}
+			} elseif ( isset( $payload['license_key'] ) ) {
+				$license = $this->read( $payload );
+
+				if (
+					! is_object( $license ) ||
+					! isset( $license->data['api_owner'] ) ||
+					! in_array( 'all', $this->api_access, true ) ||
+					! in_array( $action, $this->api_access, true ) ||
+					(
+						$this->api_key_id !== $license->data['api_owner'] &&
+						! in_array( 'other', $this->api_access, true )
+					)
+				) {
+					$is_auth = false;
+				}
+			}
+		}
 
 		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_private' ), 10 );
 
@@ -627,7 +690,7 @@ class WPPUS_License_API {
 							$this->is_api_public( $method ) ||
 							(
 								$this->authorize_ip() &&
-								$this->authorize_private()
+								$this->authorize_private( $method, $payload )
 							)
 						),
 						$method,
