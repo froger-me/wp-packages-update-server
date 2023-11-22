@@ -340,10 +340,10 @@ if ( ! function_exists( 'wppus_get_admin_template' ) ) {
 }
 
 if ( ! function_exists( 'wppus_init_nonce_auth' ) ) {
-	function wppus_init_nonce_auth( $private_auth_key, $auth_header_name = null ) {
+	function wppus_init_nonce_auth( $private_auth_key, $auth_header_names = array() ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 
-		WPPUS_Nonce::init_auth( $private_auth_key, $auth_header_name );
+		WPPUS_Nonce::init_auth( $private_auth_key, $auth_header_names );
 	}
 }
 
@@ -366,6 +366,14 @@ if ( ! function_exists( 'wppus_get_nonce_expiry' ) ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 
 		return WPPUS_Nonce::get_nonce_expiry( $nonce );
+	}
+}
+
+if ( ! function_exists( 'wppus_get_nonce_data' ) ) {
+	function wppus_get_nonce_data( $nonce ) {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
+
+		return WPPUS_Nonce::get_nonce_data( $nonce );
 	}
 }
 

@@ -44,6 +44,7 @@ class WPPUS_License_API {
 				add_filter( 'wppus_handle_update_request_params', array( $this, 'wppus_handle_update_request_params' ), 0, 1 );
 				add_filter( 'wppus_server_class_name', array( $this, 'wppus_server_class_name' ), 0, 2 );
 				add_filter( 'wppus_api_webhook_events', array( $this, 'wppus_api_webhook_events' ), 0, 1 );
+				add_filter( 'wppus_nonce_api_payload', array( $this, 'wppus_nonce_api_payload' ), 0, 2 );
 			}
 		}
 	}
@@ -51,86 +52,6 @@ class WPPUS_License_API {
 	/*******************************************************************
 	 * Public methods
 	 *******************************************************************/
-
-	public function wppus_api_webhook_events( $webhook_events ) {
-
-		if ( isset( $webhook_events['license'], $webhook_events['license']['events'] ) ) {
-			$webhook_events['license']['events']['license_activate']   = __( 'License activated', 'wppus' );
-			$webhook_events['license']['events']['license_deactivate'] = __( 'License deactivated', 'wppus' );
-			$webhook_events['license']['events']['license_add']        = __( 'License added', 'wppus' );
-			$webhook_events['license']['events']['license_edit']       = __( 'License edited', 'wppus' );
-			$webhook_events['license']['events']['license_delete']     = __( 'License deleted', 'wppus' );
-			$webhook_events['license']['events']['license_require']    = __( 'License becomes required for a package', 'wppus' );
-			$webhook_events['license']['events']['license_unrequire']  = __( 'License becomes not required a for package', 'wppus' );
-		}
-
-		return $webhook_events;
-	}
-
-	public function wppus_bypass_did_edit_license_action() {
-		remove_action( 'wppus_did_edit_license', array( $this, 'wppus_did_license_action' ), 10 );
-	}
-
-	public function wppus_did_license_action( $result, $payload, $original = null ) {
-		$format = '';
-		$event  = 'license_' . str_replace( array( 'wppus_did_', '_license' ), array( '', '' ), current_action() );
-
-		if ( ! is_object( $result ) ) {
-			// translators: %s is operation slug
-			$description = sprintf( esc_html__( 'An error occured for License operation `%s` on WPPUS.' ), $event );
-			$content     = array(
-				'error'   => true,
-				'result'  => $result,
-				'payload' => $payload,
-			);
-		} else {
-			$content = null !== $original ?
-				array(
-					'new'      => $result,
-					'original' => $original,
-				) :
-				$result;
-
-			switch ( $event ) {
-				case 'license_edit':
-					// translators: %1$s is the license key, %2$s is the licence ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been edited on WPPUS' );
-					break;
-				case 'license_add':
-					// translators: %1$s is the license key, %2$s is the licence ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been added on WPPUS' );
-					break;
-				case 'license_delete':
-					// translators: %1$s is the license key, %2$s is the licence ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deleted on WPPUS' );
-					break;
-				case 'license_activate':
-					// translators: %1$s is the license key, %2$s is the licence ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been activated on WPPUS' );
-					break;
-				case 'license_deactivate':
-					// translators: %1$s is the license key, %2$s is the licence ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deactivated on WPPUS' );
-					break;
-				default:
-					return;
-			}
-
-			$description = sprintf(
-				$format,
-				$result->license_key,
-				$result->id
-			);
-		}
-
-		$payload = array(
-			'event'       => $event,
-			'description' => $description,
-			'content'     => $content,
-		);
-
-		wppus_schedule_webhook( $payload, 'license' );
-	}
 
 	// API action --------------------------------------------------
 
@@ -383,7 +304,8 @@ class WPPUS_License_API {
 			array(
 				'__wppus_license_api',
 				'action',
-				'api_auth_key',
+				'api',
+				'api_token',
 				'browse_query',
 				'license_key',
 				'license_signature',
@@ -432,6 +354,165 @@ class WPPUS_License_API {
 		return $class_name;
 	}
 
+	public function wppus_api_webhook_events( $webhook_events ) {
+
+		if ( isset( $webhook_events['license'], $webhook_events['license']['events'] ) ) {
+			$webhook_events['license']['events']['license_activate']   = __( 'License activated', 'wppus' );
+			$webhook_events['license']['events']['license_deactivate'] = __( 'License deactivated', 'wppus' );
+			$webhook_events['license']['events']['license_add']        = __( 'License added', 'wppus' );
+			$webhook_events['license']['events']['license_edit']       = __( 'License edited', 'wppus' );
+			$webhook_events['license']['events']['license_delete']     = __( 'License deleted', 'wppus' );
+			$webhook_events['license']['events']['license_require']    = __( 'License becomes required for a package', 'wppus' );
+			$webhook_events['license']['events']['license_unrequire']  = __( 'License becomes not required a for package', 'wppus' );
+		}
+
+		return $webhook_events;
+	}
+
+	public function wppus_bypass_did_edit_license_action() {
+		remove_action( 'wppus_did_edit_license', array( $this, 'wppus_did_license_action' ), 10 );
+	}
+
+	public function wppus_did_license_action( $result, $payload, $original = null ) {
+		$format = '';
+		$event  = 'license_' . str_replace( array( 'wppus_did_', '_license' ), array( '', '' ), current_action() );
+
+		if ( ! is_object( $result ) ) {
+			// translators: %s is operation slug
+			$description = sprintf( esc_html__( 'An error occured for License operation `%s` on WPPUS.' ), $event );
+			$content     = array(
+				'error'   => true,
+				'result'  => $result,
+				'payload' => $payload,
+			);
+		} else {
+			$content = null !== $original ?
+				array(
+					'new'      => $result,
+					'original' => $original,
+				) :
+				$result;
+
+			switch ( $event ) {
+				case 'license_edit':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been edited on WPPUS' );
+					break;
+				case 'license_add':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been added on WPPUS' );
+					break;
+				case 'license_delete':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deleted on WPPUS' );
+					break;
+				case 'license_activate':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been activated on WPPUS' );
+					break;
+				case 'license_deactivate':
+					// translators: %1$s is the license key, %2$s is the licence ID
+					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deactivated on WPPUS' );
+					break;
+				default:
+					return;
+			}
+
+			$description = sprintf(
+				$format,
+				$result->license_key,
+				$result->id
+			);
+		}
+
+		$payload = array(
+			'event'       => $event,
+			'description' => $description,
+			'content'     => $content,
+		);
+
+		wppus_schedule_webhook( $payload, 'license' );
+	}
+
+	public function wppus_fetch_nonce_private( $nonce, $true_nonce, $expiry, $data ) {
+		$config = self::get_config();
+		$valid  = false;
+
+		if (
+			! empty( $config['private_api_auth_keys'] ) &&
+			isset( $data['license_api'], $data['license_api']['id'], $data['license_api']['access'] )
+		) {
+			global $wp;
+
+			$action = $wp->query_vars['action'];
+
+			foreach ( $config['private_api_auth_keys'] as $id => $values ) {
+
+				if (
+					$id === $data['license_api']['id'] &&
+					isset( $values['access'] ) &&
+					is_array( $values['access'] ) &&
+					(
+						in_array( 'all', $values['access'], true ) ||
+						in_array( $action, $values['access'], true )
+					)
+				) {
+					$valid = true;
+				}
+			}
+		}
+
+		if ( ! $valid ) {
+			$nonce = null;
+		}
+
+		return $nonce;
+	}
+
+	public function wppus_nonce_api_payload( $payload, $method ) {
+		$key    = false;
+		$config = self::get_config();
+
+		if (
+			isset( $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'] ) &&
+			! empty( $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'] )
+		) {
+			$key = $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'];
+		} else {
+			global $wp;
+
+			if (
+				isset( $wp->query_vars['api_auth_key'], $wp->query_vars['api'] ) &&
+				is_string( $wp->query_vars['api_auth_key'] ) &&
+				! empty( $wp->query_vars['api_auth_key'] ) &&
+				'license' === $wp->query_vars['api']
+			) {
+				$key = $wp->query_vars['api_auth_key'];
+			}
+		}
+
+		if ( $key && ! empty( $config['private_api_auth_keys'] ) ) {
+
+			foreach ( $config['private_api_auth_keys'] as $id => $values ) {
+
+				if ( isset( $values['key'] ) && $key === $values['key'] ) {
+					$payload['data']['license_api'] = array(
+						'id'     => $id,
+						'access' => isset( $values['access'] ) ? $values['access'] : array(),
+					);
+
+					if ( 'token' === $method ) {
+						$payload['expiry_length'] = DAY_IN_SECONDS;
+					}
+
+					break;
+				}
+			}
+		}
+
+		return $payload;
+	}
+
 	// Misc. -------------------------------------------------------
 
 	public static function is_doing_api_request() {
@@ -471,28 +552,32 @@ class WPPUS_License_API {
 	 * Protected methods
 	 *******************************************************************/
 
-	protected function authorize() {
-		$key = false;
+	protected function authorize_private() {
+		$token   = false;
+		$is_auth = false;
 
 		if (
-			isset( $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'] ) &&
-			! empty( $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'] )
+			isset( $_SERVER['HTTP_X_WPPUS_TOKEN'] ) &&
+			! empty( $_SERVER['HTTP_X_WPPUS_TOKEN'] )
 		) {
-			$key = $_SERVER['HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY'];
+			$token = $_SERVER['HTTP_X_WPPUS_TOKEN'];
 		} else {
 			global $wp;
 
 			if (
-				isset( $wp->query_vars['api_auth_key'] ) &&
-				is_string( $wp->query_vars['api_auth_key'] ) &&
-				! empty( $wp->query_vars['api_auth_key'] )
+				isset( $wp->query_vars['api_token'] ) &&
+				is_string( $wp->query_vars['api_token'] ) &&
+				! empty( $wp->query_vars['api_token'] )
 			) {
-				$key = $wp->query_vars['api_auth_key'];
+				$token = $wp->query_vars['api_token'];
 			}
 		}
 
-		$config  = self::get_config();
-		$is_auth = in_array( $key, array_keys( $config['private_api_auth_keys'] ), true );
+		add_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_private' ), 10, 4 );
+
+		$is_auth = wppus_validate_nonce( $token );
+
+		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_private' ), 10 );
 
 		return $is_auth;
 	}
@@ -547,7 +632,7 @@ class WPPUS_License_API {
 							$this->is_api_public( $method ) ||
 							(
 								$this->authorize_ip() &&
-								$this->authorize()
+								$this->authorize_private()
 							)
 						),
 						$method,

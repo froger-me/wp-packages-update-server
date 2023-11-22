@@ -4,39 +4,41 @@
 WP Packages Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin. Below is the documentation to interface with miscellaneous aspects of WP Packages Update Server. 
 
 * [WP Packages Update Server - Miscellaneous - Developer documentation](#wp-packages-update-server---miscellaneous---developer-documentation)
-    * [Nonce API](#nonce-api)
-    * [Consuming Webhooks](#consuming-webhooks)
-    * [Functions](#functions)
-        * [php\_log](#php_log)
-        * [cidr\_match](#cidr_match)
-        * [wppus\_is\_doing\_api\_request](#wppus_is_doing_api_request)
-            * [wppus\_is\_doing\_webhook\_api\_request](#wppus_is_doing_webhook_api_request)
-            * [wppus\_init\_nonce\_auth](#wppus_init_nonce_auth)
-            * [wppus\_create\_nonce](#wppus_create_nonce)
-            * [wppus\_get\_nonce\_expiry](#wppus_get_nonce_expiry)
-            * [wppus\_validate\_nonce](#wppus_validate_nonce)
-            * [wppus\_delete\_nonce](#wppus_delete_nonce)
-            * [wppus\_delete\_nonce](#wppus_delete_nonce-1)
-            * [wppus\_schedule\_webhook](#wppus_schedule_webhook)
-            * [wppus\_fire\_webhook](#wppus_fire_webhook)
-    * [Actions](#actions)
-        * [wppus\_no\_api\_includes](#wppus_no_api_includes)
-        * [wppus\_no\_license\_api\_includes](#wppus_no_license_api_includes)
-        * [wppus\_remote\_sources\_options\_updated](#wppus_remote_sources_options_updated)
-    * [Filters](#filters)
-        * [wppus\_is\_api\_request](#wppus_is_api_request)
-        * [wppus\_page\_wppus\_scripts\_l10n](#wppus_page_wppus_scripts_l10n)
-        * [wppus\_nonce\_api\_code](#wppus_nonce_api_code)
-        * [wppus\_nonce\_api\_response](#wppus_nonce_api_response)
-        * [wppus\_created\_nonce](#wppus_created_nonce)
-        * [wppus\_clear\_nonces\_query](#wppus_clear_nonces_query)
-        * [wppus\_clear\_nonces\_query\_args](#wppus_clear_nonces_query_args)
-        * [wppus\_expire\_nonce](#wppus_expire_nonce)
-        * [wppus\_delete\_nonce](#wppus_delete_nonce-2)
-        * [wppus\_fetch\_nonce](#wppus_fetch_nonce)
-        * [wppus\_nonce\_authorize](#wppus_nonce_authorize)
-        * [wppus\_api\_option\_update](#wppus_api_option_update)
-        * [wppus\_api\_webhook\_events](#wppus_api_webhook_events)
+	* [Nonce API](#nonce-api)
+	* [Consuming Webhooks](#consuming-webhooks)
+	* [Functions](#functions)
+		* [php\_log](#php_log)
+		* [cidr\_match](#cidr_match)
+		* [wppus\_is\_doing\_api\_request](#wppus_is_doing_api_request)
+			* [wppus\_is\_doing\_webhook\_api\_request](#wppus_is_doing_webhook_api_request)
+			* [wppus\_init\_nonce\_auth](#wppus_init_nonce_auth)
+			* [wppus\_create\_nonce](#wppus_create_nonce)
+			* [wppus\_get\_nonce\_expiry](#wppus_get_nonce_expiry)
+			* [wppus\_get\_nonce\_data](#wppus_get_nonce_data)
+			* [wppus\_validate\_nonce](#wppus_validate_nonce)
+			* [wppus\_delete\_nonce](#wppus_delete_nonce)
+			* [wppus\_delete\_nonce](#wppus_delete_nonce-1)
+			* [wppus\_schedule\_webhook](#wppus_schedule_webhook)
+			* [wppus\_fire\_webhook](#wppus_fire_webhook)
+	* [Actions](#actions)
+		* [wppus\_no\_api\_includes](#wppus_no_api_includes)
+		* [wppus\_no\_license\_api\_includes](#wppus_no_license_api_includes)
+		* [wppus\_remote\_sources\_options\_updated](#wppus_remote_sources_options_updated)
+	* [Filters](#filters)
+		* [wppus\_is\_api\_request](#wppus_is_api_request)
+		* [wppus\_page\_wppus\_scripts\_l10n](#wppus_page_wppus_scripts_l10n)
+		* [wppus\_nonce\_api\_payload](#wppus_nonce_api_payload)
+		* [wppus\_nonce\_api\_code](#wppus_nonce_api_code)
+		* [wppus\_nonce\_api\_response](#wppus_nonce_api_response)
+		* [wppus\_created\_nonce](#wppus_created_nonce)
+		* [wppus\_clear\_nonces\_query](#wppus_clear_nonces_query)
+		* [wppus\_clear\_nonces\_query\_args](#wppus_clear_nonces_query_args)
+		* [wppus\_expire\_nonce](#wppus_expire_nonce)
+		* [wppus\_delete\_nonce](#wppus_delete_nonce-2)
+		* [wppus\_fetch\_nonce](#wppus_fetch_nonce)
+		* [wppus\_nonce\_authorize](#wppus_nonce_authorize)
+		* [wppus\_api\_option\_update](#wppus_api_option_update)
+		* [wppus\_api\_webhook\_events](#wppus_api_webhook_events)
 
 ___
 ## Nonce API
@@ -44,8 +46,10 @@ ___
 The nonce API is accessible via `POST` and `GET` requests on the `/wppus-token/` endpoint to acquire a reusable token, and `/wppus-nonce/` to acquire a true nonce.  
 It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well.
 
-Authorization is granted with either the `HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY` header in `POST` (recommended) or with the `api_auth_key` parameter for both `POST` and `GET` ; the key is any of the Private API Authentication Keys of the Packages API by default (accepted authorization keys and header may be overriden with the `wppus_init_nonce_auth` [function](#wppus_init_nonce_auth)).  
-**Using `GET` requests directly in the browser, whether through the URL bar or JavaScript, is strongly discouraged due to security concerns** ; it should be avoided at all cost to prevent the inadvertent exposure of the authorization key.
+Authorization is granted with either the `HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY` and `HTTP_X_WPPUS_PRIVATE_LICENSE_API_KEY` headers in `POST` (recommended) or with the `api_auth_key` and `api` parameters for both `POST` and `GET`.  
+If not using headers, the `api` parameter value must be provided with one of `package` or `license` to specify the target API. The `api_auth_key` and the value of the header is any of the respective Private API Authentication Keys by default.
+Accepted authorization keys and header may be overriden with the `wppus_init_nonce_auth` [function](#wppus_init_nonce_auth)).  
+**Using `GET` requests directly in the browser, whether through the URL bar or JavaScript, is strongly discouraged due to security concerns** ; it should be avoided at all cost to prevent the inadvertent exposure of the authorization key.  
 
 In case the Private API Authentication Key is invalid, the API will return the following response (message's language depending on availabe translations), with HTTP response code set to `403`:
 
@@ -94,16 +98,17 @@ Parameters to aquire a reusable token or a true nonce:
 
 ```php
 $params = array(
-	'expiry_length' => 999,          // The expiry length in seconds (optional - default value to WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH - 30 seconds)
-	'data' => array(                 // Data to store along the token or true nonce (optional)
-		'permanent' => false,        // set to a truthy value to create a nonce that never expires
-		'key1'      => 'value1',     // custom data
-		'key2'      => array(        // custom data can be as nested as needed
+	'expiry_length' => 999,               // The expiry length in seconds (optional - default value to WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH - 30 seconds)
+	'data' => array(                      // Data to store along the token or true nonce (optional)
+		'permanent' => false,             // set to a truthy value to create a nonce that never expires
+		'key1'      => 'value1',          // custom data
+		'key2'      => array(             // custom data can be as nested as needed
 			'subkey1' => 'subval1',
 			'subkey2' => 'subval2'
 		),
 	),
-	'api_auth_key'  => 'secret',     // The Private API Authentication Key (optional - must provided via X-WPPUS-Private-Package-API-Key headers, or overriden header name, if absent)
+	'api_auth_key'  => 'secret',          // The Private API Authentication Key (optional - must be provided in case X-WPPUS-Private-Package-API-Key or X-WPPUS-Private-License-API-Key headers - or overriden header name - is absent)
+	'api'           => 'license|package', // The target API (optional - must be provided in case X-WPPUS-Private-Package-API-Key or X-WPPUS-Private-License-API-Key headers - or overriden header name - is absent)
 );
 ```
 
@@ -283,19 +288,19 @@ ___
 #### wppus_init_nonce_auth
 
 ```php
-wppus_init_nonce_auth( array $private_auth_keys, string|null $auth_header_name = null )
+wppus_init_nonce_auth( array $private_auth_keys, array $auth_header_names = array() )
 ```
 
 **Description**  
-Set the Private Authorization Keys and the Authorization Header name used to request nonces via the `wppus-token` and `wppus-nonce` endpoints.  
-If the Authentication Header name is not set, the `api_auth_key` variable set in `POST` method is used instead when requesting nonces.
+Set the Private Authorization Keys and the Authorization Header names used to request nonces via the `wppus-token` and `wppus-nonce` endpoints.  
+If the Authentication Header names are not set, the `api_auth_key` variable set in `POST` method is used instead when requesting nonces.
 
 **Parameters**  
 `$private_auth_keys`
 > (array) the Private Authorization Keys  
 
-`$auth_header_name`
-> (string|null) the Authorization Header name  
+`$auth_header_names`
+> (array) an array of the Authorization Header names  
 
 ___
 #### wppus_create_nonce
@@ -343,6 +348,23 @@ wppus_get_nonce_expiry( string $nonce )
 
 **Description**  
 Get the expiry timestamp of a nonce.  
+
+**Parameters**  
+`$nonce`
+> (string) the nonce  
+
+**Return value**
+> (int) the expiry timestamp  
+
+___
+#### wppus_get_nonce_data
+
+```php
+wppus_get_nonce_data( string $nonce )
+```
+
+**Description**  
+Get the data stored along a nonce.  
 
 **Parameters**  
 `$nonce`
@@ -525,6 +547,23 @@ Filter the internationalization strings passed to the frontend scripts.
 **Parameters**  
 `$l10n`
 > (array) the internationalization strings passed to the frontend scripts  
+
+___
+### wppus_nonce_api_payload
+
+```php
+apply_filters( 'wppus_nonce_api_payload', array $payload, string $action );
+```
+
+**Description**  
+Filter the payload sent to the Nonce API.  
+
+**Parameters**  
+`$code`
+> (string) the payload sent to the Nonce API  
+
+`$action`
+> (string) the api action - `token` or `nonce`  
 
 ___
 ### wppus_nonce_api_code

@@ -22,7 +22,7 @@
     padding: 0;
 }
 
-.form-table td input[type=text].new-api-key-item-name,
+.form-table td input[type=text].new-api-key-item-id,
 .form-table td input[type=text].new-webhook-item-url,
 .form-table td input[type=text].new-webhook-item-secret,
 .form-table td textarea.ip-whitelist,
@@ -59,7 +59,7 @@
     word-break: break-all;
 }
 
-.api-keys-items .name {
+.api-keys-items .id {
     justify-self: left;
 }
 

@@ -27,6 +27,7 @@ class WPPUS_Package_API {
 
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 			add_filter( 'wppus_api_webhook_events', array( $this, 'wppus_api_webhook_events' ), 10, 1 );
+			add_filter( 'wppus_nonce_api_payload', array( $this, 'wppus_nonce_api_payload' ), 0, 2 );
 		}
 	}
 
@@ -239,9 +240,10 @@ class WPPUS_Package_API {
 			$query_vars,
 			array(
 				'__wppus_package_api',
+				'action',
+				'api',
 				'package_id',
 				'type',
-				'action',
 				'browse_query',
 			)
 		);
@@ -313,6 +315,113 @@ class WPPUS_Package_API {
 		return $webhook_events;
 	}
 
+	public function wppus_fetch_nonce_public( $nonce, $true_nonce, $expiry, $data ) {
+		global $wp;
+
+		$current_action = $wp->query_vars['action'];
+
+		if (
+			isset( $data['actions'] ) &&
+			is_array( $data['actions'] ) &&
+			! empty( $data['actions'] )
+		) {
+
+			if ( ! in_array( $current_action, $data['actions'], true ) ) {
+				$nonce = null;
+			} elseif ( isset( $data['type'], $data['package_id'] ) ) {
+				$type       = isset( $wp->query_vars['type'] ) ? $wp->query_vars['type'] : null;
+				$package_id = isset( $wp->query_vars['package_id'] ) ? $wp->query_vars['package_id'] : null;
+
+				if ( $type !== $data['type'] || $package_id !== $data['package_id'] ) {
+					$nonce = null;
+				}
+			}
+		} else {
+			$nonce = null;
+		}
+
+		return $nonce;
+	}
+
+	public function wppus_fetch_nonce_private( $nonce, $true_nonce, $expiry, $data ) {
+		$config = self::get_config();
+		$valid  = false;
+
+		if (
+			! empty( $config['private_api_auth_keys'] ) &&
+			isset( $data['package_api'], $data['package_api']['id'], $data['package_api']['access'] )
+		) {
+			global $wp;
+
+			$action = $wp->query_vars['action'];
+
+			foreach ( $config['private_api_auth_keys'] as $id => $values ) {
+
+				if (
+					$id === $data['package_api']['id'] &&
+					isset( $values['access'] ) &&
+					is_array( $values['access'] ) &&
+					(
+						in_array( 'all', $values['access'], true ) ||
+						in_array( $action, $values['access'], true )
+					)
+				) {
+					$valid = true;
+				}
+			}
+		}
+
+		if ( ! $valid ) {
+			$nonce = null;
+		}
+
+		return $nonce;
+	}
+
+	public function wppus_nonce_api_payload( $payload, $method ) {
+		$key    = false;
+		$config = self::get_config();
+
+		if (
+			isset( $_SERVER['HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY'] ) &&
+			! empty( $_SERVER['HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY'] )
+		) {
+			$key = $_SERVER['HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY'];
+		} else {
+			global $wp;
+
+			if (
+				isset( $wp->query_vars['api_auth_key'], $wp->query_vars['api'] ) &&
+				is_string( $wp->query_vars['api_auth_key'] ) &&
+				! empty( $wp->query_vars['api_auth_key'] ) &&
+				'package' === $wp->query_vars['api']
+			) {
+				$key = $wp->query_vars['api_auth_key'];
+			}
+		}
+
+		if ( $key && ! empty( $config['private_api_auth_keys'] ) ) {
+
+			foreach ( $config['private_api_auth_keys'] as $id => $values ) {
+
+				if ( isset( $values['key'] ) && $key === $values['key'] ) {
+					$payload['data']['package_api'] = array(
+						'id'     => $id,
+						'access' => isset( $values['access'] ) ? $values['access'] : array(),
+					);
+
+					if ( 'token' === $method ) {
+						$payload['expiry_length'] = DAY_IN_SECONDS;
+					}
+
+					break;
+				}
+			}
+		}
+
+		return $payload;
+	}
+
 	// Misc. -------------------------------------------------------
 
 	public static function is_doing_api_request() {
@@ -352,6 +461,52 @@ class WPPUS_Package_API {
 	/*******************************************************************
 	 * Protected methods
 	 *******************************************************************/
+
+	protected function authorize_public() {
+		$nonce = filter_input( INPUT_GET, 'token', FILTER_UNSAFE_RAW );
+
+		if ( ! $nonce ) {
+			$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
+		}
+
+		add_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_public' ), 10, 4 );
+
+		$result = wppus_validate_nonce( $nonce );
+
+		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_public' ), 10 );
+
+		return $result;
+	}
+
+	protected function authorize_private() {
+		$token   = false;
+		$is_auth = false;
+
+		if (
+			isset( $_SERVER['HTTP_X_WPPUS_TOKEN'] ) &&
+			! empty( $_SERVER['HTTP_X_WPPUS_TOKEN'] )
+		) {
+			$token = $_SERVER['HTTP_X_WPPUS_TOKEN'];
+		} else {
+			global $wp;
+
+			if (
+				isset( $wp->query_vars['api_token'] ) &&
+				is_string( $wp->query_vars['api_token'] ) &&
+				! empty( $wp->query_vars['api_token'] )
+			) {
+				$token = $wp->query_vars['api_token'];
+			}
+		}
+
+		add_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_private' ), 10, 4 );
+
+		$is_auth = wppus_validate_nonce( $token );
+
+		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_private' ), 10 );
+
+		return $is_auth;
+	}
 
 	protected function is_api_public( $method ) {
 		$public_api    = apply_filters(
@@ -458,75 +613,5 @@ class WPPUS_Package_API {
 		}
 
 		return $result;
-	}
-
-	protected function authorize_public() {
-		$nonce = filter_input( INPUT_GET, 'token', FILTER_UNSAFE_RAW );
-
-		if ( ! $nonce ) {
-			$nonce = filter_input( INPUT_GET, 'nonce', FILTER_UNSAFE_RAW );
-		}
-
-		add_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_public' ), 10, 4 );
-
-		$result = wppus_validate_nonce( $nonce );
-
-		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_public' ), 10 );
-
-		return $result;
-	}
-
-	public function wppus_fetch_nonce_public( $nonce, $true_nonce, $expiry, $data ) {
-		global $wp;
-
-		$current_action = $wp->query_vars['action'];
-
-		if (
-			isset( $data['actions'] ) &&
-			is_array( $data['actions'] ) &&
-			! empty( $data['actions'] )
-		) {
-
-			if ( ! in_array( $current_action, $data['actions'], true ) ) {
-				$nonce = null;
-			} elseif ( isset( $data['type'], $data['package_id'] ) ) {
-				$type       = isset( $wp->query_vars['type'] ) ? $wp->query_vars['type'] : null;
-				$package_id = isset( $wp->query_vars['package_id'] ) ? $wp->query_vars['package_id'] : null;
-
-				if ( $type !== $data['type'] || $package_id !== $data['package_id'] ) {
-					$nonce = null;
-				}
-			}
-		} else {
-			$nonce = null;
-		}
-
-		return $nonce;
-	}
-
-	protected function authorize_private() {
-		$key = false;
-
-		if (
-			isset( $_SERVER['HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY'] ) &&
-			! empty( $_SERVER['HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY'] )
-		) {
-			$key = $_SERVER['HTTP_X_WPPUS_PRIVATE_PACKAGE_API_KEY'];
-		} else {
-			global $wp;
-
-			if (
-				isset( $wp->query_vars['api_auth_key'] ) &&
-				is_string( $wp->query_vars['api_auth_key'] ) &&
-				! empty( $wp->query_vars['api_auth_key'] )
-			) {
-				$key = $wp->query_vars['api_auth_key'];
-			}
-		}
-
-		$config  = self::get_config();
-		$is_auth = in_array( $key, array_keys( $config['private_api_auth_keys'] ), true );
-
-		return $is_auth;
 	}
 }

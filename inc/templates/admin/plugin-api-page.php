@@ -15,13 +15,22 @@
 						<div class="api-keys-items empty">
 						</div>
 						<div>
-							<input type="text" class="new-api-key-item-name" placeholder="<?php esc_attr_e( 'Package Key Name' ); ?>">
+							<input type="text" class="new-api-key-item-id" placeholder="<?php esc_attr_e( 'Package Key ID' ); ?>">
 							<button disabled="disabled" class="api-keys-add button" type="button"><?php esc_html_e( 'Add a Package API Key' ); ?></button>
 						</div>
 						<input type="hidden" class="api-key-values" id="wppus_package_private_api_auth_keys" name="wppus_package_private_api_auth_keys" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_auth_keys', '{}' ) ); ?>">
 					</div>
 					<p class="description">
-						<?php esc_html_e( 'Used to authenticate package administration requests (browse, read, edit, add, delete), requests for signed URLs of package, and requests for tokens & true nonces.', 'wppus' ); ?>
+						<?php esc_html_e( 'Used to get tokens for package administration requests (browse, read, edit, add, delete) and requests of signed URLs of package.', 'wppus' ); ?>
+						<br>
+						<?php
+						printf(
+							// translators: %1$s is <code>-</code>, %2$s is <code>_</code>
+							esc_html__( 'The Package Key ID must contain on numbers, letters, %1$s and %2$s.', 'wppus' ),
+							'<code>-</code>',
+							'<code>_</code>',
+						);
+						?>
 						<br>
 						<strong><?php esc_html_e( 'WARNING: Keep these keys secret, do not share any of them with customers!', 'wppus' ); ?></strong>
 					</p>
@@ -52,13 +61,22 @@
 						<div class="api-keys-items empty">
 						</div>
 						<div>
-							<input type="text" class="new-api-key-item-name" placeholder="<?php esc_attr_e( 'License Key Name' ); ?>">
+							<input type="text" class="new-api-key-item-id" placeholder="<?php esc_attr_e( 'License Key ID' ); ?>">
 							<button disabled="disabled" class="api-keys-add button" type="button"><?php esc_html_e( 'Add a License API Key' ); ?></button>
 						</div>
 						<input type="hidden" class="api-key-values" id="wppus_license_private_api_auth_keys" name="wppus_license_private_api_auth_keys" value="<?php echo esc_attr( get_option( 'wppus_license_private_api_auth_keys', '{}' ) ); ?>">
 					</div>
 					<p class="description">
-						<?php esc_html_e( 'Used to authenticate license administration requests (browse, read, edit, add, delete).', 'wppus' ); ?>
+						<?php esc_html_e( 'Used to get tokens for license administration requests (browse, read, edit, add, delete).', 'wppus' ); ?>
+						<br>
+						<?php
+						printf(
+							// translators: %1$s is <code>-</code>, %2$s is <code>_</code>
+							esc_html__( 'The License Key ID must contain on numbers, letters, %1$s and %2$s.', 'wppus' ),
+							'<code>-</code>',
+							'<code>_</code>',
+						);
+						?>
 						<br>
 						<strong><?php esc_html_e( 'WARNING: Keep these keys secret, do not share any of them with customers!', 'wppus' ); ?></strong>
 					</p>

@@ -164,7 +164,7 @@ jQuery(document).ready(function ($) {
         el = $(el);
 
         var data = JSON.parse(el.find('.api-key-values').val());
-        var nameNew = el.find('.new-api-key-item-name');
+        var idNew = el.find('.new-api-key-item-id');
         var addButton = el.find('.api-keys-add').get(0);
         var itemsContainer = el.find('.api-keys-items').get(0);
 
@@ -173,10 +173,13 @@ jQuery(document).ready(function ($) {
         }
 
         addButton.onclick = function () {
-            addButton.disabled  = 'disabled';
-            data[bin2hex_openssl_random_pseudo_bytes(16)] = nameNew.val();
+            addButton.disabled = 'disabled';
+            data[idNew.val()] = {
+                'key': bin2hex_openssl_random_pseudo_bytes(16),
+                'access': ['all']
+            };
 
-            nameNew.val('');
+            idNew.val('');
             renderItems();
         };
 
@@ -185,14 +188,14 @@ jQuery(document).ready(function ($) {
 
             Object.keys(data).forEach(function (index) {
                 var itemContainer = document.createElement('div');
-                var nameText = document.createElement('span');
+                var idText = document.createElement('span');
                 var keyText = document.createElement('span');
                 var deleteButton = document.createElement('button');
 
                 itemContainer.className = 'item';
-                nameText.textContent = data[index];
-                nameText.classList = 'name';
-                keyText.textContent = index;
+                idText.textContent = index;
+                idText.classList = 'id';
+                keyText.textContent = data[index].key;
                 keyText.classList = 'key';
                 deleteButton.type = 'button';
                 deleteButton.innerHTML = '<span class="wppus-remove-icon" aria-hidden="true"></span>';
@@ -204,7 +207,7 @@ jQuery(document).ready(function ($) {
                     }
                 };
 
-                itemContainer.appendChild(nameText);
+                itemContainer.appendChild(idText);
                 itemContainer.appendChild(keyText);
                 itemContainer.appendChild(deleteButton);
                 itemsContainer.appendChild(itemContainer);
@@ -217,11 +220,13 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        nameNew.on('input', function () {
+        idNew.on('input', function () {
             var inputValue = $(this).get(0).value.trim();
             var isEnabled = inputValue !== '' && !Object.values(data).some(function (item) {
                 return item === inputValue;
             });
+
+            isEnabled = isEnabled && /^[a-zA-Z0-9_-]+$/.test(inputValue);
 
             addButton.disabled = !isEnabled;
         });

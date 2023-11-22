@@ -159,12 +159,12 @@ class WPPUS_Webhook_Manager {
 				foreach ( $inputs as $url => $values ) {
 					$url    = filter_var( $url, FILTER_SANITIZE_URL );
 					$events = filter_var(
-						$values['events'],
+						isset( $values['events'] ) ? $values['events'] : array(),
 						FILTER_SANITIZE_FULL_SPECIAL_CHARS,
 						FILTER_REQUIRE_ARRAY
 					);
 					$secret = filter_var(
-						$values['secret'],
+						isset( $values['secret'] ) ? $values['secret'] : false,
 						FILTER_SANITIZE_FULL_SPECIAL_CHARS
 					);
 

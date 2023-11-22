@@ -13,7 +13,7 @@ class WPPUS_Nonce {
 	protected static $expiry_length;
 	protected static $doing_update_api_request = null;
 	protected static $private_auth_keys;
-	protected static $auth_header_name;
+	protected static $auth_header_names;
 
 	/*******************************************************************
 	 * Public methods
@@ -74,7 +74,12 @@ class WPPUS_Nonce {
 				);
 				$code     = 403;
 			} elseif ( isset( $wp->query_vars['action'] ) ) {
-				$method = $wp->query_vars['action'];
+				$method  = $wp->query_vars['action'];
+				$payload = $wp->query_vars;
+
+				unset( $payload['action'] );
+
+				$payload = apply_filters( 'wppus_nonce_api_payload', $payload, $method );
 
 				if (
 					is_string( $wp->query_vars['action'] ) &&
@@ -83,11 +88,8 @@ class WPPUS_Nonce {
 						'generate_' . $wp->query_vars['action'] . '_api_response'
 					)
 				) {
-					$method = 'generate_' . $wp->query_vars['action'] . '_api_response';
-
-					unset( $wp->query_vars['action'] );
-
-					$response = self::$method( $wp->query_vars );
+					$method   = 'generate_' . $wp->query_vars['action'] . '_api_response';
+					$response = self::$method( $payload );
 
 					if ( $response ) {
 						$code = 200;
@@ -179,9 +181,9 @@ class WPPUS_Nonce {
 		add_filter( 'query_vars', array( get_class(), 'query_vars' ), -99, 1 );
 	}
 
-	public static function init_auth( $private_auth_keys, $auth_header_name = null ) {
+	public static function init_auth( $private_auth_keys, $auth_header_names = array() ) {
 		self::$private_auth_keys = $private_auth_keys;
-		self::$auth_header_name  = $auth_header_name;
+		self::$auth_header_names = $auth_header_names;
 	}
 
 	public static function is_doing_api_request() {
@@ -263,6 +265,26 @@ class WPPUS_Nonce {
 		}
 
 		return intval( $nonce_expiry );
+	}
+
+	public static function get_nonce_data( $nonce ) {
+		global $wpdb;
+
+		$table = $wpdb->prefix . 'wppus_nonce';
+		$row   = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$table} WHERE nonce = %s;", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				$nonce
+			)
+		);
+
+		if ( ! $row ) {
+			$data = array();
+		} else {
+			$data = is_string( $row->data ) ? json_decode( $row->data, true ) : array();
+		}
+
+		return $data;
 	}
 
 	public static function validate_nonce( $value ) {
@@ -442,13 +464,20 @@ class WPPUS_Nonce {
 	protected static function authorize() {
 		$key = false;
 
-		if (
-			self::$auth_header_name &&
-			isset( $_SERVER[ self::$auth_header_name ] ) &&
-			! empty( $_SERVER[ self::$auth_header_name ] )
-		) {
-			$key = $_SERVER[ self::$auth_header_name ];
-		} else {
+		if ( is_array( self::$auth_header_names ) && ! empty( self::$auth_header_names ) ) {
+
+			foreach ( self::$auth_header_names as $header_name ) {
+
+				if (
+					isset( $_SERVER[ $header_name ] ) &&
+					! empty( $_SERVER[ $header_name ] )
+				) {
+					$key = $_SERVER[ $header_name ];
+				}
+			}
+		}
+
+		if ( ! $key ) {
 			global $wp;
 
 			if (

@@ -174,23 +174,33 @@ class WPPUS_API_Manager {
 						} else {
 							$filtered = array();
 
-							foreach ( $inputs as $key => $value ) {
-								$filtered_key   = filter_var(
-									$key,
-									FILTER_SANITIZE_FULL_SPECIAL_CHARS
+							foreach ( $inputs as $id => $values ) {
+								$id = filter_var( $id, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+
+								if ( ! preg_match( '/^[a-zA-Z0-9_-]+$/', $id ) ) {
+									$id = false;
+								}
+
+								$access = filter_var(
+									isset( $values['access'] ) ? $values['access'] : array(),
+									FILTER_SANITIZE_FULL_SPECIAL_CHARS,
+									FILTER_REQUIRE_ARRAY
 								);
-								$filtered_value = filter_var(
-									$value,
+								$key    = filter_var(
+									isset( $values['key'] ) ? $values['key'] : false,
 									FILTER_SANITIZE_FULL_SPECIAL_CHARS
 								);
 
-								if ( ! $filtered_key || ! $filtered_value ) {
+								if ( ! $id || empty( $access ) || ! $key ) {
 									$filtered = new stdClass();
 
 									break;
 								}
 
-								$filtered[ $filtered_key ] = $filtered_value;
+								$filtered[ $id ] = array(
+									'key'    => $key,
+									'access' => $access,
+								);
 							}
 
 							$option_info['value'] = wp_json_encode(
