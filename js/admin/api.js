@@ -110,7 +110,7 @@ jQuery(document).ready(function ($) {
                     });
 
                     if ('' !== messageParts.package && '' !== messageParts.license) {
-                        message = messageParts.package + Wppus_l10n.apiSumSep + messageParts.license;
+                        message = messageParts.package + Wppus_l10n.apiSumSep + '<br>' + messageParts.license;
                     } else if ( '' !== messageParts.package ) {
                         message = messageParts.package;
                     } else {
@@ -124,7 +124,7 @@ jQuery(document).ready(function ($) {
                 urlText.classList = 'url';
                 secretText.textContent = data[index].secret;
                 secretText.classList = 'secret';
-                eventsText.textContent = message;
+                eventsText.innerHTML = message;
                 eventsText.title = '(' + data[index].events.join(', ') + ')';
                 eventsText.classList = 'summary';
                 deleteButton.type = 'button';

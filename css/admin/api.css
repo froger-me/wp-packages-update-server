@@ -79,6 +79,7 @@
 .webhook-items .summary {
     width: auto;
     justify-self: flex-start;
+    text-align: left;
 }
 
 .add-controls {
