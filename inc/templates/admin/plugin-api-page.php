@@ -11,11 +11,23 @@
 					<label for="wppus_package_private_api_keys"><?php esc_html_e( 'Private API Keys', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<div class="api-keys-multiple">
+					<div class="api-keys-multiple package">
 						<div class="api-keys-items empty">
 						</div>
-						<div>
+						<div class="add-controls">
 							<input type="text" class="new-api-key-item-id" placeholder="<?php esc_attr_e( 'Package Key ID' ); ?>">
+							<div class="event-types">
+								<?php foreach ( $package_api_actions as $top_action => $values ) : ?>
+								<div class="event-container <?php echo esc_attr( $top_action ); ?>">
+									<label class="top-level"><input type="checkbox" data-api-action="<?php echo esc_attr( $top_action ); ?>"> <?php echo esc_html( $values['label'] ); ?> <code>(<?php echo esc_html( $top_action ); ?>)</code></label>
+									<?php if ( isset( $values['actions'] ) && ! empty( $values['actions'] ) ) : ?>
+										<?php foreach ( $values['actions'] as $action_name => $label ) : ?>
+										<label class="child"><input type="checkbox" data-api-action="<?php echo esc_attr( $action_name ); ?>"> <?php echo esc_html( $label ); ?> <code>(<?php echo esc_html( $action_name ); ?>)</code></label>
+										<?php endforeach; ?>
+									<?php endif; ?>
+								</div>
+								<?php endforeach; ?>
+							</div>
 							<button disabled="disabled" class="api-keys-add button" type="button"><?php esc_html_e( 'Add a Package API Key' ); ?></button>
 						</div>
 						<input type="hidden" class="api-key-values" id="wppus_package_private_api_keys" name="wppus_package_private_api_keys" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_keys', '{}' ) ); ?>">
@@ -60,8 +72,20 @@
 					<div class="api-keys-multiple">
 						<div class="api-keys-items empty">
 						</div>
-						<div>
+						<div class="add-controls">
 							<input type="text" class="new-api-key-item-id" placeholder="<?php esc_attr_e( 'License Key ID' ); ?>">
+							<div class="event-types">
+								<?php foreach ( $license_api_actions as $top_action => $values ) : ?>
+								<div class="event-container <?php echo esc_attr( $top_action ); ?>">
+									<label class="top-level"><input type="checkbox" data-api-action="<?php echo esc_attr( $top_action ); ?>"> <?php echo esc_html( $values['label'] ); ?> <code>(<?php echo esc_html( $top_action ); ?>)</code></label>
+									<?php if ( isset( $values['actions'] ) && ! empty( $values['actions'] ) ) : ?>
+										<?php foreach ( $values['actions'] as $action_name => $label ) : ?>
+										<label class="child"><input type="checkbox" data-api-action="<?php echo esc_attr( $action_name ); ?>"> <?php echo esc_html( $label ); ?> <code>(<?php echo esc_html( $action_name ); ?>)</code></label>
+										<?php endforeach; ?>
+									<?php endif; ?>
+								</div>
+								<?php endforeach; ?>
+							</div>
 							<button disabled="disabled" class="api-keys-add button" type="button"><?php esc_html_e( 'Add a License API Key' ); ?></button>
 						</div>
 						<input type="hidden" class="api-key-values" id="wppus_license_private_api_keys" name="wppus_license_private_api_keys" value="<?php echo esc_attr( get_option( 'wppus_license_private_api_keys', '{}' ) ); ?>">
@@ -103,15 +127,15 @@
 					<div class="webhook-multiple">
 						<div class="webhook-items empty">
 						</div>
-						<div class="webhook-add-controls">
+						<div class="add-controls">
 							<input type="text" class="new-webhook-item-url" placeholder="<?php esc_attr_e( 'Payload URL' ); ?>">
 							<input type="text" class="new-webhook-item-secret" placeholder="<?php echo esc_attr( 'secret-key' ); ?>">
-							<div class="webhook-event-types">
-								<div class="webhook-event-container all">
+							<div class="event-types">
+								<div class="event-container all">
 									<label><input type="checkbox" data-webhook-event="all"> <?php esc_html_e( 'All events', 'wppus' ); ?></label>
 								</div>
 								<?php foreach ( $webhook_events as $top_event => $values ) : ?>
-								<div class="webhook-event-container">
+								<div class="event-container">
 									<label class="top-level"><input type="checkbox" data-webhook-event="<?php echo esc_attr( $top_event ); ?>"> <?php echo esc_html( $values['label'] ); ?> <code>(<?php echo esc_html( $top_event ); ?>)</code></label>
 									<?php if ( isset( $values['events'] ) && ! empty( $values['events'] ) ) : ?>
 										<?php foreach ( $values['events'] as $event => $label ) : ?>

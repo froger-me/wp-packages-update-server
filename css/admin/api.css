@@ -89,7 +89,7 @@
     margin-bottom: 1em;
 }
 
-.webhook-event-types {
+.event-types {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -98,22 +98,23 @@
     margin: 0.5em 0;
 }
 
-.webhook-event-container {
+.event-container {
     margin-left: 1.75em;
     display: flex;
     flex-direction: column;
     gap: 0.5em;
 }
 
-.webhook-event-container.all {
+.event-container.all,
+.event-container.other {
     margin-left: 0;
 }
 
-.webhook-event-container label {
+.event-container label {
     display: block;
 }
 
-.webhook-event-container label.child {
+.event-container label.child {
     margin-left: 1.75em;
 }
 

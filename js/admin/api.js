@@ -37,24 +37,24 @@ jQuery(document).ready(function ($) {
             };
 
             if (packageEvents.prop('checked')) {
-                packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', false);
+                packageEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('checked', false);
             }
 
             if (licenseEvents.prop('checked')) {
-                licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', false);
+                licenseEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('checked', false);
             }
 
-            if (packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').length === packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]:checked').length) {
+            if (packageEvents.closest('.event-container').find('.child input[type="checkbox"]').length === packageEvents.closest('.event-container').find('.child input[type="checkbox"]:checked').length) {
                 packageEvents.prop('checked', true);
-                packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', false);
+                packageEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('checked', false);
             }
 
-            if (licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').length === licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]:checked').length) {
+            if (licenseEvents.closest('.event-container').find('.child input[type="checkbox"]').length === licenseEvents.closest('.event-container').find('.child input[type="checkbox"]:checked').length) {
                 licenseEvents.prop('checked', true);
-                licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', false);
+                licenseEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('checked', false);
             }
 
-            el.find('.webhook-event-types input[type="checkbox"]').each(function (idx, checkbox) {
+            el.find('.event-types input[type="checkbox"]').each(function (idx, checkbox) {
                 checkbox = $(checkbox);
 
                 if ('all' !== checkbox.data('webhook-event') && checkbox.prop('checked')) {
@@ -127,23 +127,23 @@ jQuery(document).ready(function ($) {
 
         urlNew.on('input', validateInput);
         secretNew.on('input', validateInput);
-        el.find('.webhook-event-types input[type="checkbox"]').on('change', function () {
+        el.find('.event-types input[type="checkbox"]').on('change', function () {
 
             if (allEvents.prop('checked')) {
-                el.find('.webhook-event-types input[type="checkbox"]').prop('checked', true);
-                el.find('.webhook-event-types input[type="checkbox"]').prop('disabled', true);
+                el.find('.event-types input[type="checkbox"]').prop('checked', true);
+                el.find('.event-types input[type="checkbox"]').prop('disabled', true);
                 allEvents.prop('disabled', false);
             } else {
-                el.find('.webhook-event-types input[type="checkbox"]').prop('disabled', false);
+                el.find('.event-types input[type="checkbox"]').prop('disabled', false);
 
                 if (packageEvents.prop('checked')) {
-                    packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', true);
-                    packageEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('disabled', true);
+                    packageEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('checked', true);
+                    packageEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('disabled', true);
                 }
 
                 if (licenseEvents.prop('checked')) {
-                    licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('checked', true);
-                    licenseEvents.closest('.webhook-event-container').find('.child input[type="checkbox"]').prop('disabled', true);
+                    licenseEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('checked', true);
+                    licenseEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('disabled', true);
                 }
             }
         });
