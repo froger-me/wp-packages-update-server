@@ -325,12 +325,12 @@ Set the private keys to check against when requesting nonces via the `wppus-toke
 > (array) the private keys with the following format:  
 ```php
 $private_keys = array(
-	'private_key_id_1' => array(
-		'key' => 'private_key_1',
+	'api_key_id_1' => array(
+		'key' => 'api_key_1',
 		// ... other values are ignored
 	),
-	'private_key_id_2' => array(
-		'key' => 'private_key_2',
+	'api_key_id_2' => array(
+		'key' => 'api_key_2',
 		// ... other values are ignored
 	),
 );
