@@ -89,6 +89,34 @@ jQuery(document).ready(function ($) {
                 var secretText = document.createElement('span');
                 var eventsText = document.createElement('span');
                 var deleteButton = document.createElement('button');
+                var message = '';
+                var events = data[index].events;
+
+                if (2 === events.length && events.includes('package') && events.includes('license')) {
+                     message = Wppus_l10n.eventApiCountAll;
+                } else {
+                    var messageParts = { package: '', license: '' };
+
+                    ['package', 'license'].forEach(function (val, index) {
+                        var type = ('package' === val) ? Wppus_l10n.eventApiTypePackage : Wppus_l10n.eventApiTypeLicense;
+
+                        if (events.includes(val)) {
+                            messageParts[val] = Wppus_l10n.eventApiCountAllType.replace('%s', type);
+                        } else if (1 === events.filter(function (i) { return i.startsWith(val); }).length) {
+                            messageParts[val] = Wppus_l10n.eventApiCountTypeSingular.replace('%s', type);
+                        } else if (events.filter(function (i) { return i.startsWith(val); }).length) {
+                            messageParts[val] = Wppus_l10n.eventApiCountTypePlural.replace('%1$d', events.filter(function (i) { return i.startsWith(val); }).length).replace('%2$s', type);
+                        }
+                    });
+
+                    if ('' !== messageParts.package && '' !== messageParts.license) {
+                        message = messageParts.package + Wppus_l10n.apiSumSep + messageParts.license;
+                    } else if ( '' !== messageParts.package ) {
+                        message = messageParts.package;
+                    } else {
+                        message = messageParts.license;
+                    }
+                }
 
                 itemContainer.className = 'item';
                 urlText.textContent = index;
@@ -96,7 +124,7 @@ jQuery(document).ready(function ($) {
                 urlText.classList = 'url';
                 secretText.textContent = data[index].secret;
                 secretText.classList = 'secret';
-                eventsText.textContent = (1 === data[index].events.length) ? Wppus_l10n.eventApiCountSingular : Wppus_l10n.eventApiCountPlural.replace('%d', data[index].events.length)
+                eventsText.textContent = message;
                 eventsText.title = '(' + data[index].events.join(', ') + ')';
                 eventsText.classList = 'summary';
                 deleteButton.type = 'button';
@@ -182,7 +210,7 @@ jQuery(document).ready(function ($) {
 
             if (allActions.prop('checked') || el.find('.event-container:not(.all, .other) input[type="checkbox"]').length === el.find('.event-container:not(.all, .other) input[type="checkbox"]:checked').length) {
                 allActions.prop('checked', true);
-                el.find('.event-container:not(.all) input[type="checkbox"]').prop('checked', false);
+                el.find('.event-container:not(.all, .other) input[type="checkbox"]').prop('checked', false);
                 data[idNew.val()].access.push('all');
             }
 
@@ -194,6 +222,7 @@ jQuery(document).ready(function ($) {
                 }
             });
 
+            el.find('.event-container.other input[type="checkbox"]').prop('checked', false);
             allActions.prop('checked', true);
             allActions.trigger('change');
             idNew.val('');
@@ -221,13 +250,29 @@ jQuery(document).ready(function ($) {
                 var keyText = document.createElement('span');
                 var actionsText = document.createElement('span');
                 var deleteButton = document.createElement('button');
+                var message = '';
+                var access = data[index].access;
+
+                if (1 === access.length && 'all' === access[0]) {
+                    message = Wppus_l10n.actionApiCountAll;
+                } else if (2 === access.length && access.includes('all') && access.includes('other')) {
+                    message = Wppus_l10n.actionApiCountAllOther;
+                } else if ( 2 === access.length && access.includes('other') ) {
+                    message = Wppus_l10n.actionApiCountSingularOther;
+                } else if ( access.includes('other') ) {
+                    message = Wppus_l10n.actionApiCountPluralOther.replace('%d', access.length - 1);
+                } else if (1 === access.length) {
+                    message = Wppus_l10n.actionApiCountSingular;
+                } else {
+                    message = Wppus_l10n.actionApiCountPlural.replace('%d', access.length);
+                }
 
                 itemContainer.className = 'item';
                 idText.textContent = index;
                 idText.classList = 'id';
                 keyText.textContent = data[index].key;
                 keyText.classList = 'key';
-                actionsText.textContent = (1 === data[index].access.length) ? Wppus_l10n.eventApiCountSingular : Wppus_l10n.eventApiCountPlural.replace('%d', data[index].access.length);
+                actionsText.textContent = message;
                 actionsText.title = '(' + data[index].access.join(', ') + ')';
                 actionsText.classList = 'summary';
                 deleteButton.type = 'button';

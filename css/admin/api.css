@@ -1,5 +1,4 @@
-.api-keys-items button,
-.webhook-items button {
+.api-keys-items button,.webhook-items button {
     width: 24px;
     height: 24px;
     border: none;
@@ -7,60 +6,52 @@
     background: 0 0;
     cursor: pointer;
     text-indent: 0;
-    align-self: center;
+    align-self: center
 }
 
-.api-keys-items,
-.webhook-items {
+.api-keys-items,.webhook-items {
     background: #fff;
-    padding: 0.5em;
-    margin-bottom: 0.75em;
+    padding: .5em;
+    margin-bottom: .75em
 }
 
-.api-keys-items.empty,
-.webhook-items.empty {
-    padding: 0;
+.api-keys-items.empty,.webhook-items.empty {
+    padding: 0
 }
 
-.form-table td input[type=text].new-api-key-item-id,
-.form-table td input[type=text].new-webhook-item-url,
-.form-table td input[type=text].new-webhook-item-secret,
-.form-table td textarea.ip-whitelist,
-.api-keys-items {
-    max-width: 600px;
+.form-table td input[type=text].new-api-key-item-id,.form-table td input[type=text].new-webhook-item-url,.form-table td input[type=text].new-webhook-item-secret,.form-table td textarea.ip-whitelist,.api-keys-items {
+    max-width: 600px
 }
 
 .webhook-items {
-    max-width: 750px;
+    max-width: 750px
 }
 
-.api-keys-items .item,
-.webhook-items .item {
+.api-keys-items .item,.webhook-items .item {
     display: grid;
     align-items: center;
-    padding: 0.5em;
+    padding: .5em;
     border-bottom: 1px solid #c3c4c7;
     grid-template-columns: auto 1fr 2fr auto;
     gap: 0 1em;
-    justify-items: center;
+    justify-items: center
 }
 
 .webhook-items .item {
-    grid-template-columns: auto 2fr 1fr auto;
+    grid-template-columns: 2fr 1fr 2fr auto;
 }
 
-.api-keys-items .item:last-child,
-.webhook-items .item:last-child {
-    border: 0;
+.api-keys-items .item:last-child,.webhook-items .item:last-child {
+    border: 0
 }
 
-.api-keys-items .key,
-.webhook-items .secret {
+.api-keys-items .key,.webhook-items .secret {
     word-break: break-all;
+    min-width: 75px
 }
 
 .api-keys-items .id {
-    justify-self: left;
+    justify-self: left
 }
 
 .webhook-items .url {
@@ -70,24 +61,28 @@
     width: 250px;
     display: inline-block;
     cursor: help;
-    justify-self: self-start;
+    justify-self: self-start
 }
 
-.api-keys-items .summary,
-.webhook-items .summary {
+.api-keys-items .summary,.webhook-items .summary {
     font-style: italic;
     color: #666b72;
     font-size: 90%;
     cursor: help;
-    min-width: 75px;
+    width: 75px;
     display: inline-block;
     text-align: center;
     text-decoration: underline;
-    text-decoration-style: dotted;
+    text-decoration-style: dotted
+}
+
+.webhook-items .summary {
+    width: auto;
+    justify-self: flex-start;
 }
 
 .add-controls {
-    margin-bottom: 1em;
+    margin-bottom: 1em
 }
 
 .event-types {
@@ -95,47 +90,43 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: 0.5em;
-    margin: 0.5em 0;
+    gap: .5em;
+    margin: .5em 0
 }
 
 .event-container {
     margin-left: 1.75em;
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: .5em
 }
 
-.event-container.all,
-.event-container.other {
-    margin-left: 0;
+.event-container.all,.event-container.other {
+    margin-left: 0
 }
 
 .event-container label {
-    display: block;
+    display: block
 }
 
 .event-container label.child {
-    margin-left: 1.75em;
+    margin-left: 1.75em
 }
 
 @media only screen and (max-width: 782px) {
-
-    .wp-core-ui button.api-keys-add.button,
-    .wp-core-ui button.webhook-add.button {
-        margin-top: 0.5em;
+    .wp-core-ui button.api-keys-add.button,.wp-core-ui button.webhook-add.button {
+        margin-top:.5em
     }
 }
 
 @media only screen and (max-width: 425px) {
-
     .webhook-items .url {
-        text-overflow: ellipsis;
+        text-overflow:ellipsis;
         overflow: hidden;
         white-space: nowrap;
         width: 115px;
         display: inline-block;
         cursor: help;
-        justify-self: self-start;
+        justify-self: self-start
     }
 }
