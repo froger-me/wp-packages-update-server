@@ -143,11 +143,6 @@ class WPPUS_License_Server {
 			}
 		}
 
-		if ( is_object( $return ) && apply_filters( 'wppus_license_is_public', true, $return ) ) {
-			unset( $return->hmac_key );
-			unset( $return->crypto_key );
-		}
-
 		do_action( 'wppus_did_read_license', $return, $payload );
 
 		return $return;
@@ -275,15 +270,9 @@ class WPPUS_License_Server {
 	}
 
 	public function is_signature_valid( $license_key, $license_signature ) {
-		$valid = false;
-		$crypt = $license_signature;
-
-		add_filter( 'wppus_license_is_public', '__return_false' );
-
-		$license = $this->read_license( array( 'license_key' => $license_key ) );
-
-		remove_filter( 'wppus_license_is_public', '__return_false' );
-
+		$valid      = false;
+		$crypt      = $license_signature;
+		$license    = $this->read_license( array( 'license_key' => $license_key ) );
 		$hmac_key   = $license->hmac_key;
 		$crypto_key = $license->crypto_key;
 

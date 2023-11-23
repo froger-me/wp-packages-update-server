@@ -168,13 +168,22 @@ class WPPUS_License_API {
 		}
 
 		$result = $this->license_server->read_license( $license_data );
-		$result = is_object( $result ) ?
-			$result :
-			array(
+
+		if ( is_object( $result ) ) {
+			unset( $result->hmac_key );
+			unset( $result->crypto_key );
+			unset( $result->data );
+			unset( $result->owner_name );
+			unset( $result->email );
+			unset( $result->company_name );
+		} else {
+			$result = array(
 				'license_key' => isset( $license_data['license_key'] ) ?
 					$license_data['license_key'] :
 					false,
 			);
+		}
+
 		$result = apply_filters( 'wppus_check_license_result', $result, $license_data );
 
 		do_action( 'wppus_did_check_license', $result );
@@ -233,6 +242,13 @@ class WPPUS_License_API {
 					apply_filters( 'wppus_activate_license_payload', $payload )
 				);
 				$result->license_signature = $this->license_server->generate_license_signature( $license, reset( $license_data['allowed_domains'] ) );
+
+				unset( $result->hmac_key );
+				unset( $result->crypto_key );
+				unset( $result->data );
+				unset( $result->owner_name );
+				unset( $result->email );
+				unset( $result->company_name );
 			}
 		} else {
 			$result['license_key'] = isset( $license_data['license_key'] ) ? $license_data['license_key'] : false;
@@ -293,6 +309,13 @@ class WPPUS_License_API {
 				$result          = $this->license_server->edit_license(
 					apply_filters( 'wppus_deactivate_license_payload', $payload )
 				);
+
+				unset( $result->hmac_key );
+				unset( $result->crypto_key );
+				unset( $result->data );
+				unset( $result->owner_name );
+				unset( $result->email );
+				unset( $result->company_name );
 			}
 		} else {
 			$result['license_key'] = isset( $license_data['license_key'] ) ? $license_data['license_key'] : false;

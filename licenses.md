@@ -66,7 +66,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_license\_public\_api\_actions](#wppus_license_public_api_actions)
 		* [wppus\_license\_api\_request\_authorized](#wppus_license_api_request_authorized)
 		* [wppus\_license\_bypass\_signature](#wppus_license_bypass_signature)
-		* [wppus\_license\_is\_public](#wppus_license_is_public)
+		* [wppus\_api\_license\_actions](#wppus_api_license_actions)
 
 ___
 ## The License Query
@@ -175,9 +175,6 @@ Response `$data` - **success**:
 		"domain1.example.com",
 	],
 	"status": "activated",
-	"owner_name": "Test Owner",
-	"email": "test@test.com",
-	"company_name": "Test Company",
 	"txn_id": "#111111111",
 	"date_created": "2099-12-01",
 	"date_renewed": "2099-12-15",
@@ -216,9 +213,6 @@ Response `$data` - **success**:
 		"example.com"
 	],
 	"status": "activated",
-	"owner_name": "Test Owner",
-	"email": "test@test.com",
-	"company_name": "Test Company",
 	"txn_id": "#111111111",
 	"date_created": "2099-12-01",
 	"date_renewed": "2099-12-15",
@@ -280,9 +274,6 @@ Response `$data` - **success** (in case some domains are still activated):
 		"domain1.example.com",
 	],
 	"status": "activated",
-	"owner_name": "Test Owner",
-	"email": "test@test.com",
-	"company_name": "Test Company",
 	"txn_id": "#111111111",
 	"date_created": "2099-12-01",
 	"date_renewed": "2099-12-15",
@@ -314,9 +305,6 @@ Response `$data` - **success** (in case all domains have been deactivated):
 	"max_allowed_domains": "2",
 	"allowed_domains": [],
 	"status": "deactivated",
-	"owner_name": "Test Owner",
-	"email": "test@test.com",
-	"company_name": "Test Company",
 	"txn_id": "#111111111",
 	"date_created": "2099-12-01",
 	"date_renewed": "2099-12-15",
@@ -442,8 +430,13 @@ Response `$data` - **success**:
 		"date_renewed": "2099-12-15",
 		"date_expiry": "2099-12-31",
 		"package_slug": "test-package",
-		"package_type": "plugin"
-	},
+		"package_type": "plugin",
+		"data": {
+			"api_owner": "private_key_id"
+		},
+		"hmac_key":"aaaaaaaaaaaaccbb9999999999999999",
+		"crypto_key":"9999999999999999ccbbaaaaaaaaaaaa"
+		},
 	...
 ]
 ```
@@ -482,7 +475,12 @@ Response `$data` - **success**:
 	"date_renewed": "2099-12-15",
 	"date_expiry": "2099-12-31",
 	"package_slug": "test-package",
-	"package_type": "plugin"
+	"package_type": "plugin",
+	"data": {
+		"api_owner": "private_key_id"
+	},
+	"hmac_key":"aaaaaaaaaaaaccbb9999999999999999",
+	"crypto_key":"9999999999999999ccbbaaaaaaaaaaaa"
 }
 ```
 
@@ -536,7 +534,12 @@ Response `$data` - **success**:
 	"date_renewed": "3099-12-15",
 	"date_expiry": "3099-12-31",
 	"package_slug": "new-package",
-	"package_type": "theme"
+	"package_type": "theme",
+	"data": {
+		"api_owner": "private_key_id"
+	},
+	"hmac_key":"aaaaaaaaaaaaccbb9999999999999999",
+	"crypto_key":"9999999999999999ccbbaaaaaaaaaaaa"
 }
 ```
 
@@ -595,7 +598,12 @@ Response `$data` - **success**:
 	"date_renewed": "2099-12-15",
 	"date_expiry": "2099-12-31",
 	"package_slug": "test-package",
-	"package_type": "plugin"
+	"package_type": "plugin",
+	"data": {
+		"api_owner": "private_key_id"
+	},
+	"hmac_key":"aaaaaaaaaaaaccbb9999999999999999",
+	"crypto_key":"9999999999999999ccbbaaaaaaaaaaaa"
 }
 ```
 
@@ -639,7 +647,12 @@ Response `$data` - **success**:
 	"date_renewed": "2099-12-15",
 	"date_expiry": "2099-12-31",
 	"package_slug": "test-package",
-	"package_type": "plugin"
+	"package_type": "plugin",
+	"data": {
+		"api_owner": "private_key_id"
+	},
+	"hmac_key":"aaaaaaaaaaaaccbb9999999999999999",
+	"crypto_key":"9999999999999999ccbbaaaaaaaaaaaa"
 }
 ```
 
@@ -1450,21 +1463,17 @@ Fired during client license API request.
 `$license`
 > (string) the license object  
 ___
-### wppus_license_is_public
+### wppus_api_license_actions
 
 ```php
-apply_filters( 'wppus_license_is_public', bool $is_public, object $license );
+apply_filters( 'wppus_api_license_actions', array $actions );
 ```
 
 **Description**  
-Filter whether the license object being manipulated is to be publicly exposed.  
-If `$is_public` is truthy, the cryptographic information used for building and authenticating the signature are subsequently stripped from the license object.  
-Fired during client license API request.
+Filter the License API actions available for API access control.  
 
 **Parameters**  
-`$is_public`
-> (bool) whether the license object being manipulated is to be publicly exposed  
+`$actions`
+> (array) the API actions  
 
-`$license`
-> (string) the license object  
 ___
