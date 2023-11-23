@@ -401,6 +401,19 @@ if ( ! function_exists( 'wppus_clear_nonces' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wppus_build_nonce_api_signature' ) ) {
+	function wppus_build_nonce_api_signature( $api_key_id, $api_key, $timestamp ) {
+		$credentials = $timestamp . '/' . $api_key_id;
+		$time_key    = hash_hmac( 'sha256', $timestamp, $api_key, true );
+		$signature   = hash_hmac( 'sha256', base64_encode( $api_key_id ), $time_key ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+
+		return array(
+			'credentials' => $credentials,
+			'signature'   => $signature,
+		);
+	}
+}
+
 if ( ! function_exists( 'wppus_schedule_webhook' ) ) {
 	function wppus_schedule_webhook( $payload, $event_type ) {
 

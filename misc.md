@@ -17,7 +17,8 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 			* [wppus\_get\_nonce\_data](#wppus_get_nonce_data)
 			* [wppus\_validate\_nonce](#wppus_validate_nonce)
 			* [wppus\_delete\_nonce](#wppus_delete_nonce)
-			* [wppus\_delete\_nonce](#wppus_delete_nonce-1)
+			* [wppus\_clear\_nonce](#wppus_clear_nonce)
+			* [wppus\_build\_nonce\_api\_signature](#wppus_build_nonce_api_signature)
 			* [wppus\_schedule\_webhook](#wppus_schedule_webhook)
 			* [wppus\_fire\_webhook](#wppus_fire_webhook)
 	* [Actions](#actions)
@@ -34,7 +35,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_clear\_nonces\_query](#wppus_clear_nonces_query)
 		* [wppus\_clear\_nonces\_query\_args](#wppus_clear_nonces_query_args)
 		* [wppus\_expire\_nonce](#wppus_expire_nonce)
-		* [wppus\_delete\_nonce](#wppus_delete_nonce-2)
+		* [wppus\_delete\_nonce](#wppus_delete_nonce-1)
 		* [wppus\_fetch\_nonce](#wppus_fetch_nonce)
 		* [wppus\_nonce\_authorize](#wppus_nonce_authorize)
 		* [wppus\_api\_option\_update](#wppus_api_option_update)
@@ -51,22 +52,23 @@ If requesting a token for an existing API, the `api` parameter value must be pro
 The credentials and the signature are valid for 1 minute ; building them is the responsibility of the third-party client making use of the API - an implementation in PHP is provided below.  
 **Using `GET` requests directly in the browser, whether through the URL bar or JavaScript, is strongly discouraged due to security concerns** ; it should be avoided at all cost to prevent the inadvertent exposure of the credentials and signature.  
 
-Building API credentials and API signature:
+Building API credentials and API signature - developers may use this function in their own project:
 
 ```php
-if ( ! function_exists( 'build_wppus_nonce_api_signature' ) ) {
+if ( ! function_exists( 'wppus_build_nonce_api_signature' ) ) {
 	/**
-	* Generate credentials and signature for WPPUS Nonce API
+	* Build credentials and signature for WPPUS Nonce API
 	*
 	* @param string $api_key_id The ID of the Private API Key
 	* @param string $api_key The Private API Key - will not be sent over the Internet
+	* @param int    $timestamp The timestamp used to limit the validity of the signature (validity is MINUTE_IN_SECONDS)
 	* @return array An array with keys `credentials` and `signature`
 	*/
-	function build_wppus_nonce_api_signature( $api_key_id, $api_key ) {
+	function wppus_build_nonce_api_signature( $api_key_id, $api_key, $timestamp ) {
 		$timestamp   = time();
-		$credentials = $timestamp . '|' . $api_key_id;
-		$time_sign   = hash_hmac( 'sha256', $timestamp, $api_key, true );
-		$signature   = hash_hmac( 'sha256', base64_encode( $api_key_id ), $time_sign );
+		$credentials = $timestamp . '/' . $api_key_id;
+		$time_key    = hash_hmac( 'sha256', $timestamp, $api_key, true );
+		$signature   = hash_hmac( 'sha256', base64_encode( $api_key_id ), $time_key ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 
 		return array(
 			'credentials' => $credentials,
@@ -74,6 +76,12 @@ if ( ! function_exists( 'build_wppus_nonce_api_signature' ) ) {
 		);
 	}
 }
+
+// Usage
+$values = wppus_build_nonce_api_signature( getenv( 'WPPUS_API_KEY_ID' ), getenv( 'WPPUS_API_KEY' ), time() );
+
+echo '<div>The credentials are: ' . esc_html( $values['credentials'] ) . '</div>';
+echo '<div>The signature is: ' . esc_html( $values['signature'] ) . '</div>';
 ```
 
 In case the Private API Key is invalid, the API will return the following response (message's language depending on availabe translations), with HTTP response code set to `403`:
@@ -443,7 +451,7 @@ Delete a nonce from the system if the corresponding value exists.
 > (bool) whether the nonce was deleted  
 
 ___
-#### wppus_delete_nonce
+#### wppus_clear_nonce
 
 ```php
 wppus_clear_nonces()
@@ -454,6 +462,29 @@ Clear expired nonces from the system.
 
 **Return value**
 > (bool) whether some nonces were cleared  
+
+___
+#### wppus_build_nonce_api_signature
+
+```php
+wppus_build_nonce_api_signature( string $api_key_id, string $api_key, int $timestamp )
+```
+
+**Description**  
+Build credentials and signature for WPPUS Nonce API  
+
+**Parameters**  
+`$api_key_id`
+> (string) the ID of the Private API Key  
+
+`$api_key`
+> (string) the Private API Key - will not be sent over the Internet  
+
+`$timestamp`
+> (int) the timestamp used to limit the validity of the signature (validity is `MINUTE_IN_SECONDS`)  
+
+**Return value**
+> (array) an array with keys `credentials` and `signature`  
 
 ___
 #### wppus_schedule_webhook

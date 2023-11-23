@@ -512,9 +512,8 @@ class WPPUS_Nonce {
 		}
 
 		if ( $sign && $timestamp && $key_id && isset( self::$private_keys[ $key_id ] ) ) {
-			$time_sign = hash_hmac( 'sha256', $timestamp, self::$private_keys[ $key_id ]['key'], true );
-			$hash      = hash_hmac( 'sha256', base64_encode( $key_id ), $time_sign ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-			$auth      = hash_equals( $hash, $sign );
+			$values = wppus_build_nonce_api_signature( $key_id, self::$private_keys[ $key_id ], $timestamp );
+			$auth   = hash_equals( $values['signature'], $sign );
 		}
 
 		return apply_filters(
