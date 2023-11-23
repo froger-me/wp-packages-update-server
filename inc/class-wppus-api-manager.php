@@ -115,24 +115,11 @@ class WPPUS_API_Manager {
 				'result'              => $result,
 				'license_api_actions' => apply_filters(
 					'wppus_api_license_actions',
-					array(
-						'all'   => array(
-							'label'   => __( 'All access to licenses associated with the License API Key', 'wppus' ),
-							'actions' => array(),
-						),
-						'other' => array(
-							'label' => __( 'Also grant access to other licenses', 'wppus' ),
-						),
-					)
+					array()
 				),
 				'package_api_actions' => apply_filters(
 					'wppus_api_package_actions',
-					array(
-						'all' => array(
-							'label'   => __( 'All access', 'wppus' ),
-							'actions' => array(),
-						),
-					)
+					array()
 				),
 				'webhook_events'      => apply_filters(
 					'wppus_api_webhook_events',

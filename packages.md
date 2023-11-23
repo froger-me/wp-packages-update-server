@@ -118,6 +118,7 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_webhook\_process\_request](#wppus_webhook_process_request)
 		* [wppus\_package\_option\_update](#wppus_package_option_update)
 		* [wppus\_remote\_source\_option\_update](#wppus_remote_source_option_update)
+		* [wppus\_api\_package\_actions](#wppus_api_package_actions)
 
 
 
@@ -2539,3 +2540,18 @@ Filter whether to update the remote sources plugin option.
 > (array) the values submitted along with the option  
 
 ___
+### wppus_api_package_actions
+
+```php
+apply_filters( 'wppus_api_package_actions', array $actions );
+```
+
+**Description**  
+Filter the Package API actions available for API access control.  
+
+**Parameters**  
+`$actions`
+> (array) the API actions  
+
+___
+

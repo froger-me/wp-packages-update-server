@@ -45,6 +45,7 @@ class WPPUS_License_API {
 				add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 				add_filter( 'wppus_handle_update_request_params', array( $this, 'wppus_handle_update_request_params' ), 0, 1 );
 				add_filter( 'wppus_server_class_name', array( $this, 'wppus_server_class_name' ), 0, 2 );
+				add_filter( 'wppus_api_license_actions', array( $this, 'wppus_api_license_actions' ), 0, 1 );
 				add_filter( 'wppus_api_webhook_events', array( $this, 'wppus_api_webhook_events' ), 0, 1 );
 				add_filter( 'wppus_nonce_api_payload', array( $this, 'wppus_nonce_api_payload' ), 0, 1 );
 			}
@@ -75,8 +76,8 @@ class WPPUS_License_API {
 					foreach ( $result as $index => $license ) {
 
 						if (
-							! isset( $license['data'], $license['data']['api_owner'] ) ||
-							$license['data']['api_owner'] !== $this->api_key_id
+							! isset( $license->data, $license->data['api_owner'] ) ||
+							$license->data['api_owner'] !== $this->api_key_id
 						) {
 							unset( $result[ $index ] );
 						}
@@ -205,11 +206,7 @@ class WPPUS_License_API {
 			unset( $license_data['id'] );
 		}
 
-		add_filter( 'wppus_license_is_public', '__return_false' );
-
 		$license = $this->license_server->read_license( $license_data );
-
-		remove_filter( 'wppus_license_is_public', '__return_false' );
 
 		do_action( 'wppus_pre_activate_license', $license );
 
@@ -402,6 +399,16 @@ class WPPUS_License_API {
 		}
 
 		return $class_name;
+	}
+
+	public function wppus_api_license_actions( $actions ) {
+		$actions['browse'] = __( 'Browse multiple license records', 'wppus' );
+		$actions['read']   = __( 'Get single license records', 'wppus' );
+		$actions['edit']   = __( 'Update license records', 'wppus' );
+		$actions['add']    = __( 'Create license records', 'wppus' );
+		$actions['delete'] = __( 'Delete license records', 'wppus' );
+
+		return $actions;
 	}
 
 	public function wppus_api_webhook_events( $webhook_events ) {
@@ -627,42 +634,30 @@ class WPPUS_License_API {
 
 		$is_auth = wppus_validate_nonce( $token );
 
+		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_private' ), 10 );
+
 		if ( $this->api_key_id && $this->api_access ) {
 
-			if ( 'browse' === $action ) {
-				if (
-					! in_array( 'all', $this->api_access, true ) ||
-					! in_array( $action, $this->api_access, true )
-				) {
-					$is_auth = false;
-				}
-			} elseif ( 'add' === $action ) {
-
-				if (
-					! in_array( 'all', $this->api_access, true ) ||
-					! in_array( $action, $this->api_access, true )
-				) {
-					$is_auth = false;
-				}
+			if ( 'browse' === $action || 'add' === $action ) {
+				$is_auth = $is_auth && (
+					in_array( 'all', $this->api_access, true ) ||
+					in_array( $action, $this->api_access, true )
+				);
 			} elseif ( isset( $payload['license_key'] ) ) {
 				$license = $this->read( $payload );
-
-				if (
-					! is_object( $license ) ||
-					! isset( $license->data['api_owner'] ) ||
-					! in_array( 'all', $this->api_access, true ) ||
-					! in_array( $action, $this->api_access, true ) ||
+				$is_auth = $is_auth && (
+					is_object( $license ) &&
 					(
-						$this->api_key_id !== $license->data['api_owner'] &&
-						! in_array( 'other', $this->api_access, true )
+						in_array( 'all', $this->api_access, true ) ||
+						in_array( $action, $this->api_access, true )
+					) &&
+					(
+						( isset( $license->data['api_owner'] ) && $this->api_key_id === $license->data['api_owner'] ) ||
+						in_array( 'other', $this->api_access, true )
 					)
-				) {
-					$is_auth = false;
-				}
+				);
 			}
 		}
-
-		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_private' ), 10 );
 
 		return $is_auth;
 	}

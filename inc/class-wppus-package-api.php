@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WPPUS_Package_API {
 	protected $http_response_code = 200;
+	protected $api_key_id;
+	protected $api_access;
 
 	protected static $doing_update_api_request = null;
 	protected static $instance;
@@ -26,6 +28,7 @@ class WPPUS_Package_API {
 			add_action( 'wppus_did_download_package', array( $this, 'wppus_did_download_package' ), 10, 1 );
 
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
+			add_filter( 'wppus_api_package_actions', array( $this, 'wppus_api_package_actions' ), 0, 1 );
 			add_filter( 'wppus_api_webhook_events', array( $this, 'wppus_api_webhook_events' ), 10, 1 );
 			add_filter( 'wppus_nonce_api_payload', array( $this, 'wppus_nonce_api_payload' ), 0, 1 );
 		}
@@ -306,6 +309,17 @@ class WPPUS_Package_API {
 		wppus_schedule_webhook( $payload, 'package' );
 	}
 
+	public function wppus_api_package_actions( $actions ) {
+		$actions['browse']     = __( 'Get information about multiple packages', 'wppus' );
+		$actions['read']       = __( 'Get information about a single package', 'wppus' );
+		$actions['edit']       = __( 'Force download a package to overwrite the existing one on the file system ; requires using a Remote Repository', 'wppus' );
+		$actions['add']        = __( 'Force download a package to the file system if it does not exist ; requires using a Remote Repository', 'wppus' );
+		$actions['delete']     = __( 'Delete a package from the file system', 'wppus' );
+		$actions['signed_url'] = __( 'Get secure URLs to download packages', 'wppus' );
+
+		return $actions;
+	}
+
 	public function wppus_api_webhook_events( $webhook_events ) {
 
 		if ( isset( $webhook_events['package'], $webhook_events['package']['events'] ) ) {
@@ -368,7 +382,9 @@ class WPPUS_Package_API {
 						in_array( $action, $values['access'], true )
 					)
 				) {
-					$valid = true;
+					$this->api_key_id = $id;
+					$this->api_access = $values['access'];
+					$valid            = true;
 				}
 			}
 		}
@@ -478,7 +494,7 @@ class WPPUS_Package_API {
 		return $result;
 	}
 
-	protected function authorize_private() {
+	protected function authorize_private( $action ) {
 		$token   = false;
 		$is_auth = false;
 
@@ -504,6 +520,13 @@ class WPPUS_Package_API {
 		$is_auth = wppus_validate_nonce( $token );
 
 		remove_filter( 'wppus_fetch_nonce', array( $this, 'wppus_fetch_nonce_private' ), 10 );
+
+		if ( $this->api_key_id && $this->api_access ) {
+			$is_auth = $is_auth && (
+				in_array( 'all', $this->api_access, true ) ||
+				in_array( $action, $this->api_access, true )
+			);
+		}
 
 		return $is_auth;
 	}
@@ -551,7 +574,7 @@ class WPPUS_Package_API {
 							$this->authorize_public()
 						) ||
 						(
-							$this->authorize_private() &&
+							$this->authorize_private( $method ) &&
 							$this->authorize_ip()
 						)
 					),

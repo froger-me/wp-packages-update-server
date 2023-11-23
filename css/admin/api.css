@@ -40,7 +40,7 @@
     align-items: center;
     padding: 0.5em;
     border-bottom: 1px solid #c3c4c7;
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: auto 1fr 2fr auto;
     gap: 0 1em;
     justify-items: center;
 }
@@ -73,7 +73,8 @@
     justify-self: self-start;
 }
 
-.webhook-items .events {
+.api-keys-items .summary,
+.webhook-items .summary {
     font-style: italic;
     color: #666b72;
     font-size: 90%;
@@ -85,7 +86,7 @@
     text-decoration-style: dotted;
 }
 
-.webhook-add-controls {
+.add-controls {
     margin-bottom: 1em;
 }
 
@@ -123,5 +124,18 @@
     .wp-core-ui button.api-keys-add.button,
     .wp-core-ui button.webhook-add.button {
         margin-top: 0.5em;
+    }
+}
+
+@media only screen and (max-width: 425px) {
+
+    .webhook-items .url {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        width: 115px;
+        display: inline-block;
+        cursor: help;
+        justify-self: self-start;
     }
 }

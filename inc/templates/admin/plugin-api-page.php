@@ -17,23 +17,23 @@
 						<div class="add-controls">
 							<input type="text" class="new-api-key-item-id" placeholder="<?php esc_attr_e( 'Package Key ID' ); ?>">
 							<div class="event-types">
-								<?php foreach ( $package_api_actions as $top_action => $values ) : ?>
-								<div class="event-container <?php echo esc_attr( $top_action ); ?>">
-									<label class="top-level"><input type="checkbox" data-api-action="<?php echo esc_attr( $top_action ); ?>"> <?php echo esc_html( $values['label'] ); ?> <code>(<?php echo esc_html( $top_action ); ?>)</code></label>
-									<?php if ( isset( $values['actions'] ) && ! empty( $values['actions'] ) ) : ?>
-										<?php foreach ( $values['actions'] as $action_name => $label ) : ?>
-										<label class="child"><input type="checkbox" data-api-action="<?php echo esc_attr( $action_name ); ?>"> <?php echo esc_html( $label ); ?> <code>(<?php echo esc_html( $action_name ); ?>)</code></label>
-										<?php endforeach; ?>
-									<?php endif; ?>
+								<div class="event-container all">
+									<label><input type="checkbox" data-api-action="all"> <?php esc_html_e( 'Grant access to all the package actions', 'wppus' ); ?> <code>(all)</code></label>
 								</div>
-								<?php endforeach; ?>
+								<?php if ( ! empty( $package_api_actions ) ) : ?>
+									<?php foreach ( $package_api_actions as $action_id => $label ) : ?>
+									<div class="event-container <?php echo esc_attr( $action_id ); ?>">
+										<label class="top-level"><input type="checkbox" data-api-action="<?php echo esc_attr( $action_id ); ?>"> <?php echo esc_html( $label ); ?> <code>(<?php echo esc_html( $action_id ); ?>)</code></label>
+									</div>
+									<?php endforeach; ?>
+								<?php endif; ?>
 							</div>
 							<button disabled="disabled" class="api-keys-add button" type="button"><?php esc_html_e( 'Add a Package API Key' ); ?></button>
 						</div>
 						<input type="hidden" class="api-key-values" id="wppus_package_private_api_keys" name="wppus_package_private_api_keys" value="<?php echo esc_attr( get_option( 'wppus_package_private_api_keys', '{}' ) ); ?>">
 					</div>
 					<p class="description">
-						<?php esc_html_e( 'Used to get tokens for package administration requests (browse, read, edit, add, delete) and requests of signed URLs used to download packages.', 'wppus' ); ?>
+						<?php esc_html_e( 'Used to get tokens for package administration requests and requests of signed URLs used to download packages.', 'wppus' ); ?>
 						<br>
 						<?php
 						printf(
@@ -55,7 +55,7 @@
 				<td>
 					<textarea class="ip-whitelist" id="wppus_package_private_api_ip_whitelist" name="wppus_package_private_api_ip_whitelist"><?php echo esc_html( implode( "\n", get_option( 'wppus_package_private_api_ip_whitelist', array() ) ) ); ?></textarea>
 					<p class="description">
-						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authoriszed to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
+						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authorized to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
 						<?php esc_html_e( 'Leave blank to accept any IP address (not recommended).', 'wprus' ); ?>
 					</p>
 				</td>
@@ -75,23 +75,26 @@
 						<div class="add-controls">
 							<input type="text" class="new-api-key-item-id" placeholder="<?php esc_attr_e( 'License Key ID' ); ?>">
 							<div class="event-types">
-								<?php foreach ( $license_api_actions as $top_action => $values ) : ?>
-								<div class="event-container <?php echo esc_attr( $top_action ); ?>">
-									<label class="top-level"><input type="checkbox" data-api-action="<?php echo esc_attr( $top_action ); ?>"> <?php echo esc_html( $values['label'] ); ?> <code>(<?php echo esc_html( $top_action ); ?>)</code></label>
-									<?php if ( isset( $values['actions'] ) && ! empty( $values['actions'] ) ) : ?>
-										<?php foreach ( $values['actions'] as $action_name => $label ) : ?>
-										<label class="child"><input type="checkbox" data-api-action="<?php echo esc_attr( $action_name ); ?>"> <?php echo esc_html( $label ); ?> <code>(<?php echo esc_html( $action_name ); ?>)</code></label>
-										<?php endforeach; ?>
-									<?php endif; ?>
+								<div class="event-container all">
+									<label><input type="checkbox" data-api-action="all"> <?php esc_html_e( 'Grant access to all the license actions affecting the records associated with the License API Key', 'wppus' ); ?> <code>(all)</code></label>
 								</div>
-								<?php endforeach; ?>
+								<?php if ( ! empty( $license_api_actions ) ) : ?>
+									<?php foreach ( $license_api_actions as $action_id => $label ) : ?>
+									<div class="event-container <?php echo esc_attr( $action_id ); ?>">
+										<label class="top-level"><input type="checkbox" data-api-action="<?php echo esc_attr( $action_id ); ?>"> <?php echo esc_html( $label ); ?> <code>(<?php echo esc_html( $action_id ); ?>)</code></label>
+									</div>
+									<?php endforeach; ?>
+								<?php endif; ?>
+								<div class="event-container other">
+									<label><input type="checkbox" data-api-action="other"> <?php esc_html_e( 'Also grant access to affect other records (all records)', 'wppus' ); ?> <code>(other)</code></label>
+								</div>
 							</div>
 							<button disabled="disabled" class="api-keys-add button" type="button"><?php esc_html_e( 'Add a License API Key' ); ?></button>
 						</div>
 						<input type="hidden" class="api-key-values" id="wppus_license_private_api_keys" name="wppus_license_private_api_keys" value="<?php echo esc_attr( get_option( 'wppus_license_private_api_keys', '{}' ) ); ?>">
 					</div>
 					<p class="description">
-						<?php esc_html_e( 'Used to get tokens for license administration requests (browse, read, edit, add, delete).', 'wppus' ); ?>
+						<?php esc_html_e( 'Used to get tokens for license administration requests.', 'wppus' ); ?>
 						<br>
 						<?php
 						printf(
@@ -113,7 +116,7 @@
 				<td>
 					<textarea class="ip-whitelist" id="wppus_license_private_api_ip_whitelist" name="wppus_license_private_api_ip_whitelist"><?php echo esc_html( implode( "\n", get_option( 'wppus_license_private_api_ip_whitelist', array() ) ) ); ?></textarea>
 					<p class="description">
-						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authoriszed to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
+						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authorized to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
 						<?php esc_html_e( 'Leave blank to accept any IP address (not recommended).', 'wprus' ); ?>
 					</p>
 				</td>
@@ -135,7 +138,7 @@
 									<label><input type="checkbox" data-webhook-event="all"> <?php esc_html_e( 'All events', 'wppus' ); ?></label>
 								</div>
 								<?php foreach ( $webhook_events as $top_event => $values ) : ?>
-								<div class="event-container">
+								<div class="event-container" <?php echo esc_attr( $top_event ); ?>>
 									<label class="top-level"><input type="checkbox" data-webhook-event="<?php echo esc_attr( $top_event ); ?>"> <?php echo esc_html( $values['label'] ); ?> <code>(<?php echo esc_html( $top_event ); ?>)</code></label>
 									<?php if ( isset( $values['events'] ) && ! empty( $values['events'] ) ) : ?>
 										<?php foreach ( $values['events'] as $event => $label ) : ?>

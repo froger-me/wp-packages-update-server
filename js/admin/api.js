@@ -62,8 +62,6 @@ jQuery(document).ready(function ($) {
                 }
             });
 
-            console.log(data);
-
             urlNew.val('');
             secretNew.val('');
             allEvents.prop('checked', true);
@@ -78,7 +76,7 @@ jQuery(document).ready(function ($) {
             });
             var urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+\/?)|localhost(:\d+)?(\/[\w-]+)*\/?(\?\S*)?$/;
 
-            isEnabled = isEnabled && urlPattern.test(inputValue) && (1 <= secretNew.val().length);
+            isEnabled = isEnabled && urlPattern.test(inputValue) && (16 <= secretNew.val().length) && 0 !== el.find('.event-container input[type="checkbox"]:checked').length;;
             addButton.disabled = !isEnabled;
         }
 
@@ -100,7 +98,7 @@ jQuery(document).ready(function ($) {
                 secretText.classList = 'secret';
                 eventsText.textContent = (1 === data[index].events.length) ? Wppus_l10n.eventApiCountSingular : Wppus_l10n.eventApiCountPlural.replace('%d', data[index].events.length)
                 eventsText.title = '(' + data[index].events.join(', ') + ')';
-                eventsText.classList = 'events';
+                eventsText.classList = 'summary';
                 deleteButton.type = 'button';
                 deleteButton.innerHTML = '<span class="wppus-remove-icon" aria-hidden="true"></span>';
                 deleteButton.onclick = function () {
@@ -146,6 +144,8 @@ jQuery(document).ready(function ($) {
                     licenseEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('disabled', true);
                 }
             }
+
+            validateInput();
         });
 
         // Initial rendering
@@ -165,6 +165,7 @@ jQuery(document).ready(function ($) {
 
         var data = JSON.parse(el.find('.api-key-values').val());
         var idNew = el.find('.new-api-key-item-id');
+        var allActions = el.find('input[data-api-action="all"]');
         var addButton = el.find('.api-keys-add').get(0);
         var itemsContainer = el.find('.api-keys-items').get(0);
 
@@ -176,12 +177,40 @@ jQuery(document).ready(function ($) {
             addButton.disabled = 'disabled';
             data[idNew.val()] = {
                 'key': bin2hex_openssl_random_pseudo_bytes(16),
-                'access': ['all']
+                'access': []
             };
 
+            if (allActions.prop('checked') || el.find('.event-container:not(.all, .other) input[type="checkbox"]').length === el.find('.event-container:not(.all, .other) input[type="checkbox"]:checked').length) {
+                allActions.prop('checked', true);
+                el.find('.event-container:not(.all) input[type="checkbox"]').prop('checked', false);
+                data[idNew.val()].access.push('all');
+            }
+
+            el.find('.event-container input[type="checkbox"]').each(function (idx, checkbox) {
+                checkbox = $(checkbox);
+
+                if ('all' !== checkbox.data('api-action') && checkbox.prop('checked')) {
+                    data[idNew.val()].access.push(checkbox.data('api-action'));
+                }
+            });
+
+            allActions.prop('checked', true);
+            allActions.trigger('change');
             idNew.val('');
+            validateInput();
             renderItems();
         };
+
+        function validateInput() {
+            var inputValue = idNew.get(0).value.trim();
+            var isEnabled = inputValue !== '' && !Object.values(data).some(function (item) {
+                return item === inputValue;
+            });
+
+            isEnabled = isEnabled && /^[a-zA-Z0-9_-]+$/.test(inputValue) && 0 !== el.find('.event-container:not(.other) input[type="checkbox"]:checked').length;
+
+            addButton.disabled = !isEnabled;
+        }
 
         function renderItems() {
             itemsContainer.innerHTML = '';
@@ -190,6 +219,7 @@ jQuery(document).ready(function ($) {
                 var itemContainer = document.createElement('div');
                 var idText = document.createElement('span');
                 var keyText = document.createElement('span');
+                var actionsText = document.createElement('span');
                 var deleteButton = document.createElement('button');
 
                 itemContainer.className = 'item';
@@ -197,6 +227,9 @@ jQuery(document).ready(function ($) {
                 idText.classList = 'id';
                 keyText.textContent = data[index].key;
                 keyText.classList = 'key';
+                actionsText.textContent = (1 === data[index].access.length) ? Wppus_l10n.eventApiCountSingular : Wppus_l10n.eventApiCountPlural.replace('%d', data[index].access.length);
+                actionsText.title = '(' + data[index].access.join(', ') + ')';
+                actionsText.classList = 'summary';
                 deleteButton.type = 'button';
                 deleteButton.innerHTML = '<span class="wppus-remove-icon" aria-hidden="true"></span>';
                 deleteButton.onclick = function () {
@@ -207,6 +240,7 @@ jQuery(document).ready(function ($) {
                     }
                 };
 
+                itemContainer.appendChild(actionsText);
                 itemContainer.appendChild(idText);
                 itemContainer.appendChild(keyText);
                 itemContainer.appendChild(deleteButton);
@@ -220,18 +254,23 @@ jQuery(document).ready(function ($) {
             }
         }
 
-        idNew.on('input', function () {
-            var inputValue = $(this).get(0).value.trim();
-            var isEnabled = inputValue !== '' && !Object.values(data).some(function (item) {
-                return item === inputValue;
-            });
+        idNew.on('input', validateInput);
+        el.find('.event-types input[type="checkbox"]').on('change', function () {
 
-            isEnabled = isEnabled && /^[a-zA-Z0-9_-]+$/.test(inputValue);
+            if (allActions.prop('checked')) {
+                el.find('.event-container:not(.other) input[type="checkbox"]').prop('checked', true);
+                el.find('.event-container:not(.other) input[type="checkbox"]').prop('disabled', true);
+                allActions.prop('disabled', false);
+            } else {
+                el.find('.event-types input[type="checkbox"]').prop('disabled', false);
+            }
 
-            addButton.disabled = !isEnabled;
+            validateInput();
         });
 
         // Initial rendering
+        allActions.prop('checked', true);
+        allActions.trigger('change');
         renderItems();
 
         $('input[type="submit"]').on('click', function (e) {
