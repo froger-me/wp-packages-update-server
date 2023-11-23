@@ -163,12 +163,7 @@ class WPPUS_License_API {
 
 	public function check( $license_data ) {
 		$license_data = apply_filters( 'wppus_check_license_dirty_payload', $license_data );
-
-		if ( isset( $license_data['id'] ) ) {
-			unset( $license_data['id'] );
-		}
-
-		$result = $this->license_server->read_license( $license_data );
+		$result       = $this->license_server->read_license( $license_data );
 
 		if ( is_object( $result ) ) {
 			unset( $result->hmac_key );
@@ -201,12 +196,7 @@ class WPPUS_License_API {
 		$license_data = apply_filters( 'wppus_activate_license_dirty_payload', $license_data );
 		$request_slug = isset( $license_data['package_slug'] ) ? $license_data['package_slug'] : false;
 		$result       = array();
-
-		if ( isset( $license_data['id'] ) ) {
-			unset( $license_data['id'] );
-		}
-
-		$license = $this->license_server->read_license( $license_data );
+		$license      = $this->license_server->read_license( $license_data );
 
 		do_action( 'wppus_pre_activate_license', $license );
 
@@ -266,13 +256,8 @@ class WPPUS_License_API {
 		$license      = null;
 		$license_data = apply_filters( 'wppus_deactivate_license_dirty_payload', $license_data );
 		$request_slug = isset( $license_data['package_slug'] ) ? $license_data['package_slug'] : false;
-
-		if ( isset( $license_data['id'] ) ) {
-			unset( $license_data['id'] );
-		}
-
-		$license = $this->license_server->read_license( $license_data );
-		$result  = array();
+		$license      = $this->license_server->read_license( $license_data );
+		$result       = array();
 
 		do_action( 'wppus_pre_deactivate_license', $license );
 
@@ -563,9 +548,7 @@ class WPPUS_License_API {
 			);
 		}
 
-		if ( (bool) ( constant( 'WP_DEBUG' ) ) ) {
-			$payload['expiry_length'] = DAY_IN_SECONDS;
-		}
+		$payload['expiry_length'] = HOUR_IN_SECONDS / 2;
 
 		return $payload;
 	}
