@@ -556,6 +556,10 @@ class WPPUS_License_API {
 			);
 		}
 
+		if ( (bool) ( constant( 'WP_DEBUG' ) ) ) {
+			$payload['expiry_length'] = DAY_IN_SECONDS;
+		}
+
 		return $payload;
 	}
 
