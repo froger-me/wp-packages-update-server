@@ -42,14 +42,14 @@
 					<?php
 					printf(
 						// translators: %s is <code>$packages_dir</code>
-						esc_html__( 'Get an archive of a package from a Remote Repository an put it in the %s directory by entering the package slug.', 'wppus' ),
+						esc_html__( 'Get an archive of a package from a Remote Repository and put it in the %s directory by entering the package slug.', 'wppus' ),
 						'<code>' . esc_html( $packages_dir ) . '</code>',
 					);
 					?>
 					<?php
 					printf(
 						// translators: %s is <code>package-slug</code>
-						esc_html__( 'The repository name should be  and all the files should be located at the root of the repository.', 'wppus' ),
+						esc_html__( 'The repository name should be %s and all the files should be located at the root of the repository.', 'wppus' ),
 						'<code>package-slug</code>',
 					);
 					?>
@@ -65,7 +65,7 @@
 					<br>
 					<?php esc_html_e( 'Using this method adds the package to the list if not present or forcefully downloads its latest version from the Remote Repository and overwrites the existing package.', 'wppus' ); ?>
 					<br>
-					<?php esc_html_e( 'Note: packages will be overwritten automatically regularly with their counterpart from the Remote Repository if a newer version exists.', 'wppus' ); ?>
+					<?php esc_html_e( 'Note: packages will be overwritten automatically and regularly with their counterpart from the Remote Repository if a newer version exists.', 'wppus' ); ?>
 				</p>
 			</td>
 		</tr>
@@ -92,7 +92,7 @@
 					<?php
 					printf(
 						// translators: %1$s is <code>package-slug.zip</code>, %2$s is <code>package-slug.php</code>
-						esc_html__( 'In the case of a plugin the main plugin file must have the same name as the zip archive - for example, the main plugin file in %1$s would be %2$s.', 'wppus' ),
+						esc_html__( 'In the case of a plugin, the main plugin file must have the same name as the zip archive - for example, the main plugin file in %1$s would be %2$s.', 'wppus' ),
 						'<code>package-slug.zip</code>',
 						'<code>package-slug.php</code>',
 					);
@@ -101,7 +101,7 @@
 					<?php esc_html_e( 'Using this method adds the package to the list if not present or overwrites the existing package.', 'wppus' ); ?>
 					<?php if ( get_option( 'wppus_use_remote_repository' ) ) : ?>
 					<br>
-						<?php esc_html_e( 'Note: a manually uploaded package that does not have its counterpart in a Remote Repository will need to be re-uploaded manually to provide updates for each new release.', 'wppus' ); ?>
+						<?php esc_html_e( 'Note: a manually uploaded package that does not have its counterpart in a Remote Repository will need to be uploaded manually for each new release to provide updates.', 'wppus' ); ?>
 					<?php endif; ?>
 				</p>
 			</td>

@@ -15,7 +15,7 @@
 				<?php
 				printf(
 					// translators: %s is the packages folder
-					esc_html__( 'If it does not exist, a virtual folders %s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
+					esc_html__( 'If it does not exist, a virtual folder %s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
 					'<code>' . esc_html( $virtual_dir ) . '</code>',
 				);
 				?>
@@ -97,7 +97,7 @@
 				<?php
 				printf(
 					// translators: %s is the packages folder
-					esc_html__( 'If it does not exist, a virtual folders %s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
+					esc_html__( 'If it does not exist, a virtual folder %s will be created in the Storage Unit chosen for package storage.', 'wppus' ),
 					'<code>' . esc_html( $virtual_dir ) . '</code>',
 				);
 				?>

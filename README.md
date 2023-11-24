@@ -121,7 +121,7 @@ The following settings are available:
 
 Name                                | Type     | Description
 ----------------------------------- |:--------:| ------------------------------------------------------------------------------------------------------------------------------
-Use Cloud Storage                   | checkbox | Check to use a Cloud Storage Service - S3 Compatible.<br>If it does not exist, a virtual folders `wppus-packages` will be created in the Storage Unit chosen for package storage.
+Use Cloud Storage                   | checkbox | Check to use a Cloud Storage Service - S3 Compatible.<br>If it does not exist, a virtual folder `wppus-packages` will be created in the Storage Unit chosen for package storage.
 Cloud Storage Access Key            | text     | The Access Key provided by the Cloud Storage service provider.
 Cloud Storage Secret Key            | text     | The Secret Key provided by the Cloud Storage service provider.
 Cloud Storage Endpoint              | text     | The domain (without `http://` or `https://`) of the endpoint for the Cloud Storage Service.
@@ -132,7 +132,7 @@ Cache max size (in MB)              | number   | Maximum size in MB for the `wp-
 Logs max size (in MB)               | number   | Maximum size in MB for the `wp-content/plugins/wp-packages-update-server/logs` directory. If the size of the directory grows larger, its content will be deleted at next cron run (checked hourly). The size indicated in the "Force Clean" button is the real current size.
 
 A button is available to send a test request to the Cloud Storage Service. The request checks whether the provider is reachable and if the Storage Unit exists and is writable.  
-If it does not exist during the test, a virtual folders `wppus-packages` will be created in the Storage Unit chosen for package storage.  
+If it does not exist during the test, a virtual folder `wppus-packages` will be created in the Storage Unit chosen for package storage.  
 
 ### Remote Sources
 

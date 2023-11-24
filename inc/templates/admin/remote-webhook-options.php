@@ -46,7 +46,7 @@
 	<td>
 		<input class="regular-text secret" type="password" autocomplete="new-password" id="wppus_remote_repository_webhook_secret" name="wppus_remote_repository_webhook_secret" value="<?php echo esc_attr( get_option( 'wppus_remote_repository_webhook_secret', 'repository_webhook_secret' ) ); ?>">
 		<p class="description">
-			<?php esc_html_e( 'Ideally a random string, the secret string included in the request by the repository service when calling the Webhook.', 'wppus' ); ?>
+			<?php esc_html_e( 'Preferably a random string, the secret string included in the request by the repository service when calling the Webhook.', 'wppus' ); ?>
 			<br>
 			<strong><?php esc_html_e( 'WARNING: Changing this value will invalidate all the existing Webhooks set up on all package repositories.', 'wppus' ); ?></strong>
 			<br>
