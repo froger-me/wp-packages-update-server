@@ -44,8 +44,8 @@ This plugin adds the following major features to WordPress:
 
 * **Packages Overview:** manage package updates with a table showing Package Name, Version, Type, File Name, Size, Last Modified and License Status ; includes bulk operations to delete, download and change the license status, and the ability to delete all the packages. Upload updates from your local machine to WPPUS, or let the system to automatically download them to WPPUS from a Remote Repository. Store packages either locally, or in the Cloud with an S3 compatible service. Packages can also be managed through their own API.
 * **Remote Sources:** configure the Remote Repository Service of your choice (Bitbucket, Github, Gitlab, or a self-hosted installation of Gitlab) with secure credentials and a branch name where the updates are hosted ; choose to check for updates recurringly, or when receiveing a webhook notification. WPPUS acts as a middleman between your Remote Repository, your udpates storage (local or Cloud), and your clients.
-* **Licenses:** manage licenses with a table showing ID, License Key, Registered Email, Status, Package Type, Package Slug, Creation Date, and Expiry Date ; add and edit them with a form, or use the API for better control. Licenses prevent plugins and themes installed on client WordPress installation from being updated without a valid license. Licenses are generated automatically by default and the values are unguessable (it is recommended to keep the default). When checking the validity of licenses an extra license signature is also checked to prevent the use of a license on more than the configured allowed domains.
-* **API & Webhooks:** Use the Package API to administrer packages (browse, read, edit, add, delete), request for expirable signed URLs of packages to allow secure downloads, and requests for tokens & true nonces. Use the License API to administer licenses (browse, read, edit, add, delete) and check, activate or deactivate licenses. Fire Webhooks to notifify any URL of you choice of key events affecting packages and licenses. 
+* **Licenses:** manage licenses with a table showing ID, License Key, Registered Email, Status, Package Type, Package Slug, Creation Date, and Expiry Date ; add and edit them with a form, or use the API for more control. Licenses prevent plugins and themes installed on client WordPress installation from being updated without a valid license. Licenses are generated automatically by default and the values are unguessable (it is recommended to keep the default). When checking the validity of licenses an extra license signature is also checked to prevent the use of a license on more than the configured allowed domains.
+* **API & Webhooks:** Use the Package API to administer packages (browse, read, edit, add, delete), and request for expirable signed URLs of packages to allow secure downloads. Use the License API to administer licenses (browse, read, edit, add, delete) and check, activate or deactivate licenses. Fire Webhooks to notify any URL of your choice of key events affecting packages and licenses. 
 
 To connect their plugins or themes and WP Packages Update Server, developers can find integration examples in `wp-packages-update-server/integration-examples`:
 * **Dummy Plugin:** a folder `dummy-plugin` with a simple, empty plugin that includes the necessary code in the `dummy-plugin.php` main plugin file and the necessary libraries in a `lib` folder.
@@ -59,16 +59,16 @@ Authorisation to use these libraries freely provided relevant licenses are inclu
 
 ### Compatibility
 
-* Tested with PHP 8.x - may work with PHP 7.x versions for the most part, but no guarantee
+* Tested with PHP 8.x - may work with PHP 7.x versions for the most part, but it is not guaranteed
 * WP Packages Update Server proper uses Plugin Update Checker Library 5.3 and WP Update Server Library 2.0.1
 * Integration examples use Plugin Update Checker Library 5.3
 
-**Pull requests to solve any bug, improve performance, and keep libraries up to date are welcome and highly encouraged.**  
+**Pull requests to solve any bugs, improve performance, and keep libraries up to date are welcome and highly encouraged.**  
 **Requests to debug or troubleshoot specific setups will not be addressed.**
 
 ### Screenshots
 
-Note: the screenshots are updated on a regular basis, but the actual interface may vary slightly.
+Note: the screenshots are updated regularly, but the actual interface may vary slightly.
 
 #### Packages Overview
 
@@ -110,7 +110,7 @@ Aside from a help page, WP Packages Update Server provides a user interface to m
 This tab allows administrators to:
 - View the list of packages currently available in WP Packages Update Server, with Package Name, Version, Type (Plugin or Theme), File Name, Size, Last Modified and License Status (if enabled)
 - Download a package
-- Toggle between "Require License" and "Do not Require License" for a package when "Enable Package Licenses" is checked under the "License" tab
+- Toggle between "Require License" and "Do not Require License" for a package when "Enable Package Licenses" is checked under the "Licenses" tab
 - Delete a package
 - Apply bulk actions on the list of packages (download, delete, change license status of the package if licenses are enabled)
 - Add a package (either by uploading it directly, or by priming it by pulling it from a configured Remote Repository)
@@ -145,7 +145,7 @@ Remote Repository Service URL         | text      | The URL of the Remote Reposi
 Self-hosted Remote Repository Service | checkbox  | Check this only if the Remote Repository Service is a self-hosted instance of Gitlab.
 Packages branch name                  | text      | The branch to download when getting remote packages from the Remote Repository Service.
 Remote Repository Service credentials | text      | Credentials for non-publicly accessible repositories.<br/>In the case of Github and Gitlab, an access token (`token`).<br/>In the case of Bitbucket, the Consumer key and secret separated by a pipe (`consumer_key\|consumer_secret`). IMPORTANT: when creating the consumer, "This is a private consumer" must be checked.	
-Use Webhooks                          | checkbox  | Check so that each repository of the Remote Repository Service calls a Webhook when updates are pushed.<br>When checked, WP Packages Update Server will not regularly poll repositories for package version changes, but relies on events sent by the repositories to schedule a package download.<br>Webhook URL: `https://domain.tld/wppus-webhook/package-type/package-slug` - where `package-type` is the package type (`plugin` or `theme`) and `package-slug` is the slug of the package needing updates.<br>Note that WP Packages Update Server does not rely on the content of the payload to schedule a package download, so any type of event can be used to trigger the Webhook.
+Use Webhooks                          | checkbox  | Check so that each repository of the Remote Repository Service calls a Webhook when updates are pushed.<br>When checked, WP Packages Update Server will not regularly poll repositories for package version changes, but relies on events sent by the repositories to schedule a package download.<br>Webhook URL: `https://domain.tld/wppus-webhook/package-type/package-slug` - where `package-type` is the package type (`plugin` or `theme`) and `package-slug` is the slug of the package that needs updates.<br>Note that WP Packages Update Server does not rely on the content of the payload to schedule a package download, so any type of event can be used to trigger the Webhook.
 Remote Download Delay                 | number    | Delay in minutes after which WP Packages Update Server will poll the Remote Repository for package updates when the Webhook has been called.<br>Leave at `0` to schedule a package update during the cron run happening immediately after the Webhook notification was received.
 Remote Repository Webhook Secret      | text      | Ideally a random string, the secret string included in the request by the repository service when calling the Webhook.<br>**WARNING: Changing this value will invalidate all the existing Webhooks set up on all package repositories.**<br>After changing this setting, make sure to update the Webhooks secrets in the repository service.
 Remote update check frequency         | select    | Only available in case Webhooks are not used - How often WP Packages Update Server will poll each Remote Repository for package updates - checking too often may slow down the server (recommended "Once Daily").
@@ -170,7 +170,7 @@ This tab allows administrators to:
 ### API & Webhooks
 
 This tab allows administrators to configure:
-- the Package API to administrer packages (browse, read, edit, add, delete), request for expirable signed URLs of packages to allow secure downloads, and requests for tokens & true nonces.
+- the Package API to administer packages (browse, read, edit, add, delete), request for expirable signed URLs of packages to allow secure downloads, and requests for tokens & true nonces.
 - the License API to administer licenses (browse, read, edit, add, delete) and check, activate or deactivate licenses.
 - the list of URLs notified via Webhooks, with the following available events:
 	-  Package events `(package)`
@@ -191,14 +191,14 @@ Available settings:
 Name                                     | Description
 ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Private API Keys (Package API)           | Multiple values ; creating a key required a "Package Key ID" used to identify the package key.<br>Used to sign requests to obtain tokens for package administration operations (browse, read, edit, add, delete) and obtaining signed URLs of package.<br>The Package Key ID must contain only numbers, letters, `-` and `_`.<br>**WARNING: Keep these keys secret, do not share any of them with customers!**
-IP Whitelist (Package API)               | Multiple values<br>List of IP addresses and/or CIDRs of remote sites authorized to use the Package Private API (one IP address or CIDR per line).<br>Leave blank to accept any IP address (not recommended).
+IP Whitelist (Package API)               | Multiple values.<br>List of IP addresses and/or CIDRs of remote sites authorized to use the Package Private API (one IP address or CIDR per line).<br>Leave blank to accept any IP address (not recommended).
 Private API Keys (License API)	         | Multiple values ; creating a key required a "License Key ID" used to identify the package key.<br>Used to sign requests to obtain tokens for license administration operations (browse, read, edit, add, delete).<br>The License Key ID must contain only numbers, letters, `-` and `_`.<br>**WARNING: Keep these keys secret, do not share any of them with customers!**
-IP Whitelist (License API)               | Multiple values<br>List of IP addresses and/or CIDRs of remote sites authorized to use the License Private API (one IP address or CIDR per line).<br>Leave blank to accept any IP address (not recommended).
+IP Whitelist (License API)               | Multiple values.<br>List of IP addresses and/or CIDRs of remote sites authorized to use the License Private API (one IP address or CIDR per line).<br>Leave blank to accept any IP address (not recommended).
 Webhook                                  | Multiple values ; creating a Webhook requires a "Payload URL", a `secret-key`, and a list of events.<br>Webhooks are event notifications sent to arbitrary URLs at next cronjob (1 min. latest after the event occured, depending on the server configuration) with a payload of data for third party services integration.<br>To allow the recipients to authenticate the notifications, the payload is signed with a `secret-key` secret key using `sha1` algorithm and `sha256` algorithm ; the resulting hashes are made available in the `X-WPPUS-Signature` and `X-WPPUS-Signature-256` headers respectively.<br>**The `secret-key` must be at least 16 characters long, ideally a random string.**<br>The payload is sent in JSON format via a `POST` request.<br>**WARNING: Only add URLs you trust!**
 
 ## Performances
 
-Performances can be evaluated using the script `tests.php` located at the plugin's root. It is included only if the WordPress constants `WP_DEBUG` and `SAVEQUERIES` are truthy. Developers can edit the script freely by uncommenting relevant parts to  activate the desired tests.  
+Performance can be evaluated using the script `tests.php` located at the plugin's root. It is included only if the WordPress constants `WP_DEBUG` and `SAVEQUERIES` are truthy. Developers can edit the script freely by uncommenting relevant parts to  activate the desired tests.  
 
 The performance insights below have been gathered on a cheap shared hosting server (less than $10 per month) with 256 MB of RAM, without any function hooked to WP Packages Update Server actions or filters, no Webhook, and with the MU Plugin endpoint optimizer active. Your Mileage May Vary depending on your server configuration and various optimisations you may add to your WordPress installation.  
 
@@ -322,7 +322,7 @@ The following can also be found under the "Help" tab of the WP Packages Update S
 
 ### Provide updates with WP Packages Update Server - packages requirements 
 
-To link your packages to WP Packages Update Server, and maybe to prevent webmasters from getting updates of your plugins and themes unless they have a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the `functions.php` file (for themes), and provide the necessary libraries in a lib directory at the root of the package.  
+To link your packages to WP Packages Update Server, and optionally to prevent webmasters from getting updates of your plugins and themes without a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the `functions.php` file (for themes), and provide the necessary libraries in a lib directory at the root of the package.  
 
 See `wp-content/plugins/wp-packages-update-server/integration-examples/dummy-plugin` for an example of plugin, and  `wp-content/plugins/wp-packages-update-server/integration-examples/dummy-theme` for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.  
 

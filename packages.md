@@ -126,7 +126,7 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 
 The Package API is accessible via POST and GET requests on the `/wppus-package-api/` endpoint for both the Public and Private API, and via POST only for the Private API. It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well for the Public API.
 
-In case the API is accessed with an invalid `action` parameter, the following response is returned (message's language depending on availabe translations), with HTTP response code set to `400`:
+In case the API is accessed with an invalid `action` parameter, the following response is returned (message's language depending on available translations), with HTTP response code set to `400`:
 
 Response `$data` - malformed request:
 ```json
@@ -194,7 +194,7 @@ $params = array(
 ___
 #### download
 
-The `download` operation retreives a package file. If no corresponding package exists on the file system, the operation fails.
+The `download` operation retrieves a package file. If no corresponding package exists on the file system, the operation fails.
 
 ```php
 $url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
@@ -222,7 +222,7 @@ Response `$data` - **failure** (`404` response code - no result):
 ___
 ### Private API
 
-The Private API, only accessible via the POST method, necessitates extra authentication for all its actions - `browse`, `edit`, `add`, `delete`.  
+The Private API, only accessible via the POST method, requires extra authentication for all its actions - `browse`, `edit`, `add`, `delete`.  
 The first action, `browse`, is particular in the sense that, unlike the other actions, its endpoint must not include the `package-type/package-slug` part of the query string (`$url = 'https://domain.tld/wppus-package-api/';`).  
 With the Private API, depending on granted privileges, developers can theoretically perform any operation on the packages stored by WP Packages Update Server - **be careful to keep the Private API Authentication Key an absolute secret!**
 
@@ -277,7 +277,7 @@ In the above example, the `$data` variable looks like:
 }
 ```
 Once an authentication token has been obtained, it needs to be provided to API actions, either via the `api_token` parameter, or by passing a `X-WPPUS-Token` header (recommended - it is then found in `$_SERVER['HTTP_X_WPPUS_TOKEN']` in PHP).  
-In case the token is invalid, all the actions of the Private API return the same response (message's language depending on availabe translations), with HTTP response code set to `403`:
+In case the token is invalid, all the actions of the Private API return the same response (message's language depending on available translations), with HTTP response code set to `403`:
 
 Response `$data` - forbidden access:
 ```json
@@ -285,7 +285,7 @@ Response `$data` - forbidden access:
 	"message": "Unauthorized access"
 }
 ```
-In case the Private API is accessed via the `GET` method, all the actions return the same response (message's language depending on availabe translations), with HTTP response code set to `405`:
+In case the Private API is accessed via the `GET` method, all the actions return the same response (message's language depending on available translations), with HTTP response code set to `405`:
 
 Response `$data` - unauthorized method:
 ```json
@@ -296,7 +296,7 @@ Response `$data` - unauthorized method:
 ___
 #### browse
 
-The `browse` operation retreives package information, optionally filtered by a search keyword. If no corresponding package exists on the file system, or in the Remote Repository Service, the operation fails.
+The `browse` operation retrieves package information, optionally filtered by a search keyword. If no corresponding package exists on the file system, or in the Remote Repository Service, the operation fails.
 
 ```php
 $url = 'https://domain.tld/wppus-package-api/'; // Replace domain.tld with the domain where WP Packages Update Server is installed  
@@ -336,7 +336,7 @@ Response `$data` - **failure** (`404` response code - no result):
 ___
 #### read
 
-The `read` operation retreives information for the specified package. If the package does not exist on the file system, or if the package does not exist in the Remote Repository Service, the operation fails.
+The `read` operation retrieves information for the specified package. If the package does not exist on the file system, or if the package does not exist in the Remote Repository Service, the operation fails.
 
 ```php
 $url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
@@ -598,7 +598,7 @@ false
 ___
 #### signed_url
 
-The `signed_url` operation returns a pubilc URL signed with a token to download a package with the `download` [operation](#download). By default, the token is reusable and the URL is valid for 60 minutes. If the package does not exist on the file system or in the Remote Repository Service, the operation fails.
+The `signed_url` operation returns a public URL signed with a token to download a package with the `download` [operation](#download). By default, the token is reusable and the URL is valid for 60 minutes. If the package does not exist on the file system or in the Remote Repository Service, the operation fails.
 
 ```php
 $url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
@@ -631,7 +631,7 @@ ___
 ## Functions
 
 The functions listed below are made publicly available by the plugin for theme and plugin developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).  
-Although the main classes can theoretically be instanciated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
+Although the main classes can theoretically be instantiated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
 
 ___
 ### wppus_get_root_data_dir
@@ -680,7 +680,7 @@ wppus_is_doing_update_api_request();
 ```
 
 **Description**  
-Determine wether the current request is made by a client plugin or theme interacting with the plugin's API.
+Determine whether the current request is made by a client plugin or theme interacting with the plugin's API.
 
 **Return value**
 > (bool) `true` if the current request is a client plugin or theme interacting with the plugin's API, `false` otherwise
@@ -693,7 +693,7 @@ wppus_is_doing_package_api_request()
 ```
 
 **Description**
-Determine wether the current request is made by a remote client interacting with the plugin's package API.
+Determine whether the current request is made by a remote client interacting with the plugin's package API.
 
 **Return value**
 > (bool) `true` the current request is made by a remote client interacting with the plugin's package API, `false` otherwise
@@ -706,7 +706,7 @@ wppus_check_remote_package_update( $package_slug, $type )
 ```
 
 **Description**  
-Determine wether the remote package is an updated version compared to the one on the file system.
+Determine whether the remote package is an updated version compared to the one on the file system.
 
 **Parameters**  
 `$package_slug`
@@ -726,7 +726,7 @@ wppus_check_remote_plugin_update( string $package_slug );
 ```
 
 **Description**  
-Determine wether the remote plugin package is an updated version compared to one on the file system.
+Determine whether the remote plugin package is an updated version compared to one on the file system.
 
 **Parameters**  
 `$package_slug`
@@ -743,7 +743,7 @@ wppus_check_remote_theme_update( string $package_slug );
 ```
 
 **Description**  
-Determine wether the remote theme package is an updated version compared to the one on the file system.
+Determine whether the remote theme package is an updated version compared to the one on the file system.
 
 **Parameters**  
 `$package_slug`
@@ -1227,7 +1227,7 @@ Fired after cleanup was attempted for a type of plugin data.
 
 **Parameters**  
 `$result`
-> (bool) `true` if the clean up was successful, flase otherwise  
+> (bool) `true` if the clean up was successful, `false` otherwise  
 
 `$type`
 > (string) type of data to clean up (`cache`, `logs`,or `tmp`)  
@@ -1282,7 +1282,7 @@ do_action( 'wppus_saved_remote_package_to_local', bool $result, string $type, st
 ```
 
 **Description**  
-Fired after an attempt to save a downloaded package on the file system hase been performed.  
+Fired after an attempt to save a downloaded package on the file system has been performed.  
 Fired during client update API request.  
 
 **Parameters**  
@@ -1799,7 +1799,7 @@ Fired when outputing a table cell in the admin interface where `$column_name` is
 ___
 ## Filters
 
-WP Packages Update Server gives developers the possibility to customise its behavior with a series of custom filters.  
+WP Packages Update Server gives developers the possibility to customize its behavior with a series of custom filters.  
 **Warning**: the filters below with the mention "Fired during client update API request" need to be used with caution. Although they may be triggered when using the functions above, these filters will possibly be called when client packages request for updates. Registering functions doing heavy computation to these filters when client update API requests are handled can seriously degrade the server's performances.  
 
 ___

@@ -52,7 +52,7 @@ If requesting a token for an existing API, the `api` parameter value must be pro
 The credentials and the signature are valid for 1 minute ; building them is the responsibility of the third-party client making use of the API - an implementation in PHP is provided below.  
 **Using `GET` requests directly in the browser, whether through the URL bar or JavaScript, is strongly discouraged due to security concerns** ; it should be avoided at all cost to prevent the inadvertent exposure of the credentials and signature.  
 
-In case the Private API Key is invalid, the API will return the following response (message's language depending on availabe translations), with HTTP response code set to `403`:
+In case the Private API Key is invalid, the API will return the following response (message's language depending on available translations), with HTTP response code set to `403`:
 
 Response `$data` - forbidden access:
 ```json
@@ -95,7 +95,7 @@ if ( is_wp_error( $response ) ) {
 }
 ```
 
-Payload to aquire a reusable token or a true nonce:
+Payload to acquire a reusable token or a true nonce:
 
 ```php
 $payload = array(
@@ -141,7 +141,7 @@ if ( ! function_exists( 'wppus_build_nonce_api_signature' ) ) {
 	* @param string $api_key_id The ID of the Private API Key
 	* @param string $api_key The Private API Key - will not be sent over the Internet
 	* @param int    $timestamp The timestamp used to limit the validity of the signature (validity is MINUTE_IN_SECONDS)
-	* @param int    $payload The payload to aquire a reusable token or a true nonce 
+	* @param int    $payload The payload to acquire a reusable token or a true nonce 
 	* @return array An array with keys `credentials` and `signature`
 	*/
 	function wppus_build_nonce_api_signature( $api_key_id, $api_key, $timestamp, $payload ) {
@@ -273,7 +273,7 @@ ___
 ## Functions
 
 The functions listed below are made publicly available by the plugin for theme and plugin developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).  
-Although the main classes can theoretically be instanciated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
+Although the main classes can theoretically be instantiated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
 
 ___
 ### php_log
@@ -333,7 +333,7 @@ wppus_is_doing_webhook_api_request()
 ```
 
 **Description**  
-Determine wether the current request is made by a Webhook.
+Determine whether the current request is made by a Webhook.
 
 **Return value**
 > (bool) `true` if the current request is made by a Webhook, `false` otherwise
@@ -504,7 +504,7 @@ Build credentials and signature for WPPUS Nonce API
 > (int) the timestamp used to limit the validity of the signature (validity is `MINUTE_IN_SECONDS`)  
 
 `$payload`
-> (array) the payload to aquire a reusable token or a true nonce  
+> (array) the payload to acquire a reusable token or a true nonce  
 
 **Return value**
 > (array) an array with keys `credentials` and `signature`  
@@ -557,7 +557,7 @@ Immediately send a event notification to `$url`, signed with `$secret` in `X-WPP
 > (string) the JSON string sent in the notification  
 
 `$action`
-> (string) the WordPress action responsible for fireing the webhook  
+> (string) the WordPress action responsible for firing the webhook  
 
 **Return value**
 > (array|WP_Error) the response of the request in case of success, a `WP_Error` otherwise  
@@ -605,7 +605,7 @@ Fired after the options in "API & Webhooks" have been updated.
 ___
 ## Filters
 
-WP Packages Update Server gives developers the possibility to customise its behavior with a series of custom filters.  
+WP Packages Update Server gives developers the possibility to customize its behavior with a series of custom filters.  
 **Warning**: the filters below with the mention "Fired during API requests" need to be used with caution. Although they may be triggered when using the functions above, these filters will possibly be called when the Update API, License API, Packages API or a Webhook is called. Registering functions doing heavy computation to these filters can seriously degrade the server's performances.  
 
 ___

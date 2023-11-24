@@ -8,7 +8,7 @@
 		<?php
 		printf(
 			// translators: %1$s is <code>functions.php</code>, %2$s is <code>lib</code>
-			esc_html__( 'To link your packages to WP Packages Update Server, and maybe to prevent webmasters from getting updates of your plugins and themes unless they have a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the %1$s file (for themes), and provide the necessary libraries in a %2$s directory at the root of the package.', 'wppus' ),
+			esc_html__( 'To link your packages to WP Packages Update Server, and optionally to prevent webmasters from getting updates of your plugins and themes without a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the %1$s file (for themes), and provide the necessary libraries in a %2$s directory at the root of the package.', 'wppus' ),
 			'<code>functions.php</code>',
 			'<code>lib</code>'
 		);

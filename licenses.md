@@ -106,7 +106,7 @@ ___
 
 The License API is accessible via POST and GET requests on the `/wppus-license-api/` endpoint for both the Public and Private API, and via POST only for the Private API. It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well for the Public API.
 
-In case the API is accessed with an invalid `action` parameter, the following response is returned (message's language depending on availabe translations), with HTTP response code set to `400`:
+In case the API is accessed with an invalid `action` parameter, the following response is returned (message's language depending on available translations), with HTTP response code set to `400`:
 
 Response `$data` - malformed request:
 ```json
@@ -118,8 +118,7 @@ Response `$data` - malformed request:
 The description of the API further below is using the following code as reference, where `$params` are the parameters passed to the API (other parameters can be adjusted, they are just WordPress' default) and `$data` is the JSON response:
 
 ```php
-$url = 'https://domain.tld/wppus-license-api/'; // Replace domain.tld with the domain where WP Packages Update Server is installed.
-
+$url      = 'https://domain.tld/wppus-license-api/'; // Replace domain.tld with the domain where WP Packages Update Server is installed.
 $response = wp_remote_post(
 	$url,
 	array(
@@ -326,7 +325,7 @@ Response `$data` - **failure** (in case of already deactivated for `allowed_doma
 ___
 ### Private API
 
-The Private API, only accessible via the POST method, necessitates extra authentication for all its actions - `browse`, `edit`, `add`, `delete`.  
+The Private API, only accessible via the POST method, requires extra authentication for all its actions - `browse`, `edit`, `add`, `delete`.  
 The first action, `browse`, is particular in the sense that, unlike the other actions and aside from the authentication token, it accepts a JSON License Query instead of the classic form-data payload.  
 With the Private API, depending on granted privileges, developers can theoretically perform any operation on the license records - **be careful to keep the Private API Authentication Key an absolute secret!**
 
@@ -334,9 +333,8 @@ To access the Private API, an authentication token must first be obtained with t
 
 ```php
 // We assume the API Key is stored in environment variables
-$api_key = getenv( 'WPPUS_LICENSE_API_KEY' );
-$url     = 'https://domain.tld/wppus-token/'; // Replace domain.tld with the domain where WP Packages Update Server is installed.
-
+$api_key  = getenv( 'WPPUS_LICENSE_API_KEY' );
+$url      = 'https://domain.tld/wppus-token/'; // Replace domain.tld with the domain where WP Packages Update Server is installed.
 $response = wp_remote_post(
 	$url,
 	array(
@@ -381,7 +379,7 @@ In the above example, the `$data` variable looks like:
 }
 ```
 Once an authentication token has been obtained, it needs to be provided to API actions, either via the `api_token` parameter, or by passing a `X-WPPUS-Token` header (recommended - it is then found in `$_SERVER['HTTP_X_WPPUS_TOKEN']` in PHP).  
-In case the token is invalid, all the actions of the Private API return the same response (message's language depending on availabe translations), with HTTP response code set to `403`:
+In case the token is invalid, all the actions of the Private API return the same response (message's language depending on available translations), with HTTP response code set to `403`:
 
 Response `$data` - forbidden access:
 ```json
@@ -390,7 +388,7 @@ Response `$data` - forbidden access:
 }
 ```
 
-In case the Private API is accessed via the `GET` method, all the actions return the same response (message's language depending on availabe translations), with HTTP response code set to `405`:
+In case the Private API is accessed via the `GET` method, all the actions return the same response (message's language depending on available translations), with HTTP response code set to `405`:
 
 Response `$data` - unauthorized method:
 ```json
@@ -665,7 +663,7 @@ ___
 ## Functions
 
 The functions listed below are made publicly available by the plugin for theme and plugin developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).
-Although the main classes can theoretically be instanciated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
+Although the main classes can theoretically be instantiated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
 
 ___
 ### wppus_is_doing_license_api_request
@@ -675,7 +673,7 @@ wppus_is_doing_license_api_request();
 ```
 
 **Description**  
-Determine wether the current request is made by a client plugin or theme interacting with the plugin's license API.
+Determine whether the current request is made by a client plugin or theme interacting with the plugin's license API.
 
 **Return value**
 > (bool) `true`  if the current request is a client plugin or theme interacting with the plugin's API, `false` otherwise
@@ -1110,7 +1108,7 @@ Fired before the License API request is processed ; useful to bypass the executi
 ___
 ## Filters
 
-WP Packages Update Server gives developers the possibility to customise its behavior with a series of custom filters.
+WP Packages Update Server gives developers the possibility to customize its behavior with a series of custom filters.
 **Warning**: the filters below with the mention "Fired during client license API request" need to be used with caution. Although they may be triggered when using the functions above, these filters will be called when client packages request for updates or when License API calls are performed. Registering functions doing heavy computation to these filters when client license API requests are handled can seriously degrade the server's performances.
 
 ___
@@ -1136,7 +1134,7 @@ apply_filters( 'wppus_license_valid', bool $is_valid, mixed $license, string $li
 ```
 
 **Description**  
-Filter wether a license is valid when requesting for an update.
+Filter whether a license is valid when requesting for an update.
 Fired during client license API request.
 
 **Parameters**  
