@@ -489,7 +489,7 @@ class WPPUS_Nonce {
 			isset( $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] ) &&
 			! empty( $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] )
 		) {
-			$credentials = explode( '|', $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] );
+			$credentials = explode( '/', $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] );
 		} else {
 			global $wp;
 
@@ -498,7 +498,7 @@ class WPPUS_Nonce {
 				is_string( $wp->query_vars['api_credentials'] ) &&
 				! empty( $wp->query_vars['api_credentials'] )
 			) {
-				$credentials = explode( '|', $wp->query_vars['api_credentials'] );
+				$credentials = explode( '/', $wp->query_vars['api_credentials'] );
 			}
 		}
 
@@ -507,13 +507,16 @@ class WPPUS_Nonce {
 			$key_id    = end( $credentials );
 		}
 
-		if ( $current_time < $timestamp || $timestamp < ( $current_time - MINUTE_IN_SECONDS ) ) {
+		$validity = (bool) ( constant( 'WP_DEBUG' ) ) ? HOUR_IN_SECONDS : MINUTE_IN_SECONDS;
+
+		if ( $current_time < $timestamp || $timestamp < ( $current_time - $validity ) ) {
 			$timestamp = false;
 		}
 
 		if ( $sign && $timestamp && $key_id && isset( self::$private_keys[ $key_id ] ) ) {
-			$values = wppus_build_nonce_api_signature( $key_id, self::$private_keys[ $key_id ], $timestamp );
-			$auth   = hash_equals( $values['signature'], $sign );
+			$payload = $_POST; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$values  = wppus_build_nonce_api_signature( $key_id, self::$private_keys[ $key_id ]['key'], $timestamp, $payload );
+			$auth    = hash_equals( $values['signature'], $sign );
 		}
 
 		return apply_filters(

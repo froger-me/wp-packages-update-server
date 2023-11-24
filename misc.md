@@ -52,38 +52,6 @@ If requesting a token for an existing API, the `api` parameter value must be pro
 The credentials and the signature are valid for 1 minute ; building them is the responsibility of the third-party client making use of the API - an implementation in PHP is provided below.  
 **Using `GET` requests directly in the browser, whether through the URL bar or JavaScript, is strongly discouraged due to security concerns** ; it should be avoided at all cost to prevent the inadvertent exposure of the credentials and signature.  
 
-Building API credentials and API signature - developers may use this function in their own project:
-
-```php
-if ( ! function_exists( 'wppus_build_nonce_api_signature' ) ) {
-	/**
-	* Build credentials and signature for WPPUS Nonce API
-	*
-	* @param string $api_key_id The ID of the Private API Key
-	* @param string $api_key The Private API Key - will not be sent over the Internet
-	* @param int    $timestamp The timestamp used to limit the validity of the signature (validity is MINUTE_IN_SECONDS)
-	* @return array An array with keys `credentials` and `signature`
-	*/
-	function wppus_build_nonce_api_signature( $api_key_id, $api_key, $timestamp ) {
-		$timestamp   = time();
-		$credentials = $timestamp . '/' . $api_key_id;
-		$time_key    = hash_hmac( 'sha256', $timestamp, $api_key, true );
-		$signature   = hash_hmac( 'sha256', base64_encode( $api_key_id ), $time_key ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-
-		return array(
-			'credentials' => $credentials,
-			'signature'   => $signature,
-		);
-	}
-}
-
-// Usage
-$values = wppus_build_nonce_api_signature( getenv( 'WPPUS_API_KEY_ID' ), getenv( 'WPPUS_API_KEY' ), time() );
-
-echo '<div>The credentials are: ' . esc_html( $values['credentials'] ) . '</div>';
-echo '<div>The signature is: ' . esc_html( $values['signature'] ) . '</div>';
-```
-
 In case the Private API Key is invalid, the API will return the following response (message's language depending on availabe translations), with HTTP response code set to `403`:
 
 Response `$data` - forbidden access:
@@ -127,10 +95,10 @@ if ( is_wp_error( $response ) ) {
 }
 ```
 
-Parameters to aquire a reusable token or a true nonce:
+Payload to aquire a reusable token or a true nonce:
 
 ```php
-$params = array(
+$payload = array(
 	'expiry_length' => 999,               // The expiry length in seconds (optional - default value to WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH - 30 seconds)
 	'data' => array(                      // Data to store along the token or true nonce (optional)
 		'permanent' => false,             // set to a truthy value to create a nonce that never expires
@@ -161,6 +129,58 @@ Response `$data` - **success**:
 		},
 	}
 }
+```
+
+Building API credentials and API signature - developers may use this function in their own project:
+
+```php
+if ( ! function_exists( 'wppus_build_nonce_api_signature' ) ) {
+	/**
+	* Build credentials and signature for WPPUS Nonce API
+	*
+	* @param string $api_key_id The ID of the Private API Key
+	* @param string $api_key The Private API Key - will not be sent over the Internet
+	* @param int    $timestamp The timestamp used to limit the validity of the signature (validity is MINUTE_IN_SECONDS)
+	* @param int    $payload The payload to aquire a reusable token or a true nonce 
+	* @return array An array with keys `credentials` and `signature`
+	*/
+	function wppus_build_nonce_api_signature( $api_key_id, $api_key, $timestamp, $payload ) {
+		unset( $payload['api_signature'] );
+		unset( $payload['api_credentials'] );
+
+		( function ( &$arr ) {
+			$recur_ksort = function ( &$arr ) use ( &$recur_ksort ) {
+
+				foreach ( $arr as &$value ) {
+
+					if ( is_array( $value ) ) {
+						$recur_ksort( $value );
+					}
+				}
+
+				ksort( $arr );
+			};
+
+			$recur_ksort( $arr );
+		} )( $payload );
+
+		$str         = base64_encode( $api_key_id . json_encode( $payload, JSON_NUMERIC_CHECK ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode, WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		$credentials = $timestamp . '/' . $api_key_id;
+		$time_key    = hash_hmac( 'sha256', $timestamp, $api_key, true );
+		$signature   = hash_hmac( 'sha256', $str, $time_key );
+
+		return array(
+			'credentials' => $credentials,
+			'signature'   => $signature,
+		);
+	}
+}
+
+// Usage
+$values = wppus_build_nonce_api_signature( getenv( 'WPPUS_API_KEY_ID' ), getenv( 'WPPUS_API_KEY' ), time(), $payload );
+
+echo '<div>The credentials are: ' . esc_html( $values['credentials'] ) . '</div>';
+echo '<div>The signature is: ' . esc_html( $values['signature'] ) . '</div>';
 ```
 ___
 ## Consuming Webhooks
@@ -467,7 +487,7 @@ ___
 #### wppus_build_nonce_api_signature
 
 ```php
-wppus_build_nonce_api_signature( string $api_key_id, string $api_key, int $timestamp )
+wppus_build_nonce_api_signature( string $api_key_id, string $api_key, int $timestamp, array $payload )
 ```
 
 **Description**  
@@ -482,6 +502,9 @@ Build credentials and signature for WPPUS Nonce API
 
 `$timestamp`
 > (int) the timestamp used to limit the validity of the signature (validity is `MINUTE_IN_SECONDS`)  
+
+`$payload`
+> (array) the payload to aquire a reusable token or a true nonce  
 
 **Return value**
 > (array) an array with keys `credentials` and `signature`  

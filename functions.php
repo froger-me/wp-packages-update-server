@@ -402,10 +402,30 @@ if ( ! function_exists( 'wppus_clear_nonces' ) ) {
 }
 
 if ( ! function_exists( 'wppus_build_nonce_api_signature' ) ) {
-	function wppus_build_nonce_api_signature( $api_key_id, $api_key, $timestamp ) {
+	function wppus_build_nonce_api_signature( $api_key_id, $api_key, $timestamp, $payload ) {
+		unset( $payload['api_signature'] );
+		unset( $payload['api_credentials'] );
+
+		( function ( &$arr ) {
+			$recur_ksort = function ( &$arr ) use ( &$recur_ksort ) {
+
+				foreach ( $arr as &$value ) {
+
+					if ( is_array( $value ) ) {
+						$recur_ksort( $value );
+					}
+				}
+
+				ksort( $arr );
+			};
+
+			$recur_ksort( $arr );
+		} )( $payload );
+
+		$str         = base64_encode( $api_key_id . json_encode( $payload, JSON_NUMERIC_CHECK ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 		$credentials = $timestamp . '/' . $api_key_id;
 		$time_key    = hash_hmac( 'sha256', $timestamp, $api_key, true );
-		$signature   = hash_hmac( 'sha256', base64_encode( $api_key_id ), $time_key ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+		$signature   = hash_hmac( 'sha256', $str, $time_key );
 
 		return array(
 			'credentials' => $credentials,

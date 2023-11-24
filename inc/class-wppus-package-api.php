@@ -411,13 +411,13 @@ class WPPUS_Package_API {
 			isset( $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] ) &&
 			! empty( $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] )
 		) {
-			$credentials = explode( '|', $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] );
+			$credentials = explode( '/', $_SERVER['HTTP_X_WPPUS_API_CREDENTIALS'] );
 		} elseif (
 			isset( $wp->query_vars['api_credentials'], $wp->query_vars['api'] ) &&
 			is_string( $wp->query_vars['api_credentials'] ) &&
 			! empty( $wp->query_vars['api_credentials'] )
 		) {
-			$credentials = explode( '|', $wp->query_vars['api_credentials'] );
+			$credentials = explode( '/', $wp->query_vars['api_credentials'] );
 		}
 
 		if ( 2 === count( $credentials ) ) {
@@ -425,6 +425,7 @@ class WPPUS_Package_API {
 		}
 
 		if ( $key_id && isset( $config['private_api_auth_keys'][ $key_id ]['key'] ) ) {
+			$values                         = $config['private_api_auth_keys'][ $key_id ];
 			$payload['data']['package_api'] = array(
 				'id'     => $key_id,
 				'access' => isset( $values['access'] ) ? $values['access'] : array(),
