@@ -56,7 +56,7 @@
 					<textarea class="ip-whitelist" id="wppus_package_private_api_ip_whitelist" name="wppus_package_private_api_ip_whitelist"><?php echo esc_html( implode( "\n", get_option( 'wppus_package_private_api_ip_whitelist', array() ) ) ); ?></textarea>
 					<p class="description">
 						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authorized to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
-						<?php esc_html_e( 'Leave blank to accept any IP address (not recommended).', 'wprus' ); ?>
+						<?php esc_html_e( 'Leave blank to allow any IP address (not recommended).', 'wprus' ); ?>
 					</p>
 				</td>
 			</tr>
@@ -117,7 +117,7 @@
 					<textarea class="ip-whitelist" id="wppus_license_private_api_ip_whitelist" name="wppus_license_private_api_ip_whitelist"><?php echo esc_html( implode( "\n", get_option( 'wppus_license_private_api_ip_whitelist', array() ) ) ); ?></textarea>
 					<p class="description">
 						<?php esc_html_e( 'List of IP addresses and/or CIDRs of remote sites authorized to use the Private API (one IP address or CIDR per line).', 'wprus' ); ?> <br/>
-						<?php esc_html_e( 'Leave blank to accept any IP address (not recommended).', 'wprus' ); ?>
+						<?php esc_html_e( 'Leave blank to allow any IP address (not recommended).', 'wprus' ); ?>
 					</p>
 				</td>
 			</tr>
@@ -153,12 +153,12 @@
 						<input type="hidden" class="webhook-values" id="wppus_webhooks" name="wppus_webhooks" value="<?php echo esc_attr( get_option( 'wppus_webhooks', '{}' ) ); ?>">
 					</div>
 					<p class="description">
-						<?php esc_html_e( 'Webhooks are event notifications sent to arbitrary URLs at next cronjob (1 min. latest after the event occured, depending on the server configuration) with a payload of data for third party services integration.', 'wppus' ); ?>
+						<?php esc_html_e( 'Webhooks are event notifications sent to arbitrary URLs during the next cron job (within 1 minute after the event occurs, depending on the server configuration) with a payload of data for third party services integration.', 'wppus' ); ?>
 						<br>
 						<?php
 						printf(
 							// translators: %1$s is <code>secret</code>, %2$s is <code>X-WPPUS-Signature</code>, %3$s is <code>X-WPPUS-Signature-256</code>
-							esc_html__( 'To allow the recipients to authenticate the notifications, the payload is signed with a %1$s secret key using sha1 algorithm and sha256 algorithm ; the resulting hashes are made available in the %2$s and %3$s headers respectively.', 'wppus' ),
+							esc_html__( 'To allow the recipients to authenticate the notifications, the payload is signed with a %1$s secret key using the SHA-1 and SHA-256 algorithms ; the resulting hashes are made available in the %2$s and %3$s headers respectively.', 'wppus' ),
 							'<code>secret-key</code>',
 							'<code>X-WPPUS-Signature</code>',
 							'<code>X-WPPUS-Signature-256</code>'
@@ -169,7 +169,7 @@
 						<?php
 						printf(
 							// translators: %s is '<code>secret-key</code>'
-							esc_html__( 'The %s must be at least 16 characters long, ideally a random string.', 'wppus' ),
+							esc_html__( 'The %s must be a minimum of 16 characters long, preferably a random string', 'wppus' ),
 							'<code>secret-key</code>'
 						);
 						?>
@@ -183,7 +183,7 @@
 						);
 						?>
 						<br>
-						<strong><?php esc_html_e( 'WARNING: Only add URLs you trust!', 'wppus' ); ?></strong>
+						<strong><?php esc_html_e( 'CAUTION: Only add URLs from trusted sources!', 'wppus' ); ?></strong>
 					</p>
 				</td>
 			</tr>

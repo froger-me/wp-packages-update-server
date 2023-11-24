@@ -312,10 +312,10 @@ class WPPUS_Package_API {
 	public function wppus_api_package_actions( $actions ) {
 		$actions['browse']     = __( 'Get information about multiple packages', 'wppus' );
 		$actions['read']       = __( 'Get information about a single package', 'wppus' );
-		$actions['edit']       = __( 'Force download a package to overwrite the existing one on the file system ; requires using a Remote Repository', 'wppus' );
-		$actions['add']        = __( 'Force download a package to the file system if it does not exist ; requires using a Remote Repository', 'wppus' );
+		$actions['edit']       = __( 'Forcefully download and overwrite an existing package on the file system. ; requires using a Remote Repository', 'wppus' );
+		$actions['add']        = __( 'Download a package to the file system if it does not exist ; requires using a Remote Repository', 'wppus' );
 		$actions['delete']     = __( 'Delete a package from the file system', 'wppus' );
-		$actions['signed_url'] = __( 'Get secure URLs to download packages', 'wppus' );
+		$actions['signed_url'] = __( 'Retrieve secure URLs for downloading packages', 'wppus' );
 
 		return $actions;
 	}
