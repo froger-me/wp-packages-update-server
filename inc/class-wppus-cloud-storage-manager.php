@@ -33,14 +33,13 @@ class WPPUS_Cloud_Storage_Manager {
 
 			self::$cloud_storage->setExceptions();
 
-			// @todo doc
 			self::$virtual_dir = apply_filters( 'wppus_cloud_storage_virtual_dir', 'wppus-packages' );
 		}
 
 		if ( $init_hooks ) {
 
 			if ( ! wppus_is_doing_api_request() ) {
-				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
+				add_filter( 'wppus_admin_scripts', array( $this, 'wppus_admin_scripts' ), 10, 1 );
 				add_action( 'wp_ajax_wppus_cloud_storage_test', array( $this, 'cloud_storage_test' ), 10, 0 );
 				add_action( 'wppus_package_options_updated', array( $this, 'wppus_package_options_updated' ), 10, 0 );
 				add_action( 'wppus_template_package_manager_option_before_miscellaneous', array( $this, 'wppus_template_package_manager_option_before_miscellaneous' ), 10, 0 );
@@ -89,7 +88,6 @@ class WPPUS_Cloud_Storage_Manager {
 			self::$config = $config;
 		}
 
-		// @todo doc
 		return apply_filters( 'wppus_could_storage_api_config', self::$config );
 	}
 
@@ -102,21 +100,14 @@ class WPPUS_Cloud_Storage_Manager {
 		return self::$instance;
 	}
 
-	public function admin_enqueue_scripts( $hook ) {
-		$debug = (bool) ( constant( 'WP_DEBUG' ) );
+	public function wppus_admin_scripts( $scripts ) {
+		$scripts['cloud-storage'] = array(
+			'path' => WPPUS_PLUGIN_PATH . 'js/admin/cloud-storage' . wppus_assets_suffix() . '.js',
+			'uri'  => WPPUS_PLUGIN_URL . 'js/admin/cloud-storage' . wppus_assets_suffix() . '.js',
+			'deps' => array( 'jquery' ),
+		);
 
-		if ( false !== strpos( $hook, 'page_wppus' ) ) {
-			$js_ext = ( $debug ) ? '.js' : '.min.js';
-			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/cloud-storage' . $js_ext );
-
-			wp_enqueue_script(
-				'wppus-cloud-storage-script',
-				WPPUS_PLUGIN_URL . 'js/admin/cloud-storage' . $js_ext,
-				array( 'jquery' ),
-				$ver_js,
-				true
-			);
-		}
+		return $scripts;
 	}
 
 	public function wppus_submitted_package_config( $config ) {

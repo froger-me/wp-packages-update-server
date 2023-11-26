@@ -9,9 +9,9 @@ class WPPUS_Webhook_Manager {
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 			add_action( 'wppus_template_remote_source_manager_option_before_recurring_check', array( $this, 'wppus_template_remote_source_manager_option_before_recurring_check' ), 10, 0 );
 
+			add_filter( 'wppus_admin_scripts', array( $this, 'wppus_admin_scripts' ), 10, 1 );
 			add_filter( 'wppus_submitted_remote_sources_config', array( $this, 'wppus_submitted_remote_sources_config' ), 10, 1 );
 			add_filter( 'wppus_submitted_api_config', array( $this, 'wppus_submitted_api_config' ), 10, 1 );
 			add_filter( 'wppus_remote_source_option_update', array( $this, 'wppus_remote_source_option_update' ), 10, 3 );
@@ -35,21 +35,14 @@ class WPPUS_Webhook_Manager {
 
 	public static function uninstall() {}
 
-	public function admin_enqueue_scripts( $hook ) {
-		$debug = (bool) ( constant( 'WP_DEBUG' ) );
+	public function wppus_admin_scripts( $scripts ) {
+		$scripts['webhook'] = array(
+			'path' => WPPUS_PLUGIN_PATH . 'js/admin/webhook' . wppus_assets_suffix() . '.js',
+			'uri'  => WPPUS_PLUGIN_URL . 'js/admin/webhook' . wppus_assets_suffix() . '.js',
+			'deps' => array( 'jquery' ),
+		);
 
-		if ( false !== strpos( $hook, 'page_wppus' ) ) {
-			$js_ext = ( $debug ) ? '.js' : '.min.js';
-			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/webhook' . $js_ext );
-
-			wp_enqueue_script(
-				'wppus-webhook-script',
-				WPPUS_PLUGIN_URL . 'js/admin/webhook' . $js_ext,
-				array( 'jquery' ),
-				$ver_js,
-				true
-			);
-		}
+		return $scripts;
 	}
 
 	public function wppus_page_wppus_scripts_l10n( $l10n ) {

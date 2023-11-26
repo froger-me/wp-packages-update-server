@@ -5,9 +5,8 @@ jQuery(document).ready(function ($) {
 		if ($(this).prop('checked')) {
 			$('.check-frequency').addClass('hidden');
 			$('.webhooks').removeClass('hidden');
-        } else {
-            console.log($('.webhooks'));
-            $('.webhooks').addClass('hidden');
+		} else {
+			$('.webhooks').addClass('hidden');
 			$('.check-frequency').removeClass('hidden');
 		}
 	});

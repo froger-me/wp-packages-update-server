@@ -9,9 +9,10 @@ class WPPUS_API_Manager {
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 20, 0 );
 
+			add_filter( 'wppus_admin_scripts', array( $this, 'wppus_admin_scripts' ), 10, 1 );
+			add_filter( 'wppus_admin_styles', array( $this, 'wppus_admin_styles' ), 10, 1 );
 			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 20, 1 );
 			add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 20, 2 );
 			add_filter( 'wppus_page_wppus_scripts_l10n', array( $this, 'wppus_page_wppus_scripts_l10n' ), 20, 2 );
@@ -24,31 +25,23 @@ class WPPUS_API_Manager {
 
 	// WordPress hooks ---------------------------------------------
 
-	public function admin_enqueue_scripts( $hook ) {
-		$debug = (bool) ( constant( 'WP_DEBUG' ) );
+	public function wppus_admin_styles( $styles ) {
+		$styles['api'] = array(
+			'path' => WPPUS_PLUGIN_PATH . 'css/admin/api' . wppus_assets_suffix() . '.css',
+			'uri'  => WPPUS_PLUGIN_URL . 'css/admin/api' . wppus_assets_suffix() . '.css',
+		);
 
-		if ( false !== strpos( $hook, 'page_wppus' ) ) {
-			$js_ext = ( $debug ) ? '.js' : '.min.js';
-			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/api' . $js_ext );
+		return $styles;
+	}
 
-			wp_enqueue_script(
-				'wppus-api-script',
-				WPPUS_PLUGIN_URL . 'js/admin/api' . $js_ext,
-				array( 'jquery' ),
-				$ver_js,
-				true
-			);
+	public function wppus_admin_scripts( $scripts ) {
+		$scripts['api'] = array(
+			'path' => WPPUS_PLUGIN_PATH . 'js/admin/api' . wppus_assets_suffix() . '.js',
+			'uri'  => WPPUS_PLUGIN_URL . 'js/admin/api' . wppus_assets_suffix() . '.js',
+			'deps' => array( 'jquery' ),
+		);
 
-			$css_ext = ( $debug ) ? '.css' : '.min.css';
-			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/api' . $css_ext );
-
-			wp_enqueue_style(
-				'wppus-admin-api',
-				WPPUS_PLUGIN_URL . 'css/admin/api' . $css_ext,
-				array(),
-				$ver_css
-			);
-		}
+		return $scripts;
 	}
 
 	public function wppus_page_wppus_scripts_l10n( $l10n ) {

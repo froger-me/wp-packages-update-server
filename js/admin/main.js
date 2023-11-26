@@ -1,4 +1,4 @@
-/* global Wppus, console, Wppus_l10n */
+/* global Wppus, console, WppusAdminMain_l10n */
 jQuery(document).ready(function ($) {
 
 	function htmlDecode(input) {
@@ -23,7 +23,7 @@ jQuery(document).ready(function ($) {
 	});
 
 	$('.wppus-wrap .wp-list-table .delete a').on('click', function(e) {
-		var r = window.confirm(Wppus_l10n.deleteRecord);
+		var r = window.confirm(WppusAdminMain_l10n.deleteRecord);
 
 		if (!r) {
 			e.preventDefault();
@@ -31,7 +31,7 @@ jQuery(document).ready(function ($) {
 	});
 
 	$('.wppus-delete-all-packages').on('click', function(e) {
-		var r = window.confirm(Wppus_l10n.deletePackagesConfirm);
+		var r = window.confirm(WppusAdminMain_l10n.deletePackagesConfirm);
 
 		if (!r) {
 			e.preventDefault();
@@ -211,25 +211,25 @@ jQuery(document).ready(function ($) {
 		) {
 
 			if ($.inArray(file.type, validFileFormats) === -1) {
-				window.alert(Wppus_l10n.invalidFileFormat);
+				window.alert(WppusAdminMain_l10n.invalidFileFormat);
 
 				valid = false;
 			}
 
 			if (0 === file.size) {
-				window.alert(Wppus_l10n.invalidFileSize);
+				window.alert(WppusAdminMain_l10n.invalidFileSize);
 
 				valid = false;
 			}
 
 			if (!regex.test(file.name)) {
-				window.alert(Wppus_l10n.invalidFileName);
+				window.alert(WppusAdminMain_l10n.invalidFileName);
 
 				valid = false;
 			}
 
 		} else {
-			window.alert(Wppus_l10n.invalidFile);
+			window.alert(WppusAdminMain_l10n.invalidFile);
 
 			valid = false;
 		}

@@ -20,6 +20,8 @@ class WP_Packages_Update_Server {
 				add_action( 'admin_menu', array( $this, 'admin_menu' ), 5, 0 );
 				add_action( 'admin_menu', array( $this, 'admin_menu_help' ), 99, 0 );
 
+				add_filter( 'wppus_admin_scripts', array( $this, 'wppus_admin_scripts' ), 10, 1 );
+				add_filter( 'wppus_admin_styles', array( $this, 'wppus_admin_styles' ), 10, 1 );
 				add_filter( 'plugin_action_links_' . $plugin_id, array( $this, 'add_action_links' ), 10, 1 );
 				add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 99, 1 );
 				add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 99, 2 );
@@ -118,66 +120,68 @@ class WP_Packages_Update_Server {
 		load_plugin_textdomain( 'wppus', false, 'wp-packages-update-server/languages' );
 	}
 
+	public function wppus_admin_styles( $styles ) {
+		$styles['main'] = array(
+			'path' => WPPUS_PLUGIN_PATH . 'css/admin/main' . wppus_assets_suffix() . '.css',
+			'uri'  => WPPUS_PLUGIN_URL . 'css/admin/main' . wppus_assets_suffix() . '.css',
+		);
+
+		return $styles;
+	}
+
+	public function wppus_admin_scripts( $scripts ) {
+		$l10n = array(
+			'invalidFileFormat' => array( __( 'Error: invalid file format.', 'wppus' ) ),
+			'invalidFileSize'   => array( __( 'Error: invalid file size.', 'wppus' ) ),
+			'invalidFileName'   => array( __( 'Error: invalid file name.', 'wppus' ) ),
+			'invalidFile'       => array( __( 'Error: invalid file', 'wppus' ) ),
+			'deleteRecord'      => array( __( 'Are you sure you want to delete this record?', 'wppus' ) ),
+		);
+
+		if ( get_option( 'wppus_use_remote_repository' ) ) {
+			$l10n['deletePackagesConfirm'] = array(
+				__( 'You are about to delete all the packages from this server.', 'wppus' ),
+				__( 'Packages with a Remote Repository will be added again automatically whenever a client asks for updates.', 'wppus' ),
+				__( 'All packages manually uploaded without counterpart in a Remote Repository will be permanently deleted.', 'wppus' ),
+				"\n",
+				__( 'Are you sure you want to do this?', 'wppus' ),
+			);
+		} else {
+			$l10n['deletePackagesConfirm'] = array(
+				__( 'You are about to delete all the packages from this server.', 'wppus' ),
+				__( 'All packages will be permanently deleted.\n\nAre you sure you want to do this?', 'wppus' ),
+				"\n",
+				__( 'Are you sure you want to do this?', 'wppus' ),
+			);
+		}
+
+		$l10n = apply_filters( 'wppus_page_wppus_scripts_l10n', $l10n );
+
+		foreach ( $l10n as $key => $values ) {
+			$l10n[ $key ] = implode( "\n", $values );
+		}
+
+		$scripts['main'] = array(
+			'path'   => WPPUS_PLUGIN_PATH . 'js/admin/main' . wppus_assets_suffix() . '.js',
+			'uri'    => WPPUS_PLUGIN_URL . 'js/admin/main' . wppus_assets_suffix() . '.js',
+			'deps'   => array( 'jquery' ),
+			'params' => array(
+				'debug'    => (bool) ( constant( 'WP_DEBUG' ) ),
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+			),
+			'l10n'   => array(
+				'values' => $l10n,
+			),
+		);
+
+		return $scripts;
+	}
+
 	public function admin_enqueue_scripts( $hook ) {
-		$debug = (bool) ( constant( 'WP_DEBUG' ) );
 
 		if ( false !== strpos( $hook, 'page_wppus' ) ) {
-			$js_ext = ( $debug ) ? '.js' : '.min.js';
-			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/main' . $js_ext );
-			$l10n   = array(
-				'invalidFileFormat' => array( __( 'Error: invalid file format.', 'wppus' ) ),
-				'invalidFileSize'   => array( __( 'Error: invalid file size.', 'wppus' ) ),
-				'invalidFileName'   => array( __( 'Error: invalid file name.', 'wppus' ) ),
-				'invalidFile'       => array( __( 'Error: invalid file', 'wppus' ) ),
-				'deleteRecord'      => array( __( 'Are you sure you want to delete this record?', 'wppus' ) ),
-			);
-			$params = array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'debug'    => $debug,
-			);
-
-			if ( get_option( 'wppus_use_remote_repository' ) ) {
-				$l10n['deletePackagesConfirm'] = array(
-					__( 'You are about to delete all the packages from this server.', 'wppus' ),
-					__( 'Packages with a Remote Repository will be added again automatically whenever a client asks for updates.', 'wppus' ),
-					__( 'All packages manually uploaded without counterpart in a Remote Repository will be permanently deleted.', 'wppus' ),
-					"\n",
-					__( 'Are you sure you want to do this?', 'wppus' ),
-				);
-			} else {
-				$l10n['deletePackagesConfirm'] = array(
-					__( 'You are about to delete all the packages from this server.', 'wppus' ),
-					__( 'All packages will be permanently deleted.\n\nAre you sure you want to do this?', 'wppus' ),
-					"\n",
-					__( 'Are you sure you want to do this?', 'wppus' ),
-				);
-			}
-
-			// @todo doc
-			$l10n = apply_filters( 'wppus_page_wppus_scripts_l10n', $l10n );
-
-			foreach ( $l10n as $key => $values ) {
-				$l10n[ $key ] = implode( "\n", $values );
-			}
-
-			wp_enqueue_script(
-				'wp-packages-update-server-script',
-				WPPUS_PLUGIN_URL . 'js/admin/main' . $js_ext,
-				array( 'jquery' ),
-				$ver_js,
-				true
-			);
-			wp_localize_script( 'wp-packages-update-server-script', 'Wppus_l10n', $l10n );
-			wp_add_inline_script(
-				'wp-packages-update-server-script',
-				'var Wppus = ' . wp_json_encode( $params ),
-				'before'
-			);
-
-			$css_ext = ( $debug ) ? '.css' : '.min.css';
-			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/main' . $css_ext );
-
-			wp_enqueue_style( 'wppus-admin-main', WPPUS_PLUGIN_URL . 'css/admin/main' . $css_ext, array(), $ver_css );
+			$this->enqueue_styles( array() );
+			$this->enqueue_scripts( array() );
 		}
 	}
 
@@ -398,5 +402,98 @@ class WP_Packages_Update_Server {
 		}
 
 		return $states;
+	}
+
+	protected function enqueue_styles( $styles ) {
+		$filter = 'wppus_admin_styles';
+		$styles = apply_filters( $filter, $styles );
+
+		if ( ! empty( $styles ) ) {
+
+			foreach ( $styles as $key => $values ) {
+
+				if ( isset( $values['path'] ) && file_exists( $values['path'] ) ) {
+					$version        = filemtime( $values['path'] );
+					$values['deps'] = isset( $values['deps'] ) ? $values['deps'] : array();
+					$suffix         = '-admin-style';
+
+					wp_enqueue_style(
+						'wppus-' . $key . $suffix,
+						$values['uri'],
+						$values['deps'],
+						$version
+					);
+
+					if ( isset( $values['inline'] ) ) {
+						wp_add_inline_style( 'wppus-' . $key . $suffix, $values['inline'] );
+					}
+				}
+			}
+		}
+
+		return $styles;
+	}
+
+	protected function enqueue_scripts( $scripts ) {
+		$filter  = 'wppus_admin_scripts';
+		$scripts = apply_filters( $filter, $scripts );
+
+		if ( ! empty( $scripts ) ) {
+
+			foreach ( $scripts as $key => $values ) {
+
+				if ( isset( $values['path'] ) && file_exists( $values['path'] ) ) {
+					$version             = filemtime( $values['path'] );
+					$values['deps']      = isset( $values['deps'] ) ? $values['deps'] : array();
+					$values['in_footer'] = isset( $values['in_footer'] ) ? $values['in_footer'] : true;
+					$suffix              = '-admin-script';
+
+					wp_enqueue_script(
+						'wppus-' . $key . $suffix,
+						$values['uri'],
+						$values['deps'],
+						$version,
+						$values['in_footer']
+					);
+
+					if ( isset( $values['params'] ) ) {
+						$var_prefix              = 'WppusAdmin';
+						$values['params_before'] = isset( $values['params_before'] ) ?
+							$values['params_before'] :
+							'before';
+
+						wp_add_inline_script(
+							'wppus-' . $key . $suffix,
+							'var '
+								. $var_prefix
+								. ucfirst( str_replace( '-', '', ucwords( $key, '-' ) ) )
+								. ' = '
+								. wp_json_encode( $values['params'] ),
+							$values['params_before']
+						);
+					}
+
+					if ( isset( $values['l10n'] ) ) {
+						$var_prefix               = 'WppusAdmin';
+						$values['l10n']['var']    = isset( $values['l10n']['var'] ) ?
+							$values['l10n']['var'] :
+							$var_prefix
+								. ucfirst( str_replace( '-', '', ucwords( $key, '-' ) ) )
+								. '_l10n';
+						$values['l10n']['values'] = isset( $values['l10n']['values'] ) ?
+							$values['l10n']['values'] :
+							array();
+
+						wp_localize_script(
+							'wppus-' . $key . $suffix,
+							$values['l10n']['var'],
+							$values['l10n']['values']
+						);
+					}
+				}
+			}
+		}
+
+		return $scripts;
 	}
 }

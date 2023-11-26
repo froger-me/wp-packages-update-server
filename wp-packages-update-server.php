@@ -114,7 +114,6 @@ function wppus_run() {
 		do_action( 'wppus_no_api_includes' );
 	}
 
-	// @todo doc
 	$objects = apply_filters( 'wppus_objects', array() );
 
 	if ( ! isset( $objects['license_api'] ) ) {

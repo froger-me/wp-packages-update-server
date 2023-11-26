@@ -93,24 +93,24 @@ jQuery(document).ready(function ($) {
                 var events = data[index].events;
 
                 if (2 === events.length && events.includes('package') && events.includes('license')) {
-                     message = Wppus_l10n.eventApiCountAll;
+                     message = WppusAdminMain_l10n.eventApiCountAll;
                 } else {
                     var messageParts = { package: '', license: '' };
 
                     ['package', 'license'].forEach(function (val, index) {
-                        var type = ('package' === val) ? Wppus_l10n.eventApiTypePackage : Wppus_l10n.eventApiTypeLicense;
+                        var type = ('package' === val) ? WppusAdminMain_l10n.eventApiTypePackage : WppusAdminMain_l10n.eventApiTypeLicense;
 
                         if (events.includes(val)) {
-                            messageParts[val] = Wppus_l10n.eventApiCountAllType.replace('%s', type);
+                            messageParts[val] = WppusAdminMain_l10n.eventApiCountAllType.replace('%s', type);
                         } else if (1 === events.filter(function (i) { return i.startsWith(val); }).length) {
-                            messageParts[val] = Wppus_l10n.eventApiCountTypeSingular.replace('%s', type);
+                            messageParts[val] = WppusAdminMain_l10n.eventApiCountTypeSingular.replace('%s', type);
                         } else if (events.filter(function (i) { return i.startsWith(val); }).length) {
-                            messageParts[val] = Wppus_l10n.eventApiCountTypePlural.replace('%1$d', events.filter(function (i) { return i.startsWith(val); }).length).replace('%2$s', type);
+                            messageParts[val] = WppusAdminMain_l10n.eventApiCountTypePlural.replace('%1$d', events.filter(function (i) { return i.startsWith(val); }).length).replace('%2$s', type);
                         }
                     });
 
                     if ('' !== messageParts.package && '' !== messageParts.license) {
-                        message = messageParts.package + Wppus_l10n.apiSumSep + '<br>' + messageParts.license;
+                        message = messageParts.package + WppusAdminMain_l10n.apiSumSep + '<br>' + messageParts.license;
                     } else if ( '' !== messageParts.package ) {
                         message = messageParts.package;
                     } else {
@@ -131,7 +131,7 @@ jQuery(document).ready(function ($) {
                 deleteButton.innerHTML = '<span class="wppus-remove-icon" aria-hidden="true"></span>';
                 deleteButton.onclick = function () {
 
-                    if (confirm(Wppus_l10n.deleteApiWebhookConfirm)) {
+                    if (confirm(WppusAdminMain_l10n.deleteApiWebhookConfirm)) {
                         delete data[index];
                         renderItems();
                     }
@@ -254,17 +254,17 @@ jQuery(document).ready(function ($) {
                 var access = data[index].access;
 
                 if (1 === access.length && 'all' === access[0]) {
-                    message = Wppus_l10n.actionApiCountAll;
+                    message = WppusAdminMain_l10n.actionApiCountAll;
                 } else if (2 === access.length && access.includes('all') && access.includes('other')) {
-                    message = Wppus_l10n.actionApiCountAllOther;
+                    message = WppusAdminMain_l10n.actionApiCountAllOther;
                 } else if ( 2 === access.length && access.includes('other') ) {
-                    message = Wppus_l10n.actionApiCountSingularOther;
+                    message = WppusAdminMain_l10n.actionApiCountSingularOther;
                 } else if ( access.includes('other') ) {
-                    message = Wppus_l10n.actionApiCountPluralOther.replace('%d', access.length - 1);
+                    message = WppusAdminMain_l10n.actionApiCountPluralOther.replace('%d', access.length - 1);
                 } else if (1 === access.length) {
-                    message = Wppus_l10n.actionApiCountSingular;
+                    message = WppusAdminMain_l10n.actionApiCountSingular;
                 } else {
-                    message = Wppus_l10n.actionApiCountPlural.replace('%d', access.length);
+                    message = WppusAdminMain_l10n.actionApiCountPlural.replace('%d', access.length);
                 }
 
                 itemContainer.className = 'item';
@@ -279,7 +279,7 @@ jQuery(document).ready(function ($) {
                 deleteButton.innerHTML = '<span class="wppus-remove-icon" aria-hidden="true"></span>';
                 deleteButton.onclick = function () {
 
-                    if (confirm(Wppus_l10n.deleteApiKeyConfirm)) {
+                    if (confirm(WppusAdminMain_l10n.deleteApiKeyConfirm)) {
                         delete data[index];
                         renderItems();
                     }

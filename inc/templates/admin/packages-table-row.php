@@ -68,7 +68,7 @@
 					);
 					?>
 				<?php else : ?>
-					<?php do_action( 'wppus_packages_table_cell', $column_name, $record, $record_key ); // @todo doc ?>
+					<?php do_action( 'wppus_packages_table_cell', $column_name, $record, $record_key ); ?>
 				<?php endif; ?>
 			</td>
 		<?php endif; ?>

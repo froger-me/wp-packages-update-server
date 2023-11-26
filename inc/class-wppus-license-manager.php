@@ -28,7 +28,8 @@ class WPPUS_License_Manager {
 				add_filter( 'wppus_packages_table_row_actions', array( $this, 'wppus_packages_table_row_actions' ), 10, 4 );
 			}
 
-			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 5, 1 );
+			add_filter( 'wppus_admin_scripts', array( $this, 'wppus_admin_scripts' ), 10, 1 );
+			add_filter( 'wppus_admin_styles', array( $this, 'wppus_admin_styles' ), 10, 1 );
 			add_action( 'admin_init', array( $this, 'admin_init' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 20, 0 );
 			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 20, 1 );
@@ -185,51 +186,36 @@ class WPPUS_License_Manager {
 		$this->change_packages_license_status_bulk( $deleted_package_slugs, false );
 	}
 
-	public function admin_enqueue_scripts( $hook ) {
-		$debug = (bool) ( constant( 'WP_DEBUG' ) );
+	public function wppus_admin_styles( $styles ) {
+		$styles['license'] = array(
+			'path' => WPPUS_PLUGIN_PATH . 'css/admin/license' . wppus_assets_suffix() . '.css',
+			'uri'  => WPPUS_PLUGIN_URL . 'css/admin/license' . wppus_assets_suffix() . '.css',
+		);
 
-		if ( false !== strpos( $hook, 'page_wppus' ) ) {
-			$js_ext = ( $debug ) ? '.js' : '.min.js';
-			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/license' . $js_ext );
+		$styles['jquery-ui'] = array(
+			'path' => WPPUS_PLUGIN_URL . 'css/admin/jquery-ui' . wppus_assets_suffix() . '.css',
+			'uri'  => WPPUS_PLUGIN_URL . 'css/admin/jquery-ui' . wppus_assets_suffix() . '.css',
+		);
 
-			wp_enqueue_script(
-				'wppus-license-script',
-				WPPUS_PLUGIN_URL . 'js/admin/license' . $js_ext,
-				array( 'jquery' ),
-				$ver_js,
-				true
-			);
+		return $styles;
+	}
 
-			$ver_js = filemtime( WPPUS_PLUGIN_PATH . 'js/admin/jquery.validate.min.js' );
+	public function wppus_admin_scripts( $scripts ) {
+		$scripts['license'] = array(
+			'path' => WPPUS_PLUGIN_PATH . 'js/admin/license' . wppus_assets_suffix() . '.js',
+			'uri'  => WPPUS_PLUGIN_URL . 'js/admin/license' . wppus_assets_suffix() . '.js',
+			'deps' => array( 'jquery' ),
+		);
 
-			wp_enqueue_script(
-				'wp-packages-update-server-validate-script',
-				WPPUS_PLUGIN_URL . 'js/admin/jquery.validate.min.js',
-				array( 'jquery' ),
-				$ver_js,
-				true
-			);
-			wp_enqueue_script( 'jquery-ui-datepicker' );
+		$scripts['license'] = array(
+			'path' => WPPUS_PLUGIN_PATH . 'js/admin/jquery.validate.min.js',
+			'uri'  => WPPUS_PLUGIN_URL . 'js/admin/jquery.validate.min.js',
+			'deps' => array( 'jquery' ),
+		);
 
-			$css_ext = ( $debug ) ? '.css' : '.min.css';
-			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/license' . $css_ext );
+		wp_enqueue_script( 'jquery-ui-datepicker' );
 
-			wp_enqueue_style(
-				'wppus-admin-license',
-				WPPUS_PLUGIN_URL . 'css/admin/license' . $css_ext,
-				array(),
-				$ver_css
-			);
-
-			$ver_css = filemtime( WPPUS_PLUGIN_PATH . 'css/admin/jquery-ui' . $css_ext );
-
-			wp_enqueue_style(
-				'wppus-admin-jquery-ui',
-				WPPUS_PLUGIN_URL . 'css/admin/jquery-ui' . $css_ext,
-				array(),
-				$ver_css
-			);
-		}
+		return $scripts;
 	}
 
 	public function add_page_options() {

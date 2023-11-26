@@ -36,6 +36,12 @@ if ( ! function_exists( 'cidr_match' ) ) {
 	}
 }
 
+if ( ! function_exists( 'wppus_assets_suffix' ) ) {
+	function wppus_assets_suffix() {
+		return (bool) ( constant( 'WP_DEBUG' ) ) ? '' : '.min';
+	}
+}
+
 if ( ! function_exists( 'wppus_is_doing_license_api_request' ) ) {
 	function wppus_is_doing_license_api_request() {
 

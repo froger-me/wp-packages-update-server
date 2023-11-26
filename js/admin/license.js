@@ -1,4 +1,4 @@
-/* global Wppus, console, Wppus_l10n */
+/* global Wppus, console */
 jQuery(document).ready(function ($) {
 
 	$('#add_license_trigger').on('click', function() {
