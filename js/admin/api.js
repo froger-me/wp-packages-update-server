@@ -76,7 +76,7 @@ jQuery(document).ready(function ($) {
             });
             var urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+\/?)|localhost(:\d+)?(\/[\w-]+)*\/?(\?\S*)?$/;
 
-            isEnabled = isEnabled && urlPattern.test(inputValue) && (16 <= secretNew.val().length) && 0 !== el.find('.event-container input[type="checkbox"]:checked').length;;
+            isEnabled = isEnabled && urlPattern.test(inputValue) && (16 <= secretNew.val().length) && 0 !== el.find('.event-container input[type="checkbox"]:checked').length;
             addButton.disabled = !isEnabled;
         }
 
