@@ -523,7 +523,7 @@ class WPPUS_Nonce {
 			'wppus_nonce_authorize',
 			$auth,
 			array(
-				'credentials' => $timestamp . '|' . $key_id,
+				'credentials' => $timestamp . '/' . $key_id,
 				'signature'   => $sign,
 			),
 			self::$private_keys
