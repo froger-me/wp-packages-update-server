@@ -45,7 +45,7 @@ ___
 ## Nonce API
 
 The nonce API is accessible via `POST` and `GET` requests on the `/wppus-token/` endpoint to acquire a reusable token, and `/wppus-nonce/` to acquire a true nonce.  
-It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well.
+It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well.  
 
 Authorization is granted with either the `HTTP_X_WPPUS_API_CREDENTIALS` and `HTTP_X_WPPUS_API_SIGNATURE` headers or with the `api_credentials` and `api_signature` parameters.  
 If requesting a token for an existing API, the `api` parameter value must be provided with one of `package` or `license` to specify the target API.  
@@ -87,7 +87,7 @@ if ( is_wp_error( $response ) ) {
 	$data         = wp_remote_retrieve_body( $response );
 	$decoded_data = json_decode( $data );
 
-	if ( '200' === $response->code ) {
+	if ( 200 === $response['response']['code'] ) {
 		// Handle success with $decoded_data
 	} else {
 		// Handle failure with $decoded_data
@@ -95,7 +95,7 @@ if ( is_wp_error( $response ) ) {
 }
 ```
 
-Payload to acquire a reusable token or a true nonce:
+Payload to acquire a reusable token or a true nonce ; please note that **boolean values are NOT supported**: if the payload needs to include such value type, developers are invited to use the string `'true'`/`'false'`, or the integers `1`/`0` :
 
 ```php
 $payload = array(
@@ -104,8 +104,12 @@ $payload = array(
 		'permanent' => false,             // set to a truthy value to create a nonce that never expires
 		'key1'      => 'value1',          // custom data
 		'key2'      => array(             // custom data can be as nested as needed
-			'subkey1' => 'subval1',
-			'subkey2' => 'subval2'
+			'subkey1'   => 'subval1',
+			'subkey2'   => 'subval2'
+			'bool_key1' => 'true',
+			'bool_key2' => 'false',
+			'bool_key3' => 1,
+			'bool_key4' => 0,
 		),
 	),
 	'api_credentials' => '9999999999|private_key_id', // The credentials acting as public key `timestamp|key_id`, where `timestamp` is a past timestamp no older than 1 minutes, and `key_id` is the ID corresponding to the Private API Key (optional - must be provided in case X-WPPUS-API-Credentials header is absent)

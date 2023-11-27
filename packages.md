@@ -160,7 +160,7 @@ if ( is_wp_error( $response ) ) {
 	$data         = wp_remote_retrieve_body( $response );
 	$decoded_data = json_decode( $data );
 
-	if ( '200' === $response->code ) {
+	if ( '200' === $response['response']['code'] ) {
 		// Handle success with $decoded_data
 	} else {
 		// Handle failure with $decoded_data
@@ -251,7 +251,7 @@ if ( is_wp_error( $response ) ) {
 } else {
 	$data = wp_remote_retrieve_body( $response );
 
-	if ( '200' === $response->code ) {
+	if ( '200' === $response['response']['code'] ) {
 		error_log( $data );
 	} else {
 		// Handle failure with $data
