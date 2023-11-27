@@ -207,6 +207,13 @@ class WPPUS_API_Manager {
 						}
 					} elseif ( 'api-keys' === $option_info['condition'] ) {
 						$inputs = json_decode( $option_info['value'], true );
+						$prefix = '';
+
+						if ( 'wppus_package_private_api_keys' === $option_name ) {
+							$prefix = 'P**';
+						} elseif ( 'wppus_license_private_api_keys' === $option_name ) {
+							$prefix = 'L**';
+						}
 
 						if ( empty( $option_info['value'] ) || json_last_error() ) {
 							$option_info['value'] = '{}';
@@ -214,10 +221,16 @@ class WPPUS_API_Manager {
 							$filtered = array();
 
 							foreach ( $inputs as $id => $values ) {
-								$id = filter_var( $id, FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+								$id = str_replace(
+									$prefix,
+									'',
+									filter_var( $id, FILTER_SANITIZE_FULL_SPECIAL_CHARS )
+								);
 
 								if ( ! preg_match( '/^[a-zA-Z0-9_-]+$/', $id ) ) {
 									$id = false;
+								} else {
+									$id = $prefix . $id;
 								}
 
 								$access = filter_var(
