@@ -515,7 +515,12 @@ class WPPUS_Nonce {
 
 		if ( $sign && $timestamp && $key_id && isset( self::$private_keys[ $key_id ] ) ) {
 			$payload = $_POST; // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$values  = wppus_build_nonce_api_signature( $key_id, self::$private_keys[ $key_id ]['key'], $timestamp, $payload );
+			$values  = wppus_build_nonce_api_signature(
+				$key_id,
+				self::$private_keys[ $key_id ]['key'],
+				$timestamp,
+				$payload
+			);
 			$auth    = hash_equals( $values['signature'], $sign );
 		}
 
