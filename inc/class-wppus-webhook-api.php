@@ -37,6 +37,7 @@ class WPPUS_Webhook_API {
 	// WordPress hooks ---------------------------------------------
 
 	public function add_endpoints() {
+		add_rewrite_rule( '^wppus-webhook$', 'index.php?__wppus_webhook=1&', 'top' );
 		add_rewrite_rule( '^wppus-webhook/(plugin|theme)/(.+)?$', 'index.php?type=$matches[1]&package_id=$matches[2]&__wppus_webhook=1&', 'top' );
 	}
 
@@ -238,18 +239,69 @@ class WPPUS_Webhook_API {
 	 * Protected methods
 	 *******************************************************************/
 
+	protected function handle_remote_test() {
+		global $wp_filesystem;
+
+		$sign       = $_SERVER['HTTP_X_WPPUS_SIGNATURE_256'];
+		$sign_parts = explode( '=', $sign );
+		$sign       = 2 === count( $sign_parts ) ? end( $sign_parts ) : false;
+		$algo       = ( $sign ) ? reset( $sign_parts ) : false;
+		$payload    = ( $sign ) ? filter_input_array(
+			INPUT_POST,
+			array(
+				'test'   => FILTER_VALIDATE_INT,
+				'source' => FILTER_SANITIZE_URL,
+			)
+		) : false;
+		$valid      = false;
+
+		if (
+			$payload &&
+			1 === intval( $payload['test'] ) &&
+			! empty( $this->webhooks )
+		) {
+			$source   = $payload['source'];
+			$webhooks = array_filter(
+				$this->webhooks,
+				function ( $key ) use ( $source ) {
+					return 0 === strpos( $key, $source );
+				},
+				ARRAY_FILTER_USE_KEY
+			);
+
+			if ( ! empty( $webhooks ) ) {
+
+				foreach ( $webhooks as $webhook ) {
+					$secret = $webhook['secret'];
+					$body   = wp_json_encode( $payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+					$valid  = $sign && hash_equals( hash_hmac( $algo, $body, $secret ), $sign );
+
+					if ( $valid ) {
+						break;
+					}
+				}
+			}
+		}
+
+		wp_send_json( $valid, $valid ? 200 : 403 );
+	}
+
 	protected function handle_api_request() {
 		global $wp, $wp_filesystem;
-
-		$config = self::get_config();
-
-		do_action( 'wppus_webhook_before_handling_request', $config );
 
 		if ( empty( $wp_filesystem ) ) {
 			require_once ABSPATH . '/wp-admin/includes/file.php';
 
 			WP_Filesystem();
 		}
+
+		if ( isset( $_SERVER['HTTP_X_WPPUS_SIGNATURE_256'] ) ) {
+			$this->handle_remote_test();
+		}
+
+		$config = self::get_config();
+
+		do_action( 'wppus_webhook_before_handling_request', $config );
 
 		if ( $this->validate_request( $config ) ) {
 			$package_id        = isset( $wp->query_vars['package_id'] ) ?
