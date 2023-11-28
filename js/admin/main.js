@@ -57,7 +57,7 @@ jQuery(document).ready(function ($) {
 		button.attr('disabled', 'disabled');
 
 		$.ajax({
-			url: Wppus.ajax_url,
+			url: WppusAdminMain.ajax_url,
 			data: data,
 			type: 'POST',
 			success: function(response) {
@@ -96,7 +96,7 @@ jQuery(document).ready(function ($) {
 				}
 			},
 			error: function (jqXHR, textStatus) {
-				Wppus.debug && console.log(textStatus);
+				WppusAdminMain.debug && console.log(textStatus);
 			}
 		});
 
@@ -129,7 +129,7 @@ jQuery(document).ready(function ($) {
 		primeLocked = true;
 
 		$.ajax({
-			url: Wppus.ajax_url,
+			url: WppusAdminMain.ajax_url,
 			data: data,
 			type: 'POST',
 			success: function(response) {
@@ -153,7 +153,7 @@ jQuery(document).ready(function ($) {
 				}
 			},
 			error: function (jqXHR, textStatus) {
-				Wppus.debug && console.log(textStatus);
+				WppusAdminMain.debug && console.log(textStatus);
 
 				primeLocked = false;
 
@@ -240,7 +240,7 @@ jQuery(document).ready(function ($) {
 			data.append('nonce', $('#wppus_plugin_options_handler_nonce').val());
 
 			$.ajax({
-				url: Wppus.ajax_url,
+				url: WppusAdminMain.ajax_url,
 				data: data,
 				type: 'POST',
 				cache: false,
@@ -264,7 +264,7 @@ jQuery(document).ready(function ($) {
 					}
 				},
 				error: function (jqXHR, textStatus) {
-					Wppus.debug && console.log(textStatus);
+					WppusAdminMain.debug && console.log(textStatus);
 				}
 			});
 		} else {

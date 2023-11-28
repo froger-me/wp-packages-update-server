@@ -204,10 +204,10 @@ class WPPUS_License_Manager {
 		$scripts['license'] = array(
 			'path' => WPPUS_PLUGIN_PATH . 'js/admin/license' . wppus_assets_suffix() . '.js',
 			'uri'  => WPPUS_PLUGIN_URL . 'js/admin/license' . wppus_assets_suffix() . '.js',
-			'deps' => array( 'jquery' ),
+			'deps' => array( 'jquery', 'wppus-jq-validate-admin-script' ),
 		);
 
-		$scripts['license'] = array(
+		$scripts['jq-validate'] = array(
 			'path' => WPPUS_PLUGIN_PATH . 'js/admin/jquery.validate.min.js',
 			'uri'  => WPPUS_PLUGIN_URL . 'js/admin/jquery.validate.min.js',
 			'deps' => array( 'jquery' ),
