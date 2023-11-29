@@ -25,7 +25,6 @@ if ( ! function_exists( 'cidr_match' ) ) {
 		$subnet                 = ip2long( $subnet );
 
 		if ( ! $ip || ! $subnet || ! $bits ) {
-
 			return false;
 		}
 
@@ -44,28 +43,24 @@ if ( ! function_exists( 'wppus_assets_suffix' ) ) {
 
 if ( ! function_exists( 'wppus_is_doing_license_api_request' ) ) {
 	function wppus_is_doing_license_api_request() {
-
 		return WPPUS_License_API::is_doing_api_request();
 	}
 }
 
 if ( ! function_exists( 'wppus_is_doing_update_api_request' ) ) {
 	function wppus_is_doing_update_api_request() {
-
 		return WPPUS_Update_API::is_doing_api_request();
 	}
 }
 
 if ( ! function_exists( 'wppus_is_doing_webhook_api_request' ) ) {
 	function wppus_is_doing_webhook_api_request() {
-
 		return WPPUS_Webhook_API::is_doing_api_request();
 	}
 }
 
 if ( ! function_exists( 'wppus_is_doing_package_api_request' ) ) {
 	function wppus_is_doing_package_api_request() {
-
 		return WPPUS_Package_API::is_doing_api_request();
 	}
 }
@@ -85,56 +80,48 @@ if ( ! function_exists( 'wppus_is_doing_api_request' ) ) {
 
 if ( ! function_exists( 'wppus_get_root_data_dir' ) ) {
 	function wppus_get_root_data_dir() {
-
 		return WPPUS_Data_Manager::get_data_dir();
 	}
 }
 
 if ( ! function_exists( 'wppus_get_packages_data_dir' ) ) {
 	function wppus_get_packages_data_dir() {
-
 		return WPPUS_Data_Manager::get_data_dir( 'packages' );
 	}
 }
 
 if ( ! function_exists( 'wppus_get_logs_data_dir' ) ) {
 	function wppus_get_logs_data_dir() {
-
 		return WPPUS_Data_Manager::get_data_dir( 'logs' );
 	}
 }
 
 if ( ! function_exists( 'wppus_force_cleanup_cache' ) ) {
 	function wppus_force_cleanup_cache() {
-
 		return WPPUS_Data_Manager::maybe_cleanup( 'cache', true );
 	}
 }
 
 if ( ! function_exists( 'wppus_force_cleanup_logs' ) ) {
 	function wppus_force_cleanup_logs() {
-
 		return WPPUS_Data_Manager::maybe_cleanup( 'logs', true );
 	}
 }
 
 if ( ! function_exists( 'wppus_force_cleanup_tmp' ) ) {
 	function wppus_force_cleanup_tmp() {
-
 		return WPPUS_Data_Manager::maybe_cleanup( 'tmp', true );
 	}
 }
 
 if ( ! function_exists( 'wppus_check_remote_plugin_update' ) ) {
 	function wppus_check_remote_plugin_update( $slug ) {
-
 		return wppus_check_remote_package_update( $slug, 'plugin' );
 	}
 }
 
 if ( ! function_exists( 'wppus_check_remote_theme_update' ) ) {
 	function wppus_check_remote_theme_update( $slug ) {
-
 		return wppus_check_remote_package_update( $slug, 'theme' );
 	}
 }
@@ -149,14 +136,12 @@ if ( ! function_exists( 'wppus_check_remote_package_update' ) ) {
 
 if ( ! function_exists( 'wppus_download_remote_plugin' ) ) {
 	function wppus_download_remote_plugin( $slug ) {
-
 		return wppus_download_remote_package( $slug, 'plugin' );
 	}
 }
 
 if ( ! function_exists( 'wppus_download_remote_theme' ) ) {
 	function wppus_download_remote_theme( $slug ) {
-
 		return wppus_download_remote_package( $slug, 'theme' );
 	}
 }
@@ -230,14 +215,12 @@ if ( ! function_exists( 'wppus_get_local_package_path' ) ) {
 		global $wp_filesystem;
 
 		if ( ! $wp_filesystem ) {
-
 			wp_die( __FUNCTION__ . ' - WP_Filesystem not available.' );
 		}
 
 		$package_path = trailingslashit( WPPUS_Data_Manager::get_data_dir( 'packages' ) ) . $package_slug . '.zip';
 
 		if ( $wp_filesystem->is_file( $package_path ) ) {
-
 			return $package_path;
 		}
 
@@ -369,40 +352,30 @@ if ( ! function_exists( 'wppus_create_nonce' ) ) {
 
 if ( ! function_exists( 'wppus_get_nonce_expiry' ) ) {
 	function wppus_get_nonce_expiry( $nonce ) {
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
-
 		return WPPUS_Nonce::get_nonce_expiry( $nonce );
 	}
 }
 
 if ( ! function_exists( 'wppus_get_nonce_data' ) ) {
 	function wppus_get_nonce_data( $nonce ) {
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
-
 		return WPPUS_Nonce::get_nonce_data( $nonce );
 	}
 }
 
 if ( ! function_exists( 'wppus_validate_nonce' ) ) {
 	function wppus_validate_nonce( $value ) {
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
-
 		return WPPUS_Nonce::validate_nonce( $value );
 	}
 }
 
 if ( ! function_exists( 'wppus_delete_nonce' ) ) {
 	function wppus_delete_nonce( $value ) {
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
-
 		return WPPUS_Nonce::delete_nonce( $value );
 	}
 }
 
 if ( ! function_exists( 'wppus_clear_nonces' ) ) {
 	function wppus_clear_nonces() {
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
-
 		return WPPUS_Nonce::wppus_nonce_cleanup();
 	}
 }
