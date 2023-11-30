@@ -16,7 +16,7 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		$repository_service_url,
 		$repository_branch,
 		$repository_credentials,
-		$repository_service_self_hosted,
+		$repository_service_self_hosted
 	) {
 		parent::__construct(
 			$use_remote_repository,
@@ -173,14 +173,9 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		$license_server = new WPPUS_License_Server();
 		$payload        = array( 'license_key' => $license_key );
 		$result         = $license_server->read_license( $payload );
-		$name_parts     = explode( ' ', $result->owner_name );
-		$first_name     = array_shift( $name_parts );
-		$last_name      = implode( ' ', $name_parts );
 
 		if ( is_object( $result ) ) {
 			$result->result             = 'success';
-			$result->first_name         = $first_name;
-			$result->last_name          = $last_name;
 			$result->registered_domains = $result->allowed_domains;
 			$result->message            = __( 'License key details retrieved.', 'wppus' );
 			$result->product_ref        = ( 'theme' === $result->package_type ) ?
@@ -193,6 +188,13 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 
 	protected function prepare_license_for_output( $license ) {
 		$output = json_decode( wp_json_encode( $license ), true );
+
+		unset( $output['hmac_key'] );
+		unset( $output['crypto_key'] );
+		unset( $output['data'] );
+		unset( $output['owner_name'] );
+		unset( $output['email'] );
+		unset( $output['company_name'] );
 
 		return $output;
 	}
