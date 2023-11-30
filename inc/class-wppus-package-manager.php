@@ -117,7 +117,7 @@ class WPPUS_Package_Manager {
 	public function wppus_admin_tab_links( $links ) {
 		$links['main'] = array(
 			admin_url( 'admin.php?page=wppus-page' ),
-			"<span class='dashicons dashicons-welcome-view-site'></span> " . __( 'Packages Overview', 'wppus' ),
+			"<span class='dashicons dashicons-media-archive'></span> " . __( 'Packages Overview', 'wppus' ),
 		);
 
 		return $links;
