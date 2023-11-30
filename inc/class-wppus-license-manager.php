@@ -512,7 +512,9 @@ class WPPUS_License_Manager {
 				if ( 'blocked' === $status || 'expired' === $status ) {
 					$include = true;
 				} elseif ( '0000-00-00' !== $license_info->date_expiry ) {
-					$include = time() < mysql2date( 'U', $license_info->date_expiry );
+					$timezone    = new DateTimeZone( wp_timezone_string() );
+					$date_expiry = new DateTime( $license_info->date_expiry, $timezone );
+					$include     = time() < $date_expiry->getTimestamp();
 				} else {
 					$include = true;
 				}

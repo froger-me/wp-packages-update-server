@@ -50,26 +50,20 @@
 					<?php echo esc_html( $record[ $key ] ); ?>
 				<?php elseif ( 'col_date_created' === $column_name ) : ?>
 					<?php
-					echo esc_html(
-						wp_date(
-							get_option( 'date_format' ),
-							mysql2date( 'U', $record[ $key ] ),
-							new DateTimeZone( wp_timezone_string() )
-						)
-					);
+					$timezone = new DateTimeZone( wp_timezone_string() );
+					$date     = new DateTime( $record[ $key ], $timezone );
+
+					echo esc_html( $date->format( get_option( 'date_format' ) ) );
 					?>
 				<?php elseif ( 'col_date_expiry' === $column_name ) : ?>
 					<?php if ( '0000-00-00' === $record[ $key ] ) : ?>
 						<?php esc_html_e( 'N/A', 'wppus' ); ?>
 					<?php else : ?>
 						<?php
-						echo esc_html(
-							wp_date(
-								get_option( 'date_format' ),
-								mysql2date( 'U', $record[ $key ] ),
-								new DateTimeZone( wp_timezone_string() )
-							)
-						);
+						$timezone = new DateTimeZone( wp_timezone_string() );
+						$date     = new DateTime( $record[ $key ], $timezone );
+
+						echo esc_html( $date->format( get_option( 'date_format' ) ) );
 						?>
 					<?php endif; ?>
 				<?php endif; ?>

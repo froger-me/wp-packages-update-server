@@ -4,7 +4,7 @@
  * Plugins and themes update library to enable with WP Packages Update Server
  *
  * @author Alexandre Froger
- * @version 1.5
+ * @version 2.0
  * @copyright Alexandre Froger - https://www.froger.me
  */
 defined( 'ABSPATH' ) || exit; // Exit if accessed directly
@@ -73,7 +73,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 
 	class WP_Package_Updater {
 
-		const VERSION = '1.0.4';
+		const VERSION = '2.0';
 
 		private $license_server_url;
 		private $package_slug;
@@ -548,6 +548,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 
 		protected function handle_license_errors( $license_data, $query_type = null ) {
 			$license_data->clear_key = false;
+			$timezone                = new DateTimeZone( wp_timezone_string() );
 
 			if ( 'activate' === $query_type ) {
 
@@ -562,16 +563,30 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				if ( isset( $license_data->allowed_domains ) ) {
 					$license_data->clear_key = true;
 					$license_data->message   = __( 'The license is already inactive for this domain.', 'wp-package-updater' );
+				} elseif ( isset( $license_data->next_deactivate ) ) {
+					$date = new DateTime( 'now', $timezone );
+
+					$date->setTimestamp( intval( $license_data->next_deactivate ) );
+
+					$license_data->message = sprintf(
+						// translators: the next posible deactivation date
+						__( 'The license may not be deactivated before %s.', 'wp-package-updater' ),
+						$date->format( get_option( 'date_format' ) . ' H:i:s' )
+					);
 				}
 			}
 
 			if ( isset( $license_data->status ) && 'expired' === $license_data->status ) {
 
 				if ( isset( $license_data->date_expiry ) ) {
+					$date = new DateTime( 'now', $timezone );
+
+					$date->setTimestamp( intval( $license_data->date_expiry ) );
+
 					$license_data->message = sprintf(
 						// translators: the license expiry date
 						__( 'The license expired on %s and needs to be renewed to be updated.', 'wp-package-updater' ),
-						date_i18n( get_option( 'date_format' ), strtotime( $license_data->date_expiry ) )
+						$date->format( get_option( 'date_format' ) )
 					);
 				} else {
 					$license_data->message = __( 'The license expired and needs to be renewed to be updated.', 'wp-package-updater' );
@@ -580,7 +595,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				$license_data->message = __( 'The license is blocked and cannot be updated anymore. Please use another license key.', 'wp-package-updater' );
 			} elseif ( isset( $license_data->status ) && 'pending' === $license_data->status ) {
 				$license_data->clear_key = true;
-				$license_data->message   = __( 'The license has not been activated and its status is stil pending. Please try again or use another license key.', 'wp-package-updater' );
+				$license_data->message   = __( 'The license has not been activated and its status is still pending. Please try again or use another license key.', 'wp-package-updater' );
 			} elseif ( isset( $license_data->status ) && 'invalid' === $license_data->status ) {
 				$license_data->clear_key = true;
 				$license_data->message   = __( 'The provided license key is invalid. Please use another license key.', 'wp-package-updater' );

@@ -304,14 +304,15 @@ class WPPUS_License_Server {
 
 	public function switch_expired_licenses_status() {
 		global $wpdb;
-
-		$sql = "UPDATE {$wpdb->prefix}wppus_licenses
+		$timezone = new DateTimeZone( wp_timezone_string() );
+		$date     = new DateTime( 'now', $timezone );
+		$sql      = "UPDATE {$wpdb->prefix}wppus_licenses
 				SET status = 'expired'
 				WHERE date_expiry <= %s
 				AND status != 'blocked'
 				AND date_expiry != '0000-00-00'";
 
-		$wpdb->query( $wpdb->prepare( $sql, mysql2date( 'Y-m-d', current_time( 'mysql' ), false ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$wpdb->query( $wpdb->prepare( $sql, $date->format( 'Y-m-d' ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 	}
 
 	public function update_licenses_status( $status, $license_ids = array() ) {
@@ -444,7 +445,9 @@ class WPPUS_License_Server {
 		}
 
 		if ( isset( $payload['date_created'] ) && empty( $payload['date_created'] ) ) {
-			$payload['date_created'] = mysql2date( 'Y-m-d', current_time( 'mysql' ), false );
+			$timezone                = new DateTimeZone( wp_timezone_string() );
+			$date                    = new DateTime( time(), $timezone );
+			$payload['date_created'] = $date->format( 'Y-m-d' );
 		}
 
 		if ( isset( $payload['status'] ) && empty( $payload['status'] ) ) {
@@ -499,10 +502,14 @@ class WPPUS_License_Server {
 
 		if (
 			! empty( $license['date_expiry'] ) &&
-			'blocked' !== $license['status'] &&
-			strtotime( $license['date_expiry'] ) <= strtotime( mysql2date( 'Y-m-d', current_time( 'mysql' ), false ) )
+			'blocked' !== $license['status']
 		) {
-			$license['status'] = 'expired';
+			$timezone    = new DateTimeZone( wp_timezone_string() );
+			$date_expiry = new DateTime( $license['date_expiry'], $timezone );
+
+			if ( $date_expiry->getTimestamp() <= time() ) {
+				$license['status'] = 'expired';
+			}
 		}
 
 		return $license;

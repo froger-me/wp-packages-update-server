@@ -213,8 +213,6 @@ class WPPUS_License_API {
 
 			if ( 'expired' === $license->status || 'blocked' === $license->status ) {
 				$result['status'] = $license->status;
-			} elseif ( ! empty( array_intersect( $license_data['allowed_domains'], $license->allowed_domains ) ) ) {
-				$result['allowed_domains'] = $license_data['allowed_domains'];
 			} elseif ( $domain_count > absint( $license->max_allowed_domains ) ) {
 				$result['max_allowed_domains'] = $license->max_allowed_domains;
 			}
@@ -223,7 +221,7 @@ class WPPUS_License_API {
 				$payload                   = array(
 					'id'              => $license->id,
 					'status'          => 'activated',
-					'allowed_domains' => array_merge( $license_data['allowed_domains'], $license->allowed_domains ),
+					'allowed_domains' => array_unique( array_merge( $license_data['allowed_domains'], $license->allowed_domains ) ),
 				);
 				$result                    = $this->license_server->edit_license(
 					apply_filters( 'wppus_activate_license_payload', $payload )
@@ -279,16 +277,24 @@ class WPPUS_License_API {
 					empty( array_intersect( $license_data['allowed_domains'], $license->allowed_domains ) )
 			) {
 				$result['allowed_domains'] = $license_data['allowed_domains'];
+			} elseif (
+				isset( $license->data, $license->data['next_deactivate'] ) &&
+				$license->data['next_deactivate'] > time()
+			) {
+				$result['next_deactivate'] = $license->data['next_deactivate'];
 			}
 
 			if ( empty( $result ) ) {
-				$allowed_domains = array_diff( $license->allowed_domains, $license_data['allowed_domains'] );
-				$payload         = array(
+				$data                    = isset( $license->data ) ? $license->data : array();
+				$data['next_deactivate'] = time() + MONTH_IN_SECONDS;
+				$allowed_domains         = array_diff( $license->allowed_domains, $license_data['allowed_domains'] );
+				$payload                 = array(
 					'id'              => $license->id,
 					'status'          => empty( $allowed_domains ) ? 'deactivated' : $license->status,
 					'allowed_domains' => $allowed_domains,
+					'data'            => $data,
 				);
-				$result          = $this->license_server->edit_license(
+				$result                  = $this->license_server->edit_license(
 					apply_filters( 'wppus_deactivate_license_payload', $payload )
 				);
 

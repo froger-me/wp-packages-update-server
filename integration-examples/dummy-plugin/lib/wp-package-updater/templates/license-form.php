@@ -7,7 +7,7 @@
 	</p>
 	<div class="license-change">
 		<label><?php esc_html_e( 'License key:', 'wp-package-updater' ); ?></label> <input class="regular-text license" type="text" id="<?php echo esc_attr( 'license_key_' . $package_id ); ?>" value="<?php echo ( $show_license ) ? esc_html( $license ) : ''; ?>" >
-		<input type="button" value="Activate" class="button-primary activate-license" />
-		<input type="button" value="Deactivate" class="button deactivate-license" />
+		<input type="button" value="<?php esc_attr_e( 'Activate', 'wp-package-updater' ); ?>" class="button-primary activate-license" />
+		<input type="button" value="<?php esc_attr_e( 'Deactivate (Allowed once per month)', 'wp-package-updater' ); ?>" class="button deactivate-license" />
 	</div>
 </div>
