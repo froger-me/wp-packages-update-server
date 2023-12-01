@@ -67,6 +67,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_license\_api\_request\_authorized](#wppus_license_api_request_authorized)
 		* [wppus\_license\_bypass\_signature](#wppus_license_bypass_signature)
 		* [wppus\_api\_license\_actions](#wppus_api_license_actions)
+		* [wppus\_api\_license\_actions](#wppus_api_license_actions-1)
 
 ___
 ## The License Query
@@ -1473,5 +1474,22 @@ Filter the License API actions available for API access control.
 **Parameters**  
 `$actions`
 > (array) the API actions  
+
+___
+### wppus_api_license_actions
+
+```php
+apply_filters( 'wppus_license_update_server_prepare_license_for_output', array $output, object $license );
+```
+
+**Description**  
+Filter the license data to send to the remote client.  
+
+**Parameters**  
+`$output`
+> (array) the license data to send to the remote client  
+
+`$license`
+> (array) the original license object  
 
 ___

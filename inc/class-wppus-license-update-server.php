@@ -196,7 +196,7 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		unset( $output['email'] );
 		unset( $output['company_name'] );
 
-		return $output;
+		return apply_filters( 'wppus_license_update_server_prepare_license_for_output', $output, $license );
 	}
 
 	protected function is_license_valid( $license, $license_signature ) {
