@@ -27,7 +27,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 		$repository_service_url = null,
 		$repository_branch = 'master',
 		$repository_credentials = null,
-		$repository_service_self_hosted = false,
+		$repository_service_self_hosted = false
 	) {
 		parent::__construct( $server_url, untrailingslashit( $server_directory ) );
 
