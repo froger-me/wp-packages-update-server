@@ -4,6 +4,20 @@
  */
 class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 
+		protected $headerMap = array(
+		'Name' => 'name',
+		'Version' => 'version',
+		'PluginURI' => 'homepage',
+		'ThemeURI' => 'homepage',
+		'Author' => 'author',
+		'AuthorURI' => 'author_homepage',
+		'RequiresPHP' => 'requires_php',
+		'Description' => 'description',
+		'DetailsURI' => 'details_url', //Only for themes.
+		'Depends' => 'depends', // plugin-dependencies plugin
+		'Provides' => 'provides', // plugin-dependencies plugin
+	);
+
 	/**
 	 * @see Wpup_ZipMetadataParser
 	 * @throws Wpup_InvalidPackageException if the input file can't be parsed as a plugin or theme.
