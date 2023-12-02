@@ -6,10 +6,10 @@ Description: Empty plugin to demonstrate the WP Package Updater.
 Version: 1.4.14
 Author: Alexandre Froger
 Author URI: https://froger.me/
-Icon1x: https://raw.githubusercontent.com/froger-me/wp-packages-update-server/master/integration-examples/assets/icon-128x128.png
-Icon2x: https://raw.githubusercontent.com/froger-me/wp-packages-update-server/master/integration-examples/assets/icon-256x256.png
-BannerHigh: https://raw.githubusercontent.com/froger-me/wp-packages-update-server/master/integration-examples/assets/banner-1544x500.png
-BannerLow: https://raw.githubusercontent.com/froger-me/wp-packages-update-server/master/integration-examples/assets/banner-722x250.png
+Icon1x: https://raw.githubusercontent.com/froger-me/wp-packages-update-server/main/integration-examples/assets/icon-128x128.png
+Icon2x: https://raw.githubusercontent.com/froger-me/wp-packages-update-server/main/integration-examples/assets/icon-256x256.png
+BannerHigh: https://raw.githubusercontent.com/froger-me/wp-packages-update-server/main/integration-examples/assets/banner-1544x500.png
+BannerLow: https://raw.githubusercontent.com/froger-me/wp-packages-update-server/main/integration-examples/assets/banner-722x250.png
 */
 
 if ( ! defined( 'ABSPATH' ) ) {
