@@ -84,6 +84,16 @@ class WPPUS_License_API {
 					}
 				}
 
+				if ( ! empty( $query['criteria'] ) ) {
+
+					foreach ( $query['criteria'] as $index => $criteria ) {
+
+						if ( 'id' === $criteria['field'] ) {
+							unset( $query['criteria'][ $index ] );
+						}
+					}
+				}
+
 				break;
 			case JSON_ERROR_DEPTH:
 				$result = 'JSON parse error - Maximum stack depth exceeded';
