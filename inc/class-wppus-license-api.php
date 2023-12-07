@@ -124,6 +124,8 @@ class WPPUS_License_API {
 	}
 
 	public function edit( $license_data ) {
+		unset( $license_data['data']['api_owner'] );
+
 		$result = $this->license_server->edit_license( $license_data );
 
 		if ( ! is_object( $result ) ) {
@@ -134,11 +136,12 @@ class WPPUS_License_API {
 	}
 
 	public function add( $license_data ) {
-		$result = $this->license_server->add_license( $license_data );
 
 		if ( $this->api_key_id ) {
 			$license_data['data']['api_owner'] = $this->api_key_id;
 		}
+
+		$result = $this->license_server->add_license( $license_data );
 
 		if ( is_object( $result ) ) {
 			$result->result  = 'success';
@@ -508,6 +511,8 @@ class WPPUS_License_API {
 					$this->api_key_id = $id;
 					$this->api_access = $values['access'];
 					$valid            = true;
+
+					break;
 				}
 			}
 		}
