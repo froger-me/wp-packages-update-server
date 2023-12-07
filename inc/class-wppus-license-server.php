@@ -28,7 +28,7 @@ class WPPUS_License_Server {
 	);
 	public static $browsing_query     = array(
 		'relationship' => 'AND',
-		'limit'        => 10,
+		'limit'        => 999,
 		'offset'       => 0,
 		'order_by'     => 'date_created',
 		'criteria'     => array(),
@@ -100,8 +100,14 @@ class WPPUS_License_Server {
 			}
 		}
 
-		$sql           .= ' ORDER BY ' . $browsing_query['order_by'] . ' LIMIT %d OFFSET %d';
-		$prepare_args[] = $browsing_query['limit'];
+		$sql .= ' ORDER BY ' . $browsing_query['order_by'];
+
+		if ( 0 < $browsing_query['limit'] ) {
+			$sql           .= ' LIMIT %d';
+			$prepare_args[] = $browsing_query['limit'];
+		}
+
+		$sql           .= ' OFFSET %d';
 		$prepare_args[] = $browsing_query['offset'];
 		$licenses       = $wpdb->get_results( $wpdb->prepare( $sql, $prepare_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
@@ -375,7 +381,7 @@ class WPPUS_License_Server {
 		if ( ! is_numeric( $payload['limit'] ) ) {
 			$payload['limit'] = self::$browsing_query['limit'];
 		} else {
-			$payload['limit'] = absint( $payload['limit'] );
+			$payload['limit'] = intval( $payload['limit'] );
 		}
 
 		if ( ! is_numeric( $payload['offset'] ) ) {

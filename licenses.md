@@ -77,7 +77,7 @@ The License Query is an associative array. It is used to browse the license reco
 ```php
 $license_query = array(
 	'relationship' => 'AND',          // Relationship of the criteria when provided - 'AND or 'OR' - default 'AND' (optional)
-	'limit'        => '10',           // Limit the number of results - default 10 (optional)
+	'limit'        => '10',           // Limit the number of results ; set to any negative value for no limit - default 999 (optional)
 	'offset'       => '0',            // Results offset - default 0 (optional)
 	'order_by'     => 'date_created', // Order of the license records returned - default 'date_created' (optional)
 	'criteria'     => array(          // Criteria to filter the license records - accepts multiple values - if omitted, the result is not filtered (optional)
