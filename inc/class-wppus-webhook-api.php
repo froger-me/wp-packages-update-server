@@ -240,8 +240,6 @@ class WPPUS_Webhook_API {
 	 *******************************************************************/
 
 	protected function handle_remote_test() {
-		global $wp_filesystem;
-
 		$sign       = $_SERVER['HTTP_X_WPPUS_SIGNATURE_256'];
 		$sign_parts = explode( '=', $sign );
 		$sign       = 2 === count( $sign_parts ) ? end( $sign_parts ) : false;
@@ -273,8 +271,8 @@ class WPPUS_Webhook_API {
 
 				foreach ( $webhooks as $webhook ) {
 					$secret = $webhook['secret'];
-					$body   = wp_json_encode( $payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
-					$valid  = $sign && hash_equals( hash_hmac( $algo, $body, $secret ), $sign );
+					$body   = wp_json_encode( $payload, JSON_NUMERIC_CHECK );
+					$valid  = hash_equals( hash_hmac( $algo, $body, $secret ), $sign );
 
 					if ( $valid ) {
 						break;
