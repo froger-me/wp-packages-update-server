@@ -103,13 +103,12 @@ class WPPUS_License_Server {
 		$sql .= ' ORDER BY ' . $browsing_query['order_by'];
 
 		if ( 0 < $browsing_query['limit'] ) {
-			$sql           .= ' LIMIT %d';
+			$sql           .= ' LIMIT %d OFFSET %d';
 			$prepare_args[] = $browsing_query['limit'];
+			$prepare_args[] = $browsing_query['offset'];
 		}
 
-		$sql           .= ' OFFSET %d';
-		$prepare_args[] = $browsing_query['offset'];
-		$licenses       = $wpdb->get_results( $wpdb->prepare( $sql, $prepare_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$licenses = $wpdb->get_results( $wpdb->prepare( $sql, $prepare_args ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( ! empty( $licenses ) ) {
 
@@ -433,7 +432,13 @@ class WPPUS_License_Server {
 					empty( $crit['value'] )
 				) {
 					$crit = $faulty_criteria;
-				} elseif ( is_array( $crit['value'] ) ) {
+				} elseif (
+					! (
+						( 'BETWEEN' === $crit['operator'] || 'NOT BETWEEN' === $crit['operator'] ) ||
+						( 'IN' === $crit['operator'] || 'NOT IN' === $crit['operator'] )
+					) &&
+					is_array( $crit['value'] )
+				) {
 					$crit = $faulty_criteria;
 				}
 
