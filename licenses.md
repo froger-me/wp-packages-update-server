@@ -98,7 +98,7 @@ $license_query = array(
 
 Accepted operators are: `=`, `>`, `<`, `>=`, `<=`, `BETWEEN`, `NOT BETWEEN`, `IN`, `NOT IN`, `LIKE`, `NOT LIKE`.
 
-Accepted license fields are: `id`, `license_key`, `max_allowed_domains`, `allowed_domains`, `status`, `owner_name`, `email`, `company_name`, `txn_id`, `date_created`, `date_renewed`, `date_expiry`, `package_slug`, `package_type`.
+Accepted license fields are: `id` (only for `wppus_browse_licenses`, not through the API), `license_key`, `max_allowed_domains`, `allowed_domains`, `status`, `owner_name`, `email`, `company_name`, `txn_id`, `date_created`, `date_renewed`, `date_expiry`, `package_slug`, `package_type`.
 
 NOTE: the field `allowed_domains` is a serialized array, therefore when used in a criteria the only operators likely to return results are `LIKE` and `NOT LIKE`.
 
