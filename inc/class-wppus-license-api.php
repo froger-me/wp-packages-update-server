@@ -63,6 +63,16 @@ class WPPUS_License_API {
 
 		switch ( json_last_error() ) {
 			case JSON_ERROR_NONE:
+				if ( ! empty( $payload['criteria'] ) ) {
+
+					foreach ( $payload['criteria'] as $index => $criteria ) {
+
+						if ( 'id' === $criteria['field'] ) {
+							unset( $payload['criteria'][ $index ] );
+						}
+					}
+				}
+
 				$result = $this->license_server->browse_licenses( $payload );
 
 				if (
@@ -80,16 +90,8 @@ class WPPUS_License_API {
 							$license->data['api_owner'] !== $this->api_key_id
 						) {
 							unset( $result[ $index ] );
-						}
-					}
-				}
-
-				if ( ! empty( $query['criteria'] ) ) {
-
-					foreach ( $query['criteria'] as $index => $criteria ) {
-
-						if ( 'id' === $criteria['field'] ) {
-							unset( $query['criteria'][ $index ] );
+						} else {
+							unset( $result[ $index ]->id );
 						}
 					}
 				}
@@ -128,6 +130,8 @@ class WPPUS_License_API {
 
 		if ( ! is_object( $result ) ) {
 			$this->http_response_code = 400;
+		} else {
+			unset( $result->id );
 		}
 
 		return $result;
@@ -140,6 +144,8 @@ class WPPUS_License_API {
 
 		if ( ! is_object( $result ) ) {
 			$this->http_response_code = 400;
+		} else {
+			unset( $result->id );
 		}
 
 		return $result;
@@ -157,6 +163,8 @@ class WPPUS_License_API {
 			$result->result  = 'success';
 			$result->message = 'License successfully created';
 			$result->key     = $result->license_key;
+
+			unset( $result->id );
 		} else {
 			$this->http_response_code = 400;
 		}
@@ -185,6 +193,7 @@ class WPPUS_License_API {
 			unset( $result->owner_name );
 			unset( $result->email );
 			unset( $result->company_name );
+			unset( $result->id );
 		} else {
 			$result = array(
 				'license_key' => isset( $license_data['license_key'] ) ?
@@ -247,6 +256,7 @@ class WPPUS_License_API {
 				unset( $result->owner_name );
 				unset( $result->email );
 				unset( $result->company_name );
+				unset( $result->id );
 			}
 		} else {
 			$result['license_key'] = isset( $license_data['license_key'] ) ? $license_data['license_key'] : false;
@@ -317,6 +327,7 @@ class WPPUS_License_API {
 				unset( $result->owner_name );
 				unset( $result->email );
 				unset( $result->company_name );
+				unset( $result->id );
 			}
 		} else {
 			$result['license_key'] = isset( $license_data['license_key'] ) ? $license_data['license_key'] : false;
