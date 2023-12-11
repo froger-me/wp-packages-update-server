@@ -503,7 +503,71 @@ class WPPUS_License_API {
 			'content'     => $content,
 		);
 
+		add_filter( 'wppus_webhook_fire', array( $this, 'wppus_webhook_fire' ), 10, 4 );
 		wppus_schedule_webhook( $payload, 'license' );
+		remove_filter( 'wppus_webhook_fire', array( $this, 'wppus_webhook_fire' ), 10 );
+	}
+
+	public function wppus_webhook_fire( $fire, $payload, $url, $info ) {
+
+		if ( ! isset( $info['licenseAPIKey'] ) || empty( $info['licenseAPIKey'] ) ) {
+			return $fire;
+		}
+
+		$owner = false;
+
+		if (
+			is_array( $payload['content'] ) &&
+			isset( $payload['content']['new'] ) &&
+			isset( $payload['content']['new']->data['api_owner'] )
+		) {
+			$owner = $payload['content']['new']->data['api_owner'];
+		} elseif (
+			is_object( $payload['content'] ) &&
+			isset( $payload['content']->data['api_owner'] )
+		) {
+			$owner = $payload['content']->data['api_owner'];
+		}
+
+		$config     = self::get_config();
+		$api_access = false;
+
+		foreach ( $config['private_api_auth_keys'] as $id => $values ) {
+
+			if (
+				$id === $info['licenseAPIKey'] &&
+				isset( $values['access'] ) &&
+				is_array( $values['access'] )
+			) {
+				$api_access = $values['access'];
+
+				break;
+			}
+		}
+
+		if ( $api_access && in_array( 'other', $api_access, true ) ) {
+			$fire = true;
+		} elseif ( $api_access ) {
+			$action = str_replace( 'license_', '', $payload['event'] );
+
+			if (
+				in_array( 'all', $api_access, true ) ||
+				in_array( 'read', $api_access, true ) ||
+				in_array( 'browse', $api_access, true ) ||
+				(
+					in_array( $action, array( 'edit', 'add', 'delete' ), true ) &&
+					in_array( $action, $api_access, true )
+				)
+			) {
+				$fire = $owner === $info['licenseAPIKey'];
+			} else {
+				$fire = false;
+			}
+		} else {
+			$fire = $owner === $info['licenseAPIKey'];
+		}
+
+		return $fire;
 	}
 
 	public function wppus_fetch_nonce_private( $nonce, $true_nonce, $expiry, $data ) {

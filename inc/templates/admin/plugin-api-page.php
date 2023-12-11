@@ -133,12 +133,13 @@
 						<div class="add-controls">
 							<input type="text" class="new-webhook-item-url" placeholder="<?php esc_attr_e( 'Payload URL' ); ?>">
 							<input type="text" class="new-webhook-item-secret" placeholder="<?php echo esc_attr( 'secret-key' ); ?>">
+							<input type="text" class="show-if-license new-webhook-item-license_api_key hidden" placeholder="<?php echo esc_attr( 'License Key ID (L**...)' ); ?>">
 							<div class="event-types">
 								<div class="event-container all">
 									<label><input type="checkbox" data-webhook-event="all"> <?php esc_html_e( 'All events', 'wppus' ); ?></label>
 								</div>
 								<?php foreach ( $webhook_events as $top_event => $values ) : ?>
-								<div class="event-container" <?php echo esc_attr( $top_event ); ?>>
+								<div class="event-container <?php echo esc_attr( $top_event ); ?>">
 									<label class="top-level"><input type="checkbox" data-webhook-event="<?php echo esc_attr( $top_event ); ?>"> <?php echo esc_html( $values['label'] ); ?> <code>(<?php echo esc_html( $top_event ); ?>)</code></label>
 									<?php if ( isset( $values['events'] ) && ! empty( $values['events'] ) ) : ?>
 										<?php foreach ( $values['events'] as $event => $label ) : ?>
@@ -151,40 +152,45 @@
 							<button disabled="disabled" class="webhook-add button" type="button"><?php esc_html_e( 'Add a Webhook' ); ?></button>
 						</div>
 						<input type="hidden" class="webhook-values" id="wppus_webhooks" name="wppus_webhooks" value="<?php echo esc_attr( get_option( 'wppus_webhooks', '{}' ) ); ?>">
+						<p class="description">
+							<?php esc_html_e( 'Webhooks are event notifications sent to arbitrary URLs during the next cron job (within 1 minute after the event occurs, depending on the server configuration) with a payload of data for third party services integration.', 'wppus' ); ?>
+							<br>
+							<br>
+							<?php
+							printf(
+								// translators: %1$s is <code>secret</code>, %2$s is <code>X-WPPUS-Signature</code>, %3$s is <code>X-WPPUS-Signature-256</code>
+								esc_html__( 'To allow the recipients to authenticate the notifications, the payload is signed with a %1$s secret key using the SHA-1 and SHA-256 algorithms ; the resulting hashes are made available in the %2$s and %3$s headers respectively.', 'wppus' ),
+								'<code>secret-key</code>',
+								'<code>X-WPPUS-Signature</code>',
+								'<code>X-WPPUS-Signature-256</code>'
+							);
+							?>
+							<br>
+							<strong>
+							<?php
+							printf(
+								// translators: %s is '<code>secret-key</code>'
+								esc_html__( 'The %s must be a minimum of 16 characters long, preferably a random string', 'wppus' ),
+								'<code>secret-key</code>'
+							);
+							?>
+							</strong>
+							<br>
+							<?php
+							printf(
+								// translators: %s is <code>POST</code>
+								esc_html__( 'The payload is sent in JSON format via a %s request.', 'wppus' ),
+								'<code>POST</code>',
+							);
+							?>
+							<br>
+							<span class="show-if-license hidden"><br><?php esc_html_e( 'Use the License Key ID field to filter the License events sent to the payload URLs: if provided, only the events affecting license keys owned by the License Key ID will be broacasted to the Payload URL.', 'wppus' ); ?></span>
+							<br>
+							<strong class="show-if-license hidden"><?php esc_html_e( 'CAUTION: In case a License Key ID is not provided, events will be broacasted for all the licenses, leading to the potential leak of private data!', 'wppus' ); ?><br></strong>
+							<br>
+							<strong><?php esc_html_e( 'CAUTION: Only add URLs from trusted sources!', 'wppus' ); ?></strong>
+						</p>
 					</div>
-					<p class="description">
-						<?php esc_html_e( 'Webhooks are event notifications sent to arbitrary URLs during the next cron job (within 1 minute after the event occurs, depending on the server configuration) with a payload of data for third party services integration.', 'wppus' ); ?>
-						<br>
-						<?php
-						printf(
-							// translators: %1$s is <code>secret</code>, %2$s is <code>X-WPPUS-Signature</code>, %3$s is <code>X-WPPUS-Signature-256</code>
-							esc_html__( 'To allow the recipients to authenticate the notifications, the payload is signed with a %1$s secret key using the SHA-1 and SHA-256 algorithms ; the resulting hashes are made available in the %2$s and %3$s headers respectively.', 'wppus' ),
-							'<code>secret-key</code>',
-							'<code>X-WPPUS-Signature</code>',
-							'<code>X-WPPUS-Signature-256</code>'
-						);
-						?>
-						<br>
-						<strong>
-						<?php
-						printf(
-							// translators: %s is '<code>secret-key</code>'
-							esc_html__( 'The %s must be a minimum of 16 characters long, preferably a random string', 'wppus' ),
-							'<code>secret-key</code>'
-						);
-						?>
-						</strong>
-						<br>
-						<?php
-						printf(
-							// translators: %s is <code>POST</code>
-							esc_html__( 'The payload is sent in JSON format via a %s request.', 'wppus' ),
-							'<code>POST</code>',
-						);
-						?>
-						<br>
-						<strong><?php esc_html_e( 'CAUTION: Only add URLs from trusted sources!', 'wppus' ); ?></strong>
-					</p>
 				</td>
 			</tr>
 		</table>

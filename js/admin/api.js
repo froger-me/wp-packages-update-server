@@ -18,6 +18,7 @@ jQuery(document).ready(function ($) {
 
         var data = JSON.parse(el.find('.webhook-values').val());
         var urlNew = el.find('.new-webhook-item-url');
+        var licenseAPIKeyNew = el.find('.new-webhook-item-license_api_key');
         var secretNew = el.find('.new-webhook-item-secret');
         var allEvents = el.find('input[data-webhook-event="all"]');
         var packageEvents = el.find('input[data-webhook-event="package"]');
@@ -30,9 +31,23 @@ jQuery(document).ready(function ($) {
         }
 
         addButton.onclick = function () {
-            addButton.disabled  = 'disabled';
+            addButton.disabled = 'disabled';
+
+            if (
+                el.find('.event-container.license input[type="checkbox"]:checked').length &&
+                !licenseAPIKeyNew.val().length
+            ) {
+                if (!confirm(WppusAdminMain_l10n.addWebhookNoLicenseApiConfirm)) {
+                    addButton.disabled = false;
+                    renderItems();
+
+                    return;
+                }
+            }
+
             data[urlNew.val()] = {
                 'secret': secretNew.val(),
+                'licenseAPIKey': licenseAPIKeyNew.val(),
                 'events': []
             };
 
@@ -64,6 +79,7 @@ jQuery(document).ready(function ($) {
 
             urlNew.val('');
             secretNew.val('');
+            licenseAPIKeyNew.val('');
             allEvents.prop('checked', true);
             allEvents.trigger('change');
             renderItems();
@@ -75,8 +91,9 @@ jQuery(document).ready(function ($) {
                 return item === inputValue;
             });
             var urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+\/?)|localhost(:\d+)?(\/[\w-]+)*\/?(\?\S*)?$/;
+            var apiKeyPattern = /^L\*\*[a-zA-Z0-9_-]+$/;
 
-            isEnabled = isEnabled && urlPattern.test(inputValue) && (16 <= secretNew.val().length) && 0 !== el.find('.event-container input[type="checkbox"]:checked').length;
+            isEnabled = isEnabled && urlPattern.test(inputValue) && (16 <= secretNew.val().length) && 0 !== el.find('.event-container input[type="checkbox"]:checked').length && (0 === licenseAPIKeyNew.val().length || apiKeyPattern.test(licenseAPIKeyNew.val()));
             addButton.disabled = !isEnabled;
         }
 
@@ -137,6 +154,10 @@ jQuery(document).ready(function ($) {
                     }
                 };
 
+                if (data[index].licenseAPIKey) {
+                    urlText.title += "\n(" + data[index].licenseAPIKey + ')';
+                }
+
                 itemContainer.appendChild(eventsText);
                 itemContainer.appendChild(urlText);
                 itemContainer.appendChild(secretText);
@@ -153,6 +174,7 @@ jQuery(document).ready(function ($) {
 
         urlNew.on('input', validateInput);
         secretNew.on('input', validateInput);
+        licenseAPIKeyNew.on('input', validateInput);
         el.find('.event-types input[type="checkbox"]').on('change', function () {
 
             if (allEvents.prop('checked')) {
@@ -171,6 +193,12 @@ jQuery(document).ready(function ($) {
                     licenseEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('checked', true);
                     licenseEvents.closest('.event-container').find('.child input[type="checkbox"]').prop('disabled', true);
                 }
+            }
+
+            if (el.find('.event-container.license input[type="checkbox"]:checked').length) {
+                el.find('.show-if-license').removeClass('hidden');
+            } else {
+                el.find('.show-if-license').addClass('hidden');
             }
 
             validateInput();

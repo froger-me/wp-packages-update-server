@@ -205,7 +205,7 @@ class WPPUS_Webhook_API {
 				}
 			}
 
-			if ( $fire ) {
+			if ( apply_filters( 'wppus_webhook_fire', $fire, $payload, $url, $info ) ) {
 				$body = wp_json_encode( $payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 				$hook = 'wppus_webhook';
 

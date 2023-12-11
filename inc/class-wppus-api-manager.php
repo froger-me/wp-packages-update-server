@@ -45,60 +45,66 @@ class WPPUS_API_Manager {
 	}
 
 	public function wppus_page_wppus_scripts_l10n( $l10n ) {
-		$l10n['deleteApiKeyConfirm']         = array(
+		$l10n['deleteApiKeyConfirm']           = array(
 			__( 'You are about to delete an API key.', 'wppus' ),
 			__( 'If you proceed, the remote systems using it will not be able to access the API anymore.', 'wppus' ),
 			"\n",
 			__( 'Are you sure you want to do this?', 'wppus' ),
 		);
-		$l10n['deleteApiWebhookConfirm']     = array(
+		$l10n['deleteApiWebhookConfirm']       = array(
 			__( 'You are about to delete a Webhook.', 'wppus' ),
-			__( 'If you proceed, the remote URL will not receive the configured events anymore.', 'wppus' ),
+			__( 'If you proceed, the Payload URL will not receive the configured events anymore.', 'wppus' ),
 			"\n",
 			__( 'Are you sure you want to do this?', 'wppus' ),
 		);
-		$l10n['actionApiCountSingular']      = array(
+		$l10n['addWebhookNoLicenseApiConfirm'] = array(
+			__( 'You are about to add a Webhook without Licence API Key ID.', 'wppus' ),
+			__( 'If you proceed, the Payload URL will receive events for ALL licenses.', 'wppus' ),
+			"\n",
+			__( 'Are you sure you want to do this?', 'wppus' ),
+		);
+		$l10n['actionApiCountSingular']        = array(
 			__( '1 action', 'wppus' ),
 		);
-		$l10n['actionApiCountSingularOther'] = array(
+		$l10n['actionApiCountSingularOther']   = array(
 			__( '1 action (all records)', 'wppus' ),
 		);
-		$l10n['actionApiCountPlural']        = array(
+		$l10n['actionApiCountPlural']          = array(
 			// translators: %d is the number of actions
 			__( '%d actions', 'wppus' ),
 		);
-		$l10n['actionApiCountPluralOther']   = array(
+		$l10n['actionApiCountPluralOther']     = array(
 			// translators: %d is the number of actions
 			__( '%d actions (all records)', 'wppus' ),
 		);
-		$l10n['actionApiCountAll']           = array(
+		$l10n['actionApiCountAll']             = array(
 			__( 'All actions', 'wppus' ),
 		);
-		$l10n['actionApiCountAllOther']      = array(
+		$l10n['actionApiCountAllOther']        = array(
 			__( 'All actions (all records)', 'wppus' ),
 		);
-		$l10n['eventApiCountAll']            = array(
+		$l10n['eventApiCountAll']              = array(
 			__( 'All events', 'wppus' ),
 		);
-		$l10n['eventApiCountAllType']        = array(
+		$l10n['eventApiCountAllType']          = array(
 			// translators: %s is the type of events
 			__( 'All %s events', 'wppus' ),
 		);
-		$l10n['eventApiCountTypeSingular']   = array(
+		$l10n['eventApiCountTypeSingular']     = array(
 			// translators: %s is the type of event
 			__( '1 %s event', 'wppus' ),
 		);
-		$l10n['eventApiCountTypePlural']     = array(
+		$l10n['eventApiCountTypePlural']       = array(
 			// translators: %1$d is the number of events, %s is the type of events
 			__( '%1$d %2$s events', 'wppus' ),
 		);
-		$l10n['eventApiTypePackage']         = array(
+		$l10n['eventApiTypePackage']           = array(
 			_x( 'package', 'WPPUS webhook event type', 'wppus' ),
 		);
-		$l10n['eventApiTypeLicense']         = array(
+		$l10n['eventApiTypeLicense']           = array(
 			_x( 'license', 'WPPUS webhook event type', 'wppus' ),
 		);
-		$l10n['apiSumSep']                   = array(
+		$l10n['apiSumSep']                     = array(
 			// translators: the separator between summaries ; example: All package events, 3 license events
 			_x( ', ', 'WPPUS separator between API summaries', 'wppus' ),
 		);
