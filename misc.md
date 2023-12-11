@@ -40,6 +40,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 		* [wppus\_nonce\_authorize](#wppus_nonce_authorize)
 		* [wppus\_api\_option\_update](#wppus_api_option_update)
 		* [wppus\_api\_webhook\_events](#wppus_api_webhook_events)
+		* [wppus\_webhook\_fire](#wppus_webhook_fire)
 
 ___
 ## Nonce API
@@ -885,14 +886,36 @@ ___
 ### wppus_api_webhook_events
 
 ```php
-apply_filters( 'wppus_api_webhook_events',  array $events )
+apply_filters( 'wppus_api_webhook_events', array $events )
 ```
 
 **Description**  
-Filter whether the available webhook events.  
+Filter the available webhook events.  
 
 **Parameters**  
 `$events`
-> (array) the info related to the option  
+> (array) the available webhook events  
 
+___
+### wppus_webhook_fire
+
+```php
+apply_filters( 'wppus_webhook_fire', bool $fire, array $payload, string $url, array $webhook_setting )
+```
+
+**Description**  
+Filter whether to fire the webhook event.  
+
+**Parameters**  
+`$fire`
+> (bool) whether to fire the event  
+
+`$payload`
+> (array) the payload of the event  
+
+`$url`
+> (string) the target url of the event  
+
+`$webhook_setting`
+> (array) the settings of the webhook  
 ___
