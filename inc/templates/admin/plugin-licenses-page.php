@@ -52,6 +52,7 @@
 										<option value="pending"><?php esc_html_e( 'Pending', 'wppus' ); ?></option>
 										<option value="activated"><?php esc_html_e( 'Activated', 'wppus' ); ?></option>
 										<option value="deactivated"><?php esc_html_e( 'Deactivated', 'wppus' ); ?></option>
+										<option value="on-hold"><?php esc_html_e( 'On Hold', 'wppus' ); ?></option>
 										<option value="blocked"><?php esc_html_e( 'Blocked', 'wppus' ); ?></option>
 										<option value="expired"><?php esc_html_e( 'Expired', 'wppus' ); ?></option>
 									</select>

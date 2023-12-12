@@ -230,7 +230,7 @@ Response `$data` - **failure** (in case of invalid `license_key`):
 }
 ```
 
-Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"expired"` and `"blocked"`):
+Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"on-hold"`, `"expired"` and `"blocked"`):
 ```json
 {
 	"status": "expired"
@@ -290,7 +290,7 @@ Response `$data` - **failure** (in case of invalid `license_key`):
 }
 ```
 
-Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"expired"` and `"blocked"`):
+Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"on-hold"`, `"expired"` and `"blocked"`):
 ```json
 {
 	"status": "expired"
@@ -500,7 +500,7 @@ $params = array(
 		'different1.example.com',
 		'different2.example.com',
 	),
-	'status'              => 'blocked',           // The status of the license - one of pending, activated, deactivated, blocked, expired (required)
+	'status'              => 'blocked',           // The status of the license - one of pending, activated, deactivated, on-hold, blocked, expired (required)
 	'owner_name'          => 'Another Owner',     // The full name of the owner of the license (optional)
 	'email'               => 'test-new@test.com', // The email registered with the license (required)
 	'company_name'        => 'New Company',       // The company of the owner of the license (optional)
@@ -565,7 +565,7 @@ $params = array(
 		'domain1.example.com',
 		'domain2.example.com',
 	),
-	'status'              => 'pending',       // The status of the license - one of pending, activated, deactivated, blocked, expired (required)
+	'status'              => 'pending',       // The status of the license - one of pending, activated, deactivated, on-hold, blocked, expired (required)
 	'owner_name'          => 'Test Owner',    // The full name of the owner of the license (optional)
 	'email'               => 'test@test.com', // The email registered with the license (required)
 	'company_name'        => 'Test Company',  // The company of the owner of the license (optional)

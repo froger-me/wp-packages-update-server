@@ -271,7 +271,7 @@ class WPPUS_License_API {
 		if ( is_object( $license ) && ! empty( $license_data['allowed_domains'] ) && $request_slug === $license->package_slug ) {
 			$domain_count = count( $license_data['allowed_domains'] ) + count( $license->allowed_domains );
 
-			if ( 'expired' === $license->status || 'blocked' === $license->status ) {
+			if ( in_array( $license->status, array( 'expired', 'blocked', 'on-hold' ), true ) ) {
 				$result['status'] = $license->status;
 			} elseif ( $domain_count > absint( $license->max_allowed_domains ) ) {
 				$result['max_allowed_domains'] = $license->max_allowed_domains;
@@ -326,12 +326,16 @@ class WPPUS_License_API {
 			$license_data['allowed_domains'] = array( $license_data['allowed_domains'] );
 		}
 
-		if ( is_object( $license ) && ! empty( $license_data['allowed_domains'] ) && $request_slug === $license->package_slug ) {
+		if (
+			is_object( $license ) &&
+			! empty( $license_data['allowed_domains'] ) &&
+			$request_slug === $license->package_slug
+		) {
 
 			if ( 'expired' === $license->status ) {
 				$result['status']      = $license->status;
 				$result['date_expiry'] = $license->date_expiry;
-			} elseif ( 'blocked' === $license->status ) {
+			} elseif ( 'blocked' === $license->status || 'on-hold' === $license->status ) {
 				$result['status'] = $license->status;
 			} elseif (
 					'deactivated' === $license->status ||

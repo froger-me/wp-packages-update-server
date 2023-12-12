@@ -379,7 +379,7 @@ class WPPUS_License_Manager {
 			license_key varchar(255) NOT NULL,
 			max_allowed_domains int(12) NOT NULL,
 			allowed_domains longtext NOT NULL,
-			status ENUM('pending', 'activated', 'deactivated', 'blocked', 'expired') NOT NULL DEFAULT 'pending',
+			status ENUM('pending', 'activated', 'deactivated', 'on-hold', 'blocked', 'expired') NOT NULL DEFAULT 'pending',
 			owner_name varchar(255) NOT NULL default '',
 			email varchar(64) NOT NULL,
 			company_name varchar(100) NOT NULL default '',

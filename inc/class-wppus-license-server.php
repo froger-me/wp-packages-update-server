@@ -50,6 +50,7 @@ class WPPUS_License_Server {
 		'pending',
 		'activated',
 		'deactivated',
+		'on-hold',
 		'blocked',
 		'expired',
 	);
