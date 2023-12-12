@@ -1,3 +1,6 @@
+<?php if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+} ?>
 <html>
 	<head>
 		<title><?php echo esc_html( $title ); ?></title>
