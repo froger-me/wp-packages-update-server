@@ -158,6 +158,7 @@ class WPPUS_License_Server {
 		$payload    = apply_filters( 'wppus_edit_license_payload', $payload );
 		$validation = $this->validate_license( $payload, true );
 		$return     = $validation;
+		$original   = null;
 
 		if ( true === $validation ) {
 			global $wpdb;

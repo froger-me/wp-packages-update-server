@@ -120,6 +120,11 @@ class WPPUS_License_API {
 		if ( ! is_array( $result ) ) {
 			$result                   = array( $result );
 			$this->http_response_code = 400;
+		} elseif ( empty( $result ) ) {
+			$this->http_response_code = 404;
+			$result                   = array(
+				'message' => __( 'Licenses not found.', 'wppus' ),
+			);
 		}
 
 		return $result;
@@ -129,8 +134,20 @@ class WPPUS_License_API {
 		$result = $this->license_server->read_license( $license_data );
 
 		if ( ! is_object( $result ) ) {
-			$this->http_response_code = 400;
+			if ( isset( $result['license_not_found'] ) ) {
+				$this->http_response_code = 404;
+			} else {
+				$this->http_response_code = 400;
+			}
 		} else {
+
+			if ( ! isset( $result->license_key ) ) {
+				$this->http_response_code = 404;
+				$result                   = array(
+					'message' => __( 'License not found.', 'wppus' ),
+				);
+			}
+
 			unset( $result->id );
 		}
 
@@ -143,8 +160,20 @@ class WPPUS_License_API {
 		$result = $this->license_server->edit_license( $license_data );
 
 		if ( ! is_object( $result ) ) {
-			$this->http_response_code = 400;
+			if ( isset( $result['license_not_found'] ) ) {
+				$this->http_response_code = 404;
+			} else {
+				$this->http_response_code = 400;
+			}
 		} else {
+
+			if ( ! isset( $result->license_key ) ) {
+				$this->http_response_code = 404;
+				$result                   = array(
+					'message' => __( 'License not found.', 'wppus' ),
+				);
+			}
+
 			unset( $result->id );
 		}
 
@@ -176,7 +205,16 @@ class WPPUS_License_API {
 		$result = $this->license_server->delete_license( $license_data );
 
 		if ( ! is_object( $result ) ) {
-			$this->http_response_code = 400;
+			if ( isset( $license['license_not_found'] ) ) {
+				$this->http_response_code = 404;
+			} else {
+				$this->http_response_code = 400;
+			}
+		} elseif ( ! isset( $result->license_key ) ) {
+			$this->http_response_code = 404;
+			$result                   = array(
+				'message' => __( 'License not found.', 'wppus' ),
+			);
 		}
 
 		return $result;
@@ -726,14 +764,17 @@ class WPPUS_License_API {
 			} elseif ( isset( $payload['license_key'] ) ) {
 				$license = $this->read( $payload );
 				$is_auth = $is_auth && (
-					is_object( $license ) &&
+					! is_object( $license ) ||
 					(
-						in_array( 'all', $this->api_access, true ) ||
-						in_array( $action, $this->api_access, true )
-					) &&
-					(
-						( isset( $license->data['api_owner'] ) && $this->api_key_id === $license->data['api_owner'] ) ||
-						in_array( 'other', $this->api_access, true )
+						is_object( $license ) &&
+						(
+							in_array( 'all', $this->api_access, true ) ||
+							in_array( $action, $this->api_access, true )
+						) &&
+						(
+							( isset( $license->data['api_owner'] ) && $this->api_key_id === $license->data['api_owner'] ) ||
+							in_array( 'other', $this->api_access, true )
+						)
 					)
 				);
 			}
