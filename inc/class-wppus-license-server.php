@@ -312,43 +312,128 @@ class WPPUS_License_Server {
 
 	public function switch_expired_licenses_status() {
 		global $wpdb;
-		$timezone = new DateTimeZone( wp_timezone_string() );
-		$date     = new DateTime( 'now', $timezone );
-		$sql      = "UPDATE {$wpdb->prefix}wppus_licenses
-				SET status = 'expired'
-				WHERE date_expiry <= %s
-				AND status != 'blocked'
-				AND date_expiry != '0000-00-00'";
+
+		$timezone      = new DateTimeZone( wp_timezone_string() );
+		$date          = new DateTime( 'now', $timezone );
+		$license_query = array(
+			'limit'    => '-1',
+			'criteria' => array(
+				array(
+					'field'    => 'date_expiry',
+					'value'    => '0000-00-00',
+					'operator' => '!=',
+				),
+				array(
+					'field'    => 'status',
+					'value'    => 'blocked',
+					'operator' => '!=',
+				),
+				array(
+					'field'    => 'date_expiry',
+					'value'    => $date->format( 'Y-m-d' ),
+					'operator' => '<=',
+				),
+			),
+		);
+		$items         = $this->browse_licenses( $license_query );
+		$sql           = "UPDATE {$wpdb->prefix}wppus_licenses
+			SET status = 'expired'
+			WHERE date_expiry <= %s
+			AND status != 'blocked'
+			AND date_expiry != '0000-00-00'";
 
 		$wpdb->query( $wpdb->prepare( $sql, $date->format( 'Y-m-d' ) ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		if ( ! empty( $items ) ) {
+
+			foreach ( $items as $item ) {
+				$original           = $item;
+				$original['status'] = 'undefined';
+
+				do_action(
+					'wppus_did_edit_license',
+					$item,
+					array(
+						'license_key' => $item->license_key,
+						'status'      => 'expired',
+					),
+					$original
+				);
+			}
+		}
 	}
 
 	public function update_licenses_status( $status, $license_ids = array() ) {
+		$license_query = array( 'limit' => '-1' );
+
 		global $wpdb;
 
 		$where = '';
 
 		if ( ! empty( $license_ids ) ) {
-			$where = " AND id IN ('" . implode( "','", $license_ids ) . "')";
+			$where                     = " AND id IN ('" . implode( "','", $license_ids ) . "')";
+			$license_query['criteria'] = array(
+				array(
+					'field'    => 'id',
+					'value'    => $license_ids,
+					'operator' => 'IN',
+				),
+			);
 		}
 
-		$sql = "UPDATE {$wpdb->prefix}wppus_licenses SET status = %s WHERE 1=1" . $where;
+		$items = $this->browse_licenses( $license_query );
+		$sql   = "UPDATE {$wpdb->prefix}wppus_licenses SET status = %s WHERE 1=1" . $where;
 
 		$wpdb->query( $wpdb->prepare( $sql, $status ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		if ( ! empty( $items ) ) {
+
+			foreach ( $items as $item ) {
+				$original           = $item;
+				$original['status'] = 'undefined';
+
+				do_action(
+					'wppus_did_edit_license',
+					$item,
+					array(
+						'license_key' => $item->license_key,
+						'status'      => $status,
+					),
+					$original
+				);
+			}
+		}
 	}
 
 	public function purge_licenses( $license_ids = array() ) {
+		$license_query = array( 'limit' => '-1' );
+
 		global $wpdb;
 
 		$where = '';
 
 		if ( ! empty( $license_ids ) ) {
-			$where = " AND id IN ('" . implode( "','", $license_ids ) . "')";
+			$where                     = " AND id IN ('" . implode( "','", $license_ids ) . "')";
+			$license_query['criteria'] = array(
+				array(
+					'field'    => 'id',
+					'value'    => $license_ids,
+					'operator' => 'IN',
+				),
+			);
 		}
 
-		$sql = "DELETE FROM {$wpdb->prefix}wppus_licenses WHERE 1=1" . $where;
+		$items = $this->browse_licenses( $license_query );
+		$sql   = "DELETE FROM {$wpdb->prefix}wppus_licenses WHERE 1=1" . $where;
 
 		$wpdb->query( $sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+
+		if ( ! empty( $items ) ) {
+
+			foreach ( $items as $item ) {
+				do_action( 'wppus_did_delete_license', $item, array( $item->license_key ) );
+			}
+		}
 	}
 
 	public function dispatch( $response, $response_status_code ) {
