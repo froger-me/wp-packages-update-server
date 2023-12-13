@@ -251,9 +251,10 @@ if ( ! function_exists( 'wppus_add_license' ) ) {
 			$license_data['data'] = array();
 		}
 
-		$license_data['data']['operation']    = 'add';
-		$license_data['data']['operation_id'] = bin2hex( random_bytes( 16 ) );
-		$api                                  = WPPUS_License_API::get_instance();
+		$license_data['data']['operation_timestamp'] = time();
+		$license_data['data']['operation']           = 'add';
+		$license_data['data']['operation_id']        = bin2hex( random_bytes( 16 ) );
+		$api = WPPUS_License_API::get_instance();
 
 		return $api->add( $license_data );
 	}
@@ -266,9 +267,10 @@ if ( ! function_exists( 'wppus_edit_license' ) ) {
 			$license_data['data'] = array();
 		}
 
-		$license_data['data']['operation']    = 'edit';
-		$license_data['data']['operation_id'] = bin2hex( random_bytes( 16 ) );
-		$api                                  = WPPUS_License_API::get_instance();
+		$license_data['data']['operation_timestamp'] = time();
+		$license_data['data']['operation']           = 'edit';
+		$license_data['data']['operation_id']        = bin2hex( random_bytes( 16 ) );
+		$api = WPPUS_License_API::get_instance();
 
 		return $api->edit( $license_data );
 	}
