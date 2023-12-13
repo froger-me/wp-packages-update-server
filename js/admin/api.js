@@ -78,7 +78,7 @@ jQuery(document).ready(function ($) {
             });
 
             urlNew.val('');
-            secretNew.val('');
+            secretNew.val(bin2hex_openssl_random_pseudo_bytes(8));
             licenseAPIKeyNew.val('');
             allEvents.prop('checked', true);
             allEvents.trigger('change');
