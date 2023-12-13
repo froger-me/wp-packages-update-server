@@ -571,7 +571,7 @@ class WPPUS_License_Manager {
 
 	protected function update_license( $license_data ) {
 		$payload = json_decode( wp_unslash( $license_data ), true );
-		$license = $this->license_server->edit_license( $payload );
+		$license = wppus_edit_license( $payload );
 
 		if ( is_object( $license ) ) {
 			$this->message = __( 'License edited successfully.', 'wppus' );
@@ -584,7 +584,7 @@ class WPPUS_License_Manager {
 
 	protected function create_license( $license_data ) {
 		$payload = json_decode( wp_unslash( $license_data ), true );
-		$license = $this->license_server->add_license( $payload );
+		$license = wppus_add_license( $payload );
 
 		if ( is_object( $license ) ) {
 			$this->message = __( 'License added successfully.', 'wppus' );
