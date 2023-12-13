@@ -500,6 +500,13 @@ class WPPUS_License_API {
 				'payload' => $payload,
 			);
 		} else {
+
+			if ( null !== $original ) {
+				unset( $original->id );
+			}
+
+			unset( $result->id );
+
 			$content = null !== $original ?
 				array(
 					'new'      => $result,
