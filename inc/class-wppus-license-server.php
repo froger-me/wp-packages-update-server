@@ -35,6 +35,7 @@ class WPPUS_License_Server {
 	);
 	public static $browsing_operators = array(
 		'=',
+		'!=',
 		'>',
 		'<',
 		'>=',
