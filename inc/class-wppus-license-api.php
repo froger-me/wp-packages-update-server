@@ -516,34 +516,30 @@ class WPPUS_License_API {
 
 			switch ( $event ) {
 				case 'license_edit':
-					// translators: %1$s is the license key, %2$s is the license ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been edited on WPPUS' );
+					// translators: %s is the license key
+					$format = esc_html__( 'The license `%s` has been edited on WPPUS' );
 					break;
 				case 'license_add':
-					// translators: %1$s is the license key, %2$s is the license ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been added on WPPUS' );
+					// translators: %s is the license key
+					$format = esc_html__( 'The license `%s` has been added on WPPUS' );
 					break;
 				case 'license_delete':
-					// translators: %1$s is the license key, %2$s is the license ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deleted on WPPUS' );
+					// translators: %s is the license key
+					$format = esc_html__( 'The license `%s` has been deleted on WPPUS' );
 					break;
 				case 'license_activate':
-					// translators: %1$s is the license key, %2$s is the license ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been activated on WPPUS' );
+					// translators: %s is the license key
+					$format = esc_html__( 'The license `%s` has been activated on WPPUS' );
 					break;
 				case 'license_deactivate':
-					// translators: %1$s is the license key, %2$s is the license ID
-					$format = esc_html__( 'The license `%1$s` with ID #%2$s has been deactivated on WPPUS' );
+					// translators: %s is the license key
+					$format = esc_html__( 'The license `%s` has been deactivated on WPPUS' );
 					break;
 				default:
 					return;
 			}
 
-			$description = sprintf(
-				$format,
-				$result->license_key,
-				$result->id
-			);
+			$description = sprintf( $format, $result->license_key );
 		}
 
 		$payload = array(
