@@ -6,8 +6,8 @@
 	<?php if ( get_option( 'wppus_use_licenses' ) ) : ?>
 	<form autocomplete="off" id="wppus-licenses-list" action="" method="post">
 		<h3><?php esc_html_e( 'Licenses', 'wppus' ); ?></h3>
-		<?php $licences_table->search_box( 'Search', 'wppus' ); ?>
-		<?php $licences_table->display(); ?>
+		<?php $licenses_table->search_box( 'Search', 'wppus' ); ?>
+		<?php $licenses_table->display(); ?>
 	</form>
 	<div id="wppus_license_panel" class="postbox">
 		<div class="inside">

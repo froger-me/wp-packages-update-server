@@ -58,7 +58,7 @@ class WPPUS_API_Manager {
 			__( 'Are you sure you want to do this?', 'wppus' ),
 		);
 		$l10n['addWebhookNoLicenseApiConfirm'] = array(
-			__( 'You are about to add a Webhook without Licence API Key ID.', 'wppus' ),
+			__( 'You are about to add a Webhook without License API Key ID.', 'wppus' ),
 			__( 'If you proceed, the Payload URL will receive events for ALL licenses.', 'wppus' ),
 			"\n",
 			__( 'Are you sure you want to do this?', 'wppus' ),

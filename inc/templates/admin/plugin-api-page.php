@@ -132,7 +132,7 @@
 						</div>
 						<div class="add-controls">
 							<input type="text" class="new-webhook-item-url" placeholder="<?php esc_attr_e( 'Payload URL' ); ?>">
-							<input type="text" class="new-webhook-item-secret" placeholder="<?php echo esc_attr( 'secret-key' ); ?>">
+							<input type="text" class="new-webhook-item-secret" placeholder="<?php echo esc_attr( 'secret-key' ); ?>" value="<?php echo esc_attr( bin2hex( openssl_random_pseudo_bytes( 8 ) ) ); ?>">
 							<input type="text" class="show-if-license new-webhook-item-license_api_key hidden" placeholder="<?php echo esc_attr( 'License Key ID (L**...)' ); ?>">
 							<div class="event-types">
 								<div class="event-container all">

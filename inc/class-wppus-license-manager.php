@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WPPUS_License_Manager {
 
-	protected $licences_table;
+	protected $licenses_table;
 	protected $message = '';
 	protected $errors  = array();
 	protected $license_server;
@@ -119,12 +119,12 @@ class WPPUS_License_Manager {
 	public function admin_init() {
 
 		if ( is_admin() && ! wp_doing_ajax() && ! wp_doing_cron() ) {
-			$this->licences_table = new WPPUS_Licenses_Table();
+			$this->licenses_table = new WPPUS_Licenses_Table();
 
 			if (
 				(
 					isset( $_REQUEST['_wpnonce'] ) &&
-					wp_verify_nonce( $_REQUEST['_wpnonce'], $this->licences_table->nonce_action )
+					wp_verify_nonce( $_REQUEST['_wpnonce'], $this->licenses_table->nonce_action )
 				) ||
 				(
 					isset( $_REQUEST['linknonce'] ) &&
@@ -333,7 +333,7 @@ class WPPUS_License_Manager {
 		}
 
 		$result         = $this->plugin_options_handler();
-		$licences_table = $this->licences_table;
+		$licenses_table = $this->licenses_table;
 
 		if ( ! $result ) {
 
@@ -344,11 +344,11 @@ class WPPUS_License_Manager {
 			}
 		}
 
-		$licences_table->prepare_items();
+		$licenses_table->prepare_items();
 		wppus_get_admin_template(
 			'plugin-licenses-page.php',
 			array(
-				'licences_table' => $licences_table,
+				'licenses_table' => $licenses_table,
 				'result'         => $result,
 			)
 		);
@@ -393,7 +393,7 @@ class WPPUS_License_Manager {
 			crypto_key varchar(64) NOT NULL,
 			data longtext NOT NULL,
 			PRIMARY KEY  (id),
-			KEY licence_key (license_key)
+			KEY license_key (license_key)
 			)" . $charset_collate . ';';
 
 		dbDelta( $sql );
