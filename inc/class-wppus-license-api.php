@@ -779,7 +779,10 @@ class WPPUS_License_API {
 							in_array( $action, $this->api_access, true )
 						) &&
 						(
-							( isset( $license->data['api_owner'] ) && $this->api_key_id === $license->data['api_owner'] ) ||
+							(
+								isset( $license->data['api_owner'] ) &&
+								$this->api_key_id === $license->data['api_owner']
+							) ||
 							in_array( 'other', $this->api_access, true )
 						)
 					)
