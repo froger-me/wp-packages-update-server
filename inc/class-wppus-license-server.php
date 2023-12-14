@@ -335,6 +335,7 @@ class WPPUS_License_Server {
 				),
 			),
 		);
+		$time          = time();
 		$items         = $this->browse_licenses( $license_query );
 		$sql           = "UPDATE {$wpdb->prefix}wppus_licenses
 			SET status = 'expired'
@@ -347,8 +348,16 @@ class WPPUS_License_Server {
 		if ( ! empty( $items ) ) {
 
 			foreach ( $items as $item ) {
-				$original           = $item;
-				$original['status'] = 'undefined';
+				$original     = $item;
+				$item->status = 'expired';
+
+				if ( ! is_array( $item->data ) ) {
+					$item->data = array();
+				}
+
+				$item->data['operation_timestamp'] = $time;
+				$item->data['operation']           = 'edit';
+				$item->data['operation_id']        = bin2hex( random_bytes( 16 ) );
 
 				do_action(
 					'wppus_did_edit_license',
@@ -381,6 +390,7 @@ class WPPUS_License_Server {
 			);
 		}
 
+		$time  = time();
 		$items = $this->browse_licenses( $license_query );
 		$sql   = "UPDATE {$wpdb->prefix}wppus_licenses SET status = %s WHERE 1=1" . $where;
 
@@ -389,8 +399,16 @@ class WPPUS_License_Server {
 		if ( ! empty( $items ) ) {
 
 			foreach ( $items as $item ) {
-				$original           = $item;
-				$original['status'] = 'undefined';
+				$original     = $item;
+				$item->status = $status;
+
+				if ( ! is_array( $item->data ) ) {
+					$item->data = array();
+				}
+
+				$item->data['operation_timestamp'] = $time;
+				$item->data['operation']           = 'edit';
+				$item->data['operation_id']        = bin2hex( random_bytes( 16 ) );
 
 				do_action(
 					'wppus_did_edit_license',
@@ -423,6 +441,7 @@ class WPPUS_License_Server {
 			);
 		}
 
+		$time  = time();
 		$items = $this->browse_licenses( $license_query );
 		$sql   = "DELETE FROM {$wpdb->prefix}wppus_licenses WHERE 1=1" . $where;
 
@@ -431,6 +450,15 @@ class WPPUS_License_Server {
 		if ( ! empty( $items ) ) {
 
 			foreach ( $items as $item ) {
+
+				if ( ! is_array( $item->data ) ) {
+					$item->data = array();
+				}
+
+				$item->data['operation_timestamp'] = $time;
+				$item->data['operation']           = 'delete';
+				$item->data['operation_id']        = bin2hex( random_bytes( 16 ) );
+
 				do_action( 'wppus_did_delete_license', $item, array( $item->license_key ) );
 			}
 		}

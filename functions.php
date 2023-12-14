@@ -278,6 +278,14 @@ if ( ! function_exists( 'wppus_edit_license' ) ) {
 
 if ( ! function_exists( 'wppus_delete_license' ) ) {
 	function wppus_delete_license( $license_data ) {
+
+		if ( is_array( $license_data ) && ! isset( $license_data['data'] ) ) {
+			$license_data['data'] = array();
+		}
+
+		$license_data['data']['operation_timestamp'] = time();
+		$license_data['data']['operation']           = 'delete';
+		$license_data['data']['operation_id']        = bin2hex( random_bytes( 16 ) );
 		$api = WPPUS_License_API::get_instance();
 
 		return $api->delete( $license_data );
