@@ -489,7 +489,11 @@ class WPPUS_License_API {
 
 	public function wppus_did_license_action( $result, $payload, $original = null ) {
 		$format = '';
-		$event  = 'license_' . str_replace( array( 'wppus_did_', '_license' ), array( '', '' ), current_action() );
+		$event  = 'license_' . str_replace(
+			array( 'wppus_did_', '_license' ),
+			array( '', '' ),
+			current_action()
+		);
 
 		if ( ! is_object( $result ) ) {
 			// translators: %s is operation slug

@@ -62,7 +62,7 @@ class WPPUS_License_Server {
 	 * Public methods
 	 *******************************************************************/
 
-	public function build_license( $payload ) {
+	public function build_license_payload( $payload ) {
 		$payload = $this->extend_license_payload( $this->filter_license_payload( $payload ) );
 
 		unset( $payload['id'] );
@@ -115,9 +115,12 @@ class WPPUS_License_Server {
 		if ( ! empty( $licenses ) ) {
 
 			foreach ( $licenses as $index => $license ) {
-				$licenses[ $index ]->allowed_domains = maybe_unserialize( $license->allowed_domains );
-				$licenses[ $index ]->data            = json_decode( $license->data, true );
-				$licenses[ $index ]->data            = ( null === $license->data ) ? array() : $license->data;
+				$licenses[ $index ]->max_allowed_domains = intval( $license->max_allowed_domains );
+				$licenses[ $index ]->allowed_domains     = maybe_unserialize( $license->allowed_domains );
+				$licenses[ $index ]->data                = json_decode( $license->data, true );
+				$licenses[ $index ]->data                = ( null === $license->data ) ?
+					array() :
+					$license->data;
 			}
 		}
 
@@ -138,15 +141,16 @@ class WPPUS_License_Server {
 
 			$where_field = ( isset( $payload['id'] ) && ! empty( $payload['id'] ) ) ? 'id' : 'license_key';
 			$where_value = $payload[ $where_field ];
-			$payload     = $this->sanitize_license( $payload );
+			$payload     = $this->sanitize_payload( $payload );
 			$sql         = "SELECT * FROM {$wpdb->prefix}wppus_licenses WHERE {$where_field} = %s;";
 			$license     = $wpdb->get_row( $wpdb->prepare( $sql, $where_value ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 			if ( is_object( $license ) ) {
-				$license->allowed_domains = maybe_unserialize( $license->allowed_domains );
-				$license->data            = json_decode( $license->data, true );
-				$license->data            = ( null === $license->data ) ? array() : $license->data;
-				$return                   = $license;
+				$license->max_allowed_domains = intval( $license->max_allowed_domains );
+				$license->allowed_domains     = maybe_unserialize( $license->allowed_domains );
+				$license->data                = json_decode( $license->data, true );
+				$license->data                = ( null === $license->data ) ? array() : $license->data;
+				$return                       = $license;
 			}
 		}
 
@@ -158,7 +162,7 @@ class WPPUS_License_Server {
 	public function edit_license( $payload ) {
 		$payload    = $this->cleanup_license_payload( $this->filter_license_payload( $payload ) );
 		$payload    = apply_filters( 'wppus_edit_license_payload', $payload );
-		$validation = $this->validate_license( $payload, true );
+		$validation = $this->validate_license_payload( $payload, true );
 		$return     = $validation;
 		$original   = null;
 
@@ -167,7 +171,7 @@ class WPPUS_License_Server {
 
 			$field    = isset( $payload['id'] ) ? 'id' : 'license_key';
 			$where    = array( $field => $payload[ $field ] );
-			$payload  = $this->sanitize_license( $payload );
+			$payload  = $this->sanitize_payload( $payload );
 			$original = $this->read_license( $where );
 
 			if ( isset( $payload['allowed_domains'] ) ) {
@@ -199,30 +203,30 @@ class WPPUS_License_Server {
 	}
 
 	public function add_license( $payload ) {
-		$payload    = $this->build_license( $payload );
-		$license    = apply_filters( 'wppus_add_license_payload', $payload );
-		$validation = $this->validate_license( $license );
+		$payload    = $this->build_license_payload( $payload );
+		$payload    = apply_filters( 'wppus_add_license_payload', $payload );
+		$validation = $this->validate_license_payload( $payload );
 		$return     = $validation;
 
 		if ( true === $validation ) {
 			global $wpdb;
 
-			$license['id']              = null;
-			$license                    = $this->sanitize_license( $license );
-			$license['allowed_domains'] = maybe_serialize( $license['allowed_domains'] );
-			$license['data']            = wp_json_encode(
-				$license['data'],
+			$payload['id']              = null;
+			$payload                    = $this->sanitize_payload( $payload );
+			$payload['allowed_domains'] = maybe_serialize( $payload['allowed_domains'] );
+			$payload['data']            = wp_json_encode(
+				$payload['data'],
 				JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
 			);
-			$license['hmac_key']        = bin2hex( openssl_random_pseudo_bytes( 16 ) );
-			$license['crypto_key']      = bin2hex( openssl_random_pseudo_bytes( 16 ) );
+			$payload['hmac_key']        = bin2hex( openssl_random_pseudo_bytes( 16 ) );
+			$payload['crypto_key']      = bin2hex( openssl_random_pseudo_bytes( 16 ) );
 			$result                     = $wpdb->insert(
 				$wpdb->prefix . 'wppus_licenses',
-				$license
+				$payload
 			);
 
 			if ( false !== $result ) {
-				$return = $this->read_license( $license );
+				$return = $this->read_license( $payload );
 			} else {
 				$return = array();
 
@@ -247,7 +251,7 @@ class WPPUS_License_Server {
 
 			$field   = ( isset( $payload['id'] ) && ! empty( $payload['id'] ) ) ? 'id' : 'license_key';
 			$where   = array( $field => $payload[ $field ] );
-			$payload = $this->sanitize_license( $payload );
+			$payload = $this->sanitize_payload( $payload );
 			$license = $this->read_license( $payload );
 			$result  = $wpdb->delete(
 				$wpdb->prefix . 'wppus_licenses',
@@ -592,7 +596,7 @@ class WPPUS_License_Server {
 		return array_merge( self::$license_definition, $payload );
 	}
 
-	protected function sanitize_license( $license ) {
+	protected function sanitize_payload( $license ) {
 
 		foreach ( $license as $key => $value ) {
 
@@ -642,7 +646,7 @@ class WPPUS_License_Server {
 		return $license;
 	}
 
-	protected function validate_license( $license, $partial = false ) {
+	protected function validate_license_payload( $license, $partial = false ) {
 		global $wpdb;
 
 		$errors = array();

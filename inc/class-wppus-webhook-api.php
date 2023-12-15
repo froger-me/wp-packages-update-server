@@ -206,7 +206,10 @@ class WPPUS_Webhook_API {
 			}
 
 			if ( apply_filters( 'wppus_webhook_fire', $fire, $payload, $url, $info ) ) {
-				$body = wp_json_encode( $payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+				$body = wp_json_encode(
+					$payload,
+					JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK
+				);
 				$hook = 'wppus_webhook';
 
 				if ( ! wp_next_scheduled( 'wppus_webhook', array( $url, $info, $body, current_action() ) ) ) {
