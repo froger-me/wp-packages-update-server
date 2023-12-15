@@ -1,5 +1,6 @@
 /* global Wppus, console */
 jQuery(document).ready(function ($) {
+	editor = wp.codeEditor.initialize($('#wppus_license_data'), WppusAdminLicense.cm_settings);
 
 	$('#add_license_trigger').on('click', function() {
 		showLicensePanel($('#wppus_license_panel'), function() {
@@ -52,6 +53,7 @@ jQuery(document).ready(function ($) {
 		};
 
 		$('#wppus_license').validate({
+			ignore: '.CodeMirror *',
 			errorClass: 'wppus-license-error',
 			rules: {
 				wppus_license_key: { required: true },
@@ -119,6 +121,7 @@ jQuery(document).ready(function ($) {
 			$('#wppus_license_status').val(licenseData.status);
 			$('#wppus_license_data').val(licenseData.data ? JSON.stringify(JSON.parse(licenseData.data), null, '\t') : '');
 			$('#wppus_license_package_type').val(licenseData.package_type);
+			editor.codemirror.setValue($('#wppus_license_data').val());
 
 			if ('0000-00-00' !== licenseData.date_expiry ) {
 				$('#wppus_license_date_expiry').val(licenseData.date_expiry);
@@ -162,6 +165,7 @@ jQuery(document).ready(function ($) {
 		$('.wppus-no-domain').show();
 		$('label.wppus-license-error').hide();
 		$('.wppus-license-error').removeClass('wppus-license-error');
+		editor.codemirror.setValue('{}');
 	}
 
 	function showLicensePanel( panel, callback ) {

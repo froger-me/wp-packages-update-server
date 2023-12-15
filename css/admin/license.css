@@ -43,14 +43,14 @@ input[type=number]:focus.wppus-license-error {
 }
 
 #wppus_license .license-column-container {
-    clear: both;
+    display: flex;
+    align-items: flex-start;
+    gap: 2%;
 }
 
 #wppus_license .license-column {
-    width: 49%;
-    padding: 0 1% 0 0;
     border-right: 1px solid #e6e6e6;
-    float: left;
+    max-width: 750px;
 }
 
 #wppus_license .license-column:last-child {
@@ -94,7 +94,6 @@ input[type=number]:focus.wppus-license-error {
     width: 50%;
 }
 
-
 #wppus_license .license-column .form-field small {
     display: block;
     margin: 5px 0 0;
@@ -114,7 +113,7 @@ input[type=number]:focus.wppus-license-error {
 #wppus_license .license-column .form-field-wide input,
 #wppus_license .license-column .form-field-wide select,
 #wppus_license .license-column .form-field-wide textarea {
-    width: 100%
+    width: 100%;
 }
 
 #wppus_license #wppus_license_save {
@@ -165,15 +164,22 @@ span.wppus-domain-value {
     width: 250px;
 }
 
-@media only screen and (max-width: 1024px) {
+.license-form-extra-data {
+    padding-bottom: 2em;
+}
 
-    #wppus_license .license-column {
-        width: 100%;
+@media only screen and (max-width: 945px) {
+    #wppus_license .license-column,
+    #wppus_license .license-column:last-child,
+    #wppus_license .license-column:first-child{
+        border:none;
         padding: 0;
-        border: none;
+        margin: 0;
     }
 
-    #wppus_license .license-column:first-child {
-        padding: 0;
+    #wppus_license .license-column-container {
+        flex-direction: column;
+        gap: 0;
     }
+
 }

@@ -152,17 +152,16 @@
 									</p>
 								</td>
 							</tr>
-							<tr valign="top">
-								<th scope="row"><?php esc_html_e( 'Extra Data', 'wppus' ); ?></th>
-								<td>
-									<textarea id="wppus_license_data"></textarea>
-									<p class="description">
-										<?php esc_html_e( 'Advanced - JSON-formatted custom data to add to the license.', 'wppus' ); ?>
-									</p>
-								</td>
-							</tr>
 						</table>
 					</div>
+				</div>
+				<div class="license-form-extra-data clear">
+					<h4><?php esc_html_e( 'Extra Data', 'wppus' ); ?></h4>
+					<p class="description">
+						<?php esc_html_e( 'Advanced - JSON-formatted custom data to add to the license.', 'wppus' ); ?><br>
+						<?php esc_html_e( 'Typically used by plugins & API integrations ; proceed with caution when editing.', 'wppus' ); ?><br>
+					</p>
+					<textarea id="wppus_license_data"></textarea>
 				</div>
 				<div class="license-form-actions clear">
 					<?php wp_nonce_field( 'wppus_license_form_nonce', 'wppus_license_form_nonce' ); ?>
@@ -184,7 +183,7 @@
 					<label for="wppus_use_licenses"><?php esc_html_e( 'Enable Package Licenses', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input class="regular-text" type="checkbox" id="wppus_use_licenses" name="wppus_use_licenses" value="1" <?php checked( get_option( 'wppus_use_licenses', 0 ), 1 ); ?>>
+					<input type="checkbox" id="wppus_use_licenses" name="wppus_use_licenses" value="1" <?php checked( get_option( 'wppus_use_licenses', 0 ), 1 ); ?>>
 					<p class="description">
 						<?php esc_html_e( 'Check to activate license-enabled plugins and themes packages delivery.', 'wppus' ); ?>
 						<br>

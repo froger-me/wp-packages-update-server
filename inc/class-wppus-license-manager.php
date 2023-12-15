@@ -197,15 +197,23 @@ class WPPUS_License_Manager {
 			'uri'  => WPPUS_PLUGIN_URL . 'css/admin/jquery-ui' . wppus_assets_suffix() . '.css',
 		);
 
+		wp_enqueue_style( 'wp-codemirror' );
+
 		return $styles;
 	}
 
 	public function wppus_admin_scripts( $scripts ) {
 		$scripts['license'] = array(
-			'path' => WPPUS_PLUGIN_PATH . 'js/admin/license' . wppus_assets_suffix() . '.js',
-			'uri'  => WPPUS_PLUGIN_URL . 'js/admin/license' . wppus_assets_suffix() . '.js',
-			'deps' => array( 'jquery', 'wppus-jq-validate-admin-script' ),
+			'path'   => WPPUS_PLUGIN_PATH . 'js/admin/license' . wppus_assets_suffix() . '.js',
+			'uri'    => WPPUS_PLUGIN_URL . 'js/admin/license' . wppus_assets_suffix() . '.js',
+			'deps'   => array( 'jquery', 'wppus-jq-validate-admin-script' ),
+			'params' => array(
+				'debug'       => (bool) ( constant( 'WP_DEBUG' ) ),
+				'cm_settings' => wp_enqueue_code_editor( array( 'type' => 'text/json' ) ),
+			),
 		);
+
+		wp_enqueue_script( 'wp-theme-plugin-editor' );
 
 		$scripts['jq-validate'] = array(
 			'path' => WPPUS_PLUGIN_PATH . 'js/admin/jquery.validate.min.js',
