@@ -67,29 +67,33 @@ class WPPUS_Licenses_Table extends WP_List_Table {
 		$where_args = false;
 
 		if ( $search ) {
-			$where      = " WHERE
-				id = %d OR
-				license_key = %s OR
-				allowed_domains LIKE '%%%s%%' OR
-				status = %s OR
-				owner_name LIKE '%%%s%%' OR
-				email LIKE '%%%s%%' OR
-				company_name LIKE '%%%s%%' OR
-				txn_id = %s OR
-				package_slug = %s OR
-				package_type = %s";
-			$where_args = array(
-				absint( $search ),
-				$search,
-				$search,
-				strtolower( $search ),
-				$search,
-				$search,
-				$search,
-				$search,
-				str_replace( '_', '-', sanitize_title_with_dashes( $search ) ),
-				strtolower( $search ),
-			);
+
+			if ( is_numeric( $search ) ) {
+				$where      = ' WHERE id = %d';
+				$where_args = array( absint( $search ) );
+			} else {
+				$where      = " WHERE
+					license_key = %s OR
+					allowed_domains LIKE '%%%s%%' OR
+					status = %s OR
+					owner_name LIKE '%%%s%%' OR
+					email LIKE '%%%s%%' OR
+					company_name LIKE '%%%s%%' OR
+					txn_id = %s OR
+					package_slug = %s OR
+					package_type = %s";
+				$where_args = array(
+					$search,
+					$search,
+					strtolower( $search ),
+					$search,
+					$search,
+					$search,
+					$search,
+					str_replace( '_', '-', sanitize_title_with_dashes( $search ) ),
+					strtolower( $search ),
+				);
+			}
 		}
 
 		$sql = "SELECT COUNT(id) FROM {$wpdb->prefix}wppus_licenses";
