@@ -223,8 +223,11 @@ class WPPUS_License_API {
 	public function check( $license_data ) {
 		$license_data = apply_filters( 'wppus_check_license_dirty_payload', $license_data );
 		$result       = $this->license_server->read_license( $license_data );
+		$raw_result   = array();
 
 		if ( is_object( $result ) ) {
+			$raw_result = clone $result;
+
 			unset( $result->hmac_key );
 			unset( $result->crypto_key );
 			unset( $result->data );
@@ -233,16 +236,17 @@ class WPPUS_License_API {
 			unset( $result->company_name );
 			unset( $result->id );
 		} else {
-			$result = array(
+			$result     = array(
 				'license_key' => isset( $license_data['license_key'] ) ?
 					$license_data['license_key'] :
 					false,
 			);
+			$raw_result = $result;
 		}
 
 		$result = apply_filters( 'wppus_check_license_result', $result, $license_data );
 
-		do_action( 'wppus_did_check_license', $result );
+		do_action( 'wppus_did_check_license', $raw_result );
 
 		if ( ! is_object( $result ) ) {
 			$this->http_response_code = 400;
@@ -256,6 +260,7 @@ class WPPUS_License_API {
 		$license_data = apply_filters( 'wppus_activate_license_dirty_payload', $license_data );
 		$request_slug = isset( $license_data['package_slug'] ) ? $license_data['package_slug'] : false;
 		$result       = array();
+		$raw_result   = array();
 		$license      = $this->license_server->read_license( $license_data );
 
 		do_action( 'wppus_pre_activate_license', $license );
@@ -287,6 +292,7 @@ class WPPUS_License_API {
 					apply_filters( 'wppus_activate_license_payload', $payload )
 				);
 				$result->license_signature = $this->license_server->generate_license_signature( $license, reset( $license_data['allowed_domains'] ) );
+				$raw_result                = clone $result;
 
 				unset( $result->hmac_key );
 				unset( $result->crypto_key );
@@ -297,12 +303,15 @@ class WPPUS_License_API {
 				unset( $result->id );
 			}
 		} else {
-			$result['license_key'] = isset( $license_data['license_key'] ) ? $license_data['license_key'] : false;
+			$result['license_key'] = isset( $license_data['license_key'] ) ?
+				$license_data['license_key'] :
+				false;
+			$raw_result            = $result;
 		}
 
 		$result = apply_filters( 'wppus_activate_license_result', $result, $license_data, $license );
 
-		do_action( 'wppus_did_activate_license', $result, $license_data );
+		do_action( 'wppus_did_activate_license', $raw_result, $license_data );
 
 		if ( ! is_object( $result ) ) {
 			$this->http_response_code = 400;
@@ -317,6 +326,7 @@ class WPPUS_License_API {
 		$request_slug = isset( $license_data['package_slug'] ) ? $license_data['package_slug'] : false;
 		$license      = $this->license_server->read_license( $license_data );
 		$result       = array();
+		$raw_result   = array();
 
 		do_action( 'wppus_pre_deactivate_license', $license );
 
@@ -352,6 +362,7 @@ class WPPUS_License_API {
 			if ( empty( $result ) ) {
 				$data                    = isset( $license->data ) ? $license->data : array();
 				$data['next_deactivate'] = time() + MONTH_IN_SECONDS;
+				$data['next_deactivate'] = time();
 				$allowed_domains         = array_diff( $license->allowed_domains, $license_data['allowed_domains'] );
 				$payload                 = array(
 					'id'              => $license->id,
@@ -362,6 +373,7 @@ class WPPUS_License_API {
 				$result                  = $this->license_server->edit_license(
 					apply_filters( 'wppus_deactivate_license_payload', $payload )
 				);
+				$raw_result              = clone $result;
 
 				unset( $result->hmac_key );
 				unset( $result->crypto_key );
@@ -373,11 +385,12 @@ class WPPUS_License_API {
 			}
 		} else {
 			$result['license_key'] = isset( $license_data['license_key'] ) ? $license_data['license_key'] : false;
+			$raw_result            = $result;
 		}
 
 		$result = apply_filters( 'wppus_deactivate_license_result', $result, $license_data, $license );
 
-		do_action( 'wppus_did_deactivate_license', $result, $license_data );
+		do_action( 'wppus_did_deactivate_license', $raw_result, $license_data );
 
 		if ( ! is_object( $result ) ) {
 			$this->http_response_code = 400;
