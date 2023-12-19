@@ -46,6 +46,7 @@ if ( ! defined( 'WPPUS_DEFAULT_CACHE_MAX_SIZE' ) ) {
 	define( 'WPPUS_DEFAULT_CACHE_MAX_SIZE', 100 );
 }
 
+require_once WPPUS_PLUGIN_PATH . 'lib/action-scheduler/action-scheduler.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-data-manager.php';
 require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-cloud-storage-manager.php';
