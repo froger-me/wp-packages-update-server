@@ -632,6 +632,7 @@ class WPPUS_License_Server {
 		}
 
 		if (
+			isset( $license['date_expiry'], $license['status'] ) &&
 			! empty( $license['date_expiry'] ) &&
 			'blocked' !== $license['status']
 		) {
@@ -641,6 +642,8 @@ class WPPUS_License_Server {
 			if ( $date_expiry->getTimestamp() <= time() ) {
 				$license['status'] = 'expired';
 			}
+		} elseif ( ! isset( $license['status'] ) ) {
+			$license['status'] = 'blocked';
 		}
 
 		return $license;
