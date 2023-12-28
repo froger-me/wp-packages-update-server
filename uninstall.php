@@ -33,10 +33,7 @@ $wp_filesystem->delete( $wppus_mu_plugin );
 $wp_filesystem->delete( $wppus_mu_plugin . '.backup' );
 $wp_filesystem->delete( $wppus_mdir, true );
 
-wp_clear_scheduled_hook( 'wppus_cleanup', array( 'cache' ) );
-wp_clear_scheduled_hook( 'wppus_cleanup', array( 'logs' ) );
-wp_clear_scheduled_hook( 'wppus_cleanup', array( 'tmp' ) );
-wp_clear_scheduled_hook( 'wppus_cleanup', array( 'update_from_remote_locks' ) );
+as_unschedule_all_actions( 'wppus_cleanup' );
 
 $sql = "DELETE FROM $wpdb->options WHERE `option_name` LIKE %s";
 

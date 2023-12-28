@@ -206,17 +206,17 @@ class WPPUS_Webhook_API {
 			}
 
 			if ( apply_filters( 'wppus_webhook_fire', $fire, $payload, $url, $info ) ) {
-				$body = wp_json_encode(
+				$body   = wp_json_encode(
 					$payload,
 					JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK
 				);
-				$hook = 'wppus_webhook';
+				$hook   = 'wppus_webhook';
+				$params = array( $url, $info['secret'], $body, current_action() );
 
-				if ( ! wp_next_scheduled( 'wppus_webhook', array( $url, $info, $body, current_action() ) ) ) {
-					$params    = array( $url, $info['secret'], $body, current_action() );
+				if ( ! as_has_scheduled_action( 'wppus_webhook', $params ) ) {
 					$timestamp = time();
 
-					wp_schedule_single_event( $timestamp, $hook, $params );
+					as_schedule_single_action( $timestamp, $hook, $params );
 				}
 			}
 		}
@@ -351,16 +351,18 @@ class WPPUS_Webhook_API {
 
 				$hook = 'wppus_check_remote_' . $package_id;
 
-				wp_unschedule_hook( $hook );
+				as_unschedule_all_actions( $hook );
 				do_action( 'wppus_cleared_check_remote_schedule', $package_id, $hook );
 
 				if ( $package_exists ) {
+					$params = array( $package_id, $type, true );
 
-					if ( ! wp_next_scheduled( $hook, array( $package_id, $type, true ) ) ) {
-						$params    = array( $package_id, $type, true );
+					if ( ! as_has_scheduled_action( $hook, $params ) ) {
 						$delay     = apply_filters( 'wppus_check_remote_delay', $delay, $package_id );
-						$timestamp = ( $delay ) ? time() + ( abs( intval( $delay ) ) * MINUTE_IN_SECONDS ) : time();
-						$result    = wp_schedule_single_event( $timestamp, $hook, $params );
+						$timestamp = ( $delay ) ?
+							time() + ( abs( intval( $delay ) ) * MINUTE_IN_SECONDS ) :
+							time();
+						$result    = as_schedule_single_action( $timestamp, $hook, $params );
 
 						do_action( 'wppus_scheduled_check_remote_event', $result, $package_id, $timestamp, false, $hook, $params );
 					}

@@ -254,7 +254,7 @@ class WPPUS_Data_Manager {
 				$params[] = true;
 			}
 
-			wp_clear_scheduled_hook( 'wppus_cleanup', $params );
+			as_unschedule_all_actions( 'wppus_cleanup', $params );
 			do_action( 'wppus_cleared_cleanup_schedule', $type, $params );
 		}
 	}
@@ -292,10 +292,16 @@ class WPPUS_Data_Manager {
 				$params[] = true;
 			}
 
-			if ( ! wp_next_scheduled( $hook, $params ) ) {
+			if ( ! as_has_scheduled_action( $hook, $params ) ) {
 				$frequency = apply_filters( 'wppus_schedule_cleanup_frequency', 'hourly', $type );
+				$schedules = wp_get_schedules();
 				$timestamp = time();
-				$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+				$result    = as_schedule_recurring_action(
+					$timestamp,
+					$schedules[ $frequency ]['interval'],
+					$hook,
+					$params
+				);
 
 				do_action(
 					'wppus_scheduled_cleanup_event',

@@ -69,7 +69,7 @@ class WPPUS_Remote_Sources_Manager {
 				foreach ( $slugs as $slug ) {
 					$scheduled_hook = 'wppus_check_remote_' . $slug;
 
-					wp_unschedule_hook( $scheduled_hook );
+					as_unschedule_all_actions( $scheduled_hook );
 					do_action( 'wppus_cleared_check_remote_schedule', $slug, $scheduled_hook );
 				}
 
@@ -311,11 +311,17 @@ class WPPUS_Remote_Sources_Manager {
 				$params    = array( $slug, null, false );
 				$frequency = apply_filters( 'wppus_check_remote_frequency', $frequency, $slug );
 				$timestamp = time();
+				$schedules = wp_get_schedules();
 
-				wp_unschedule_hook( $hook );
+				as_unschedule_all_actions( $hook );
 				do_action( 'wppus_cleared_check_remote_schedule', $slug, $hook );
 
-				$result = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+				$result = as_schedule_recurring_action(
+					$timestamp,
+					$schedules[ $frequency ]['interval'],
+					$hook,
+					$params
+				);
 
 				do_action(
 					'wppus_scheduled_check_remote_event',

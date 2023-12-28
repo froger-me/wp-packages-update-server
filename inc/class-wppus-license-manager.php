@@ -98,17 +98,22 @@ class WPPUS_License_Manager {
 	}
 
 	public static function deactivate() {
-		wp_clear_scheduled_hook( 'wppus_expire_licenses' );
+		as_unschedule_all_actions( 'wppus_expire_licenses' );
 		do_action( 'wppus_cleared_license_schedule' );
 	}
 
 	public function init() {
 		$hook = 'wppus_expire_licenses';
 
-		if ( ! wp_next_scheduled( $hook ) ) {
-			$frequency = apply_filters( 'wppus_schedule_license_frequency', 'hourly' );
-			$timestamp = time();
-			$result    = wp_schedule_event( $timestamp, $frequency, $hook );
+		if ( ! as_has_scheduled_action( $hook ) ) {
+			$frequency = apply_filters( 'wppus_schedule_license_frequency', 'daily' );
+			$schedules = wp_get_schedules();
+			$timestamp = strtotime( 'today noon' );
+			$result    = as_schedule_recurring_action(
+				$timestamp,
+				$schedules[ $frequency ]['interval'],
+				$hook
+			);
 
 			do_action( 'wppus_scheduled_license_event', $result, $timestamp, $frequency, $hook );
 		}

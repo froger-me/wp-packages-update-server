@@ -33,7 +33,7 @@ class WPPUS_Nonce {
 	}
 
 	public static function deactivate() {
-		wp_clear_scheduled_hook( 'wppus_nonce_cleanup' );
+		as_unschedule_all_actions( 'wppus_nonce_cleanup' );
 	}
 
 	public static function uninstall() {}
@@ -41,9 +41,9 @@ class WPPUS_Nonce {
 	public static function wp() {
 		$d = new DateTime( 'now', new DateTimeZone( wp_timezone_string() ) );
 
-		if ( ! wp_next_scheduled( 'wppus_nonce_cleanup' ) ) {
+		if ( ! as_has_scheduled_action( 'wppus_nonce_cleanup' ) ) {
 			$d->setTime( 0, 0, 0 );
-			wp_schedule_event( $d->getTimestamp(), 'daily', 'wppus_nonce_cleanup' );
+			as_schedule_recurring_action( $d->getTimestamp(), DAY_IN_SECONDS, 'wppus_nonce_cleanup' );
 		}
 	}
 

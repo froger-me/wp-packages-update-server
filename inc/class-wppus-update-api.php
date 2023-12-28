@@ -68,13 +68,23 @@ class WPPUS_Update_API {
 			$config['use_remote_repository'] &&
 			$config['repository_service_url']
 		) {
-			$hook = 'wppus_check_remote_' . $slug;
+			$hook   = 'wppus_check_remote_' . $slug;
+			$params = array( $slug, null, false );
 
-			if ( ! wp_next_scheduled( $hook, array( $slug, null, false ) ) ) {
-				$params    = array( $slug, null, false );
-				$frequency = apply_filters( 'wppus_check_remote_frequency', $config['repository_check_frequency'], $slug );
+			if ( ! as_has_scheduled_action( $hook, $params ) ) {
+				$frequency = apply_filters(
+					'wppus_check_remote_frequency',
+					$config['repository_check_frequency'],
+					$slug
+				);
 				$timestamp = time();
-				$result    = wp_schedule_event( $timestamp, $frequency, $hook, $params );
+				$schedules = wp_get_schedules();
+				$result    = as_schedule_recurring_action(
+					$timestamp,
+					$schedules[ $frequency ]['interval'],
+					$hook,
+					$params
+				);
 
 				do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, $frequency, $hook, $params );
 			}
@@ -84,7 +94,7 @@ class WPPUS_Update_API {
 	public function wppus_removed_package( $result, $type, $slug ) {
 
 		if ( $result ) {
-			wp_unschedule_hook( 'wppus_check_remote_' . $slug );
+			as_unschedule_all_actions( 'wppus_check_remote_' . $slug );
 		}
 	}
 
