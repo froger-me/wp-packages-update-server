@@ -197,11 +197,6 @@ class WPPUS_License_Manager {
 			'uri'  => WPPUS_PLUGIN_URL . 'css/admin/license' . wppus_assets_suffix() . '.css',
 		);
 
-		$styles['jquery-ui'] = array(
-			'path' => WPPUS_PLUGIN_URL . 'css/admin/jquery-ui' . wppus_assets_suffix() . '.css',
-			'uri'  => WPPUS_PLUGIN_URL . 'css/admin/jquery-ui' . wppus_assets_suffix() . '.css',
-		);
-
 		wp_enqueue_style( 'wp-codemirror' );
 
 		return $styles;
@@ -225,8 +220,6 @@ class WPPUS_License_Manager {
 			'uri'  => WPPUS_PLUGIN_URL . 'js/admin/jquery.validate.min.js',
 			'deps' => array( 'jquery' ),
 		);
-
-		wp_enqueue_script( 'jquery-ui-datepicker' );
 
 		return $scripts;
 	}

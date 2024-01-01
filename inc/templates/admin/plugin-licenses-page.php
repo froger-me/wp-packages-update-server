@@ -61,7 +61,7 @@
 							<tr valign="top">
 								<th scope="row"><?php esc_html_e( 'Date Created', 'wppus' ); ?> <span class="description"><?php esc_html_e( '(required)', 'wppus' ); ?></th>
 								<td>
-									<input type="text" id="wppus_license_date_created" name="wppus_license_date_created" class="wppus-license-date no-submit" value="" size="30">
+									<input type="date" id="wppus_license_date_created" name="wppus_license_date_created" class="wppus-license-date no-submit" value="" size="30">
 									<p class="description">
 										<?php esc_html_e( 'Creation date of the license.', 'wppus' ); ?>
 									</p>
@@ -70,7 +70,7 @@
 							<tr valign="top" class="wppus-license-show-if-edit">
 								<th scope="row"><?php esc_html_e( 'Date Renewed', 'wppus' ); ?></th>
 								<td>
-									<input type="text" id="wppus_license_date_renewed" name="wppus_license_date_renewed" class="wppus-license-date no-submit" value="" size="30">
+									<input type="date" id="wppus_license_date_renewed" name="wppus_license_date_renewed" class="wppus-license-date no-submit" value="" size="30">
 									<p class="description">
 										<?php esc_html_e( 'Date of the last time the license was renewed.', 'wppus' ); ?>
 									</p>
@@ -79,7 +79,7 @@
 							<tr valign="top">
 								<th scope="row"><?php esc_html_e( 'Expiry Date', 'wppus' ); ?></th>
 								<td>
-									<input type="text" id="wppus_license_date_expiry" name="wppus_license_date_expiry" class="wppus-license-date no-submit" value="" size="30">
+									<input type="date" id="wppus_license_date_expiry" name="wppus_license_date_expiry" class="wppus-license-date no-submit" value="" size="30">
 									<p class="description">
 										<?php esc_html_e( 'Expiry date of the license. Leave empty for no expiry.', 'wppus' ); ?>
 									</p>

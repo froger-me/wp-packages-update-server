@@ -100,12 +100,6 @@ jQuery(document).ready(function ($) {
 		}
 	});
 
-	if ($('.wppus-license-date').length > 0) {
-		$('.wppus-license-date').datepicker({
-			dateFormat : 'yy-mm-dd'
-		});
-	}
-
 	function populateLicensePanel(licenseData) {
 
 		if ($.isPlainObject(licenseData)) {
