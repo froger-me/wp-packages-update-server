@@ -37,7 +37,7 @@ This plugin adds the following major features to WordPress:
 * **Packages licensing:** Prevent plugins and themes installed on remote WordPress installation from being updated without a valid license. Licenses are generated automatically by default and the values are unguessable (it is recommended to keep the default). When checking the validity of licenses an extra license signature is also checked to prevent the use of a license on more than the configured allowed domains.
 * **Packages remote source:** WP Packages Update Server can act as a proxy and will help you to connect your clients with your plugins and themes kept on a Remote Repository, so that they are always up to date. Supports Bitbucket, Github and Gitlab, as well as self-hosted installations of Gitlab. Packages will not be installed on your server, only transferred to the clients whenever they request them.
 
-To connect their plugins or themes and WP Packages Update Server, developers can find integration examples in the `wp-packages-update-server/integration-examples` directory, or check the [documentation of the WP Package Updater](https://github.com/froger-me/wp-package-updater/blob/master/README.md).
+To connect their plugins or themes and WP Packages Update Server, developers can find integration examples in the `wp-packages-update-server/integration` directory, or check the [documentation of the WP Package Updater](https://github.com/froger-me/wp-package-updater/blob/master/README.md).
 
 In addition, a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) developers can add to the WordPress installation running WP Packages Update Server is available in `wp-packages-update-server/optimisation/wppus-endpoint-optimizer.php`.
 
@@ -45,9 +45,9 @@ In addition, a [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) d
 
 When upgrading from v1.3, licenses from Software License Manager plugin will be migrated automatically, and SLM will be bypassed while doing license checks using the old API, and compatibility will be ensured until v2.0. It is recommended to dactivate or uninstall Software license Manager entirely. Developers will need to update the [WP Package Updater](https://github.com/froger-me/wp-package-updater) library before v2.0 as support for SLM API calls will be removed then.
 
-Upgrading from 1.4.13 to 1.4.14 requires to upgrade the `lib` directory of all the packages delivered by WP Packages Update Server due to a change in the Github API (deprecation of query parameters authentication). You can find the updated `lib` content in the integration examples in the `wp-packages-update-server/integration-examples` directory.
+Upgrading from 1.4.13 to 1.4.14 requires to upgrade the `lib` directory of all the packages delivered by WP Packages Update Server due to a change in the Github API (deprecation of query parameters authentication). You can find the updated `lib` content in the integration examples in the `wp-packages-update-server/integration` directory.
 
-Upgrading from 1.4.15 to 1.4.16 requires an upgrade of the 'lib' directory of all packages provided by the WP Packages Update Server. The updated 'lib' content can be found in the integration examples in the 'wp-packages-update-server/integration-examples' directory.
+Upgrading from 1.4.15 to 1.4.16 requires an upgrade of the 'lib' directory of all packages provided by the WP Packages Update Server. The updated 'lib' content can be found in the integration examples in the 'wp-packages-update-server/integration' directory.
 
 == Roadmap ==
 

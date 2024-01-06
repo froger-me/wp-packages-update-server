@@ -52,7 +52,7 @@ This plugin adds the following major features to WordPress:
 * **Licenses:** manage licenses with a table showing ID, License Key, Registered Email, Status, Package Type, Package Slug, Creation Date, and Expiry Date ; add and edit them with a form, or use the API for more control. Licenses prevent plugins and themes installed on client WordPress installation from being updated without a valid license. Licenses are generated automatically by default and the values are unguessable (it is recommended to keep the default). When checking the validity of licenses an extra license signature is also checked to prevent the use of a license on more than the configured allowed domains.
 * **API & Webhooks:** Use the Package API to administer packages (browse, read, edit, add, delete), and request for expirable signed URLs of packages to allow secure downloads. Use the License API to administer licenses (browse, read, edit, add, delete) and check, activate or deactivate licenses. Fire Webhooks to notify any URL of your choice of key events affecting packages and licenses. 
 
-To connect their plugins or themes and WP Packages Update Server, developers can find integration examples in `wp-packages-update-server/integration-examples`:
+To connect their plugins or themes and WP Packages Update Server, developers can find integration examples in `wp-packages-update-server/integration`:
 * **Dummy Plugin:** a folder `dummy-plugin` with a simple, empty plugin that includes the necessary code in the `dummy-plugin.php` main plugin file and the necessary libraries in a `lib` folder.
 * **Dummy Theme:** a folder `dummy-theme` with a simple, empty child theme of Twenty Seventeen that includes the necessary code in the `functions.php` file and the necessary libraries in a `lib` folder.
 
@@ -329,7 +329,7 @@ The following can also be found under the "Help" tab of the WP Packages Update S
 
 To link your packages to WP Packages Update Server, and optionally to prevent webmasters from getting updates of your plugins and themes without a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the `functions.php` file (for themes), and provide the necessary libraries in a lib directory at the root of the package.  
 
-See `wp-content/plugins/wp-packages-update-server/integration-examples/dummy-plugin` for an example of plugin, and  `wp-content/plugins/wp-packages-update-server/integration-examples/dummy-theme` for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.  
+See `wp-content/plugins/wp-packages-update-server/integration/dummy-plugin` for an example of plugin, and  `wp-content/plugins/wp-packages-update-server/integration/dummy-theme` for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.  
 
 Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in `wp-content/wppus/packages` or `CloudStorageUnit://wppus-packages/`. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in `package-slug.zip` would be `package-slug.php`.  
 

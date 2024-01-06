@@ -15,7 +15,7 @@ This is an example of details page displayed in the WordPress admin when a new v
  Tags: dummy, another dummy
  Text Domain: dummy-theme
  Domain Path: /languages
- Details URI: https://github.com/froger-me/wp-packages-update-server/blob/master/integration-examples/assets/dummy-theme-details.md
+ Details URI: https://github.com/froger-me/wp-packages-update-server/blob/master/integration/assets/dummy-theme-details.md
  License: GNU General Public License v2 or later
  License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */

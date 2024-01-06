@@ -17,10 +17,10 @@
 	<p>
 		<?php
 		printf(
-			// translators: %1$s is <code>integration-examples/dummy-plugin</code>, %2$s is <code>integration-examples/dummy-theme</code>
+			// translators: %1$s is <code>integration/dummy-plugin</code>, %2$s is <code>integration/dummy-theme</code>
 			esc_html__( 'See %1$s for an example of plugin, and %2$ss for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.', 'wppus' ),
-			'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration-examples/dummy-plugin</code>',
-			'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration-examples/dummy-plugin</code>',
+			'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration/dummy-plugin</code>',
+			'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration/dummy-plugin</code>',
 		);
 		?>
 	</p>

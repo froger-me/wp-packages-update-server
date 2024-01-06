@@ -1258,7 +1258,7 @@ msgstr ""
 msgid "Save"
 msgstr ""
 
-#. %1$s is <code>integration-examples/dummy-plugin</code>, %2$s is <code>integration-examples/dummy-theme</code>
+#. %1$s is <code>integration/dummy-plugin</code>, %2$s is <code>integration/dummy-theme</code>
 #. %1$s is <code>$wppus_always_active_plugins</code>, %2$s is <code>$wppus_bypass_themes</code>, %3$s is <code>false</code>, %4$s is <code>functions.php</code>, %5$s is <code>wppus-endpoint-optimiser.php.backup</code>
 #: inc/templates/admin/plugin-help-page.php:21
 #: inc/templates/admin/plugin-help-page.php:63
