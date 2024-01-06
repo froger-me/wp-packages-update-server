@@ -230,7 +230,7 @@ Response `$data` - **failure** (in case of invalid `license_key`):
 }
 ```
 
-Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"on-hold"`, `"expired"` and `"blocked"`):
+Response `$data` - **failure** (in case of illegal status - illegal statuses for activation/deactivation are `"on-hold"`, `"expired"` and `"blocked"`):
 ```json
 {
 	"status": "expired"
@@ -290,7 +290,7 @@ Response `$data` - **failure** (in case of invalid `license_key`):
 }
 ```
 
-Response `$data` - **failure** (in case of illegal status - illegal statuses for activation are `"on-hold"`, `"expired"` and `"blocked"`):
+Response `$data` - **failure** (in case of illegal status - illegal statuses for activation/deactivation are `"on-hold"`, `"expired"` and `"blocked"`):
 ```json
 {
 	"status": "expired"

@@ -29,9 +29,9 @@
 
 
 Developer documentation:
-- [Packages](https://github.com/froger-me/wp-packages-update-server/blob/master/packages.md)
-- [Licenses](https://github.com/froger-me/wp-packages-update-server/blob/master/licenses.md)
-- [Miscellaneous](https://github.com/froger-me/wp-packages-update-server/blob/master/misc.md)
+- [Packages](https://github.com/froger-me/wp-packages-update-server/integration/docs/packages.md)
+- [Licenses](https://github.com/froger-me/wp-packages-update-server/integration/docs/licenses.md)
+- [Miscellaneous](https://github.com/froger-me/wp-packages-update-server/integration/docs/misc.md)
 
 ## Introduction
 

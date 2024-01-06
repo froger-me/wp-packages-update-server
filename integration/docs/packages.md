@@ -120,8 +120,6 @@ WP Packages Update Server offers a series of functions, actions and filters for 
 		* [wppus\_remote\_source\_option\_update](#wppus_remote_source_option_update)
 		* [wppus\_api\_package\_actions](#wppus_api_package_actions)
 
-
-
 ## API
 
 The Package API is accessible via POST and GET requests on the `/wppus-package-api/` endpoint for both the Public and Private API, and via POST only for the Private API. It accepts form-data payloads (arrays, basically). This documentation page uses `wp_remote_post`, but `wp_remote_get` would work as well for the Public API.
