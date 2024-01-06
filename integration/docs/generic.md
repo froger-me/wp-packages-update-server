@@ -65,7 +65,7 @@ Also of note, in the context of a generic package, the "domain" added to or remo
 ### Sample url
 
 ```
-https://server.anyape.com/wppus-update-api/?action=get_metadata&package_id=dummy-generic-package&installed_version=1.4.13&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D&update_type=Generic
+https://server.domain.tld/wppus-update-api/?action=get_metadata&package_id=dummy-generic-package&installed_version=1.4.13&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D&update_type=Generic
 ```
 
 ### Example response
@@ -83,14 +83,14 @@ HTTP/1.1 200 OK
 {
     "name": "Dummy Generic Package",
     "version": "1.4.14",
-    "homepage": "https:\/\/froger.me\/",
+    "homepage": "https:\/\/dev.tld\/",
     "author": "Alexandre Froger",
-    "author_homepage": "https:\/\/froger.me",
+    "author_homepage": "https:\/\/dev.tld",
     "description": "Empty Generic Package",
-    "details_url": "https:\/\/froger.me\/dummy-generic-package-details.md",
+    "details_url": "https:\/\/dev.tld\/dummy-generic-package-details.md",
     "last_updated": "2024-01-01 00:00:00",
     "slug": "dummy-generic-package",
-    "download_url": "https:\/\/server.anyape.com\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package,
+    "download_url": "https:\/\/server.domain.tld\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package,
     "request_time_elapsed": "0.386"
 }
 
@@ -105,11 +105,11 @@ HTTP/1.1 200 OK
 {
     "name": "Dummy Generic Package",
     "version": "1.4.14",
-    "homepage": "https:\/\/froger.me\/",
+    "homepage": "https:\/\/dev.tld\/",
     "author": "Alexandre Froger",
-    "author_homepage": "https:\/\/froger.me",
+    "author_homepage": "https:\/\/dev.tld",
     "description": "Empty Generic Package",
-    "details_url": "https:\/\/froger.me\/dummy-generic-package-details.md",
+    "details_url": "https:\/\/dev.tld\/dummy-generic-package-details.md",
     "last_updated": "2024-01-01 00:00:00",
     "slug": "dummy-generic-package",
     "license_error": {},
@@ -124,20 +124,20 @@ In case a valid license key is provided:
 {
    "name": "Dummy Generic Package",
     "version": "1.4.14",
-    "homepage": "https:\/\/froger.me\/",
+    "homepage": "https:\/\/dev.tld\/",
     "author": "Alexandre Froger",
-    "author_homepage": "https:\/\/froger.me",
+    "author_homepage": "https:\/\/dev.tld",
     "description": "Empty Generic Package",
-    "details_url": "https:\/\/froger.me\/dummy-generic-package-details.md",
+    "details_url": "https:\/\/dev.tld\/dummy-generic-package-details.md",
     "last_updated": "2024-01-01 00:00:00",
     "slug": "dummy-generic-package",
-    "download_url": "https:\/\/server.anyape.com\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D",
+    "download_url": "https:\/\/server.domain.tld\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D",
     "license": {
         "id": "9999",
         "license_key": "41ec1eba0f17d47f76827a33c7daab2c",
         "max_allowed_domains": 999,
         "allowed_domains": [
-            "test.anyape.com"
+            "allowedClientIdentifier"
         ],
         "status": "activated",
         "txn_id": "0000012345678",
@@ -168,7 +168,7 @@ $args      = array(
     'license_signature' => $signature,
     'update_type'       => 'Generic',
 );
-$url      = add_query_arg( $args, 'https://server.anyape.com/wppus-update-api/' );
+$url      = add_query_arg( $args, 'https://server.domain.tld/wppus-update-api/' );
 $response = wp_remote_get(
     $url,
     array
@@ -192,7 +192,7 @@ $args = array(
     'license_signature' => $signature,
     'update_type'       => 'Generic',
 );
-$url = 'https://server.anyape.com/wppus-update-api/?' . http_build_query( $args );
+$url = 'https://server.domain.tld/wppus-update-api/?' . http_build_query( $args );
 $ch = curl_init( $url );
 
 curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -219,7 +219,7 @@ const args = {
     license_signature: signature
     update_type: 'Generic',
 };
-const url = 'https://server.anyape.com/wppus-update-api/?' + querystring.stringify(args);
+const url = 'https://server.domain.tld/wppus-update-api/?' + querystring.stringify(args);
 const options = {
     headers: {
         'Accept': 'application/json'
@@ -256,7 +256,7 @@ const args = {
     license_signature: signature,
     update_type: 'Generic',
 };
-const url = new URL('https://server.anyape.com/wppus-update-api/');
+const url = new URL('https://server.domain.tld/wppus-update-api/');
 
 url.search = new URLSearchParams(args).toString();
 
@@ -290,7 +290,7 @@ args = {
     'license_signature': signature,
     'update_type': 'Generic',
 }
-url = 'https://server.anyape.com/wppus-update-api/'
+url = 'https://server.domain.tld/wppus-update-api/'
 response = requests.get(url, params=args, headers={'Accept': 'application/json'})
 
 if response.status_code == 200:
@@ -305,7 +305,7 @@ else:
 #!/bin/bash
 
 signature=$(echo -n 'ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs=' | perl -MURI::Escape -ne 'print uri_escape($_)')
-url="https://server.anyape.com/wppus-update-api/"
+url="https://server.domain.tld/wppus-update-api/"
 args=(
     "action=get_metadata"
     "package_id=dummy-generic-package"
@@ -336,13 +336,13 @@ echo "$response"
 
 Activation:
 ```
-https://server.anyape.com/wppus-update-api/?action=activate&license_key=41ec1eba0f17d47f76827a33c7daab2c&allowed_domains=test.anyape.com&package_slug=dummy-generic-package
+https://server.domain.tld/wppus-update-api/?action=activate&license_key=41ec1eba0f17d47f76827a33c7daab2c&allowed_domains=allowedClientIdentifier&package_slug=dummy-generic-package
 ```
 ___
 
 Deactivation:
 ```
-https://server.anyape.com/wppus-update-api/?action=deactivate&license_key=41ec1eba0f17d47f76827a33c7daab2c&allowed_domains=test.anyape.com&package_slug=dummy-generic-package
+https://server.domain.tld/wppus-update-api/?action=deactivate&license_key=41ec1eba0f17d47f76827a33c7daab2c&allowed_domains=allowedClientIdentifier&package_slug=dummy-generic-package
 ```
 
 ### Example response
@@ -356,7 +356,7 @@ Success - activation:
 ```
 HTTP/1.1 200 OK
 
-{"license_key":"41ec1eba0f17d47f76827a33c7daab2c","max_allowed_domains":999,"allowed_domains":["test.anyape.com"],"status":"activated","txn_id":"","date_created":"2024-01-01","date_renewed":"0000-00-00","date_expiry":"2025-01-01","package_slug":"dummy-generic-package","package_type":"generic","license_signature":"ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs="}
+{"license_key":"41ec1eba0f17d47f76827a33c7daab2c","max_allowed_domains":999,"allowed_domains":["allowedClientIdentifier"],"status":"activated","txn_id":"","date_created":"2024-01-01","date_renewed":"0000-00-00","date_expiry":"2025-01-01","package_slug":"dummy-generic-package","package_type":"generic","license_signature":"ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs="}
 ```
 
 This is when the license signature must be saved by the client to be used for future update requests.
@@ -411,10 +411,10 @@ HTTP/1.1 400 Bad Request
 $args      = array(
     'action'           => 'activate', // or 'deactivate'
     'license_key'      => '41ec1eba0f17d47f76827a33c7daab2c',
-    'allowed_domains'  => 'test.froger.me',
+    'allowed_domains'  => 'allowedClientIdentifier',
     'package_slug'     => 'dummy-generic-package',
 );
-$url      = add_query_arg( $args, 'https://server.anyape.com/wppus-license-api/' );
+$url      = add_query_arg( $args, 'https://server.domain.tld/wppus-license-api/' );
 
 wp_remote_get(
     $query,
@@ -431,10 +431,10 @@ wp_remote_get(
 $args = array(
     'action'           => 'activate', // or 'deactivate'
     'license_key'      => '41ec1eba0f17d47f76827a33c7daab2c',
-    'allowed_domains'  => 'test.froger.me',
+    'allowed_domains'  => 'allowedClientIdentifier',
     'package_slug'     => 'dummy-generic-package',
 );
-$url = 'https://server.anyape.com/wppus-license-api/?' . http_build_query($args);
+$url = 'https://server.domain.tld/wppus-license-api/?' . http_build_query($args);
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $url);
@@ -455,10 +455,10 @@ const querystring = require('querystring');
 const args = {
     action: 'activate', // or 'deactivate'
     license_key: '41ec1eba0f17d47f76827a33c7daab2c',
-    allowed_domains: 'test.froger.me',
+    allowed_domains: 'allowedClientIdentifier',
     package_slug: 'dummy-generic-package',
 };
-const url = 'https://server.anyape.com/wppus-license-api/?' + querystring.stringify(args);
+const url = 'https://server.domain.tld/wppus-license-api/?' + querystring.stringify(args);
 
 https.get(url, (res) => {
     let data = '';
@@ -484,11 +484,11 @@ https.get(url, (res) => {
 const args = {
     action: 'activate', // or 'deactivate'
     license_key: '41ec1eba0f17d47f76827a33c7daab2c',
-    allowed_domains: 'test.froger.me',
+    allowed_domains: 'allowedClientIdentifier',
     package_slug: 'dummy-generic-package',
 };
 
-const url = new URL('https://server.anyape.com/wppus-license-api/');
+const url = new URL('https://server.domain.tld/wppus-license-api/');
 Object.keys(args).forEach(key => url.searchParams.append(key, args[key]));
 
 fetch(url)
@@ -510,11 +510,11 @@ import urllib.parse
 args = {
     'action': 'activate', # or 'deactivate'
     'license_key': '41ec1eba0f17d47f76827a33c7daab2c',
-    'allowed_domains': 'test.froger.me',
+    'allowed_domains': 'allowedClientIdentifier',
     'package_slug': 'dummy-generic-package',
 }
 
-url = 'https://server.anyape.com/wppus-license-api/?' + urllib.parse.urlencode(args)
+url = 'https://server.domain.tld/wppus-license-api/?' + urllib.parse.urlencode(args)
 
 try:
     response = requests.get(url)
@@ -529,11 +529,11 @@ except requests.exceptions.HTTPError as err:
 ```bash
 #!/bin/bash
 
-url="https://server.anyape.com/wppus-update-api/"
+url="https://server.domain.tld/wppus-update-api/"
 args=(
     "action=activate"
     "license_key=41ec1eba0f17d47f76827a33c7daab2c"
-    "allowed_domains=test.froger.me"
+    "allowed_domains=allowedClientIdentifier"
     "package_slug=dummy-generic-package"
 )
 full_url="${url}?$(IFS=\& ; echo "${args[*]}")"
@@ -559,7 +559,7 @@ Note: the download URL with its one-time use token is acquired from the response
 ### Sample url
 
 ```
-https://server.anyape.com/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D
+https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D
 ```
 
 ### Example response
@@ -614,7 +614,7 @@ HTTP/1.1 404 Not Found
 #### Wordpress
 
 ```php
-$download_url = "https://server.anyape.com/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
+$download_url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
 $response     = wp_remote_get(
     $download_url,
     array(
@@ -640,7 +640,7 @@ if ( 200 === wp_remote_retrieve_response_code( $response ) ) {
 #### PHP Curl
 
 ```php
-$download_url = "https://server.anyape.com/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
+$download_url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
 $options = [
     'http' => [
         'timeout' => 20,
@@ -663,7 +663,7 @@ if ($http_response_header[0] == 'HTTP/1.1 200 OK') {
 ```js
 const https = require('https');
 const fs = require('fs');
-const url = "https://server.anyape.com/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
+const url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
 
 https.get(url, (res) => {
 
@@ -680,7 +680,7 @@ https.get(url, (res) => {
 #### JavaScript
 
 ```js
-const url = "https://server.anyape.com/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
+const url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
 
 fetch(url)
     .then(response => response.blob())
@@ -705,7 +705,7 @@ fetch(url)
 ```python
 import requests
 
-url = "https://server.anyape.com/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D"
+url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D"
 response = requests.get(url, stream=True)
 
 if response.status_code == 200:
@@ -721,7 +721,7 @@ else:
 ```bash
 #!/bin/bash
 
-url="https://server.anyape.com/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D"
+url="https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D"
 output_file="/tmp/dummy-generic-package.zip"
 
 curl -o $output_file $url
