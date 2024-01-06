@@ -39,7 +39,7 @@ Also of note, in the context of a generic package, the "domain" added to or remo
             * [Bash curl](#bash-curl-1)
         * [Downloading a package](#downloading-a-package)
         * [Parameters](#parameters-2)
-        * [Sample urls](#sample-urls-1)
+        * [Sample url](#sample-url-1)
         * [Example response](#example-response-2)
         * [Examples request](#examples-request-2)
             * [Wordpress](#wordpress-2)
@@ -556,7 +556,7 @@ Note: the download URL with its one-time use token is acquired from the response
 | license_key | no | The license key of the package, saved by the client |
 | license_signature | no | The license signature of the package, saved by the client |
 
-### Sample urls
+### Sample url
 
 ```
 https://server.anyape.com/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D
