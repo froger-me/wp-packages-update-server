@@ -104,16 +104,14 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 				$license_signature
 			)
 		) {
-			$message = $this->get_license_error_message( $license );
-
-			$this->exitWithError( $message, 403 );
+			$this->exitWithError( '', 403 );
 		}
 	}
 
 	protected function generateDownloadUrl( Wpup_Package $package ) {
 		$query = array(
 			'action'            => 'download',
-			'token'             => wppus_create_nonce(),
+			'token'             => wppus_create_nonce( true, DAY_IN_SECONDS / 2 ),
 			'package_id'        => $package->slug,
 			'license_key'       => $this->license_key,
 			'license_signature' => $this->license_signature,
@@ -175,12 +173,14 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 		$result         = $license_server->read_license( $payload );
 
 		if ( is_object( $result ) ) {
-			$result->result             = 'success';
-			$result->registered_domains = $result->allowed_domains;
-			$result->message            = __( 'License key details retrieved.', 'wppus' );
-			$result->product_ref        = ( 'theme' === $result->package_type ) ?
-				$result->package_slug . '/functions.php' :
-				$result->package_slug . '/' . $result->package_slug . '.php';
+			$result->result  = 'success';
+			$result->message = __( 'License key details retrieved.', 'wppus' );
+
+			if ( 'theme' === $result->package_type ) {
+				$result->product_ref = $result->package_slug . '/functions.php';
+			} elseif ( 'plugin' === $result->package_type ) {
+				$result->product_ref = $result->package_slug . '/' . $result->package_slug . '.php';
+			}
 		}
 
 		return $result;
