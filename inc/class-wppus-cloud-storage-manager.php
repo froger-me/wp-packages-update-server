@@ -755,7 +755,13 @@ class WPPUS_Cloud_Storage_Manager {
 					}
 
 					if ( $package_info ) {
-						$package_info['type']               = isset( $package_info['details_url'] ) ? 'theme' : 'plugin';
+
+						if ( $package_info['details_url'] ) {
+							$package_info['type'] = 'theme';
+						} else {
+							$package_info['type'] = 'plugin';
+						}
+
 						$package_info['file_name']          = $package_info['slug'] . '.zip';
 						$package_info['file_path']          = 'cloudStorage://' . self::$virtual_dir . '/' . $slug . '.zip';
 						$package_info['file_size']          = $info['size'];

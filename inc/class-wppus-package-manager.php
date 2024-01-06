@@ -578,8 +578,14 @@ class WPPUS_Package_Manager {
 				);
 
 				if ( $package ) {
-					$package_info                       = $package->getMetadata();
-					$package_info['type']               = isset( $package_info['details_url'] ) ? 'theme' : 'plugin';
+					$package_info = $package->getMetadata();
+
+					if ( isset( $package_info['details_url'] ) ) {
+						$package_info['type'] = 'theme';
+					} else {
+						$package_info['type'] = 'plugin';
+					}
+
 					$package_info['file_name']          = $package_info['slug'] . '.zip';
 					$package_info['file_path']          = $package_directory . $slug . '.zip';
 					$package_info['file_size']          = $package->getFileSize();
@@ -652,8 +658,14 @@ class WPPUS_Package_Manager {
 							);
 
 							if ( $include ) {
-								$packages[ $meta['slug'] ]                       = $meta;
-								$packages[ $meta['slug'] ]['type']               = isset( $meta['details_url'] ) ? 'theme' : 'plugin';
+								$packages[ $meta['slug'] ] = $meta;
+
+								if ( isset( $meta['details_url'] ) ) {
+									$packages[ $meta['slug'] ]['type'] = 'theme';
+								} else {
+									$packages[ $meta['slug'] ]['type'] = 'plugin';
+								}
+
 								$packages[ $meta['slug'] ]['file_name']          = $meta['slug'] . '.zip';
 								$packages[ $meta['slug'] ]['file_size']          = $package->getFileSize();
 								$packages[ $meta['slug'] ]['file_last_modified'] = $package->getLastModified();
