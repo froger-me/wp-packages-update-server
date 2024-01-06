@@ -569,7 +569,7 @@ Only the relevant headers are shown here.
 
 ___
 
-In case of success (`PK...` is the start of a zip archive, and is follow by binary data):
+In case of success (`PK...` is the start of a zip archive, and is followed by binary data):
 ```
 HTTP/1.1 200 OK
 
