@@ -544,7 +544,7 @@ echo $response
 
 ### Downloading a package
 
-Note: the download URL with its one-time use token is acquired from the response to the `get_metadata` API call (see [Requesting update information](#requesting-update-information)]).
+Note: the download URL with its one-time use token is acquired from the response to the `get_metadata` API call (see [Requesting update information](#requesting-update-information)).
 
 ### Parameters
 
