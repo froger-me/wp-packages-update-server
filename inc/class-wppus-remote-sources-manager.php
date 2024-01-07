@@ -258,6 +258,18 @@ class WPPUS_Remote_Sources_Manager {
 		return $manager->clear_remote_check_scheduled_hooks();
 	}
 
+	public static function register_schedules() {
+		$manager = new self();
+		$result  = false;
+
+		if ( apply_filters( 'wppus_use_recurring_schedule', true ) ) {
+			$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
+			$result    = $manager->reschedule_remote_check_recurring_events( $frequency );
+		}
+
+		return $result;
+	}
+
 	public function reschedule_remote_check_recurring_events( $frequency ) {
 
 		if ( WPPUS_Update_API::is_doing_api_request() ) {

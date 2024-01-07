@@ -8,7 +8,7 @@ use YahnisElsts\PluginUpdateChecker\v5p3\Theme\Package;
 use YahnisElsts\PluginUpdateChecker\v5p3\Theme\Update;
 use YahnisElsts\PluginUpdateChecker\v5p3\Theme\UpdateChecker;
 
-if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
+if (! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false)):
 
 	class Proxuc_Vcs_ThemeUpdateChecker extends UpdateChecker implements BaseChecker {
 
@@ -47,10 +47,10 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 
 			$this->optionName = $optionName;
 
-			if ( empty($this->optionName) ) {
+			if (empty($this->optionName)) {
 				//BC: Initially the library only supported plugin updates and didn't use type prefixes
 				//in the option name. Lets use the same prefix-less name when possible.
-				if ( $this->filterSuffix === '' ) {
+				if ($this->filterSuffix === '') {
 					$this->optionName = 'external_updates-' . $this->slug;
 				} else {
 					$this->optionName = $this->getUniqueName('external_updates');
@@ -61,7 +61,6 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 		}
 
 		public function Vcs_getAbsoluteDirectoryPath() {
-
 			return trailingslashit($this->themeAbsolutePath);
 		}
 
@@ -75,7 +74,8 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 
 			//Figure out which reference (tag or branch) we'll use to get the latest version of the theme.
 			$updateSource = $api->chooseReference($this->branch);
-			if ( $updateSource ) {
+
+			if ($updateSource) {
 				$ref = $updateSource->name;
 				$update->download_url = $updateSource->downloadUrl;
 			} else {
@@ -85,7 +85,8 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 			//Get headers from the main stylesheet in this branch/tag. Its "Version" header and other metadata
 			//are what the WordPress install will actually see after upgrading, so they take precedence over releases/tags.
 			$file = $api->getRemoteFile('style.css', $ref);
-			if ( ! empty($file) ) {
+
+			if (!empty($file)) {
 				$remoteHeader = $this->package->getFileHeader($file);
 				$update->version = Utils::findNotEmpty(array(
 					$remoteHeader['Version'],
@@ -93,7 +94,7 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 				));
 			}
 
-			if ( empty($update->version) ) {
+			if (empty($update->version)) {
 				//It looks like we didn't find a valid update after all.
 				$update = null;
 			}
@@ -107,9 +108,9 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 			$update = $this->requestUpdate();
 			$info   = null;
 
-			if ( $update && 'source_not_found' !== $update ) {
+			if ($update && 'source_not_found' !== $update) {
 
-				if ( !empty($update->download_url) ) {
+				if (!empty($update->download_url)) {
 					$update->download_url = $this->api->signDownloadUrl($update->download_url);
 				}
 
@@ -119,7 +120,7 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 					'main_file'    => 'style.css',
 					'download_url' => $update->download_url,
 				);
-			} elseif ( 'source_not_found' === $update ) {
+			} elseif ('source_not_found' === $update) {
 
 				return new WP_Error(
 					'puc-no-update-source',
@@ -135,11 +136,13 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 
 		public function setBranch($branch) {
 			$this->branch = $branch;
+
 			return $this;
 		}
 
 		public function setAuthentication($credentials) {
 			$this->api->setAuthentication($credentials);
+
 			return $this;
 		}
 
@@ -150,7 +153,7 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 		public function getUpdate() {
 			$update = parent::getUpdate();
 
-			if ( isset($update) && !empty($update->download_url) ) {
+			if (isset($update) && !empty($update->download_url)) {
 				$update->download_url = $this->api->signDownloadUrl($update->download_url);
 			}
 

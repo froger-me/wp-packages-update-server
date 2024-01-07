@@ -38,6 +38,11 @@ class WP_Packages_Update_Server {
 	 *******************************************************************/
 
 	public function action_scheduler_failed_execution( $action_id, Exception $exception, $context = '' ) {
+
+		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+			return;
+		}
+
 		php_log(
 			array(
 				'action_id' => $action_id,

@@ -45,12 +45,10 @@ if ( ! class_exists(Proxuc_Vcs_GenericUpdateChecker::class, false) ):
 		}
 
 		public function Vcs_getAbsoluteDirectoryPath() {
-			php_log();
 			return trailingslashit($this->genericAbsolutePath);
 		}
 
 		public function requestInfo($unused = null) {
-			php_log();
 			$update = $this->requestUpdate();
 			$info   = null;
 
@@ -81,21 +79,18 @@ if ( ! class_exists(Proxuc_Vcs_GenericUpdateChecker::class, false) ):
 		}
 
 		public function setBranch($branch) {
-			php_log();
 			$this->branch = $branch;
 
 			return $this;
 		}
 
 		public function setAuthentication($credentials) {
-			php_log();
 			$this->api->setAuthentication($credentials);
 
 			return $this;
 		}
 
 		public function getVcsApi() {
-			php_log();
 			return $this->api;
 		}
 	}
