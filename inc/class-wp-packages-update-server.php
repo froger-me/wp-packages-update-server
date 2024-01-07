@@ -228,7 +228,7 @@ class WP_Packages_Update_Server {
 	}
 
 	public function action_scheduler_retention_period() {
-		return WEEK_IN_SECONDS;
+		return DAY_IN_SECONDS;
 	}
 
 	// Misc. -------------------------------------------------------
