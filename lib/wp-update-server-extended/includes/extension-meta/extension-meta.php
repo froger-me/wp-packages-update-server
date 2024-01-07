@@ -6,13 +6,15 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 	 * @see WshWordPressPackageParser
 	 */
 	public static function parsePackage($packageFilename, $applyMarkdown = false){
-		if ( !file_exists($packageFilename) || !is_readable($packageFilename) ){
+
+		if (!file_exists($packageFilename) || !is_readable($packageFilename)){
 			return false;
 		}
 
 		//Open the .zip
 		$zip = WshWpp_Archive::open($packageFilename);
-		if ( $zip === false ){
+
+		if ($zip === false){
 			return false;
 		}
 
@@ -23,9 +25,9 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 		$stylesheet = null;
 		$type = null;
 		$assets = null;
-
 		$entries = $zip->listEntries();
-		for ( $fileIndex = 0; ($fileIndex < count($entries)) && (empty($readme) || empty($header)); $fileIndex++ ){
+
+		for ($fileIndex = 0; ($fileIndex < count($entries)) && (empty($readme) || empty($header)); $fileIndex++){
 			$info = $entries[$fileIndex];
 
 			//Normalize filename: convert backslashes to slashes, remove leading slashes.
@@ -37,18 +39,18 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 			$depth = substr_count($fileName, '/');
 
 			//Skip empty files, directories and everything that's more than 1 sub-directory deep.
-			if ( ($depth > 1) || $info['isFolder'] ) {
+			if (($depth > 1) || $info['isFolder']) {
 				continue;
 			}
 
 			//readme.txt (for plugins)?
-			if ( empty($readme) && (strtolower(basename($fileName)) == 'readme.txt') ){
+			if (empty($readme) && (strtolower(basename($fileName)) === 'readme.txt')){
 				//Try to parse the readme.
 				$readme = self::parseReadme($zip->getFileContents($info), $applyMarkdown);
 			}
 
 			//Theme stylesheet?
-			if ( empty($header) && (strtolower(basename($fileName)) == 'style.css') ) {
+			if (empty($header) && (strtolower(basename($fileName)) === 'style.css')) {
 				$fileContents = substr($zip->getFileContents($info), 0, 8*1024);
 				$header = self::getThemeHeaders($fileContents);
 				if ( !empty($header) ){
@@ -58,7 +60,7 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 			}
 
 			//Main plugin file?
-			if ( empty($header) && ($extension === 'php') ){
+			if (empty($header) && ($extension === 'php')){
 				$fileContents = substr($zip->getFileContents($info), 0, 8*1024);
 				$header = self::getPluginHeaders($fileContents);
 				if ( !empty($header) ){
@@ -69,7 +71,7 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 			}
 		}
 
-		if ( empty($type) ){
+		if (empty($type)){
 			return false;
 		} else {
 			return compact('header', 'assets', 'readme', 'pluginFile', 'stylesheet', 'type');
@@ -110,35 +112,34 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 		$headers = self::getFileHeaders($fileContents, $assetsHeaderNames);
 		$assetsHeaders = array();
 
-		if ( !empty($headers['Icon1x']) || !empty($headers['Icon2x']) ) {
+		if (!empty($headers['Icon1x']) || !empty($headers['Icon2x'])) {
 			$assetsHeaders['icons'] = array();
 
-			if ( !empty($headers['Icon1x']) ) {
+			if (!empty($headers['Icon1x'])) {
 				$assetsHeaders['icons']['1x'] = $headers['Icon1x'];
 			}
 
-			if ( !empty($headers['Icon2x']) ) {
+			if (!empty($headers['Icon2x'])) {
 				$assetsHeaders['icons']['2x'] = $headers['Icon2x'];
 			}
 		}
 
-		if ( !empty($headers['BannerLow']) || !empty($headers['BannerHigh']) ) {
+		if (!empty($headers['BannerLow']) || !empty($headers['BannerHigh'])) {
 			$assetsHeaders['banners'] = array();
 
-			if ( !empty($headers['BannerLow']) ) {
+			if (!empty($headers['BannerLow'])) {
 				$assetsHeaders['banners']['low'] = $headers['BannerLow'];
 			}
 
-			if ( !empty($headers['BannerHigh']) ) {
+			if (!empty($headers['BannerHigh'])) {
 				$assetsHeaders['banners']['high'] = $headers['BannerHigh'];
 			}
 		}
 
-		if ( empty($assetsHeaders) ){
+		if (empty($assetsHeaders)){
 			return null;
 		} else {
 			return $assetsHeaders;
 		}
 	}
-
 }

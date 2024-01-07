@@ -5,7 +5,6 @@ if ( ! class_exists(Proxuc_Autoloader::class, false) ):
 	class Proxuc_Autoloader {
 		private $prefix = '';
 		private $rootDir = '';
-		private $libraryDir = '';
 
 		public function __construct() {
 			$this->rootDir = dirname(__FILE__) . '/';
@@ -21,7 +20,7 @@ if ( ! class_exists(Proxuc_Autoloader::class, false) ):
 				$path = substr($className, strlen($this->prefix));
 				$path = str_replace('_', '/', $path);
 				$path = $this->rootDir . $path . '.php';
-				
+
 				if (file_exists($path)) {
 					/** @noinspection PhpIncludeInspection */
 					include $path;

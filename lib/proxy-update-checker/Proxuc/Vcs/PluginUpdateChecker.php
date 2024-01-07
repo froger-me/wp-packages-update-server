@@ -22,7 +22,7 @@ if ( ! class_exists(Proxuc_Vcs_PluginUpdateChecker::class, false) ):
 		protected $api = null;
 
 		protected $manualCheckErrorTransient = null;
-        protected $package = null;
+		protected $package = null;
 		/**
 		 * Puc\v5p3\Vcs\PluginUpdateChecker constructor.
 		 *
@@ -33,8 +33,8 @@ if ( ! class_exists(Proxuc_Vcs_PluginUpdateChecker::class, false) ):
 		 * @param string $optionName
 		 * @param string $muPluginFile
 		 */
-		public function __construct($api, $slug, $plugin_file_name, $package_container, $optionName = '') {           
-            $this->api = $api;
+		public function __construct($api, $slug, $plugin_file_name, $package_container, $optionName = '') {
+			$this->api = $api;
 			$this->api->setHttpFilterName($this->getUniqueName('request_info_options'));
 
 			$this->pluginAbsolutePath = trailingslashit($package_container) . $slug;
@@ -47,7 +47,7 @@ if ( ! class_exists(Proxuc_Vcs_PluginUpdateChecker::class, false) ):
 			$this->directoryName = basename(dirname($this->pluginAbsolutePath));
 			$this->slug = $slug;
 
-            $this->package = new Package($this->pluginAbsolutePath, $this);
+			$this->package = new Package($this->pluginAbsolutePath, $this);
 
 			$this->optionName = $optionName;
 			if ( empty($this->optionName) ) {
@@ -62,8 +62,7 @@ if ( ! class_exists(Proxuc_Vcs_PluginUpdateChecker::class, false) ):
 			$this->api->setSlug($this->slug);
 		}
 
-        public function Vcs_getAbsoluteDirectoryPath() {
-			
+		public function Vcs_getAbsoluteDirectoryPath() {
 			return trailingslashit($this->pluginAbsolutePath);
 		}
 

@@ -3,7 +3,7 @@ use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitHubApi;
 use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitLabApi;
 use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\BitBucketApi;
 
-if ( ! class_exists(Proxuc_Factory::class, false) ):
+if (!class_exists(Proxuc_Factory::class, false)):
 
 	/**
 	 * A factory that builds update checker instances.
@@ -42,9 +42,9 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 		 * @return Plugin\UpdateChecker|Theme\UpdateChecker|Vcs\BaseChecker|false
 		 */
 		public static function buildUpdateChecker($metadataUrl, $slug, $plugin_file_name, $type, $package_container, $optionName = '') {
-			//Plugin or theme?
-			if ( $type !== 'Plugin' && $type !== 'Theme') {
 
+			//Plugin or theme?
+			if ($type !== 'Plugin' && $type !== 'Theme') {
 				return false;
 			}
 
@@ -54,14 +54,14 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 			$apiClass = null;
 			$checkerClass = null;
 
-			if ( !empty($service) ) {
+			if (!empty($service) ) {
 				$checkerClass = 'Vcs_' . $type . 'UpdateChecker';
 				$apiClass = $service . 'Api';
 			}
 
 			$checkerClass = self::getCompatibleClassVersion($checkerClass, 'checker');
 
-			if ( $checkerClass === null ) {
+			if ($checkerClass === null) {
 				trigger_error(
 					sprintf(
 						'PUC %s does not support updates for %ss %s',
@@ -74,10 +74,11 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 
 				return null;
 			}
-      
+
 			//VCS checker + an API client.
 			$apiClass = self::getCompatibleClassVersion($apiClass, 'api');
-			if ( $apiClass === null ) {
+
+			if ($apiClass === null) {
 				trigger_error(sprintf(
 					'PUC %s does not support %s',
 					htmlentities(self::$latestCompatibleVersion['api']),
@@ -86,7 +87,7 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 
 				return null;
 			}
-		
+
 			require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/Puc/v5p3/Vcs/'. $apiClass .'.php';
 			$apiClass = 'YahnisElsts\PluginUpdateChecker\v5p3\Vcs\\' . $apiClass;
 
@@ -113,17 +114,19 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 			$path = @parse_url($metadataUrl, PHP_URL_PATH);
 			//Check if the path looks like "/user-name/repository".
 			$usernameRepoRegex = '@^/?([^/]+?)/([^/#?&]+?)/?$@';
-			if ( preg_match($usernameRepoRegex, $path) ) {
+
+			if (preg_match($usernameRepoRegex, $path)) {
 				$knownServices = array(
 					'github.com' => 'GitHub',
 					'bitbucket.org' => 'BitBucket',
 					'gitlab.com' => 'GitLab',
 				);
-				if ( isset($knownServices[$host]) ) {
+
+				if (isset($knownServices[$host])) {
 					$service = $knownServices[$host];
 				}
 			}
-      
+
 			return $service;
 		}
 
@@ -132,13 +135,13 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 		 * as this factory class.
 		 *
 		 * @param string        $class Partial class name.
-         * @param string        $versionHolder Factory version.
-         * 
+		 * @param string        $versionHolder Factory version.
+		 *
 		 * @return string|null  Full class name.
 		 */
 		protected static function getCompatibleClassVersion($class, $versionHolder) {
-           
-			if ( isset(self::$classVersions[$class][self::$latestCompatibleVersion[$versionHolder]]) ) {
+
+			if (isset(self::$classVersions[$class][self::$latestCompatibleVersion[$versionHolder]])) {
 				return self::$classVersions[$class][self::$latestCompatibleVersion[$versionHolder]];
 			}
 
@@ -152,11 +155,12 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 		 * @return null|string
 		 */
 		public static function getLatestClassVersion($class) {
-			if ( !self::$sorted ) {
+
+			if (!self::$sorted) {
 				self::sortVersions();
 			}
 
-			if ( isset(self::$classVersions[$class]) ) {
+			if (isset(self::$classVersions[$class])) {
 				return reset(self::$classVersions[$class]);
 			} else {
 				return null;
@@ -167,10 +171,12 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 		 * Sort available class versions in descending order (i.e. newest first).
 		 */
 		protected static function sortVersions() {
-			foreach ( self::$classVersions as $class => $versions ) {
+
+			foreach (self::$classVersions as $class => $versions) {
 				uksort($versions, array(__CLASS__, 'compareVersions'));
 				self::$classVersions[$class] = $versions;
 			}
+
 			self::$sorted = true;
 		}
 
@@ -198,15 +204,15 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 				$versionHolder = 'checker';
 			}
 
-			if ( empty(self::$majorVersion) ) {
+			if (empty(self::$majorVersion)) {
 				self::$majorVersion = $emptyHolder;
 			}
 
-			if ( empty(self::$latestCompatibleVersion) ) {
+			if (empty(self::$latestCompatibleVersion)) {
 				self::$latestCompatibleVersion = $emptyHolder;;
 			}
 
-			if ( empty(self::$majorVersion[$versionHolder]) ) {
+			if (empty(self::$majorVersion[$versionHolder])) {
 				$components = explode('.', self::${$versionHolder . 'Version'});
 
 				self::$majorVersion[$versionHolder] = $components[0];
@@ -215,7 +221,7 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 			//Store the greatest version number that matches our major version.
 			$components = explode('.', $version);
 
-			if ( $components[0] === self::$majorVersion[$versionHolder] ) {
+			if ($components[0] === self::$majorVersion[$versionHolder]) {
 
 				if (
 					empty(self::$latestCompatibleVersion[$versionHolder])
@@ -226,7 +232,7 @@ if ( ! class_exists(Proxuc_Factory::class, false) ):
 
 			}
 
-			if ( !isset(self::$classVersions[$generalClass]) ) {
+			if (!isset(self::$classVersions[$generalClass])) {
 				self::$classVersions[$generalClass] = array();
 			}
 

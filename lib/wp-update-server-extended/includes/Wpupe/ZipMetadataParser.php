@@ -4,7 +4,7 @@
  */
 class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 
-		protected $headerMap = array(
+	protected $headerMap = array(
 		'Name' => 'name',
 		'Version' => 'version',
 		'PluginURI' => 'homepage',
@@ -24,6 +24,7 @@ class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 	 */
 	protected function extractMetadata(){
 		$this->packageInfo = WshWordPressPackageParser_Extended::parsePackage($this->filename, true);
+
 		if (is_array($this->packageInfo) && $this->packageInfo !== array()){
 			$this->setInfoFromHeader();
 			$this->setInfoFromReadme();
@@ -39,11 +40,14 @@ class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 	 * Extract icons and banners info for plugins
 	 */
 	protected function setInfoFromAssets(){
+
 		if ($this->packageInfo['type'] === 'plugin' && !empty($this->packageInfo['assets'])){
 			$assetsMeta = $this->packageInfo['assets'];
+
 			if (!empty($assetsMeta['icons'])) {
 				$this->metadata['icons'] = $assetsMeta['icons'];
 			}
+
 			if (!empty($assetsMeta['banners'])) {
 				$this->metadata['banners'] = $assetsMeta['banners'];
 			}
@@ -54,7 +58,9 @@ class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 	 * Make sure we do not lose the section name ; keep it in data-name attribute
 	 */
 	protected function setReadmeSections(){
-		if ( is_array($this->packageInfo['readme']['sections']) && $this->packageInfo['readme']['sections'] !== array()){
+
+		if (is_array($this->packageInfo['readme']['sections']) && $this->packageInfo['readme']['sections'] !== array()) {
+
 			foreach($this->packageInfo['readme']['sections'] as $sectionName => $sectionContent){
 				$sectionContent = '<div class="readme-section" data-name="'. $sectionName. '">'. $sectionContent. '</div>';
 				$sectionName = str_replace(' ', '_', strtolower($sectionName));
@@ -77,5 +83,4 @@ class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 			$this->filename
 		);
 	}
-
 }

@@ -33,9 +33,7 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 		 * @param int $checkPeriod
 		 * @param string $optionName
 		 */
-		// public function __construct($api, $stylesheet = null, $customSlug = null, $optionName = '') {
 		public function __construct($api, $slug, $unused, $package_container, $optionName = '') {
-
 			$this->api = $api;
 			$this->api->setHttpFilterName($this->getUniqueName('request_update_options'));
 
@@ -73,7 +71,7 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 
 			$update = new Update();
 			$update->slug = $this->slug;
-            $update->version = null;
+			$update->version = null;
 
 			//Figure out which reference (tag or branch) we'll use to get the latest version of the theme.
 			$updateSource = $api->chooseReference($this->branch);
@@ -87,13 +85,13 @@ if ( ! class_exists(Proxuc_Vcs_ThemeUpdateChecker::class, false) ):
 			//Get headers from the main stylesheet in this branch/tag. Its "Version" header and other metadata
 			//are what the WordPress install will actually see after upgrading, so they take precedence over releases/tags.
 			$file = $api->getRemoteFile('style.css', $ref);
-            if ( ! empty($file) ) {
-                $remoteHeader = $this->package->getFileHeader($file);
-			    $update->version = Utils::findNotEmpty(array(
-				    $remoteHeader['Version'],
-				    Utils::get($updateSource, 'version'),
-			    ));
-            }
+			if ( ! empty($file) ) {
+				$remoteHeader = $this->package->getFileHeader($file);
+				$update->version = Utils::findNotEmpty(array(
+					$remoteHeader['Version'],
+					Utils::get($updateSource, 'version'),
+				));
+			}
 
 			if ( empty($update->version) ) {
 				//It looks like we didn't find a valid update after all.

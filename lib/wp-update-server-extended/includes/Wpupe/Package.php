@@ -18,7 +18,7 @@ class Wpup_Package_Extended extends Wpup_Package {
 		$metaObj = new Wpup_ZipMetadataParser_Extended($slug, $filename, $cache);
 		$metadata = $metaObj->get();
 
-		if ( $slug === null && isset($metadata['slug']) ) {
+		if ($slug === null && isset($metadata['slug']) ) {
 			$slug = $metadata['slug'];
 		}
 
