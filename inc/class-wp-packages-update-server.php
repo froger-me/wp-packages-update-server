@@ -25,6 +25,7 @@ class WP_Packages_Update_Server {
 				add_filter( 'plugin_action_links_' . $plugin_id, array( $this, 'add_action_links' ), 10, 1 );
 				add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 99, 1 );
 				add_filter( 'wppus_admin_tab_states', array( $this, 'wppus_admin_tab_states' ), 99, 2 );
+				add_filter( 'action_scheduler_retention_period', array( $this, 'action_scheduler_retention_period' ), 10, 0 );
 			}
 
 			add_action( 'init', array( $this, 'load_textdomain' ), 10, 0 );
@@ -224,6 +225,10 @@ class WP_Packages_Update_Server {
 		);
 
 		return array_merge( $links, $link );
+	}
+
+	public function action_scheduler_retention_period() {
+		return WEEK_IN_SECONDS;
 	}
 
 	// Misc. -------------------------------------------------------
