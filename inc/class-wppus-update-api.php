@@ -22,6 +22,7 @@ class WPPUS_Update_API {
 			add_action( 'parse_request', array( $this, 'parse_request' ), -99, 0 );
 			add_action( 'wppus_checked_remote_package_update', array( $this, 'wppus_checked_remote_package_update' ), 10, 3 );
 			add_action( 'wppus_removed_package', array( $this, 'wppus_removed_package' ), 10, 3 );
+			add_action( 'wppus_primed_package_from_remote', array( $this, 'wppus_primed_package_from_remote' ), 10, 2 );
 
 			add_filter( 'query_vars', array( $this, 'query_vars' ), -99, 1 );
 		}
@@ -61,33 +62,13 @@ class WPPUS_Update_API {
 	}
 
 	public function wppus_checked_remote_package_update( $needs_update, $type, $slug ) {
-		$config = self::get_config();
+		$this->schedule_check_remote_event( $slug );
+	}
 
-		if (
-			apply_filters( 'wppus_use_recurring_schedule', true ) &&
-			$config['use_remote_repository'] &&
-			$config['repository_service_url']
-		) {
-			$hook   = 'wppus_check_remote_' . $slug;
-			$params = array( $slug, null, false );
+	public function wppus_primed_package_from_remote( $result, $slug ) {
 
-			if ( ! as_has_scheduled_action( $hook, $params ) ) {
-				$frequency = apply_filters(
-					'wppus_check_remote_frequency',
-					$config['repository_check_frequency'],
-					$slug
-				);
-				$timestamp = time();
-				$schedules = wp_get_schedules();
-				$result    = as_schedule_recurring_action(
-					$timestamp,
-					$schedules[ $frequency ]['interval'],
-					$hook,
-					$params
-				);
-
-				do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, $frequency, $hook, $params );
-			}
+		if ( $result ) {
+			$this->schedule_check_remote_event( $slug );
 		}
 	}
 
@@ -165,8 +146,22 @@ class WPPUS_Update_API {
 		return $this->update_server->check_remote_package_update( $slug );
 	}
 
-	public function download_remote_package( $slug, $type, $force = false ) {
+	public function download_remote_package( $slug, $type = null, $force = false ) {
 		$result = false;
+
+		if ( ! $type ) {
+			$types = array( 'Plugin', 'Theme', 'Generic' );
+
+			foreach ( $types as $type ) {
+				$result = $this->download_remote_package( $slug, $type, $force );
+
+				if ( $result ) {
+					break;
+				}
+			}
+
+			return $result;
+		}
 
 		$this->init_server( $slug );
 		$this->update_server->set_type( $type );
@@ -181,6 +176,37 @@ class WPPUS_Update_API {
 	/*******************************************************************
 	 * Protected methods
 	 *******************************************************************/
+
+	protected function schedule_check_remote_event( $slug ) {
+		$config = self::get_config();
+
+		if (
+			apply_filters( 'wppus_use_recurring_schedule', true ) &&
+			$config['use_remote_repository'] &&
+			$config['repository_service_url']
+		) {
+			$hook   = 'wppus_check_remote_' . $slug;
+			$params = array( $slug, null, false );
+
+			if ( ! as_has_scheduled_action( $hook, $params ) ) {
+				$frequency = apply_filters(
+					'wppus_check_remote_frequency',
+					$config['repository_check_frequency'],
+					$slug
+				);
+				$timestamp = time();
+				$schedules = wp_get_schedules();
+				$result    = as_schedule_recurring_action(
+					$timestamp,
+					$schedules[ $frequency ]['interval'],
+					$hook,
+					$params
+				);
+
+				do_action( 'wppus_scheduled_check_remote_event', $result, $slug, $timestamp, $frequency, $hook, $params );
+			}
+		}
+	}
 
 	protected function handle_api_request() {
 		global $wp;
@@ -215,15 +241,18 @@ class WPPUS_Update_API {
 			$config
 		);
 
-		$this->update_server = new $server_class_name(
-			$config['use_remote_repository'],
-			home_url( '/wppus-update-api/' ),
-			$config['server_directory'],
-			$config['repository_service_url'],
-			$config['repository_branch'],
-			$config['repository_credentials'],
-			$config['repository_service_self_hosted'],
-		);
+		if ( ! isset( $this->update_server ) || ! is_a( $this->update_server, $server_class_name ) ) {
+			$this->update_server = new $server_class_name(
+				$config['use_remote_repository'],
+				home_url( '/wppus-update-api/' ),
+				$config['server_directory'],
+				$config['repository_service_url'],
+				$config['repository_branch'],
+				$config['repository_credentials'],
+				$config['repository_service_self_hosted'],
+			);
+		}
+
 		$this->update_server = apply_filters(
 			'wppus_update_server',
 			$this->update_server,

@@ -54,8 +54,10 @@
 				<?php elseif ( 'col_type' === $column_name ) : ?>
 					<?php if ( 'theme' === $record[ $key ] ) : ?>
 						<?php esc_html_e( 'Theme', 'wppus' ); ?>
-					<?php else : ?>
+					<?php elseif ( 'plugin' === $record[ $key ] ) : ?>
 						<?php esc_html_e( 'Plugin', 'wppus' ); ?>
+					<?php elseif ( 'generic' === $record[ $key ] ) : ?>
+						<?php esc_html_e( 'Generic', 'wppus' ); ?>
 					<?php endif; ?>
 				<?php elseif ( 'col_file_name' === $column_name ) : ?>
 					<?php echo esc_html( $record[ $key ] ); ?>

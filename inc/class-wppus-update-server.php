@@ -128,7 +128,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 	public function set_type( $type ) {
 		$type = $type ? ucfirst( $type ) : false;
 
-		if ( 'Plugin' === $type || 'Theme' === $type ) {
+		if ( 'Plugin' === $type || 'Theme' === $type || 'Generic' === $type ) {
 			$this->type = $type;
 		}
 	}
@@ -141,7 +141,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 		if ( $local_package instanceof Wpup_Package ) {
 			$package_path = $local_package->getFileName();
-			$local_meta   = WshWordPressPackageParser::parsePackage( $package_path, true );
+			$local_meta   = WshWordPressPackageParser_Extended::parsePackage( $package_path, true );
 			$local_meta   = apply_filters(
 				'wppus_check_remote_package_update_local_meta',
 				$local_meta,
@@ -169,7 +169,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 
 			$this->type = ucfirst( $local_info['type'] );
 
-			if ( 'Plugin' === $this->type || 'Theme' === $this->type ) {
+			if ( 'Plugin' === $this->type || 'Theme' === $this->type || 'Generic' === $this->type ) {
 				$this->init_update_checker( $slug );
 
 				$remote_info = $this->update_checker->requestInfo();
@@ -209,7 +209,7 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 					. filemtime( $package_path )
 				);
 
-			$parsed_info = WshWordPressPackageParser::parsePackage( $package_path, true );
+			$parsed_info = WshWordPressPackageParser_Extended::parsePackage( $package_path, true );
 			$type        = ucfirst( $parsed_info['type'] );
 			$result      = $wp_filesystem->delete( $package_path );
 		}
@@ -380,6 +380,13 @@ class WPPUS_Update_Server extends Wpup_UpdateServer {
 				);
 			} elseif ( 'Theme' === $this->type ) {
 				$this->update_checker = new Proxuc_Vcs_ThemeUpdateChecker(
+					new GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
+					$slug,
+					$slug,
+					$this->packageDirectory // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				);
+			} elseif ( 'Generic' === $this->type ) {
+				$this->update_checker = new Proxuc_Vcs_GenericUpdateChecker(
 					new GitLabApi( trailingslashit( $this->repository_service_url ) . $slug ),
 					$slug,
 					$slug,

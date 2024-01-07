@@ -154,35 +154,18 @@
 		<table class="form-table package-source check-frequency <?php echo ( $hide_check_frequency ) ? 'hidden' : ''; ?>">
 			<tr>
 				<th>
-					<label for="wppus_remote_repository_force_remove_schedules"><?php esc_html_e( 'Clear scheduled remote updates', 'wppus' ); ?></label>
+					<label for="wppus_remote_repository_force_remove_schedules"><?php esc_html_e( 'Clear & reschedule remote updates', 'wppus' ); ?></label>
 				</th>
 				<td>
-					<input type="button" value="<?php print esc_attr_e( 'Force Clear Schedules', 'wppus' ); ?>" id="wppus_remote_repository_force_remove_schedules" class="button ajax-trigger" data-action="force_clean" data-type="schedules" />
+					<input type="button" value="<?php print esc_attr_e( 'Force Clear & Reschedule', 'wppus' ); ?>" id="wppus_remote_repository_force_remove_schedules" class="button ajax-trigger" data-action="force_clean" data-type="schedules" />
 					<p class="description">
-						<?php esc_html_e( 'Clears all scheduled remote updates coming from the repository service.', 'wppus' ); ?>
+						<?php esc_html_e( 'Clears & Reschedules remote updates from the repository service for all the packages.', 'wppus' ); ?>
 						<br/>
-						<?php esc_html_e( 'WARNING: after cleaning the schedules, packages will not be automatically updated from their Remote Repository.', 'wppus' ); ?>
+						<?php esc_html_e( 'WARNING: after rescheduling remote updates, an action will be scheduled for all the packages, including those uploaded manually and without a corresponding Remote Repository.', 'wppus' ); ?>
 						<br/>
-						<?php esc_html_e( 'Use the "Prime a package using a Remote Repository " feature in the "Overview" tab to selectively reschedule remote updates, or use the "Reschedule remote updates" option below to reschedule all the existing packages.', 'wppus' ); ?>
+						<?php esc_html_e( 'Make sure either all packages have a corresponding Remote Repository in the repository service, or to use the delete operation and re-upload the packages that were previously manually uploaded to clear the useless scheduled actions.', 'wppus' ); ?>
 						<br/>
-						<?php esc_html_e( 'Useful for maintenance and tests purposes - for example, if the packages have to be manually altered directly on the file system.', 'wppus' ); ?>
-					</p>
-				</td>
-			</tr>
-			<tr>
-				<th>
-					<label for="wppus_remote_repository_force_register_schedules"><?php esc_html_e( 'Reschedule remote updates', 'wppus' ); ?></label>
-				</th>
-				<td>
-					<input type="button" value="<?php print esc_attr_e( 'Force Register Schedules', 'wppus' ); ?>" id="wppus_remote_repository_force_register_schedules" class="button ajax-trigger" data-action="force_register" data-type="schedules" />
-					<p class="description">
-						<?php esc_html_e( 'Reschedules remote updates from the repository service for all the packages.', 'wppus' ); ?>
-						<br/>
-						<?php esc_html_e( 'WARNING: after rescheduling remote updates, a wp-cron event will be scheduled for all the packages, including those uploaded manually and without a corresponding Remote Repository.', 'wppus' ); ?>
-						<br/>
-						<?php esc_html_e( 'Make sure either all packages have a corresponding Remote Repository in the repository service, or to use the delete operation and re-upload the packages that were previously manually uploaded to clear the useless scheduled wp-cron events.', 'wppus' ); ?>
-						<br/>
-						<?php esc_html_e( 'If there were useless scheduled wp-cron events left, they would not trigger any error, but the server would be querying the repository service needlessly.', 'wppus' ); ?>
+						<?php esc_html_e( 'If there are useless scheduled actions left, they will not trigger any error, but the server will query the repository service needlessly.', 'wppus' ); ?>
 					</p>
 				</td>
 			</tr>

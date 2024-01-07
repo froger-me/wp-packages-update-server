@@ -367,9 +367,7 @@ class WPPUS_Webhook_API {
 						do_action( 'wppus_scheduled_check_remote_event', $result, $package_id, $timestamp, false, $hook, $params );
 					}
 				} else {
-					$api = WPPUS_Update_API::get_instance();
-
-					$api->download_remote_package( $package_id, $type );
+					WPPUS_Update_API::get_instance()->download_remote_package( $package_id, $type );
 				}
 
 				do_action(

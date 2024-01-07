@@ -11,13 +11,12 @@ class WPPUS_Remote_Sources_Manager {
 		if ( $init_hooks ) {
 
 			if ( get_option( 'wppus_use_remote_repository' ) ) {
-				add_action( 'init', array( $this, 'register_remote_check_scheduled_hooks' ), 10, 0 );
+				add_action( 'action_scheduler_init', array( $this, 'register_remote_check_scheduled_hooks' ), 10, 0 );
 			} else {
 				add_action( 'init', array( $this, 'clear_remote_check_scheduled_hooks' ), 10, 0 );
 			}
 
 			add_action( 'wp_ajax_wppus_force_clean', array( $this, 'force_clean' ), 10, 0 );
-			add_action( 'wp_ajax_wppus_force_register', array( $this, 'force_register' ), 10, 0 );
 			add_action( 'wp_ajax_wppus_remote_repository_test', array( $this, 'remote_repository_test' ), 10, 0 );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ), 15, 0 );
 			add_filter( 'wppus_admin_tab_links', array( $this, 'wppus_admin_tab_links' ), 15, 1 );
@@ -104,37 +103,6 @@ class WPPUS_Remote_Sources_Manager {
 		return $states;
 	}
 
-	public function force_register() {
-		$result = false;
-		$type   = false;
-
-		if ( isset( $_REQUEST['nonce'] ) && wp_verify_nonce( $_REQUEST['nonce'], 'wppus_plugin_options' ) ) {
-			$type = filter_input( INPUT_POST, 'type', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-
-			if ( 'schedules' === $type ) {
-				$result = self::register_schedules();
-			}
-		}
-
-		if ( $result && $type ) {
-			wp_send_json_success();
-		} elseif ( 'schedules' === $type ) {
-			$error = new WP_Error(
-				__METHOD__,
-				__( 'Error - check the packages directory is readable and not empty', 'wppus' )
-			);
-
-			wp_send_json_error( $error );
-		} else {
-			$error = new WP_Error(
-				__METHOD__,
-				__( 'Error - an unknown error has occured', 'wppus' ) . ': type = "' . $type . '" ; result = "' . $result . '"'
-			);
-
-			wp_send_json_error( $error );
-		}
-	}
-
 	public function force_clean() {
 		$result = false;
 		$type   = false;
@@ -144,6 +112,12 @@ class WPPUS_Remote_Sources_Manager {
 
 			if ( 'schedules' === $type ) {
 				$result = $this->clear_remote_check_scheduled_hooks();
+
+				if ( $result ) {
+					$this->reschedule_remote_check_recurring_events(
+						get_option( 'wppus_remote_repository_check_frequency', 'daily' )
+					);
+				}
 			}
 		}
 
@@ -282,18 +256,6 @@ class WPPUS_Remote_Sources_Manager {
 		$manager = new self();
 
 		return $manager->clear_remote_check_scheduled_hooks();
-	}
-
-	public static function register_schedules() {
-		$manager = new self();
-		$result  = false;
-
-		if ( apply_filters( 'wppus_use_recurring_schedule', true ) ) {
-			$frequency = get_option( 'wppus_remote_repository_check_frequency', 'daily' );
-			$result    = $manager->reschedule_remote_check_recurring_events( $frequency );
-		}
-
-		return $result;
 	}
 
 	public function reschedule_remote_check_recurring_events( $frequency ) {

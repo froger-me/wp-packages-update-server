@@ -19,6 +19,7 @@ class WP_Packages_Update_Server {
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10, 1 );
 				add_action( 'admin_menu', array( $this, 'admin_menu' ), 5, 0 );
 				add_action( 'admin_menu', array( $this, 'admin_menu_help' ), 99, 0 );
+				add_action( 'action_scheduler_failed_execution', array( $this, 'action_scheduler_failed_execution' ), 10, 3 );
 
 				add_filter( 'wppus_admin_scripts', array( $this, 'wppus_admin_scripts' ), 10, 1 );
 				add_filter( 'wppus_admin_styles', array( $this, 'wppus_admin_styles' ), 10, 1 );
@@ -35,6 +36,16 @@ class WP_Packages_Update_Server {
 	/*******************************************************************
 	 * Public methods
 	 *******************************************************************/
+
+	public function action_scheduler_failed_execution( $action_id, Exception $exception, $context = '' ) {
+		php_log(
+			array(
+				'action_id' => $action_id,
+				'exception' => $exception,
+				'context'   => $context,
+			)
+		);
+	}
 
 	// WordPress hooks ---------------------------------------------
 

@@ -165,13 +165,7 @@ class WPPUS_Package_Manager {
 				Wppus_Update_Server::unlock_update_from_remote( $slug );
 
 				$api    = WPPUS_Update_API::get_instance();
-				$result = $api->download_remote_package( $slug, 'Theme', true );
-
-				if ( ! $result ) {
-					Wppus_Update_Server::unlock_update_from_remote( $slug );
-
-					$result = $api->download_remote_package( $slug, 'Plugin', true );
-				}
+				$result = $api->download_remote_package( $slug, null, true );
 			} else {
 				$error = new WP_Error(
 					__METHOD__,
@@ -580,10 +574,8 @@ class WPPUS_Package_Manager {
 				if ( $package ) {
 					$package_info = $package->getMetadata();
 
-					if ( isset( $package_info['details_url'] ) ) {
-						$package_info['type'] = 'theme';
-					} else {
-						$package_info['type'] = 'plugin';
+					if ( ! isset( $package_info['type'] ) ) {
+						$package_info['type'] = 'unknown';
 					}
 
 					$package_info['file_name']          = $package_info['slug'] . '.zip';
@@ -658,14 +650,7 @@ class WPPUS_Package_Manager {
 							);
 
 							if ( $include ) {
-								$packages[ $meta['slug'] ] = $meta;
-
-								if ( isset( $meta['details_url'] ) ) {
-									$packages[ $meta['slug'] ]['type'] = 'theme';
-								} else {
-									$packages[ $meta['slug'] ]['type'] = 'plugin';
-								}
-
+								$packages[ $meta['slug'] ]                       = $meta;
 								$packages[ $meta['slug'] ]['file_name']          = $meta['slug'] . '.zip';
 								$packages[ $meta['slug'] ]['file_size']          = $package->getFileSize();
 								$packages[ $meta['slug'] ]['file_last_modified'] = $package->getLastModified();

@@ -115,9 +115,10 @@ class WPPUS_Cloud_Storage_Manager {
 			$config,
 			array(
 				'wppus_use_cloud_storage'        => array(
-					'value'        => filter_input( INPUT_POST, 'wppus_use_cloud_storage', FILTER_VALIDATE_BOOLEAN ),
-					'display_name' => __( 'Use Cloud Storage', 'wppus' ),
-					'condition'    => 'boolean',
+					'value'                   => filter_input( INPUT_POST, 'wppus_use_cloud_storage', FILTER_VALIDATE_BOOLEAN ),
+					'display_name'            => __( 'Use Cloud Storage', 'wppus' ),
+					'failure_display_message' => __( 'Something went wrong', 'wppus' ),
+					'condition'               => 'boolean',
 				),
 				'wppus_cloud_storage_access_key' => array(
 					'value'                   => filter_input( INPUT_POST, 'wppus_cloud_storage_access_key', FILTER_SANITIZE_FULL_SPECIAL_CHARS ),
@@ -157,8 +158,6 @@ class WPPUS_Cloud_Storage_Manager {
 
 	public function wppus_package_option_update( $condition, $option_name, $option_info, $options ) {
 
-		php_log();
-
 		if ( 'use-cloud-storage' === $option_info['condition'] ) {
 
 			if (
@@ -182,6 +181,8 @@ class WPPUS_Cloud_Storage_Manager {
 			if ( ! $condition ) {
 				update_option( 'wppus_use_cloud_storage', false );
 			}
+		} else {
+			$condition = true;
 		}
 
 		return $condition;
@@ -430,7 +431,7 @@ class WPPUS_Cloud_Storage_Manager {
 					$wp_filesystem->is_file( $filename ) &&
 					$wp_filesystem->is_readable( $filename )
 				) {
-					$local_meta = WshWordPressPackageParser::parsePackage( $filename, true );
+					$local_meta = WshWordPressPackageParser_Extended::parsePackage( $filename, true );
 				}
 			} catch ( PhpS3Exception $e ) {
 				php_log( $e );
@@ -741,13 +742,24 @@ class WPPUS_Cloud_Storage_Manager {
 						);
 
 						if ( $result ) {
-							$package     = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
-							$cache_value = $package->getMetadata();
+							$package = false;
 
-							$cache->set( $cache_key, $cache_value, Wpup_ZipMetadataParser::$cacheTime ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+							try {
+								$package = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
+							} catch ( Wpup_InvalidPackageException $e ) {
+								php_log( $e );
+
+								$cleanup = true;
+							}
 
 							if ( $package ) {
-								$package_info = $cache_value;
+								$package_info = $package->getMetadata();
+
+								$cache->set(
+									$cache_key,
+									$package_info,
+									Wpup_ZipMetadataParser::$cacheTime // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+								);
 							}
 						}
 					} else {
@@ -756,10 +768,8 @@ class WPPUS_Cloud_Storage_Manager {
 
 					if ( $package_info ) {
 
-						if ( $package_info['details_url'] ) {
-							$package_info['type'] = 'theme';
-						} else {
-							$package_info['type'] = 'plugin';
+						if ( ! isset( $package_info['type'] ) ) {
+							$package_info['type'] = 'unknown';
 						}
 
 						$package_info['file_name']          = $package_info['slug'] . '.zip';

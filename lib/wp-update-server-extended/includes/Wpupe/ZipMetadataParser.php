@@ -9,11 +9,13 @@ class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 		'Version' => 'version',
 		'PluginURI' => 'homepage',
 		'ThemeURI' => 'homepage',
+		'Homepage' => 'homepage',
 		'Author' => 'author',
 		'AuthorURI' => 'author_homepage',
 		'RequiresPHP' => 'requires_php',
 		'Description' => 'description',
-		'DetailsURI' => 'details_url', //Only for themes.
+		'DetailsURI' => 'details_url', //Only for themes
+		'PackageData' => 'package_data', //Only for generic
 		'Depends' => 'depends', // plugin-dependencies plugin
 		'Provides' => 'provides', // plugin-dependencies plugin
 	);
@@ -31,9 +33,28 @@ class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 			$this->setLastUpdateDate();
 			$this->setInfoFromAssets();
 			$this->setSlug();
+			$this->setType();
 		} else {
-			throw new Wpup_InvalidPackageException(sprintf('The specified file %s does not contain a valid WordPress plugin or theme.', $this->filename));
+			throw new Wpup_InvalidPackageException(sprintf('The specified file %s does not contain a valid Generic package or WordPress plugin or theme.', $this->filename));
 		}
+	}
+
+	protected function settype(){
+		$this->metadata['type'] = $this->packageInfo['type'];
+	}
+
+	protected function setSlug(){
+
+		if ('plugin' === $this->packageInfo['type']) {
+			$mainFile = $this->packageInfo['pluginFile'];
+		} elseif ('theme' === $this->packageInfo['type']) {
+			$mainFile = $this->packageInfo['stylesheet'];
+		} elseif ('generic' === $this->packageInfo['type']) {
+			$mainFile = $this->packageInfo['genericFile'];
+		}
+
+		$this->metadata['slug'] = basename(dirname(strtolower($mainFile)));
+		//Idea: Warn the user if the package doesn't match the expected "/slug/other-files" layout.
 	}
 
 	/**

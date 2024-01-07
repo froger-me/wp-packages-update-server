@@ -775,9 +775,10 @@ class WPPUS_License_Server {
 			if (
 				! ( $partial && ! isset( $license['package_type'] ) ) &&
 				'plugin' !== $license['package_type'] &&
-				'theme' !== $license['package_type']
+				'theme' !== $license['package_type'] &&
+				'generic' !== $license['package_type']
 			) {
-				$errors['invalid_package_type'] = __( 'The package type is required and must be "plugin" or "theme".', 'wppus' );
+				$errors['invalid_package_type'] = __( 'The package type is required and must be "generic", "plugin" or "theme".', 'wppus' );
 			}
 
 			if (

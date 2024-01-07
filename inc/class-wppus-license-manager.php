@@ -19,7 +19,7 @@ class WPPUS_License_Manager {
 			if ( $use_licenses ) {
 				$this->license_server = new WPPUS_License_Server();
 
-				add_action( 'init', array( $this, 'init' ), 10, 0 );
+				add_action( 'action_scheduler_init', array( $this, 'action_scheduler_init' ), 10, 0 );
 				add_action( 'wppus_packages_table_cell', array( $this, 'wppus_packages_table_cell' ), 10, 4 );
 
 				add_filter( 'wppus_packages_table_columns', array( $this, 'wppus_packages_table_columns' ), 10, 1 );
@@ -102,7 +102,7 @@ class WPPUS_License_Manager {
 		do_action( 'wppus_cleared_license_schedule' );
 	}
 
-	public function init() {
+	public function action_scheduler_init() {
 		$hook = 'wppus_expire_licenses';
 
 		if ( ! as_has_scheduled_action( $hook ) ) {

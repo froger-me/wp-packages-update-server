@@ -38,7 +38,7 @@ class WPPUS_Nonce {
 
 	public static function uninstall() {}
 
-	public static function wp() {
+	public static function action_scheduler_init() {
 		$d = new DateTime( 'now', new DateTimeZone( wp_timezone_string() ) );
 
 		if ( ! as_has_scheduled_action( 'wppus_nonce_cleanup' ) ) {
@@ -172,7 +172,7 @@ class WPPUS_Nonce {
 
 		if ( ! self::is_doing_api_request() ) {
 			add_action( 'init', array( get_class(), 'add_endpoints' ), 10, 0 );
-			add_action( 'wp', array( get_class(), 'wp' ) );
+			add_action( 'action_scheduler_init', array( get_class(), 'action_scheduler_init' ) );
 			add_action( 'wppus_nonce_cleanup', array( get_class(), 'wppus_nonce_cleanup' ) );
 		}
 

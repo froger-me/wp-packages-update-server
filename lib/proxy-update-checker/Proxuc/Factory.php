@@ -44,7 +44,7 @@ if (!class_exists(Proxuc_Factory::class, false)):
 		public static function buildUpdateChecker($metadataUrl, $slug, $plugin_file_name, $type, $package_container, $optionName = '') {
 
 			//Plugin or theme?
-			if ($type !== 'Plugin' && $type !== 'Theme') {
+			if ($type !== 'Plugin' && $type !== 'Theme' && $type !== 'Generic') {
 				return false;
 			}
 

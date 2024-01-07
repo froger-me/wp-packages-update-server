@@ -23,9 +23,11 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 		$readme = null;
 		$pluginFile = null;
 		$stylesheet = null;
+		$genericFile = null;
 		$type = null;
 		$assets = null;
 		$entries = $zip->listEntries();
+		$slug = str_replace('.zip', '', basename($packageFilename));
 
 		for ($fileIndex = 0; ($fileIndex < count($entries)) && (empty($readme) || empty($header)); $fileIndex++){
 			$info = $entries[$fileIndex];
@@ -53,7 +55,8 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 			if (empty($header) && (strtolower(basename($fileName)) === 'style.css')) {
 				$fileContents = substr($zip->getFileContents($info), 0, 8*1024);
 				$header = self::getThemeHeaders($fileContents);
-				if ( !empty($header) ){
+
+				if (!empty($header)){
 					$stylesheet = $fileName;
 					$type = 'theme';
 				}
@@ -63,10 +66,22 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 			if (empty($header) && ($extension === 'php')){
 				$fileContents = substr($zip->getFileContents($info), 0, 8*1024);
 				$header = self::getPluginHeaders($fileContents);
-				if ( !empty($header) ){
+
+				if (!empty($header)){
 					$pluginFile = $fileName;
 					$type = 'plugin';
 					$assets = self::getAssetsHeaders($fileContents);
+				}
+			}
+
+			//Generic info file?
+			if (empty($header) && ($extension === 'json') && (basename($fileName) === 'wppus.json')){
+				$fileContents = substr($zip->getFileContents($info), 0, 8*1024);
+				$header = json_decode($fileContents, true);
+
+				if (!empty($header)){
+					$genericFile = $fileName;
+					$type = 'generic';
 				}
 			}
 		}
@@ -74,7 +89,7 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 		if (empty($type)){
 			return false;
 		} else {
-			return compact('header', 'assets', 'readme', 'pluginFile', 'stylesheet', 'type');
+			return compact('header', 'assets', 'readme', 'pluginFile', 'stylesheet', 'genericFile', 'type');
 		}
 	}
 

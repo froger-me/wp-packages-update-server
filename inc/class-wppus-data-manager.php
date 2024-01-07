@@ -24,7 +24,7 @@ class WPPUS_Data_Manager {
 	public function __construct( $init_hooks = false ) {
 
 		if ( $init_hooks ) {
-			add_action( 'init', array( $this, 'init' ), 10, 0 );
+			add_action( 'action_scheduler_init', array( $this, 'action_scheduler_init' ), 10, 0 );
 		}
 	}
 
@@ -34,7 +34,7 @@ class WPPUS_Data_Manager {
 
 	// WordPress hooks ---------------------------------------------
 
-	public function init() {
+	public function action_scheduler_init() {
 		self::register_cleanup_events();
 		self::register_cleanup_schedules();
 	}

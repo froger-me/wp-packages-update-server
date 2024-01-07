@@ -180,6 +180,8 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 				$result->product_ref = $result->package_slug . '/functions.php';
 			} elseif ( 'plugin' === $result->package_type ) {
 				$result->product_ref = $result->package_slug . '/' . $result->package_slug . '.php';
+			} elseif ( 'generic' === $result->package_type ) {
+				$result->product_ref = $result->package_slug . '/wppus.json';
 			}
 		}
 

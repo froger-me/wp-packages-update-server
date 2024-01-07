@@ -87,10 +87,9 @@ HTTP/1.1 200 OK
     "author": "Alexandre Froger",
     "author_homepage": "https:\/\/dev.tld",
     "description": "Empty Generic Package",
-    "details_url": "https:\/\/dev.tld\/dummy-generic-package-details.md",
     "last_updated": "2024-01-01 00:00:00",
     "slug": "dummy-generic-package",
-    "download_url": "https:\/\/server.domain.tld\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package,
+    "download_url": "https:\/\/server.domain.tld\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package",
     "request_time_elapsed": "0.386"
 }
 
@@ -109,7 +108,6 @@ HTTP/1.1 200 OK
     "author": "Alexandre Froger",
     "author_homepage": "https:\/\/dev.tld",
     "description": "Empty Generic Package",
-    "details_url": "https:\/\/dev.tld\/dummy-generic-package-details.md",
     "last_updated": "2024-01-01 00:00:00",
     "slug": "dummy-generic-package",
     "license_error": {},
@@ -128,7 +126,6 @@ In case a valid license key is provided:
     "author": "Alexandre Froger",
     "author_homepage": "https:\/\/dev.tld",
     "description": "Empty Generic Package",
-    "details_url": "https:\/\/dev.tld\/dummy-generic-package-details.md",
     "last_updated": "2024-01-01 00:00:00",
     "slug": "dummy-generic-package",
     "download_url": "https:\/\/server.domain.tld\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D",

@@ -10,6 +10,7 @@ require WPPUS_PLUGIN_PATH . '/lib/plugin-update-checker/plugin-update-checker.ph
 
 use YahnisElsts\PluginUpdateChecker\v5p3\Plugin;
 use YahnisElsts\PluginUpdateChecker\v5p3\Theme;
+use Anyape\ProxyUpdateChecker\Generic;
 use YahnisElsts\PluginUpdateChecker\v5p3\Vcs;
 use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitHubApi;
 use YahnisElsts\PluginUpdateChecker\v5p3\Vcs\GitLabApi;
@@ -23,6 +24,7 @@ new Proxuc_Autoloader();
 Proxuc_Factory::setCheckerVersion('1.0');
 Proxuc_Factory::addVersion('Vcs_PluginUpdateChecker', 'Proxuc_Vcs_PluginUpdateChecker', '1.0');
 Proxuc_Factory::addVersion('Vcs_ThemeUpdateChecker', 'Proxuc_Vcs_ThemeUpdateChecker', '1.0');
+Proxuc_Factory::addVersion('Vcs_GenericUpdateChecker', 'Proxuc_Vcs_GenericUpdateChecker', '1.0');
 
 Proxuc_Factory::setApiVersion('5.0');
 Proxuc_Factory::addVersion('GitHubApi', 'GitHubApi', '5.3');
