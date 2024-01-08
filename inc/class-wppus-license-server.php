@@ -606,7 +606,7 @@ class WPPUS_License_Server {
 
 					foreach ( $value as $index => $domain ) {
 
-						if ( ! filter_var( 'admin@' . $domain, FILTER_VALIDATE_EMAIL ) ) {
+						if ( ! is_scalar( $domain ) || 5 > strlen( strval( $domain ) ) ) {
 							unset( $license['allowed_domains'][ $index ] );
 						}
 					}
@@ -811,10 +811,10 @@ class WPPUS_License_Server {
 					$errors[] = __( 'The allowed domains must be an array.', 'wppus' );
 				} elseif ( ! empty( $license['allowed_domains'] ) ) {
 
-					foreach ( $license['allowed_domains'] as $key => $value ) {
+					foreach ( $license['allowed_domains'] as $value ) {
 
-						if ( ! filter_var( 'admin@' . $value, FILTER_VALIDATE_EMAIL ) ) {
-							$errors['invalid_domain'] = __( 'All allowed domains values must be valid domains or subdomains without protocol.', 'wppus' );
+						if ( ! is_scalar( $value ) || 5 > strlen( strval( $value ) ) ) {
+							$errors['invalid_domain'] = __( 'All allowed domains values must be scalar with a string-equivalent length superior to 5 characters.', 'wppus' );
 
 							break;
 						}

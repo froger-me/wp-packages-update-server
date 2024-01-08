@@ -283,24 +283,30 @@ class WPPUS_License_API {
 			}
 
 			if ( empty( $result ) ) {
-				$payload                   = array(
+				$payload = array(
 					'id'              => $license->id,
 					'status'          => 'activated',
 					'allowed_domains' => array_unique( array_merge( $license_data['allowed_domains'], $license->allowed_domains ) ),
 				);
-				$result                    = $this->license_server->edit_license(
+				$result  = $this->license_server->edit_license(
 					apply_filters( 'wppus_activate_license_payload', $payload )
 				);
-				$result->license_signature = $this->license_server->generate_license_signature( $license, reset( $license_data['allowed_domains'] ) );
-				$raw_result                = clone $result;
 
-				unset( $result->hmac_key );
-				unset( $result->crypto_key );
-				unset( $result->data );
-				unset( $result->owner_name );
-				unset( $result->email );
-				unset( $result->company_name );
-				unset( $result->id );
+				if ( is_object( $result ) ) {
+					$result->license_signature = $this->license_server->generate_license_signature( $license, reset( $license_data['allowed_domains'] ) );
+
+					unset( $result->hmac_key );
+					unset( $result->crypto_key );
+					unset( $result->data );
+					unset( $result->owner_name );
+					unset( $result->email );
+					unset( $result->company_name );
+					unset( $result->id );
+
+					$raw_result = clone $result;
+				} else {
+					$raw_result = $result;
+				}
 			}
 		} else {
 			$result['license_key'] = isset( $license_data['license_key'] ) ?
@@ -373,15 +379,22 @@ class WPPUS_License_API {
 				$result                  = $this->license_server->edit_license(
 					apply_filters( 'wppus_deactivate_license_payload', $payload )
 				);
-				$raw_result              = clone $result;
 
-				unset( $result->hmac_key );
-				unset( $result->crypto_key );
-				unset( $result->data );
-				unset( $result->owner_name );
-				unset( $result->email );
-				unset( $result->company_name );
-				unset( $result->id );
+				if ( is_object( $result ) ) {
+					$result->license_signature = $this->license_server->generate_license_signature( $license, reset( $license_data['allowed_domains'] ) );
+
+					unset( $result->hmac_key );
+					unset( $result->crypto_key );
+					unset( $result->data );
+					unset( $result->owner_name );
+					unset( $result->email );
+					unset( $result->company_name );
+					unset( $result->id );
+
+					$raw_result = clone $result;
+				} else {
+					$raw_result = $result;
+				}
 			}
 		} else {
 			$result['license_key'] = isset( $license_data['license_key'] ) ? $license_data['license_key'] : false;
