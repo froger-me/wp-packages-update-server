@@ -15,7 +15,6 @@ class Wpup_ZipMetadataParser_Extended extends Wpup_ZipMetadataParser {
 		'RequiresPHP' => 'requires_php',
 		'Description' => 'description',
 		'DetailsURI' => 'details_url', //Only for themes
-		'PackageData' => 'package_data', //Only for generic
 		'Depends' => 'depends', // plugin-dependencies plugin
 		'Provides' => 'provides', // plugin-dependencies plugin
 	);

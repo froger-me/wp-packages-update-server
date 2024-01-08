@@ -77,9 +77,10 @@ class WshWordPressPackageParser_Extended extends WshWordPressPackageParser {
 			//Generic info file?
 			if (empty($header) && ($extension === 'json') && (basename($fileName) === 'wppus.json')){
 				$fileContents = substr($zip->getFileContents($info), 0, 8*1024);
-				$header = json_decode($fileContents, true);
+				$fileContents = json_decode($fileContents, true);
 
-				if (!empty($header)){
+				if (!empty($fileContents) && isset($fileContents['packageData']) && !empty($fileContents['packageData'])){
+					$header = $fileContents['packageData'];
 					$genericFile = $fileName;
 					$type = 'generic';
 				}

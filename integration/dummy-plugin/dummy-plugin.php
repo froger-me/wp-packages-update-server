@@ -33,17 +33,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once plugin_dir_path( __FILE__ ) . 'lib/wp-package-updater/class-wp-package-updater.php';
 
-/** Enable plugin updates with license check **/
+/** Enable plugin updates**/
 // $prefix_updater = new WP_Package_Updater(
-// 	'https://your-update-server.com',
-// 	wp_normalize_path( __FILE__ ),
-// 	wp_normalize_path( plugin_dir_path( __FILE__ ) ),
-// 	true
-// );
-
-/** Enable plugin updates without license check **/
-// $prefix_updater = new WP_Package_Updater(
-// 	'https://your-update-server.com',
 // 	wp_normalize_path( __FILE__ ),
 // 	wp_normalize_path( plugin_dir_path( __FILE__ ) )
 // );

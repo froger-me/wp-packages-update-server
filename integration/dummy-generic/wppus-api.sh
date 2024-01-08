@@ -11,7 +11,7 @@
 
 # replace https://server.domain.tld/ with the URL of the server where
 # WP Packages Update Server is installed
-url="https://server.domain.tld"
+url=$(jq -r '.server' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
 
 # define the package name
 package_name="$(basename "$(cd "$(dirname "$0")"; pwd -P)")"
@@ -24,7 +24,7 @@ script_path="$(cd "$(dirname "$0")"; pwd -P)/$package_name/$script_name"
 # define the update zip archive name
 zip_name="$package_name.zip"
 # define the current version of the package from the wppus.json file
-version=$(jq -r '.Version' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
+version=$(jq -r '.packageData.Version' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
 # define the domain
 if [[ "$(uname)" == "Darwin" ]]; then
     # macOS

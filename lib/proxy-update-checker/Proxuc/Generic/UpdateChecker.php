@@ -38,14 +38,14 @@ if (!class_exists(UpdateChecker::class, false)):
 
 		public function requestUpdate() {
 			$api = $this->api;
+
 			$api->setLocalDirectory($this->Vcs_getAbsoluteDirectoryPath());
 
 			$update = new Update();
 			$update->slug = $this->slug;
 			$update->version = null;
-
-			//Figure out which reference (tag or branch) we'll use to get the latest version of the theme.
 			$updateSource = $api->chooseReference($this->branch);
+
 			if ($updateSource) {
 				$ref = $updateSource->name;
 				$update->download_url = $updateSource->downloadUrl;
@@ -53,20 +53,21 @@ if (!class_exists(UpdateChecker::class, false)):
 				return 'source_not_found';
 			}
 
-			//Get headers from the main stylesheet in this branch/tag. Its "Version" header and other metadata
-			//are what the WordPress install will actually see after upgrading, so they take precedence over releases/tags.
 			$file = $api->getRemoteFile('wppus.json', $ref);
 
 			if (!empty($file)) {
-				$remoteHeader = json_decode($file, true);
-				$update->version = Utils::findNotEmpty(array(
-					$remoteHeader['Version'],
-					Utils::get($updateSource, 'version'),
-				));
+				$fileContents = json_decode($file, true);
+
+				if (isset($fileContents['packageData']) && !empty($fileContents['packageData'])) {
+					$remoteHeader = $fileContents['packageData'];
+					$update->version = Utils::findNotEmpty(array(
+						$remoteHeader['Version'],
+						Utils::get($updateSource, 'version'),
+					));
+				}
 			}
 
 			if (empty($update->version)) {
-				//It looks like we didn't find a valid update after all.
 				$update = null;
 			}
 
@@ -81,8 +82,6 @@ if (!class_exists(UpdateChecker::class, false)):
 
 		protected function getNoUpdateItemFields() {
 			$fields = parent::getNoUpdateItemFields();
-
-			unset($fields['requires_php']);
 
 			return array_merge(
 				parent::getNoUpdateItemFields(),

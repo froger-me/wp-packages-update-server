@@ -7,10 +7,8 @@ use YahnisElsts\PluginUpdateChecker\v5p3\Update as BaseUpdate;
 if (!class_exists(Update::class, false)):
 
 	class Update extends BaseUpdate {
-		protected static $extraFields = array('package_data');
 
 		public static function fromJson($json) {
-			php_log();
 			$instance = new self();
 
 			if (!parent::createFromJson($json, $instance)) {
@@ -21,7 +19,6 @@ if (!class_exists(Update::class, false)):
 		}
 
 		public static function fromObject($object) {
-			php_log();
 			$update = new self();
 			$update->copyFields($object, $update);
 
@@ -29,8 +26,7 @@ if (!class_exists(Update::class, false)):
 		}
 
 		protected function validateMetadata($apiResponse) {
-			php_log();
-			$required = array('version', 'package_data');
+			$required = array('version');
 
 			foreach ($required as $key) {
 
@@ -45,7 +41,6 @@ if (!class_exists(Update::class, false)):
 		}
 
 		protected function getPrefixedFilter($tag) {
-			php_log();
 			return parent::getPrefixedFilter($tag) . '_generic';
 		}
 	}

@@ -25,46 +25,26 @@ use YahnisElsts\PluginUpdateChecker\v5p3\Plugin\UpdateChecker;
 *
 * WARNING - READ FIRST:
 * Before deploying the plugin or theme, make sure to change the following value
-* - https://your-update-server.com  => The URL of the server where WP Packages Update Server is installed.
+* - https://server.domain.tld  => In wppus.json ; the URL of the server where WP Packages Update Server is installed.
 * - $prefix_updater                 => Change this variable's name with your plugin or theme prefix
 **/
 
 /** Uncomment for plugin updates **/
 // require_once plugin_dir_path( __FILE__ ) . 'lib/wp-package-updater/class-wp-package-updater.php';
 
-/** Enable plugin updates with license check **/
+/** Enable plugin updates **/
 // $prefix_updater = new WP_Package_Updater(
-// 	'https://your-update-server.com',
 // 	wp_normalize_path( __FILE__ ),
 // 	wp_normalize_path( plugin_dir_path( __FILE__ ) ),
-// 	true
-// );
-
-/** Enable plugin updates without license check **/
-// $prefix_updater = new WP_Package_Updater(
-// 	'https://your-update-server.com',
-// 	wp_normalize_path( __FILE__ ),
-// 	wp_normalize_path( plugin_dir_path( __FILE__ ) ),
-// 	false // Can be omitted, false by default
 // );
 
 /** Uncomment for theme updates **/
 // require_once get_stylesheet_directory() . '/lib/wp-package-updater/class-wp-package-updater.php';
 
-/** Enable theme updates with license check **/
+/** Enable theme updates **/
 // $prefix_updater = new WP_Package_Updater(
-// 	'https://your-update-server.com',
 // 	wp_normalize_path( __FILE__ ),
 // 	get_stylesheet_directory(),
-// 	true
-// );
-
-/** Enable theme updates without license check **/
-// $prefix_updater = new WP_Package_Updater(
-// 	'https://your-update-server.com',
-// 	wp_normalize_path( __FILE__ ),
-// 	get_stylesheet_directory(),
-// 	false // Can be omitted, false by default
 // );
 
 /* ================================================================================================ */
@@ -72,7 +52,6 @@ use YahnisElsts\PluginUpdateChecker\v5p3\Plugin\UpdateChecker;
 if ( ! class_exists( 'WP_Package_Updater' ) ) {
 
 	class WP_Package_Updater {
-
 		const VERSION = '2.0';
 
 		private $license_server_url;
@@ -84,14 +63,30 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		private $type;
 		private $use_license;
 		private $package_id;
+		private $json_options;
 
-		public function __construct(
-			$update_server_url,
-			$package_file_path,
-			$package_path,
-			$use_license = false
-		) {
+		public function __construct( $package_file_path, $package_path ) {
+			global $wp_filesystem;
+
+			if ( ! isset( $wp_filesystem ) ) {
+				include_once ABSPATH . 'wp-admin/includes/file.php';
+
+				WP_Filesystem();
+			}
+
 			$this->package_path = trailingslashit( $package_path );
+
+			if ( ! $wp_filesystem->exists( $package_path . 'wppus.json' ) ) {
+				throw new RuntimeException(
+					sprintf(
+						'The package updater cannot find the wppus.json file in "%s". ',
+						esc_html( htmlentities( $package_path ) )
+					)
+				);
+			}
+
+			$update_server_url = $this->get_option( 'server' );
+			$use_license       = ! empty( $this->get_option( 'licenseKey' ) );
 
 			$this->set_type();
 
@@ -106,7 +101,6 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			$package_file_path_parts = explode( '/', $package_file_path );
 			$package_id_parts        = array_slice( $package_file_path_parts, -2, 2 );
 			$package_id              = implode( '/', $package_id_parts );
-
 			$this->package_id        = $package_id;
 			$this->update_server_url = trailingslashit( $update_server_url ) . 'wppus-update-api/';
 			$this->package_slug      = $package_slug;
@@ -487,6 +481,56 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			}
 
 			return null;
+		}
+
+		protected function get_option( $option ) {
+			global $wp_filesystem;
+
+			if ( ! isset( $wp_filesystem ) ) {
+				include_once ABSPATH . 'wp-admin/includes/file.php';
+
+				WP_Filesystem();
+			}
+
+			if ( ! isset( self::$json_options ) ) {
+				$wppus_json = $wp_filesystem->get_contents( $this->package_path . 'wppus.json' );
+
+				if ( $wppus_json ) {
+					self::$json_options = json_decode( $wppus_json, true );
+				}
+			}
+
+			if ( isset( self::$json_options[ $option ] ) ) {
+				return self::$json_options[ $option ];
+			}
+
+			return '';
+		}
+
+		protected function update_option( $option, $value ) {
+			global $wp_filesystem;
+
+			if ( ! isset( $wp_filesystem ) ) {
+				include_once ABSPATH . 'wp-admin/includes/file.php';
+
+				WP_Filesystem();
+			}
+
+			if ( ! isset( self::$json_options ) ) {
+				$wppus_json = $wp_filesystem->get_contents( $this->package_path . 'wppus.json' );
+
+				if ( $wppus_json ) {
+					self::$json_options = json_decode( $wppus_json, true );
+				}
+			}
+
+			self::$json_options[ $option ] = $value;
+			$wppus_json                    = wp_json_encode(
+				self::$json_options,
+				JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+			);
+
+			$wp_filesystem->put_contents( $this->package_path . 'wppus.json', $wppus_json, FS_CHMOD_FILE );
 		}
 
 		protected function do_query_license( $query_type ) {
