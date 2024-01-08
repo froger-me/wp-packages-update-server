@@ -31,7 +31,7 @@
 									<select id="wppus_license_package_type">
 										<option value="plugin"><?php esc_html_e( 'Plugin' ); ?></option>
 										<option value="theme"><?php esc_html_e( 'Theme' ); ?></option>
-										<option value="theme"><?php esc_html_e( 'Generic' ); ?></option>
+										<option value="generic"><?php esc_html_e( 'Generic' ); ?></option>
 									</select>
 								</td>
 							</tr>
@@ -40,7 +40,7 @@
 								<td>
 									<input type="text" id="wppus_license_package_slug" name="wppus_license_package_slug" class="no-submit" value="" size="30">
 									<p class="description">
-										<?php esc_html_e( 'The plugin or theme slug. Only alphanumeric characters and dashes are allowed.', 'wppus' ); ?>
+										<?php esc_html_e( 'The plugin, theme, or generic package slug. Only alphanumeric characters and dashes are allowed.', 'wppus' ); ?>
 										<br/>
 										<?php esc_html_e( 'Example of valid value: package-slug', 'wppus' ); ?>
 									</p>
@@ -186,7 +186,7 @@
 				<td>
 					<input type="checkbox" id="wppus_use_licenses" name="wppus_use_licenses" value="1" <?php checked( get_option( 'wppus_use_licenses', 0 ), 1 ); ?>>
 					<p class="description">
-						<?php esc_html_e( 'Check to activate license-enabled plugins and themes packages delivery.', 'wppus' ); ?>
+						<?php esc_html_e( 'Check to activate license-enabled plugin, theme, and generic packages delivery.', 'wppus' ); ?>
 						<br>
 						<strong><?php esc_html_e( 'It affects all the packages with a "Requires License" license status delivered by this installation of WP Packages Update Server.', 'wppus' ); ?></strong>
 					</p>

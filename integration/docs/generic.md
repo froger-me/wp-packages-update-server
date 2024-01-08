@@ -526,7 +526,7 @@ except requests.exceptions.HTTPError as err:
 ```bash
 #!/bin/bash
 
-url="https://server.domain.tld/wppus-update-api/"
+url="https://server.domain.tld/wppus-license-api/"
 args=(
     "action=activate"
     "license_key=41ec1eba0f17d47f76827a33c7daab2c"

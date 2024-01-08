@@ -84,7 +84,7 @@
 					<?php
 					printf(
 						// translators: %s is <code>$packages_dir</code>
-						esc_html__( 'Add a package zip archive to the %s directory. The archive needs to be a valid WordPress plugin or theme package.', 'wppus' ),
+						esc_html__( 'Add a package zip archive to the %s directory. The archive needs to be a valid generic package, or a valid WordPress plugin or theme package.', 'wppus' ),
 						'<code>' . esc_html( $packages_dir ) . '</code>',
 					);
 					?>

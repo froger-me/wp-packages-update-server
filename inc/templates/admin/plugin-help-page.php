@@ -7,10 +7,10 @@
 	<p>
 		<?php
 		printf(
-			// translators: %1$s is <code>functions.php</code>, %2$s is <code>lib</code>
-			esc_html__( 'To link your packages to WP Packages Update Server, and optionally to prevent webmasters from getting updates of your plugins and themes without a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the %1$s file (for themes), and provide the necessary libraries in a %2$s directory at the root of the package.', 'wppus' ),
+			// translators: %1$s is <code>functions.php</code>, %2$s is <code>lib</code>, %3$s is <code>main file</code>
+			esc_html__( 'To link your packages, whether they are WordPress plugins, WordPress themes, or generic packages, to the WP Packages Update Server, and optionally to prevent users from getting updates of your packages without a license, your packages need to include some extra code. For WordPress packages, it is a simple matter of adding a few lines in the main plugin file (for plugins), or in the %1$s file (for themes), and provide the necessary libraries in a %2$s directory at the root of the package.', 'wppus' ),
 			'<code>functions.php</code>',
-			'<code>lib</code>'
+			'<code>lib</code>',
 		);
 		?>
 	</p>
@@ -27,8 +27,18 @@
 	<p>
 		<?php
 		printf(
+			// translators: %1$s is <code>integration/dummy-generic</code>, %2$s is a "here" link to the documentation
+			esc_html__( 'See %1$s for an example of generic package written in bash. The API calls made by generic packages to the license API and Update API are the same, but because they are language-agnostic, there is no library provided. You may refer to the documentation found %2$s.', 'wppus' ),
+			'<a target="_blank" href="' . esc_url( 'https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md' ) . '">' . esc_html__( 'here', 'wppus' ) . '</a>',
+			'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration/dummy-generic</code>',
+		);
+		?>
+	</p>
+	<p>
+		<?php
+		printf(
 			// translators: %1$s is <code>packages_dir</code>, %2$s is <code>package-slug.zip</code>, %3$s is <code>package-slug.php</code>
-			esc_html__( 'Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in %1$s. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in %2$s would be %3$s.', 'wppus' ),
+			esc_html__( 'Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in %1$s. A packages need to a valid generic package, or a valid WordPress plugin or theme package, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in %2$s would be %3$s.', 'wppus' ),
 			'<code>' . esc_html( $packages_dir ) . '</code>',
 			'<code>package-slug.zip</code>',
 			'<code>package-slug.php</code>',
@@ -41,7 +51,7 @@
 		<?php
 		printf(
 			// translators: %s is <code>parse_request</code>
-			esc_html__( "When the remote clients where your plugins and themes are installed send a request to check for updates, download a package or check or change license status, the current server's WordPress installation is loaded, with its own plugins and themes. This is not optimised if left untouched because unnecessary action and filter hooks that execute before %s action hook are also triggered, even though the request is not designed to produce any on-screen output or further computation.", 'wppus' ),
+			esc_html__( "When the remote clients where your plugins, themes, or generic packages are installed send a request to check for updates, download a package or check or change license status, the current server's WordPress installation is loaded, with its own plugins and themes. This is not optimised if left untouched because unnecessary action and filter hooks that execute before %s action hook are also triggered, even though the request is not designed to produce any on-screen output or further computation.", 'wppus' ),
 			'<code>parse_request</code>',
 		);
 		?>
@@ -53,19 +63,6 @@
 			esc_html__( 'To solve this, the file %1$s has been automatically copied to %2$s. This effectively creates a Must Use Plugin running before everything else and preventing themes and other plugins from being executed when an update request or a license API request is received by WP Packages Update Server.', 'wppus' ),
 			'<code>' . esc_html( WPPUS_PLUGIN_PATH . 'optimisation/wppus-endpoint-optimiser.php' ) . '</code>',
 			'<code>' . esc_html( dirname( dirname( WPPUS_PLUGIN_PATH ) ) . '/mu-plugins/wppus-endpoint-optimiser.php' ) . '</code>',
-		);
-		?>
-	</p>
-	<p>
-		<?php
-		printf(
-			// translators: %1$s is <code>$wppus_always_active_plugins</code>, %2$s is <code>$wppus_bypass_themes</code>, %3$s is <code>false</code>, %4$s is <code>functions.php</code>, %5$s is <code>wppus-endpoint-optimiser.php.backup</code>
-			esc_html__( 'See %1$s for an example of plugin, and %2$ss for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.', 'wppus' ),
-			'<code>$wppus_always_active_plugins</code>',
-			'<code>$wppus_bypass_themes</code>',
-			'<code>false</code>',
-			'<code>functions.php</code>',
-			'<code>' . esc_html( dirname( dirname( WPPUS_PLUGIN_PATH ) ) . '/mu-plugins/wppus-endpoint-optimiser.php.backup' ) . '</code>',
 		);
 		?>
 	</p>
@@ -89,7 +86,7 @@
 		<?php
 		printf(
 			// translators: %s is a link to the documentation
-			esc_html__( 'The full documentation can be found %s, with more details for developers on how to integrate WP Plugin Server with their own plugins and themes.', 'wppus' ),
+			esc_html__( 'The full documentation can be found %s, with more details for developers on how to integrate WP Plugin Server with their own plugins, themes, and generic packages.', 'wppus' ),
 			'<a target="_blank" href="https://github.com/froger-me/wp-packages-update-server/blob/master/README.md">' . esc_html__( 'here', 'wppus' ) . '</a>',
 		);
 		?>
@@ -98,7 +95,7 @@
 		<?php
 		printf(
 			// translators: %1$s is a link to opening an issue, %2$s is a contact email
-			esc_html__( 'After reading the documentation, for more help on how to use WP Packages Update Server, 	please %1$s - bugfixes are welcome via pull requests, detailed bug reports with accurate pointers as to where and how they occur in the code will be addressed in a timely manner, and a fee will apply for any other request if they are addressed. If and only if you found a security issue, please contact %2$s with full details for responsible disclosure.', 'wppus' ),
+			esc_html__( 'After reading the documentation, for more help on how to use WP Packages Update Server, please %1$s - bugfixes are welcome via pull requests, detailed bug reports with accurate pointers as to where and how they occur in the code will be addressed in a timely manner, and a fee will apply for any other request (if they are addressed). If and only if you found a security issue, please contact %2$s with full details for responsible disclosure.', 'wppus' ),
 			'<a target="_blank" href="https://github.com/froger-me/wp-packages-update-server/issues">' . esc_html__( 'open an issue on Github', 'wppus' ) . '</a>',
 			'<a href="mailto:wppus-help@froger.me">wppus-help@anyape.com</a>',
 		);

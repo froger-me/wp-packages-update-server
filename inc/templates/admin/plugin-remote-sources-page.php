@@ -12,7 +12,7 @@
 				<td>
 					<input type="checkbox" id="wppus_use_remote_repository" name="wppus_use_remote_repository" value="1" <?php checked( get_option( 'wppus_use_remote_repository', 0 ), 1 ); ?>>
 					<p class="description">
-						<?php esc_html_e( 'Enables this server to download plugins and themes from a Remote Repository before delivering updates.', 'wppus' ); ?>
+						<?php esc_html_e( 'Enables this server to download plugins, themes and generic packages from a Remote Repository before delivering updates.', 'wppus' ); ?>
 						<br>
 						<?php esc_html_e( 'Supports Bitbucket, Github and Gitlab.', 'wppus' ); ?>
 						<br>

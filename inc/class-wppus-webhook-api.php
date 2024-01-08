@@ -38,7 +38,7 @@ class WPPUS_Webhook_API {
 
 	public function add_endpoints() {
 		add_rewrite_rule( '^wppus-webhook$', 'index.php?__wppus_webhook=1&', 'top' );
-		add_rewrite_rule( '^wppus-webhook/(plugin|theme)/(.+)?$', 'index.php?type=$matches[1]&package_id=$matches[2]&__wppus_webhook=1&', 'top' );
+		add_rewrite_rule( '^wppus-webhook/(plugin|theme|generic)/(.+)?$', 'index.php?type=$matches[1]&package_id=$matches[2]&__wppus_webhook=1&', 'top' );
 	}
 
 	public function parse_request() {
@@ -98,7 +98,7 @@ class WPPUS_Webhook_API {
 
 		if (
 			( isset( $payload['object_kind'] ) && 'push' === $payload['object_kind'] ) ||
-			( isset( $_SERVER['X_GITHUB_EVENT'] ) && 'push' === $_SERVER['X_GITHUB_EVENT'] )
+			( isset( $_SERVER['HTTP_X_GITHUB_EVENT'] ) && 'push' === $_SERVER['HTTP_X_GITHUB_EVENT'] )
 		) {
 			$branch = str_replace( 'refs/heads/', '', $payload['ref'] );
 		} elseif ( isset( $payload['push'], $payload['push']['changes'] ) ) {
