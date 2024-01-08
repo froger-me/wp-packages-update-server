@@ -5,5 +5,5 @@
     "Author": "Alexandre Froger",
     "AuthorURI": "https:\/\/froger.me\/",
     "Description": "Empty generic package to demonstrate the WP Package Updater.",
-    "PackageData": ["arbitrary data - can be left empty, but MUST be present"]
+    "PackageData": ["arbitrary data - can be left empty, but MUST be present."]
 }
