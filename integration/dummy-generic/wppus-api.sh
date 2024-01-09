@@ -10,17 +10,16 @@
 # environment variable WPPUS_GENERIC_PACKAGE_LICENSE
 
 # replace https://server.domain.tld/ with the URL of the server where
-# WP Packages Update Server is installed
-url=$(jq -r '.server' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
+# WP Packages Update Server is installed in wppus.json
 
+# define the url of the server
+url=$(jq -r '.server' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
 # define the package name
 package_name="$(basename "$(cd "$(dirname "$0")"; pwd -P)")"
 # define the package script
 package_script="$(cd "$(dirname "$0")"; pwd -P)/$(basename "$(cd "$(dirname "$0")"; pwd -P)").sh"
 # define the current script name
 script_name="$(basename $0)"
-# define the current script path
-script_path="$(cd "$(dirname "$0")"; pwd -P)/$package_name/$script_name"
 # define the update zip archive name
 zip_name="$package_name.zip"
 # define the current version of the package from the wppus.json file
@@ -37,8 +36,6 @@ elif [[ "$(uname)" == "Linux" ]]; then
     # Ubuntu
     domain=$(cat /var/lib/dbus/machine-id)
 fi
-# debug mode - "true" will bypass cron setting
-debug="false"
 
 ### INSTALLING THE PACKAGE ###
 
@@ -46,19 +43,8 @@ function install() {
     # add the license key to wppus.json
     jq '.licenseKey = "'"$1"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
 
-    if [ "$debug" == "true" ]; then
-        # return early
-        return
-    fi
-
-    # define the new cron job
-    local cron_job="0 */12 * * * $script_path check_for_updates"
-
-    # check if the cron job already exists
-    if ! crontab -l 2>/dev/null | grep -q "$script_path check_for_updates"; then
-        # add the new cron job
-        (crontab -l 2>/dev/null; echo "$cron_job") | crontab -
-    fi
+    # add a file '.installed' in current directory
+    touch "$(cd "$(dirname "$0")"; pwd -P)/.installed"
 }
 
 ### UNINSTALLING THE PACKAGE ###
@@ -71,39 +57,15 @@ function uninstall() {
     jq '.licenseSignature = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
     license_signature=""
 
-    if [ "$debug" == "true" ]; then
-        # return early
-        return
-    fi
-
-    # check if the cron job exists
-    if crontab -l 2>/dev/null | grep -q "$script_path check_for_updates"; then
-        # remove the cron job
-        (crontab -l | grep -v "$script_path check_for_updates") | crontab -
-    fi
+    # remove the file '.installed' from current directory
+    rm "$(cd "$(dirname "$0")"; pwd -P)/.installed"
 }
 
 ### CHECKING IF THE PACKAGE IS INSTALLED ###
 
 function is_installed() {
-
-    # check if the WPPUS_GENERIC_PACKAGE_LICENSE environment variable is set
-    if [ -z "$license_key" ]; then
-        # return false
-        echo "false"
-        # return early
-        return
-    fi
-
-    if [ "$debug" == "true" ]; then
-        # return true
-        echo "true"
-        # return early
-        return
-    fi
-
-    # check if the cron job exists
-    if crontab -l 2>/dev/null | grep -q "$script_path"; then
+    # check if the file '.installed exists in current directory
+    if [ -f "$(cd "$(dirname "$0")"; pwd -P)/.installed" ]; then
         # return true
         echo "true"
     else
@@ -119,7 +81,7 @@ function send_api_request() {
     local IFS='&'
     local full_url=$(printf "%s/%s/?%s" "$url" "$1" "${*:2}")
     # make the request
-    local response=$(curl -s "$full_url")
+    local response=$(curl -sL "$full_url")
 
     # return the response
     echo "$response"
