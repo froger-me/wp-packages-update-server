@@ -10,7 +10,7 @@
 // replace https://server.domain.tld/ with the URL of the server where
 // WP Packages Update Server is installed in wppus.json
 
-const modules = require('./exports.js');
+const modules = require('./node-dist/exports.js');
 const https = require('https');
 const querystring = require('querystring');
 const events = require('events');
