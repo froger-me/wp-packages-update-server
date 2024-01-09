@@ -221,9 +221,11 @@ class WPPUS_API {
 			# move the updated main script to the current directory ;
 			# the updated main script is in charge of overriding the update
 			# scripts by moving files around after update
+			$t_info = PATHINFO_FILENAME;
+
 			foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
 
-				if ( ! is_dir( $file ) && pathinfo( $file, PATHINFO_FILENAME ) !== pathinfo( self::$package_script, PATHINFO_FILENAME ) ) {
+				if ( pathinfo( $file, $t_info ) !== pathinfo( self::$package_script, $t_info ) ) {
 					rename( $file, dirname( self::$package_script ) . '/' . basename( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
 				}
 			}

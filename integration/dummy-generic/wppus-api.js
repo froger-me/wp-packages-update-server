@@ -255,6 +255,22 @@ async function main() {
                 let file = files[i];
 
                 if (file !== script_name) {
+                    let destinationPath = path.join(__dirname, file);
+
+                    if (fs.existsSync(destinationPath)) {
+
+                        if (parseInt(process.version.slice(1).split('.')[0]) >= 14) {
+                            fs.rmSync(destinationPath, { recursive: true, force: true });
+                        } else {
+
+                            if (fs.lstatSync(destinationPath).isDirectory()) {
+                                fs.rmdirSync(destinationPath, { recursive: true });
+                            } else {
+                                fs.unlinkSync(destinationPath);
+                            }
+                        }
+                    }
+
                     fs.renameSync('/tmp/' + package_name + '/' + file, path.join(__dirname, file));
                 }
             }

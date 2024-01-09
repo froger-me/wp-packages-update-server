@@ -253,11 +253,11 @@ if [ "$1" == "update" ]; then
         # set the permissions of the new file to the permissions of the old file
         chmod $OCTAL_MODE /tmp/$package_name/$package_name.sh
 
-        # move all the files except the wppus-api (all languages) to the
+        # move all the files and directories except the wppus-api (all languages) to the
         # current directory ; the updated main script is in charge of
         # overriding the update scripts by moving files around after update
-        for file in /tmp/$package_name *; do
-            if [[ ! -d "$file" ]] && [[ "${file%.*}" != "${script_name%.*}" ]]; then
+        for file in /tmp/$package_name/*; do
+            if [[ "${file%.*}" != "${script_name%.*}" ]]; then
                 mv /tmp/$package_name/$file $(dirname "$0")
             fi
         done
