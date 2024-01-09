@@ -82,7 +82,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 
 			$this->package_path = trailingslashit( $package_path );
 
-			if ( ! $wp_filesystem->exists( $package_path . 'wppus.json' ) ) {
+			if ( ! $wp_filesystem->exists( $package_path . '/wppus.json' ) ) {
 				throw new RuntimeException(
 					sprintf(
 						'The package updater cannot find the wppus.json file in "%s". ',
