@@ -68,8 +68,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		private $type;
 		private $use_license;
 		private $package_id;
-
-		private static $json_options;
+		private $json_options;
 
 		public function __construct( $package_file_path, $package_path ) {
 			global $wp_filesystem;
@@ -548,16 +547,16 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				WP_Filesystem();
 			}
 
-			if ( ! isset( self::$json_options ) ) {
+			if ( ! isset( $this->json_options ) ) {
 				$wppus_json = $wp_filesystem->get_contents( $this->package_path . 'wppus.json' );
 
 				if ( $wppus_json ) {
-					self::$json_options = json_decode( $wppus_json, true );
+					$this->json_options = json_decode( $wppus_json, true );
 				}
 			}
 
-			if ( isset( self::$json_options[ $option ] ) ) {
-				return self::$json_options[ $option ];
+			if ( isset( $this->json_options[ $option ] ) ) {
+				return $this->json_options[ $option ];
 			}
 
 			return '';
@@ -572,17 +571,17 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				WP_Filesystem();
 			}
 
-			if ( ! isset( self::$json_options ) ) {
+			if ( ! isset( $this->json_options ) ) {
 				$wppus_json = $wp_filesystem->get_contents( $this->package_path . 'wppus.json' );
 
 				if ( $wppus_json ) {
-					self::$json_options = json_decode( $wppus_json, true );
+					$this->json_options = json_decode( $wppus_json, true );
 				}
 			}
 
-			self::$json_options[ $option ] = $value;
+			$this->json_options[ $option ] = $value;
 			$wppus_json                    = wp_json_encode(
-				self::$json_options,
+				$this->json_options,
 				JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
 			);
 
@@ -598,25 +597,25 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				WP_Filesystem();
 			}
 
-			if ( ! isset( self::$json_options ) ) {
+			if ( ! isset( $this->json_options ) ) {
 				$wppus_json = $wp_filesystem->get_contents( $this->package_path . 'wppus.json' );
 
 				if ( $wppus_json ) {
-					self::$json_options = json_decode( $wppus_json, true );
+					$this->json_options = json_decode( $wppus_json, true );
 				}
 			}
 
 			$save = false;
 
-			if ( isset( self::$json_options[ $option ] ) ) {
+			if ( isset( $this->json_options[ $option ] ) ) {
 				$save = true;
 
-				unset( self::$json_options[ $option ] );
+				unset( $this->json_options[ $option ] );
 			}
 
 			if ( $save ) {
 				$wppus_json = wp_json_encode(
-					self::$json_options,
+					$this->json_options,
 					JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
 				);
 
@@ -633,15 +632,15 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				WP_Filesystem();
 			}
 
-			if ( ! isset( self::$json_options ) ) {
+			if ( ! isset( $this->json_options ) ) {
 				$wppus_json = $wp_filesystem->get_contents( $this->package_path . 'wppus.json' );
 
 				if ( $wppus_json ) {
-					self::$json_options = json_decode( $wppus_json, true );
+					$this->json_options = json_decode( $wppus_json, true );
 				}
 			}
 
-			update_option( 'wppus_' . $this->package_slug . '_options', self::$json_options );
+			update_option( 'wppus_' . $this->package_slug . '_options', $this->json_options );
 		}
 
 		protected function restore_wppus_options() {
