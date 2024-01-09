@@ -6,8 +6,7 @@
 # It is just a collection of basic functions and snippets, and they do not
 # perform the necessary checks to ensure data integrity ; they assume that all
 # the requests are successful, and do not check paths or permissions.
-# They also assume that the package necessitates a license key, stored in an
-# environment variable WPPUS_GENERIC_PACKAGE_LICENSE
+# They also assume that the package necessitates a license key.
 
 # replace https://server.domain.tld/ with the URL of the server where
 # WP Packages Update Server is installed in wppus.json
@@ -28,6 +27,7 @@ version=$(jq -r '.packageData.Version' "$(cd "$(dirname "$0")"; pwd -P)/wppus.js
 license_key=$(jq -r '.licenseKey' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
 # define license_signature from the wppus.json file
 license_signature=$(jq -r '.licenseSignature' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
+
 # define the domain
 if [[ "$(uname)" == "Darwin" ]]; then
     # macOS
@@ -42,7 +42,6 @@ fi
 function install() {
     # add the license key to wppus.json
     jq '.licenseKey = "'"$1"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
-
     # add a file '.installed' in current directory
     touch "$(cd "$(dirname "$0")"; pwd -P)/.installed"
 }
@@ -51,12 +50,12 @@ function install() {
 
 function uninstall() {
     local license=$license_key
+    license_signature=""
+
     # remove the license key from wppus.json
     jq '.licenseKey = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
     # remove the license signature from wppus.json
     jq '.licenseSignature = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
-    license_signature=""
-
     # remove the file '.installed' from current directory
     rm "$(cd "$(dirname "$0")"; pwd -P)/.installed"
 }
@@ -64,17 +63,20 @@ function uninstall() {
 ### CHECKING IF THE PACKAGE IS INSTALLED ###
 
 function is_installed() {
+
     # check if the file '.installed exists in current directory
     if [ -f "$(cd "$(dirname "$0")"; pwd -P)/.installed" ]; then
+
         # return true
         echo "true"
     else
+
         # return false
         echo "false"
     fi
 }
 
-### SENDNG AN API REQUEST ###
+### SENDING AN API REQUEST ###
 
 function send_api_request() {
     # build the request url
@@ -91,11 +93,14 @@ function send_api_request() {
 
 function urlencode() {
     local old_lc_collate=$LC_COLLATE
+
     LC_COLLATE=C
 
     local length="${#1}"
+
     for (( i = 0; i < length; i++ )); do
         local c="${1:$i:1}"
+
         case $c in
             [a-zA-Z0-9.~_-]) printf '%s' "$c" ;;
             *) printf '%%%02X' "'$c" ;;
@@ -107,6 +112,7 @@ function urlencode() {
 
 function urldecode() {
     local url_encoded="${1}"
+
     printf '%b' "${url_encoded//%/\\x}"
 }
 
@@ -125,6 +131,7 @@ function check_for_updates() {
     )
     # make the request
     local response=$(send_api_request "$endpoint" "${args[@]}")
+
     # return the response
     echo "$response"
 }
@@ -144,8 +151,10 @@ function activate_license() {
     local response=$(send_api_request "$endpoint" "${args[@]}")
     # get the signature from the response
     local signature=$(urldecode $(echo -n "$response" | jq -r '.license_signature'))
+
     # add the license signature to wppus.json
     jq '.licenseSignature = "'"$signature"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+
     license_signature=$signature
 }
 
@@ -160,10 +169,12 @@ function deactivate_license() {
         "allowed_domains=$(urlencode "$domain")"
         "package_slug=$(urlencode "$package_name")"
     )
+
     # make the request
-    local response=$(send_api_request "$endpoint" "${args[@]}")
+    send_api_request "$endpoint" "${args[@]}"
     # remove the license signature from wppus.json
     jq '.licenseSignature = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+
     license_signature=""
 }
 
@@ -172,10 +183,12 @@ function deactivate_license() {
 function download_update() {
     # get the download url from the response in $1
     local url=$(urldecode $(echo -n "$1" | jq -r '.download_url'))
-    # set the path to the downloaded file in /tmp/dummy-generic.zip
+    # set the path to the downloaded file
     local output_file="/tmp/$zip_name"
+
     # make the request
     curl -sS -L -o $output_file "$url"
+
     # return the path to the downloaded file
     echo $output_file
 }
@@ -186,7 +199,7 @@ function download_update() {
 if [ "$1" == "get_version" ]; then
     # return the version
     echo "$version"
-    # halt the script
+
     exit 0
 fi
 
@@ -194,7 +207,7 @@ fi
 if [ "$1" == "install" ]; then
     # install the package
     echo $(install "$2")
-    # halt the script
+
     exit 0
 fi
 
@@ -202,7 +215,7 @@ fi
 if [ "$1" == "uninstall" ]; then
     # uninstall the package
     echo $(uninstall)
-    # halt the script
+
     exit 0
 fi
 
@@ -210,12 +223,12 @@ fi
 if [ "$1" == "is_installed" ]; then
     # check if the package is installed
     echo $(is_installed)
-    # halt the script
+
     exit 0
 fi
 
-# check if the script was called with the argument "check_for_updates"
-if [ "$1" == "check_for_updates" ]; then
+# check if the script was called with the argument "update"
+if [ "$1" == "update" ]; then
     # check for updates
     response=$(check_for_updates)
     # get the version from the response
@@ -226,6 +239,7 @@ if [ "$1" == "check_for_updates" ]; then
     if [ "$(printf '%s\n' "$new_version" "$version" | sort -V | tail -n1)" != "$version" ]; then
         # download the update
         output_file=$(download_update "$response")
+
         # extract the zip in /tmp/$(package_name)
         unzip -q -o $output_file -d /tmp
 
@@ -235,10 +249,11 @@ if [ "$1" == "check_for_updates" ]; then
         elif [[ "$OSTYPE" == "darwin"* ]]; then
             OCTAL_MODE=$(stat -f '%p' "$package_script" | cut -c 4-6)
         fi
+
         # set the permissions of the new file to the permissions of the old file
         chmod $OCTAL_MODE /tmp/$package_name/$package_name.sh
 
-        # move all the files except the update scripts (all languages) to the
+        # move all the files except the wppus-api (all languages) to the
         # current directory ; the updated main script is in charge of
         # overriding the update scripts by moving files around after update
         for file in /tmp/$package_name *; do
@@ -248,7 +263,7 @@ if [ "$1" == "check_for_updates" ]; then
         done
 
         # add the license key to wppus.json
-        jq '.licenseKey = "'"$1"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+        jq '.licenseKey = "'"$license_key"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
         # add the license signature to wppus.json
         jq '.licenseSignature = "'"$signature"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
 
@@ -257,11 +272,9 @@ if [ "$1" == "check_for_updates" ]; then
         # remove the zip
         rm $output_file
 
-        # halt the script
         exit 0
     fi
 
-    # halt the script
     exit 0
 fi
 
@@ -269,7 +282,7 @@ fi
 if [ "$1" == "activate_license" ]; then
     # activate the license
     echo $(activate_license)
-    # halt the script
+
     exit 0
 fi
 
@@ -277,7 +290,7 @@ fi
 if [ "$1" == "deactivate_license" ]; then
     # deactivate the license
     echo $(deactivate_license)
-    # halt the script
+
     exit 0
 fi
 
@@ -285,7 +298,7 @@ fi
 if [ "$1" == "get_update_info" ]; then
     # get the update information
     echo "$(check_for_updates)"
-    # halt the script
+
     exit 0
 fi
 
