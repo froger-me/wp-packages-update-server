@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 require_once __DIR__ . '/wppus-api.php';
@@ -5,12 +6,17 @@ require_once __DIR__ . '/wppus-api.php';
 ### MAIN ###
 
 ( function () {
+	global $argv;
+
 	$command = $argv[1] ?? '';
 	$license = $argv[2] ?? '';
 
 	if ( function_exists( 'dummy_generic_' . $command ) ) {
+		$command = 'dummy_generic_' . $command;
 
-		if ( 'install' === $command ) {
+		WPPUS_API::init();
+
+		if ( 'dummy_generic_install' === $command ) {
 			$command( $license );
 		} else {
 			$command();
@@ -65,11 +71,11 @@ function dummy_generic_uninstall() {
 
 ### ACTIVATING THE LICENSE ###
 
-function dummy_generic_activate( $license_key ) {
+function dummy_generic_activate() {
 	// If the command is "activate", the script is installed, and the license key is not empty
-	if ( WPPUS_API::is_installed() && ! empty( $license_key ) ) {
+	if ( WPPUS_API::is_installed() ) {
 		// Activate the license
-		WPPUS_API::activate( $license_key );
+		WPPUS_API::activate();
 
 		echo "Activated\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	} else {
@@ -97,7 +103,7 @@ function dummy_generic_get_update_info() {
 	// If the command is "get_update_info" and the script is installed
 	if ( WPPUS_API::is_installed() ) {
 		// Get the update information
-		$info = WPPUS_API::get_update_info();
+		$info = json_decode( WPPUS_API::get_update_info(), true ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 		// Get the current version
 		$version = WPPUS_API::get_version();
 		// Get the remote version
@@ -131,7 +137,7 @@ function dummy_generic_update() {
 	// If the command is "update" and the script is installed
 	if ( WPPUS_API::is_installed() ) {
 		// Get the update information
-		WPPUS_API::check_for_updates();
+		WPPUS_API::update();
 
 		echo "Updated\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -144,7 +150,7 @@ function dummy_generic_update() {
 ### USAGE ###
 
 function dummy_generic_usage() {
-	echo "Usage: bash \"$(dirname \"$0\")/wppus-api.sh\" [command] [arguments]\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo "Usage: ./dummy-generic.php [command] [arguments]\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo "Commands:\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo "  install [license] - install the package\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo "  uninstall - uninstall the package\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -152,4 +158,6 @@ function dummy_generic_usage() {
 	echo "  deactivate - deactivate the license\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo "  get_update_info - output information about the remote package update\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo "  update - update the package if available\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo "  status - output the package status\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo "Note: this package assumes it needs a license.\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
