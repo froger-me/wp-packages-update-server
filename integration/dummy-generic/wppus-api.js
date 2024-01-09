@@ -17,8 +17,6 @@ const events = require('events');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const util = require('util');
-const { execSync } = require('child_process');
 const wppusApi = new events.EventEmitter();
 const AdmZip = modules.AdmZip;
 
@@ -68,9 +66,7 @@ async function main() {
     let domain = "";
 
     if ("Darwin" === os.type()) {
-        const { stdout, stderr } = execSync('ioreg -rd1 -c IOPlatformExpertDevice | awk -F\'"\' \'/IOPlatformUUID/{print $4}\'');
-
-        domain = stdout.replace(/(\r\n|\n|\r)/gm, "").trim();
+        domain = machineIdSync();
     } else if ("Linux" === os.type()) {
         domain = fs.readFileSync('/var/lib/dbus/machine-id', 'utf8');
     }
