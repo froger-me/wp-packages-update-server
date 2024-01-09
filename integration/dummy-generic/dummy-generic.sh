@@ -1,5 +1,21 @@
 #!/bin/bash
 
+### CHECKING THE PACKAGE STATUS ###
+
+if [ "$1" == "status" ] && [ "$(bash "$(dirname "$0")/wppus-api.sh" is_installed)" == "false" ]; then
+    echo "Status: Not installed"
+    # halt the script
+    exit 0
+elif [ "$1" == "status" ] && [ "$(bash "$(dirname "$0")/wppus-api.sh" is_installed)" == "true" ]; then
+    echo "Status: Installed"
+    # halt the script
+    exit 0
+elif [ "$1" == "status" ]; then
+    echo "Status: Unknown"
+    # halt the script
+    exit 1
+fi
+
 ### INSTALLING THE PACKAGE ###
 
 if [ "$1" == "install" ] && [ "$(bash "$(dirname "$0")/wppus-api.sh" is_installed)" == "false" ] && [ "$2" != "" ]; then
@@ -31,7 +47,7 @@ fi
 
 if [ "$1" == "activate" ] && [ "$(bash "$(dirname "$0")/wppus-api.sh" is_installed)" == "true" ]; then
     # activate the license
-    bash "$(dirname "$0")/wppus-api.sh" activate
+    bash "$(dirname "$0")/wppus-api.sh" activate_license
     echo "Activated"
     # halt the script
     exit 0
@@ -45,7 +61,7 @@ fi
 
 if [ "$1" == "deactivate" ] && [ "$(bash "$(dirname "$0")/wppus-api.sh" is_installed)" == "true" ]; then
     # activate the license
-    bash "$(dirname "$0")/wppus-api.sh" deactivate
+    bash "$(dirname "$0")/wppus-api.sh" deactivate_license
     echo "Deactivated"
     # halt the script
     exit 0
@@ -59,7 +75,26 @@ fi
 
 if [ "$1" == "get_update_info" ] && [ "$(bash "$(dirname "$0")/wppus-api.sh" is_installed)" == "true" ]; then
     # get the update information
-    bash "$(dirname "$0")/wppus-api.sh" get_update_info
+    info=$(bash "$(dirname "$0")/wppus-api.sh" get_update_info)
+    version=$(bash "$(dirname "$0")/wppus-api.sh" get_version)
+    new_version=$(echo -n "$info" | jq -r '.version')
+
+    echo ""
+    # get the current version
+    echo "current $version vs. remote $new_version"
+
+    if [ "$(printf '%s\n' "$new_version" "$version" | sort -V | tail -n1)" != "$version" ]; then
+        echo ""
+        echo "---------"
+        echo ""
+        echo "Update available !!! Run the \"update\" command!"
+    fi
+    echo ""
+    echo "---------"
+    echo ""
+    # pretty print the response
+    echo "$info" | jq
+    echo ""
     # halt the script
     exit 0
 elif [ "$1" == "get_update_info" ]; then
@@ -94,6 +129,5 @@ echo "  activate - activate the license"
 echo "  deactivate - deactivate the license"
 echo "  get_update_info - output information about the remote package update"
 echo "  update - update the package if available"
-echo "Installing the package will register a cronjob that will check for updates every 12 hours, and will install the update if available."
 # halt the script
 exit 1

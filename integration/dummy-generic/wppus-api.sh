@@ -25,6 +25,10 @@ script_path="$(cd "$(dirname "$0")"; pwd -P)/$package_name/$script_name"
 zip_name="$package_name.zip"
 # define the current version of the package from the wppus.json file
 version=$(jq -r '.packageData.Version' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
+# define license_key from the wppus.json file
+license_key=$(jq -r '.licenseKey' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
+# define license_signature from the wppus.json file
+license_signature=$(jq -r '.licenseSignature' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json")
 # define the domain
 if [[ "$(uname)" == "Darwin" ]]; then
     # macOS
@@ -36,17 +40,11 @@ fi
 # debug mode - "true" will bypass cron setting
 debug="false"
 
-# source the bashrc file to initialize the environment variables
-source ~/.bashrc
-
 ### INSTALLING THE PACKAGE ###
 
 function install() {
-    # save the license in an environment variable
-    echo "export WPPUS_GENERIC_PACKAGE_LICENSE=\"$1\"" >> ~/.bashrc
-    # source the bashrc file to commit the changes
-    source ~/.bashrc
-    echo "Installed license $1" >&2
+    # add the license key to wppus.json
+    jq '.licenseKey = "'"$1"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
 
     if [ "$debug" == "true" ]; then
         # return early
@@ -66,18 +64,12 @@ function install() {
 ### UNINSTALLING THE PACKAGE ###
 
 function uninstall() {
-    local license=$WPPUS_GENERIC_PACKAGE_LICENSE
-    # remove the license from the environment variable
-    # WPPUS_GENERIC_PACKAGE_LICENSE
-    sed -i '' '/WPPUS_GENERIC_PACKAGE_LICENSE/d' ~/.bashrc
-    unset WPPUS_GENERIC_PACKAGE_LICENSE
-    # remove the license signature from the environment variable
-    # WPPUS_GENERIC_PACKAGE_SIGNATURE
-    sed -i '' '/WPPUS_GENERIC_PACKAGE_SIGNATURE/d' ~/.bashrc
-    unset WPPUS_GENERIC_PACKAGE_SIGNATURE
-    # source the bashrc file to commit the changes
-    source ~/.bashrc
-    echo "Uninstalled license $license" >&2
+    local license=$license_key
+    # remove the license key from wppus.json
+    jq '.licenseKey = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+    # remove the license signature from wppus.json
+    jq '.licenseSignature = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+    license_signature=""
 
     if [ "$debug" == "true" ]; then
         # return early
@@ -96,7 +88,7 @@ function uninstall() {
 function is_installed() {
 
     # check if the WPPUS_GENERIC_PACKAGE_LICENSE environment variable is set
-    if [ -z "$WPPUS_GENERIC_PACKAGE_LICENSE" ]; then
+    if [ -z "$license_key" ]; then
         # return false
         echo "false"
         # return early
@@ -111,7 +103,7 @@ function is_installed() {
     fi
 
     # check if the cron job exists
-    if crontab -l | grep -q "$script_path"; then
+    if crontab -l 2>/dev/null | grep -q "$script_path"; then
         # return true
         echo "true"
     else
@@ -128,11 +120,12 @@ function send_api_request() {
     local full_url=$(printf "%s/%s/?%s" "$url" "$1" "${*:2}")
     # make the request
     local response=$(curl -s "$full_url")
+
     # return the response
     echo "$response"
 }
 
-## ENOCODING AND DECODING FOR URLS ##
+## ENCODING AND DECODING FOR URLS ##
 
 function urlencode() {
     local old_lc_collate=$LC_COLLATE
@@ -151,24 +144,21 @@ function urlencode() {
 }
 
 function urldecode() {
-    local url_encoded="${1//+/ }"
+    local url_encoded="${1}"
     printf '%b' "${url_encoded//%/\\x}"
 }
 
 ### CHECKING FOR UPDATES ###
 
 function check_for_updates() {
-    # get a previously acquired license signature from an environment variable
-    # WPPUS_GENERIC_PACKAGE_SIGNATURE, and url encode it
-    local signature=$(urlencode "$WPPUS_GENERIC_PACKAGE_SIGNATURE")
     # build the request url
     local endpoint="wppus-update-api"
     local args=(
         "action=get_metadata"
-        "package_id=$package_name"
-        "installed_version=1.4.13"
-        "license_key=41ec1eba0f17d47f76827a33c7daab2c"
-        "license_signature=$signature"
+        "package_id=$(urlencode "$package_name")"
+        "installed_version=$(urlencode "$version")"
+        "license_key=$(urlencode "$license_key")"
+        "license_signature=$(urlencode "$license_signature")"
         "update_type=Generic"
     )
     # make the request
@@ -180,47 +170,39 @@ function check_for_updates() {
 ### ACTIVATING A LICENSE ###
 
 function activate_license() {
-    # get the license signature from an environment variable
-    # WPPUS_GENERIC_PACKAGE_LICENSE
-    local license=$WPPUS_GENERIC_PACKAGE_LICENSE
     # build the request url
     local endpoint="wppus-license-api"
     local args=(
         "action=activate"
-        "license_key=$license"
-        "allowed_domains=$domain"
-        "package_slug=$package_name"
+        "license_key=$(urlencode "$license_key")"
+        "allowed_domains=$(urlencode "$domain")"
+        "package_slug=$(urlencode "$package_name")"
     )
     # make the request
     local response=$(send_api_request "$endpoint" "${args[@]}")
-    # get the license signature from the response
-    local license_signature=$(urldecode $(echo -n "$response" | jq -r '.license_signature'))
-    # save the license signature in an environment variable
-    # WPPUS_GENERIC_PACKAGE_SIGNATURE
-    echo "export WPPUS_GENERIC_PACKAGE_SIGNATURE=\"$license_signature\"" >> ~/.bashrc
-    source ~/.bashrc
+    # get the signature from the response
+    local signature=$(urldecode $(echo -n "$response" | jq -r '.license_signature'))
+    # add the license signature to wppus.json
+    jq '.licenseSignature = "'"$signature"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+    license_signature=$signature
 }
 
 ### DEACTIVATING A LICENSE ###
 
 function deactivate_license() {
-    # get the license signature from an environment variable
-    # WPPUS_GENERIC_PACKAGE_LICENSE
-    local license=$WPPUS_GENERIC_PACKAGE_LICENSE
     # build the request url
     local endpoint="wppus-license-api"
     local args=(
         "action=deactivate"
-        "license_key=$license"
-        "allowed_domains=$domain"
-        "package_slug=$package_name"
+        "license_key=$(urlencode "$license_key")"
+        "allowed_domains=$(urlencode "$domain")"
+        "package_slug=$(urlencode "$package_name")"
     )
     # make the request
     local response=$(send_api_request "$endpoint" "${args[@]}")
-    # remove the license signature from the environment variable
-    # WPPUS_GENERIC_PACKAGE_SIGNATURE
-    sed -i '' '/WPPUS_GENERIC_PACKAGE_SIGNATURE/d' ~/.bashrc
-    source ~/.bashrc
+    # remove the license signature from wppus.json
+    jq '.licenseSignature = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+    license_signature=""
 }
 
 ### DOWNLOADING THE PACKAGE ###
@@ -235,6 +217,16 @@ function download_update() {
     # return the path to the downloaded file
     echo $output_file
 }
+
+### MAIN SCRIPT ###
+
+# check if the script was called with the argument "get_version"
+if [ "$1" == "get_version" ]; then
+    # return the version
+    echo "$version"
+    # halt the script
+    exit 0
+fi
 
 # check if the script was called with the argument "install"
 if [ "$1" == "install" ]; then
@@ -293,6 +285,11 @@ if [ "$1" == "check_for_updates" ]; then
             fi
         done
 
+        # add the license key to wppus.json
+        jq '.licenseKey = "'"$1"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+        # add the license signature to wppus.json
+        jq '.licenseSignature = "'"$signature"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+
         # remove the directory
         rm -rf /tmp/$package_name
         # remove the zip
@@ -324,18 +321,8 @@ fi
 
 # check if the script was called with the argument "get_update"
 if [ "$1" == "get_update_info" ]; then
-    response=$(check_for_updates)
-
-    # get the current version
-    echo "current: $version"
-    echo "vs."
-    # get the version from the response
-    echo "remote: $(echo -n "$response" | jq -r '.version')"
-    echo ""
-    echo "---------"
-    echo ""
-    # pretty print the response
-    echo "$response" | jq
+    # get the update information
+    echo "$(check_for_updates)"
     # halt the script
     exit 0
 fi
