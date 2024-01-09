@@ -1,5 +1,6 @@
 {
    "server": "https:\/\/server.domain.tld\/",
+   "requireLicense": true,
     "packageData": {
          "Name": "Dummy Generic Package",
         "Version": "1.4.14",
