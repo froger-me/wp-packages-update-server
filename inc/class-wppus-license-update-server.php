@@ -191,6 +191,7 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 	protected function prepare_license_for_output( $license ) {
 		$output = json_decode( wp_json_encode( $license ), true );
 
+		unset( $output['id'] );
 		unset( $output['hmac_key'] );
 		unset( $output['crypto_key'] );
 		unset( $output['data'] );
