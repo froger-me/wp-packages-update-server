@@ -9,33 +9,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 /* ================================================================================================ */
 
 /**
-* Selectively uncomment the sections below to enable updates with WP Packages Update Server.
+* Uncomment the section below to enable updates with WP Packages Update Server.
 *
 * WARNING - READ FIRST:
-* Before deploying the plugin or theme, make sure to change the following value
-* - https://your-update-server.com  => The URL of the server where WP Packages Update Server is installed
-* - $prefix_updater                 => Replace "prefix" in this variable's name with a unique theme prefix
 *
-* @see https://github.com/froger-me/wp-package-updater
+* Before deploying the plugin or theme, make sure to change the following values in wppus.json:
+* - server          => The URL of the server where WP Packages Update Server is installed ; required
+* - requireLicense  => Whether the package requires a license ; true or false ; optional
+*
+* Also change $prefix_updater below - replace "prefix" in this variable's name with a unique prefix
+*
 **/
 
-require_once get_stylesheet_directory() . '/lib/wp-package-updater/class-wp-package-updater.php';
+/** Enable updates**/
+/* phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+require_once plugin_dir_path( __FILE__ ) . 'lib/wp-package-updater/class-wp-package-updater.php';
 
-/** Enable theme updates with license check **/
-// $prefix_updater = new WP_Package_Updater(
-// 	'https://your-update-server.com',
-// 	wp_normalize_path( __FILE__ ),
-// 	get_stylesheet_directory(),
-// 	'Public API Authentication Key',
-// 	true
-// );
-
-/** Enable theme updates without license check **/
-// $prefix_updater = new WP_Package_Updater(
-// 	'https://your-update-server.com',
-// 	wp_normalize_path( __FILE__ ),
-// 	get_stylesheet_directory()
-// );
+$prefix_updater = new WP_Package_Updater(
+	wp_normalize_path( __FILE__ ),
+	get_stylesheet_directory()
+);
+*/
 
 /* ================================================================================================ */
 
