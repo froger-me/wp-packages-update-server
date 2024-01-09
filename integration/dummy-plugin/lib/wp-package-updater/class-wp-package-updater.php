@@ -291,8 +291,8 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		public function filter_update_checks( $query_args ) {
 
 			if ( $this->use_license ) {
-				$license           = get_option( 'license_key_' . $this->package_slug );
-				$license_signature = get_option( 'license_signature_' . $this->package_slug );
+				$license           = $this->get_option( 'licenseKey' );
+				$license_signature = $this->get_option( 'licenseSignature' );
 
 				if ( $license ) {
 					$query_args['license_key']       = rawurlencode( $license );
@@ -321,25 +321,25 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			$license_data = $this->do_query_license( 'activate' );
 
 			if ( isset( $license_data->package_slug, $license_data->license_key ) ) {
-				update_option( 'license_key_' . $license_data->package_slug, $license_data->license_key );
+				$this->update_option( 'licenseKey', $license_data->license_key );
 
 				if ( isset( $license_data->license_signature ) ) {
-					update_option( 'license_signature_' . $license_data->package_slug, $license_data->license_signature );
+					$this->update_option( 'licenseSignature', $license_data->license_signature );
 				} else {
-					delete_option( 'license_signature_' . $license_data->package_slug );
+					$this->delete_option( 'licenseSignature' );
 				}
 			} else {
 				$error = new WP_Error( 'License', $license_data->message );
 
 				if ( property_exists( $license_data, 'clear_key' ) && $license_data->clear_key ) {
-					delete_option( 'license_signature_' . $this->package_slug );
-					delete_option( 'license_key_' . $this->package_slug );
+					$this->delete_option( 'licenseSignature' );
+					$this->delete_option( 'licenseKey' );
 				}
 
 				wp_send_json_error( $error );
 			}
 
-			delete_option( 'wppu_' . $this->package_slug . '_license_error' );
+			$this->delete_option( 'licenseError' );
 			wp_send_json_success( $license_data );
 		}
 
@@ -347,19 +347,19 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			$license_data = $this->do_query_license( 'deactivate' );
 
 			if ( isset( $license_data->package_slug, $license_data->license_key ) ) {
-				update_option( 'license_key_' . $license_data->package_slug, '' );
+				$this->update_option( 'licenseKey', '' );
 
 				if ( isset( $license_data->license_signature ) ) {
-					update_option( 'license_signature_' . $license_data->package_slug, '' );
+					$this->update_option( 'licenseSignature', '' );
 				} else {
-					delete_option( 'license_signature_' . $license_data->package_slug );
+					$this->delete_option( 'licenseSignature' );
 				}
 			} else {
 				$error = new WP_Error( 'License', $license_data->message );
 
 				if ( $license_data->clear_key ) {
-					delete_option( 'license_signature_' . $this->package_slug );
-					delete_option( 'license_key_' . $this->package_slug );
+					$this->delete_option( 'licenseSignature' );
+					$this->delete_option( 'licenseKey' );
 				}
 
 				wp_send_json_error( $error );
@@ -373,16 +373,16 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			if ( isset( $package_info->license_error ) && ! empty( $package_info->license_error ) ) {
 				$license_data = $this->handle_license_errors( $package_info->license_error );
 
-				update_option( 'wppu_' . $this->package_slug . '_license_error', $package_info->name . ': ' . $license_data->message );
+				$this->update_option( 'licenseError', $package_info->name . ': ' . $license_data->message );
 			} else {
-				delete_option( 'wppu_' . $this->package_slug . '_license_error' );
+				$this->delete_option( 'licenseError' );
 			}
 
 			return $package_info;
 		}
 
 		public function show_license_error_notice() {
-			$error = get_option( 'wppu_' . $this->package_slug . '_license_error' );
+			$error = get_option( 'licenseError' );
 
 			if ( $error ) {
 				$class = 'license-error license-error-' . $this->package_slug . ' notice notice-error is-dismissible';
@@ -533,6 +533,41 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 			$wp_filesystem->put_contents( $this->package_path . 'wppus.json', $wppus_json, FS_CHMOD_FILE );
 		}
 
+		protected function delete_option( $option ) {
+			global $wp_filesystem;
+
+			if ( ! isset( $wp_filesystem ) ) {
+				include_once ABSPATH . 'wp-admin/includes/file.php';
+
+				WP_Filesystem();
+			}
+
+			if ( ! isset( self::$json_options ) ) {
+				$wppus_json = $wp_filesystem->get_contents( $this->package_path . 'wppus.json' );
+
+				if ( $wppus_json ) {
+					self::$json_options = json_decode( $wppus_json, true );
+				}
+			}
+
+			$save = false;
+
+			if ( isset( self::$json_options[ $option ] ) ) {
+				$save = true;
+
+				unset( self::$json_options[ $option ] );
+			}
+
+			if ( $save ) {
+				$wppus_json = wp_json_encode(
+					self::$json_options,
+					JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+				);
+
+				$wp_filesystem->put_contents( $this->package_path . 'wppus.json', $wppus_json, FS_CHMOD_FILE );
+			}
+		}
+
 		protected function do_query_license( $query_type ) {
 
 			if ( ! wp_verify_nonce( $_REQUEST['nonce'], 'license_nonce' ) ) {
@@ -667,7 +702,7 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 		}
 
 		protected function get_license_form() {
-			$license = get_option( 'license_key_' . $this->package_slug );
+			$license = get_option( 'licenseKey' );
 
 			ob_start();
 
