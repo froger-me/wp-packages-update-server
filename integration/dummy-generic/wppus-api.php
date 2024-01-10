@@ -218,9 +218,7 @@ class WPPUS_API {
 			if ( is_dir( '/tmp/' . self::$package_name ) ) {
 				$t_ext = PATHINFO_EXTENSION;
 				# get the permissions of the current script
-				$octal_mode = intval( substr( sprintf( '%o', fileperms( self::$package_script ) ), -4 ) );
-
-				echo "$octal_mode\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$octal_mode = substr( sprintf( '%o', fileperms( self::$package_script ) ), -4 );
 
 				# set the permissions of the new main scripts to the permissions of the
 				# current script
@@ -228,12 +226,16 @@ class WPPUS_API {
 
 					# check if the file starts with the package name
 					if ( substr( basename( $file ), 0, strlen( self::$package_name ) + 1 ) === self::$package_name . '.' ) {
-						chmod( $file, $octal_mode ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+						chmod( $file, octdec( $octal_mode ) ) . "\n"; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
 					}
 				}
 
 				# delete all files in the current directory, except for update scripts
-				foreach ( glob( __DIR__ . '/*' ) as $file ) {
+				foreach ( glob( __DIR__ . '/{,.}*', GLOB_BRACE | GLOB_MARK ) as $file ) {
+
+					if ( basename( $file ) === '.' || basename( $file ) === '..' || basename( $file ) === '.installed' ) {
+						continue;
+					}
 
 					# check if the file does not start with `wppus`, or is .json
 					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
@@ -249,17 +251,16 @@ class WPPUS_API {
 				# move the updated package files to the current directory ; the
 				# updated package is in charge of overriding the update scripts
 				# with new ones after update (may be contained in a subdirectory)
-				foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
+				foreach ( glob( '/tmp/' . self::$package_name . '/{,.}*', GLOB_BRACE | GLOB_MARK ) as $file ) {
+
+					if ( basename( $file ) === '.' || basename( $file ) === '..' ) {
+						continue;
+					}
 
 					# check if the file does not start with `wppus`, or is .json
-					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
+					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) || 'json' !== pathinfo( $file, $t_ext ) ) {
 						rename( $file, dirname( self::$package_script ) . '/' . basename( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
 					}
-				}
-
-				# remove the directory
-				foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
-					unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 				}
 
 				deleteFolder( '/tmp/' . self::$package_name );
@@ -289,13 +290,19 @@ function deleteFolder( $dir_path ) { // phpcs:ignore WordPress.NamingConventions
 	if ( ! is_dir( $dir_path ) ) {
 		throw new InvalidArgumentException( "$dir_path must be a directory" ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 	}
+
 	if ( substr( $dir_path, strlen( $dir_path ) - 1, 1 ) !== '/' ) {
 		$dir_path .= '/';
 	}
 
-	$files = glob( $dir_path . '*', GLOB_MARK );
+	$files = glob( $dir_path . '{,.}*', GLOB_BRACE | GLOB_MARK );
 
 	foreach ( $files as $file ) {
+
+		if ( basename( $file ) === '.' || basename( $file ) === '..' ) {
+			continue;
+		}
+
 		if ( is_dir( $file ) ) {
 			deleteFolder( $file );
 		} else {
