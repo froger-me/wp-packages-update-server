@@ -43,10 +43,10 @@ class WPPUS_API {
 		# define the domain
 		if ( 'Darwin' === PHP_OS ) {
 			# macOS
-			self::$domain = exec( 'ioreg -rd1 -c IOPlatformExpertDevice | awk -F\'"\' \'/IOPlatformUUID/{print $4}\'' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec, WordPress.WP.GlobalVariablesOverride.Prohibited
+			self::$domain = rtrim( exec( 'ioreg -rd1 -c IOPlatformExpertDevice | awk -F\'"\' \'/IOPlatformUUID/{print $4}\'' ), "\n" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec, WordPress.WP.GlobalVariablesOverride.Prohibited
 		} elseif ( 'Linux' === PHP_OS ) {
 			# Ubuntu
-			self::$domain = exec( 'cat /var/lib/dbus/machine-id' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec, WordPress.WP.GlobalVariablesOverride.Prohibited
+			self::$domain = rtrim( exec( 'cat /var/lib/dbus/machine-id' ), "\n" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec, WordPress.WP.GlobalVariablesOverride.Prohibited
 		}
 	}
 

@@ -31,10 +31,10 @@ license_signature=$(jq -r '.licenseSignature' "$(cd "$(dirname "$0")"; pwd -P)/w
 # define the domain
 if [[ "$(uname)" == "Darwin" ]]; then
     # macOS
-    domain=$(ioreg -rd1 -c IOPlatformExpertDevice | awk -F'"' '/IOPlatformUUID/{print $4}')
+    domain=$(echo "$(ioreg -rd1 -c IOPlatformExpertDevice | awk -F'"' '/IOPlatformUUID/{print $4}')"  | tr -d '\n')
 elif [[ "$(uname)" == "Linux" ]]; then
     # Ubuntu
-    domain=$(cat /var/lib/dbus/machine-id)
+    domain=$(echo "$(cat /var/lib/dbus/machine-id)"  | tr -d '\n')
 fi
 
 ### INSTALLING THE PACKAGE ###

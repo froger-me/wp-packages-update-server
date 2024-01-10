@@ -59,32 +59,32 @@ async function main() {
     // define the current version of the package from the wppus.json file
     let version = config.packageData.Version;
     // define license_key from the wppus.json file
-    let license_key = config.licenseKey;
+    let license_key = config.licenseKey ? config.licenseKey : '';
     // define license_signature from the wppus.json file
-    let license_signature = config.licenseSignature;
+    let license_signature = config.licenseSignature ? config.licenseSignature : '';
     // define the domain
     let domain = "";
 
     if ("Darwin" === os.type()) {
-        domain = machineIdSync();
+        domain = machineIdSync().replace(/\n+$/, "");;
     } else if ("Linux" === os.type()) {
-        domain = fs.readFileSync('/var/lib/dbus/machine-id', 'utf8');
+        domain = fs.readFileSync('/var/lib/dbus/machine-id', 'utf8').replace(/\n+$/, "");;
     }
 
     // ### INSTALLING THE PACKAGE ###
 
-    const install = function () {
+    const install = async function (license_key) {
         // add the license key to wppus.json
         config.licenseKey = license_key;
         // add a file '.installed' in current directory
         fs.writeFileSync(path.join(__dirname, '.installed'), '');
         // write the new wppus.json file
-        fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config));
+        fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config, null, 4));
     };
 
     // ### UNINSTALLING THE PACKAGE ###
 
-    const uninstall = function () {
+    const uninstall = async function () {
         // remove the license key from wppus.json
         config.licenseKey = "";
         // remove the license signature from wppus.json
@@ -92,7 +92,7 @@ async function main() {
         // remove the file '.installed' from current directory
         fs.unlinkSync(path.join(__dirname, '.installed'));
         // write the new wppus.json file
-        fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config));
+        fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config, null, 4));
 
         license_signature = "";
     };
@@ -108,7 +108,7 @@ async function main() {
 
     const send_api_request = function (endpoint, args) {
         // build the request url
-        let full_url = url + '/' + endpoint + '/?' + querystring.stringify(args);
+        let full_url = url.replace(/\/$/, "") + '/' + endpoint + '/?' + querystring.stringify(args);
         // make the request
         return new Promise((resolve, reject) => {
             let response = '';
@@ -161,12 +161,12 @@ async function main() {
         // make the request
         let response = await send_api_request(endpoint, args);
         // get the signature from the response
-        let signature = decodeURIComponent(response.license_signature);
+        let signature = JSON.parse(decodeURIComponent(response)).license_signature;
 
         // add the license signature to wppus.json
         config.licenseSignature = signature;
         // write the new wppus.json file
-        fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config));
+        fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config, null, 4));
 
         license_signature = signature;
     };
@@ -187,7 +187,7 @@ async function main() {
         // remove the license signature from wppus.json
         config.licenseSignature = "";
         // write the new wppus.json file
-        fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config));
+        fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config, null, 4));
 
         license_signature = "";
     };
@@ -230,7 +230,7 @@ async function main() {
         // check for updates
         let response = await check_for_updates();
         // get the version from the response
-        let new_version = JSON.parse(response).version;
+        let new_version = JSON.parse(decodeURIComponent(response)).version;
 
         if (compareVersions(version, new_version) < 0) {
             // download the update
@@ -286,7 +286,7 @@ async function main() {
 
     const get_update_info = async function () {
         // get the update information
-        return await check_for_updates();
+        return JSON.parse(decodeURIComponent(await check_for_updates()));
     };
 
     return {
