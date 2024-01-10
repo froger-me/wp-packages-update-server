@@ -2,3 +2,6 @@
 **/package-lock.json
 **/package.json
 **/webpack.config.js
+**/__pycache__/
+**/.eslintrc
+**/.installed
