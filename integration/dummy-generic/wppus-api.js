@@ -86,11 +86,16 @@ async function main() {
 
     const uninstall = async function () {
         // remove the license key from wppus.json
-        config.licenseKey = "";
+        delete config.licenseKey;
         // remove the license signature from wppus.json
-        config.licenseSignature = "";
+        delete config.licenseSignature;
         // remove the file '.installed' from current directory
-        fs.unlinkSync(path.join(__dirname, '.installed'));
+        if (parseInt(process.version.slice(1).split('.')[0]) >= 14) {
+            fs.rmSync(path.join(__dirname, '.installed'));
+        } else {
+            fs.unlinkSync(path.join(__dirname, '.installed'));
+        }
+
         // write the new wppus.json file
         fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config, null, 4));
 
@@ -185,7 +190,7 @@ async function main() {
         // make the request
         send_api_request(endpoint, args);
         // remove the license signature from wppus.json
-        config.licenseSignature = "";
+        delete config.licenseSignature;
         // write the new wppus.json file
         fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config, null, 4));
 
