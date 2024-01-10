@@ -16,7 +16,6 @@ class WPPUS_API {
 	private static $url;
 	private static $package_name;
 	private static $package_script;
-	private static $zip_name;
 	private static $version;
 	private static $license_key;
 	private static $license_signature;
@@ -219,7 +218,9 @@ class WPPUS_API {
 			if ( is_dir( '/tmp/' . self::$package_name ) ) {
 				$t_ext = PATHINFO_EXTENSION;
 				# get the permissions of the current script
-				$octal_mode = substr( sprintf( '%o', fileperms( self::$package_script ) ), -4 );
+				$octal_mode = intval( substr( sprintf( '%o', fileperms( self::$package_script ) ), -4 ) );
+
+				echo "$octal_mode\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 				# set the permissions of the new main scripts to the permissions of the
 				# current script
@@ -236,7 +237,12 @@ class WPPUS_API {
 
 					# check if the file does not start with `wppus`, or is .json
 					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
-						unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+
+						if ( is_dir( $file ) ) {
+							deleteFolder( $file );
+						} else {
+							unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+						}
 					}
 				}
 
@@ -256,7 +262,7 @@ class WPPUS_API {
 					unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 				}
 
-				rmdir( '/tmp/' . self::$package_name ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+				deleteFolder( '/tmp/' . self::$package_name );
 			}
 
 			# add the license key to wppus.json
@@ -276,4 +282,26 @@ class WPPUS_API {
 		# get the update information
 		return self::check_for_updates();
 	}
+}
+
+function deleteFolder( $dir_path ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid, Universal.Files.SeparateFunctionsFromOO.Mixed
+
+	if ( ! is_dir( $dir_path ) ) {
+		throw new InvalidArgumentException( "$dir_path must be a directory" ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
+	}
+	if ( substr( $dir_path, strlen( $dir_path ) - 1, 1 ) !== '/' ) {
+		$dir_path .= '/';
+	}
+
+	$files = glob( $dir_path . '*', GLOB_MARK );
+
+	foreach ( $files as $file ) {
+		if ( is_dir( $file ) ) {
+			deleteFolder( $file );
+		} else {
+			unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+		}
+	}
+
+	rmdir( $dir_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
 }
