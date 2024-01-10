@@ -38,8 +38,6 @@ package_name = os.path.basename(os.path.dirname(__file__))
 package_script = os.path.join(os.path.dirname(__file__), os.path.basename(__file__))
 # define the current script name
 script_name = os.path.basename(__file__)
-# define the update zip archive name
-zip_name = package_name + ".zip"
 # define the current version of the package from the wppus.json file
 version = wppus_config["packageData"]["Version"]
 
@@ -204,7 +202,7 @@ def _download_update():
     # get the download url from the response
     _url = urllib.parse.unquote(json.loads(response)["download_url"])
     # set the path to the downloaded file
-    output_file = os.path.join(tempfile.gettempdir(), zip_name)
+    output_file = os.path.join(tempfile.gettempdir(), package_name + ".zip")
 
     # make the request
     urllib.request.urlretrieve(_url, output_file)
@@ -236,48 +234,56 @@ def update():
         with zipfile.ZipFile(output_file, "r") as zip_file:
             zip_file.extractall(os.path.join(tempfile.gettempdir(), package_name))
 
-        # get the permissions of the old file
-        octal_mode = oct(os.stat(package_script).st_mode)[-4:]
-        # set the permissions of the new file to the permissions of the old file
-        os.chmod(os.path.join(tempfile.gettempdir(), package_name, script_name), int(octal_mode, 8))
+        if os.path.isdir(os.path.join(tempfile.gettempdir(), package_name)):
+            # get the permissions of the current script
+            octal_mode = oct(os.stat(package_script).st_mode)[-4:]
 
-        # delete all files in the current directory, except for update scripts
-        for file in os.listdir(os.path.dirname(__file__)):
+             # set the permissions of the new main scripts to the permissions of the
+            # current script
+            for file in os.listdir(os.path.join(tempfile.gettempdir(), package_name)):
 
-            # check if the file does not start with `wppus`, or is .json
-            if not file.startswith("wppus") or file.endswith(".json"):
-                os.remove(os.path.join(os.path.dirname(__file__), file))
+                # check if the file starts with the package name
+                if file.startswith(package_name):
+                    path = os.path.join(tempfile.gettempdir(), package_name, file)
 
-        # move the updated package files to the current directory ;
-        # the updated package is in charge of overriding the update script
-        # with new ones after update (may be contained in a subdirectory)
-        for file in os.listdir(os.path.join(tempfile.gettempdir(), package_name)):
+                    os.chmod(path, int(octal_mode, 8))
 
-            # check if the file does not start with `wppus`, or is .json
-            if not file.startswith("wppus") or file.endswith(".json"):
-                src = os.path.join(tempfile.gettempdir(), package_name, file)
-                dest = os.path.join(os.path.dirname(__file__), file)
+            # delete all files in the current directory, except for update scripts
+            for file in os.listdir(os.path.dirname(__file__)):
 
-                if os.path.exists(dest):
-                    os.remove(dest)
-                shutil.move(src, dest)
+                # check if the file does not start with `wppus`, or is .json
+                if not file.startswith("wppus") or file.endswith(".json"):
+                    os.remove(os.path.join(os.path.dirname(__file__), file))
 
-        # add the license key to wppus.json
-        wppus_config["licenseKey"] = license_key
+            # move the updated package files to the current directory ; the
+            # updated package is in charge of overriding the update scripts
+            # with new ones after update (may be contained in a subdirectory)
+            for file in os.listdir(os.path.join(tempfile.gettempdir(), package_name)):
 
-        with open(os.path.join(os.path.dirname(__file__), conf), "w", encoding="utf-8") as f:
-            json.dump(wppus_config, f, indent=4)
-        # add the license signature to wppus.json
-        wppus_config["licenseSignature"] = license_signature
+                # check if the file does not start with `wppus`, or is .json
+                if not file.startswith("wppus") or file.endswith(".json"):
+                    src = os.path.join(tempfile.gettempdir(), package_name, file)
+                    dest = os.path.join(os.path.dirname(__file__), file)
 
-        with open(os.path.join(os.path.dirname(__file__), conf), "w", encoding="utf-8") as f:
-            json.dump(wppus_config, f, indent=4)
+                    if os.path.exists(dest):
+                        os.remove(dest)
 
-        # remove the directory
-        for file in os.listdir(os.path.join(tempfile.gettempdir(), package_name)):
-            os.remove(os.path.join(tempfile.gettempdir(), package_name, file))
+                    shutil.move(src, dest)
 
-        os.rmdir(os.path.join(tempfile.gettempdir(), package_name))
+            # add the license key to wppus.json
+            wppus_config["licenseKey"] = license_key
+            # add the license signature to wppus.json
+            wppus_config["licenseSignature"] = license_signature
+
+            with open(os.path.join(os.path.dirname(__file__), conf), "w", encoding="utf-8") as f:
+                json.dump(wppus_config, f, indent=4)
+
+            # remove the directory
+            for file in os.listdir(os.path.join(tempfile.gettempdir(), package_name)):
+                os.remove(os.path.join(tempfile.gettempdir(), package_name, file))
+
+            os.rmdir(os.path.join(tempfile.gettempdir(), package_name))
+
         # remove the zip
         os.remove(output_file)
 

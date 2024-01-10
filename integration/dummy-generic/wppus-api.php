@@ -31,8 +31,6 @@ class WPPUS_API {
 		self::$package_name = basename( __DIR__ );
 		# define the package script
 		self::$package_script = __DIR__ . '/' . basename( __DIR__ ) . '.php';
-		# define the update zip archive name
-		self::$zip_name = self::$package_name . '.zip';
 		# define the current version of the package from the wppus.json file
 		self::$version = self::$config['packageData']['Version'];
 		# define license_key from the wppus.json file
@@ -85,6 +83,8 @@ class WPPUS_API {
 	private static function send_api_request( $action, $args = array() ) {
 		# build the request url
 		$full_url = self::$url . '/' . $action . '/?' . http_build_query( $args );
+
+		echo $full_url . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		# initialize cURL
 		$ch = curl_init(); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_init
@@ -166,22 +166,27 @@ class WPPUS_API {
 	### DOWNLOADING THE PACKAGE ###
 
 	private static function download_update( $response ) {
+		$response = json_decode( $response, true );
 		# get the download url from the response
-		$url = rawurldecode( json_decode( $response, true )['download_url'] );
+		$url = isset( $response['download_url'] ) ? rawurldecode( $response['download_url'] ) : '';
 		# set the path to the downloaded file
-		$output_file = '/tmp/' . self::$zip_name;
+		$output_file = '/tmp/' . self::$package_name . '.zip';
+
 		# make the request
-		$ch = curl_init(); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_init
-		curl_setopt( $ch, CURLOPT_URL, $url ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 20 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
-		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
-		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+		if ( filter_var( $url, FILTER_VALIDATE_URL ) ) {
+			$ch = curl_init(); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_init
 
-		$response = curl_exec( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_exec
+			curl_setopt( $ch, CURLOPT_URL, $url ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_TIMEOUT, 20 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
+			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_setopt
 
-		curl_close( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_close
-		file_put_contents( $output_file, $response ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+			$response = curl_exec( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_exec
+
+			curl_close( $ch ); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_close
+			file_put_contents( $output_file, $response ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
+		}
 
 		# return the path to the downloaded file
 		return $output_file;
@@ -213,49 +218,57 @@ class WPPUS_API {
 			$zip->extractTo( '/tmp/' );
 			$zip->close();
 
-			# get the permissions of the old file
-			$octal_mode = substr( sprintf( '%o', fileperms( self::$package_script ) ), -4 );
-			# set the permissions of the new file to the permissions of the old file
-			chmod( $octal_mode, '/tmp/' . self::$package_name . '/' . self::$package_name . '.php' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+			if ( is_dir( '/tmp/' . self::$package_name ) ) {
+				$t_ext = PATHINFO_EXTENSION;
+				# get the permissions of the current script
+				$octal_mode = substr( sprintf( '%o', fileperms( self::$package_script ) ), -4 );
 
-			$t_ext = PATHINFO_EXTENSION;
+				# set the permissions of the new main scripts to the permissions of the
+				# current script
+				foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
 
-			# delete all files in the current directory, except for update scripts
-			foreach ( glob( __DIR__ . '/*' ) as $file ) {
+					# check if the file starts with the package name
+					if ( substr( basename( $file ), 0, strlen( self::$package_name ) + 1 ) === self::$package_name . '.' ) {
+						chmod( $octal_mode, $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+					}
+				}
 
-				# check if the file does not start with `wppus`, or is .json
-				if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
+				# delete all files in the current directory, except for update scripts
+				foreach ( glob( __DIR__ . '/*' ) as $file ) {
+
+					# check if the file does not start with `wppus`, or is .json
+					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
+						unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+					}
+				}
+
+				# move the updated package files to the current directory ; the
+				# updated package is in charge of overriding the update scripts
+				# with new ones after update (may be contained in a subdirectory)
+				foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
+
+					# check if the file does not start with `wppus`, or is .json
+					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
+						rename( $file, dirname( self::$package_script ) . '/' . basename( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+					}
+				}
+
+				# remove the directory
+				foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
 					unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 				}
-			}
 
-			# move the updated package files to the current directory ;
-			# the updated package is in charge of overriding the update script
-			# with new ones after update (may be contained in a subdirectory)
-			foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
-
-				# check if the file does not start with `wppus`, or is .json
-				if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
-					rename( $file, dirname( self::$package_script ) . '/' . basename( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
-				}
+				rmdir( '/tmp/' . self::$package_name ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
 			}
 
 			# add the license key to wppus.json
 			self::$config['licenseKey'] = self::$license_key;
-			file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 			# add the license signature to wppus.json
 			self::$config['licenseSignature'] = self::$license_signature;
+			# write the new version to wppus.json
 			file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
-
-			# remove the directory
-			foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
-				unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-			}
-
-			rmdir( '/tmp/' . self::$package_name ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
 			# remove the zip
 			unlink( $output_file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
-
 		}
 	}
 

@@ -17,8 +17,6 @@ url=$(jq -r '.server' "$(cd "$(dirname "$0")" || exit; pwd -P)/wppus.json")
 package_name="$(basename "$(cd "$(dirname "$0")" || exit; pwd -P)")"
 # define the package script
 package_script="$(cd "$(dirname "$0")" || exit; pwd -P)/$(basename "$(cd "$(dirname "$0")" || exit; pwd -P)").sh"
-# define the update zip archive name
-zip_name="$package_name.zip"
 # define the current version of the package from the wppus.json file
 version=$(jq -r '.packageData.Version' "$(cd "$(dirname "$0")" || exit; pwd -P)/wppus.json")
 # define license_key from the wppus.json file
@@ -183,14 +181,14 @@ function deactivate_license() {
 ### DOWNLOADING THE PACKAGE ###
 
 function download_update() {
-    local url
+    local download_url
     # get the download url from the response in $1
-    url="$(urldecode "$(echo -n "$1" | jq -r '.download_url')")"
+    download_url="$(echo -n "$1" | jq -r '.download_url')"
     # set the path to the downloaded file
-    local output_file="/tmp/$zip_name"
+    local output_file="/tmp/$package_name.zip"
 
     # make the request
-    curl -sS -L -o "$output_file" "$url"
+    curl -sS -L -o "$output_file" "$download_url"
 
     # return the path to the downloaded file
     echo "$output_file"
@@ -246,41 +244,53 @@ if [ "$1" == "update" ]; then
         # extract the zip in /tmp/$(package_name)
         unzip -q -o "$output_file" -d /tmp
 
-        # get the permissions of the old file
-        if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-            OCTAL_MODE=$(stat -c '%a' "$package_script")
-        elif [[ "$OSTYPE" == "darwin"* ]]; then
-            OCTAL_MODE=$(stat -f '%p' "$package_script" | cut -c 4-6)
+        if [ -d "/tmp/$package_name" ]; then
+
+            # get the permissions of the current script
+            if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+                OCTAL_MODE=$(stat -c '%a' "$package_script")
+            elif [[ "$OSTYPE" == "darwin"* ]]; then
+                OCTAL_MODE=$(stat -f '%p' "$package_script" | cut -c 4-6)
+            fi
+
+            # set the permissions of the new main scripts to the permissions of the
+            # current script
+            for file in "/tmp/$package_name"/*; do
+
+                # check if the file starts with the package name
+                if [[ "$file" == "/tmp/$package_name/$package_name".* ]]; then
+                    chmod "$OCTAL_MODE" "$file"
+                fi
+            done
+
+            # delete all files in the current directory, except for update scripts
+            for file in "$(cd "$(dirname "$0")" || exit; pwd -P)"/*; do
+
+                # check if the file does not start with `wppus`, or is .json
+                if [[ ! "$file" == "$(cd "$(dirname "$0")" || exit; pwd -P)"/wppus* ]] || [[ "$file" == *.json ]]; then
+                    rm -rf "$file"
+                fi
+            done
+
+            # move the updated package files to the current directory ; the
+            # updated package is in charge of overriding the update scripts
+            # with new ones after update (may be contained in a subdirectory)
+            for file in "/tmp/$package_name"/*; do
+
+                # check if the file does not start with `wppus`, or is .json
+                if [[ ! "$file" == /tmp/"$package_name"/wppus* ]] || [[ "$file" == *.json ]]; then
+                    mv "$file" "$(dirname "$0")"
+                fi
+            done
+
+            # remove the directory
+            rm -rf /tmp/"$package_name"
         fi
-
-        # set the permissions of the new file to the permissions of the old file
-        chmod "$OCTAL_MODE" /tmp/"$package_name"/"$package_name".sh
-
-        # delete all files in the current directory, except for update scripts
-        for file in "$(cd "$(dirname "$0")" || exit; pwd -P)"/*; do
-            # check if the file does not start with `wppus`, or is .json
-            if [[ ! "$file" == wppus* ]] || [[ "$file" == *.json ]]; then
-                rm -rf "$file"
-            fi
-        done
-
-        # move the updated package files to the current directory ;
-        # the updated package is in charge of overriding the update script
-        # with new ones after update (may be contained in a subdirectory)
-        for file in "/tmp/$package_name"/*; do
-            # check if the file does not start with `wppus`, or is .json
-            if [[ ! "$file" == wppus* ]] || [[ "$file" == *.json ]]; then
-                mv "/tmp/$package_name/$file" "$(dirname "$0")"
-            fi
-        done
 
         # add the license key to wppus.json
         jq --indent 4 '.licenseKey = "'"$license_key"'"' "$(cd "$(dirname "$0")" || exit; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")" || exit; pwd -P)/wppus.json"
         # add the license signature to wppus.json
-        jq --indent 4 '.licenseSignature = "'"$signature"'"' "$(cd "$(dirname "$0")" || exit; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")" || exit; pwd -P)/wppus.json"
-
-        # remove the directory
-        rm -rf /tmp/"$package_name"
+        jq --indent 4 '.licenseSignature = "'"$license_signature"'"' "$(cd "$(dirname "$0")" || exit; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")" || exit; pwd -P)/wppus.json"
         # remove the zip
         rm "$output_file"
 

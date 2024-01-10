@@ -53,8 +53,6 @@ async function main() {
     let package_script = __filename;
     // define the current script name
     let script_name = path.basename(__filename);
-    // define the update zip archive name
-    let zip_name = package_name + '.zip';
     // define the current version of the package from the wppus.json file
     let version = config.packageData.Version;
     // define license_key from the wppus.json file
@@ -202,7 +200,7 @@ async function main() {
         // get the download url from the response
         let url = decodeURIComponent(response.download_url);
         // set the path to the downloaded file
-        let output_file = path.join(os.tmpdir(), zip_name);
+        let output_file = path.join(os.tmpdir(), package_name + '.zip');
         // make the request
         return new Promise((resolve, reject) => {
             let file = fs.createWriteStream(output_file);
@@ -245,53 +243,74 @@ async function main() {
 
             zip.extractAllTo('/tmp/' + package_name);
 
-            // get the permissions of the old file
-            let octal_mode = fs.statSync(package_script).mode.toString(8).slice(-4);
-            // set the permissions of the new file to the permissions of the old file
-            fs.chmodSync('/tmp/' + package_name + '/' + script_name, octal_mode);
+            if (fs.existsSync('/tmp/' + package_name)) {
+                // get the permissions of the current script
+                let octal_mode = fs.statSync(package_script).mode.toString(8).slice(-4);
 
-            //  delete all files in the current directory, except for update scripts
-            let files = fs.readdirSync(__dirname);
+                // set the permissions of the new main scripts to the permissions of the
+                // current script
+                let files = fs.readdirSync('/tmp/' + package_name);
 
-            for (let i = 0; i < files.length; i++) {
-                let file = files[i];
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
 
-                // check if the file does not start with `wppus`, or is .json
-                if (!file.startsWith("wppus") || file.endsWith(".json")) {
-                    let deletePath = path.join(__dirname, file);
+                    // check if the file starts with the package name
+                    if (file.startsWith(package_name)) {
+                        fs.chmodSync('/tmp/' + package_name + '/' + file, octal_mode);
+                    }
+                }
 
-                    if (fs.existsSync(deletePath)) {
+                // delete all files in the current directory, except for update scripts
+                files = fs.readdirSync(__dirname);
 
-                        if (parseInt(process.version.slice(1).split('.')[0]) >= 14) {
-                            fs.rmSync(deletePath, { recursive: true, force: true });
-                        } else {
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
 
-                            if (fs.lstatSync(deletePath).isDirectory()) {
-                                fs.rmdirSync(deletePath, { recursive: true });
+                    // check if the file does not start with `wppus`, or is .json
+                    if (!file.startsWith("wppus") || file.endsWith(".json")) {
+                        let deletePath = path.join(__dirname, file);
+
+                        if (fs.existsSync(deletePath)) {
+
+                            if (parseInt(process.version.slice(1).split('.')[0]) >= 14) {
+                                fs.rmSync(deletePath, { recursive: true, force: true });
                             } else {
-                                fs.unlinkSync(deletePath);
+
+                                if (fs.lstatSync(deletePath).isDirectory()) {
+                                    fs.rmdirSync(deletePath, { recursive: true });
+                                } else {
+                                    fs.unlinkSync(deletePath);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            // move the updated package files to the current directory ;
-            // the updated package is in charge of overriding the update script
-            // with new ones after update (may be contained in a subdirectory)
-            files = fs.readdirSync('/tmp/' + package_name);
+                // move the updated package files to the current directory ; the
+                // updated package is in charge of overriding the update scripts
+                // with new ones after update (may be contained in a subdirectory)
+                files = fs.readdirSync('/tmp/' + package_name);
 
-            for (let i = 0; i < files.length; i++) {
-                let file = files[i];
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
 
-                // check if the file does not start with `wppus`, or is .json
-                if (!file.startsWith("wppus") || file.endsWith(".json")) {
-                    fs.renameSync('/tmp/' + package_name + '/' + file, path.join(__dirname, file));
+                    // check if the file does not start with `wppus`, or is .json
+                    if (!file.startsWith("wppus") || file.endsWith(".json")) {
+                        fs.renameSync('/tmp/' + package_name + '/' + file, path.join(__dirname, file));
+                    }
                 }
+
+                // remove the directory
+                fs.rmdirSync('/tmp/' + package_name);
             }
 
-            // remove the directory
-            fs.rmdirSync('/tmp/' + package_name);
+            // add the license key to wppus.json
+            config.licenseKey = license_key;
+            // add the license signature to wppus.json
+            config.licenseSignature = license_signature;
+            // write the new wppus.json file
+            fs.writeFileSync(path.join(__dirname, 'wppus.json'), JSON.stringify(config, null, 4));
+
             // remove the zip
             fs.unlinkSync(output_file);
         }
