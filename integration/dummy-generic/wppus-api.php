@@ -84,8 +84,6 @@ class WPPUS_API {
 		# build the request url
 		$full_url = self::$url . '/' . $action . '/?' . http_build_query( $args );
 
-		echo $full_url . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
 		# initialize cURL
 		$ch = curl_init(); // phpcs:ignore WordPress.WP.AlternativeFunctions.curl_curl_init
 
@@ -112,10 +110,10 @@ class WPPUS_API {
 		$endpoint = 'wppus-update-api';
 		$args     = array(
 			'action'            => 'get_metadata',
-			'package_id'        => rawurlencode( self::$package_name ),
-			'installed_version' => rawurlencode( self::$version ),
-			'license_key'       => rawurlencode( self::$license_key ),
-			'license_signature' => rawurlencode( self::$license_signature ),
+			'package_id'        => self::$package_name,
+			'installed_version' => self::$version,
+			'license_key'       => self::$license_key,
+			'license_signature' => self::$license_signature,
 			'update_type'       => 'Generic',
 		);
 		# make the request
@@ -130,9 +128,9 @@ class WPPUS_API {
 		$endpoint = 'wppus-license-api';
 		$args     = array(
 			'action'          => 'activate',
-			'license_key'     => rawurlencode( self::$license_key ),
-			'allowed_domains' => rawurlencode( self::$domain ),
-			'package_slug'    => rawurlencode( self::$package_name ),
+			'license_key'     => self::$license_key,
+			'allowed_domains' => self::$domain,
+			'package_slug'    => self::$package_name,
 		);
 		# make the request
 		$response = self::send_api_request( $endpoint, $args );
@@ -151,9 +149,9 @@ class WPPUS_API {
 		$endpoint = 'wppus-license-api';
 		$args     = array(
 			'action'          => 'deactivate',
-			'license_key'     => rawurlencode( self::$license_key ),
-			'allowed_domains' => rawurlencode( self::$domain ),
-			'package_slug'    => rawurlencode( self::$package_name ),
+			'license_key'     => self::$license_key,
+			'allowed_domains' => self::$domain,
+			'package_slug'    => self::$package_name,
 		);
 		# make the request
 		self::send_api_request( $endpoint, $args );
@@ -168,7 +166,7 @@ class WPPUS_API {
 	private static function download_update( $response ) {
 		$response = json_decode( $response, true );
 		# get the download url from the response
-		$url = isset( $response['download_url'] ) ? rawurldecode( $response['download_url'] ) : '';
+		$url = isset( $response['download_url'] ) ? $response['download_url'] : '';
 		# set the path to the downloaded file
 		$output_file = '/tmp/' . self::$package_name . '.zip';
 
@@ -229,7 +227,7 @@ class WPPUS_API {
 
 					# check if the file starts with the package name
 					if ( substr( basename( $file ), 0, strlen( self::$package_name ) + 1 ) === self::$package_name . '.' ) {
-						chmod( $octal_mode, $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+						chmod( $file, $octal_mode ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
 					}
 				}
 
