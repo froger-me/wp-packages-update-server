@@ -19,7 +19,7 @@ fi
 ### INSTALLING THE PACKAGE ###
 
 if [ "$1" == "install" ] && [ "$(bash "$(dirname "$0")/wppus-api.sh" is_installed)" == "false" ] && [ "$2" != "" ]; then
-    bash "$(dirname "$0")/wppus-api.sh" install $2
+    bash "$(dirname "$0")/wppus-api.sh" install "$2"
     echo "Installed"
 
     exit 0

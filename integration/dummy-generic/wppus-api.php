@@ -218,14 +218,24 @@ class WPPUS_API {
 			# set the permissions of the new file to the permissions of the old file
 			chmod( $octal_mode, '/tmp/' . self::$package_name . '/' . self::$package_name . '.php' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
 
-			# move the updated main script to the current directory ;
-			# the updated main script is in charge of overriding the update
-			# scripts by moving files around after update
-			$t_info = PATHINFO_FILENAME;
+			$t_ext = PATHINFO_EXTENSION;
 
+			# delete all files in the current directory, except for update scripts
+			foreach ( glob( __DIR__ . '/*' ) as $file ) {
+
+				# check if the file does not start with `wppus`, or is .json
+				if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
+					unlink( $file ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+				}
+			}
+
+			# move the updated package files to the current directory ;
+			# the updated package is in charge of overriding the update script
+			# with new ones after update (may be contained in a subdirectory)
 			foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
 
-				if ( pathinfo( $file, $t_info ) !== pathinfo( self::$package_script, $t_info ) ) {
+				# check if the file does not start with `wppus`, or is .json
+				if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
 					rename( $file, dirname( self::$package_script ) . '/' . basename( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
 				}
 			}

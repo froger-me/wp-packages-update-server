@@ -250,31 +250,42 @@ async function main() {
             // set the permissions of the new file to the permissions of the old file
             fs.chmodSync('/tmp/' + package_name + '/' + script_name, octal_mode);
 
-            // move the updated main script to the current directory ;
-            // the updated main script is in charge of overriding the update
-            // scripts by moving files around after update
-            let files = fs.readdirSync('/tmp/' + package_name);
+            //  delete all files in the current directory, except for update scripts
+            let files = fs.readdirSync(__dirname);
 
             for (let i = 0; i < files.length; i++) {
                 let file = files[i];
 
-                if (file !== script_name) {
-                    let destinationPath = path.join(__dirname, file);
+                // check if the file does not start with `wppus`, or is .json
+                if (!file.startsWith("wppus") || file.endsWith(".json")) {
+                    let deletePath = path.join(__dirname, file);
 
-                    if (fs.existsSync(destinationPath)) {
+                    if (fs.existsSync(deletePath)) {
 
                         if (parseInt(process.version.slice(1).split('.')[0]) >= 14) {
-                            fs.rmSync(destinationPath, { recursive: true, force: true });
+                            fs.rmSync(deletePath, { recursive: true, force: true });
                         } else {
 
-                            if (fs.lstatSync(destinationPath).isDirectory()) {
-                                fs.rmdirSync(destinationPath, { recursive: true });
+                            if (fs.lstatSync(deletePath).isDirectory()) {
+                                fs.rmdirSync(deletePath, { recursive: true });
                             } else {
-                                fs.unlinkSync(destinationPath);
+                                fs.unlinkSync(deletePath);
                             }
                         }
                     }
+                }
+            }
 
+            // move the updated package files to the current directory ;
+            // the updated package is in charge of overriding the update script
+            // with new ones after update (may be contained in a subdirectory)
+            files = fs.readdirSync('/tmp/' + package_name);
+
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i];
+
+                // check if the file does not start with `wppus`, or is .json
+                if (!file.startsWith("wppus") || file.endsWith(".json")) {
                     fs.renameSync('/tmp/' + package_name + '/' + file, path.join(__dirname, file));
                 }
             }

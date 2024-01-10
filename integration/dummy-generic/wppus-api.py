@@ -241,12 +241,20 @@ def update():
         # set the permissions of the new file to the permissions of the old file
         os.chmod(os.path.join(tempfile.gettempdir(), package_name, script_name), int(octal_mode, 8))
 
-        # move the updated main script to the current directory ;
-        # the updated main script is in charge of overriding the update
-        # scripts by moving files around after update
+        # delete all files in the current directory, except for update scripts
+        for file in os.listdir(os.path.dirname(__file__)):
+
+            # check if the file does not start with `wppus`, or is .json
+            if not file.startswith("wppus") or file.endswith(".json"):
+                os.remove(os.path.join(os.path.dirname(__file__), file))
+
+        # move the updated package files to the current directory ;
+        # the updated package is in charge of overriding the update script
+        # with new ones after update (may be contained in a subdirectory)
         for file in os.listdir(os.path.join(tempfile.gettempdir(), package_name)):
 
-            if file != script_name:
+            # check if the file does not start with `wppus`, or is .json
+            if not file.startswith("wppus") or file.endswith(".json"):
                 src = os.path.join(tempfile.gettempdir(), package_name, file)
                 dest = os.path.join(os.path.dirname(__file__), file)
 
