@@ -41,7 +41,7 @@ fi
 
 function install() {
     # add the license key to wppus.json
-    jq '.licenseKey = "'"$1"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+    jq --indent 4 '.licenseKey = "'"$1"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
     # add a file '.installed' in current directory
     touch "$(cd "$(dirname "$0")"; pwd -P)/.installed"
 }
@@ -53,9 +53,9 @@ function uninstall() {
     license_signature=""
 
     # remove the license key from wppus.json
-    jq '.licenseKey = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+    jq --indent 4 '.licenseKey = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
     # remove the license signature from wppus.json
-    jq '.licenseSignature = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+    jq --indent 4 '.licenseSignature = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
     # remove the file '.installed' from current directory
     rm "$(cd "$(dirname "$0")"; pwd -P)/.installed"
 }
@@ -153,7 +153,7 @@ function activate_license() {
     local signature=$(urldecode $(echo -n "$response" | jq -r '.license_signature'))
 
     # add the license signature to wppus.json
-    jq '.licenseSignature = "'"$signature"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+    jq --indent 4 '.licenseSignature = "'"$signature"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
 
     license_signature=$signature
 }
@@ -161,7 +161,7 @@ function activate_license() {
 ### DEACTIVATING A LICENSE ###
 
 function deactivate_license() {
-    # build the request url
+    # # build the request url
     local endpoint="wppus-license-api"
     local args=(
         "action=deactivate"
@@ -170,10 +170,10 @@ function deactivate_license() {
         "package_slug=$(urlencode "$package_name")"
     )
 
-    # make the request
-    send_api_request "$endpoint" "${args[@]}"
+    # # make the request
+    send_api_request "$endpoint" "${args[@]}" > /dev/null
     # remove the license signature from wppus.json
-    jq '.licenseSignature = ""' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+    jq --indent 4 'del(.licenseSignature)' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
 
     license_signature=""
 }
@@ -263,9 +263,9 @@ if [ "$1" == "update" ]; then
         done
 
         # add the license key to wppus.json
-        jq '.licenseKey = "'"$license_key"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+        jq --indent 4 '.licenseKey = "'"$license_key"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
         # add the license signature to wppus.json
-        jq '.licenseSignature = "'"$signature"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
+        jq --indent 4 '.licenseSignature = "'"$signature"'"' "$(cd "$(dirname "$0")"; pwd -P)/wppus.json" > tmp.json && mv tmp.json "$(cd "$(dirname "$0")"; pwd -P)/wppus.json"
 
         # remove the directory
         rm -rf /tmp/$package_name
@@ -281,7 +281,7 @@ fi
 # check if the script was called with the argument "activate_license"
 if [ "$1" == "activate_license" ]; then
     # activate the license
-    echo $(activate_license)
+    activate_license
 
     exit 0
 fi
@@ -289,7 +289,7 @@ fi
 # check if the script was called with the argument "deactivate_license"
 if [ "$1" == "deactivate_license" ]; then
     # deactivate the license
-    echo $(deactivate_license)
+    deactivate_license
 
     exit 0
 fi
@@ -297,7 +297,7 @@ fi
 # check if the script was called with the argument "get_update"
 if [ "$1" == "get_update_info" ]; then
     # get the update information
-    echo "$(check_for_updates)"
+    check_for_updates
 
     exit 0
 fi

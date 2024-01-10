@@ -55,7 +55,7 @@ class WPPUS_API {
 	public static function install( $license_key ) {
 		# add the license key to wppus.json
 		self::$config['licenseKey'] = $license_key;
-		file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 
 		# add a file '.installed' in current directory
 		// touch "$(cd "$(dirname "$0")"; pwd -P)/.installed" (convert to php)
@@ -67,7 +67,7 @@ class WPPUS_API {
 	public static function uninstall() {
 		# remove the license key from wppus.json
 		unset( self::$config['licenseKey'] );
-		file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 
 		# remove the file '.installed' from current directory
 		unlink( __DIR__ . '/.installed' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
@@ -140,7 +140,7 @@ class WPPUS_API {
 		$signature = rawurldecode( json_decode( $response, true )['license_signature'] );
 		# add the license signature to wppus.json
 		self::$config['licenseSignature'] = $signature;
-		file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 		self::$license_signature = $signature;
 	}
 
@@ -159,7 +159,7 @@ class WPPUS_API {
 		self::send_api_request( $endpoint, $args );
 		# remove the license signature from wppus.json
 		unset( self::$config['licenseSignature'] );
-		file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 		self::$license_signature = '';
 	}
 
@@ -232,10 +232,10 @@ class WPPUS_API {
 
 			# add the license key to wppus.json
 			self::$config['licenseKey'] = self::$license_key;
-			file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
+			file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 			# add the license signature to wppus.json
 			self::$config['licenseSignature'] = self::$license_signature;
-			file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
+			file_put_contents( __DIR__ . '/wppus.json', json_encode( self::$config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 
 			# remove the directory
 			foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
