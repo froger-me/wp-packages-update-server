@@ -367,8 +367,7 @@ class WPPUS_License_API {
 
 			if ( empty( $result ) ) {
 				$data                    = isset( $license->data ) ? $license->data : array();
-				$data['next_deactivate'] = time() + MONTH_IN_SECONDS;
-				$data['next_deactivate'] = time();
+				$data['next_deactivate'] = (bool) ( constant( 'WP_DEBUG' ) ) ? time() : time() + MONTH_IN_SECONDS;
 				$allowed_domains         = array_diff( $license->allowed_domains, $license_data['allowed_domains'] );
 				$payload                 = array(
 					'id'              => $license->id,
