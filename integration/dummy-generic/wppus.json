@@ -1,12 +1,12 @@
 {
-   "server": "https:\/\/server.domain.tld\/",
+   "server": "https://server.domain.tld/",
    "requireLicense": true,
     "packageData": {
          "Name": "Dummy Generic Package",
         "Version": "1.4.14",
-        "Homepage": "https:\/\/froger.me\/",
+        "Homepage": "https://froger.me/",
         "Author": "Alexandre Froger",
-        "AuthorURI": "https:\/\/froger.me\/",
+        "AuthorURI": "https://froger.me/",
         "Description": "Empty generic package to demonstrate the WP Package Updater."
     }
 }
