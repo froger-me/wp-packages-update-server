@@ -124,7 +124,7 @@ function dummy_generic_get_update_info() {
 		echo "---------\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		// Pretty print the response
-		echo json_encode( $info, JSON_PRETTY_PRINT ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		echo json_encode( $info, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 		echo "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	} else {
 		echo "The package is not installed\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -141,7 +141,7 @@ function dummy_generic_update() {
 
 		echo "Updated\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo json_encode( json_decode( WPPUS_API::get_update_info(), true ), JSON_PRETTY_PRINT ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		echo json_encode( json_decode( WPPUS_API::get_update_info(), true ), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.AlternativeFunctions.json_encode_json_encode
 	} else {
 		echo "The package is not installed\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
