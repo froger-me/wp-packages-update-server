@@ -63,16 +63,21 @@ elif sys.platform == "linux":
     domain = subprocess.check_output(["cat", "/var/lib/dbus/machine-id"]).decode("utf-8").strip()
 
 
-def install():
+def install(_license_key):
     """
     ### INSTALLING THE PACKAGE ###
     """
+    global license_key # pylint: disable=global-statement
     # add the license key to wppus.json
+    license_key = _license_key
     wppus_config["licenseKey"] = license_key
 
     # add a file '.installed' in current directory
     with open(os.path.join(os.path.dirname(__file__), ".installed"), "w", encoding="utf-8") as _:
         pass
+
+    with open(os.path.join(os.path.dirname(__file__), conf), "w", encoding="utf-8") as f:
+        json.dump(wppus_config, f, indent=4)
 
 def uninstall():
     """
@@ -85,6 +90,9 @@ def uninstall():
 
     # remove the file '.installed' from current directory
     os.remove(os.path.join(os.path.dirname(__file__), ".installed"))
+
+    with open(os.path.join(os.path.dirname(__file__), conf), "w", encoding="utf-8") as f:
+        json.dump(wppus_config, f, indent=4)
 
 
 def is_installed():
@@ -107,13 +115,11 @@ def _send_api_request(endpoint, args):
     """
     # build the request url
     full_url = url.rstrip('/') + "/" + endpoint + "/?" + "&".join(args)
-
     # set headers
     headers = {
         "user-agent": "curl",
         "accept": "*/*"
     }
-
     # make the request
     response = requests.get(full_url, headers=headers, timeout=20, verify=True)
 
@@ -145,6 +151,7 @@ def activate_license():
     """
     ### ACTIVATING A LICENSE ###
     """
+    global license_signature # pylint: disable=global-statement
     # build the request url
     endpoint = "wppus-license-api"
     args = [
@@ -156,9 +163,10 @@ def activate_license():
     # make the request
     response = _send_api_request(endpoint, args)
     # get the signature from the response
-    signature = urllib.parse.unquote(json.loads(response)["license_signature"])
+    signature = json.loads(response)["license_signature"]
     # add the license signature to wppus.json
-    wppus_config["licenseSignature"] = signature
+    license_signature = signature
+    wppus_config["licenseSignature"] = license_signature
 
     with open(os.path.join(os.path.dirname(__file__), conf), "w", encoding="utf-8") as f:
         json.dump(wppus_config, f, indent=4)
@@ -183,29 +191,25 @@ def deactivate_license():
     with open(os.path.join(os.path.dirname(__file__), conf), "w", encoding="utf-8") as f:
         json.dump(wppus_config, f, indent=4)
 
-def _download_update():
+def _download_update(response):
     """
     ### DOWNLOADING THE PACKAGE ###
     """
-    # build the request url
-    endpoint = "wppus-update-api"
-    args = [
-        "action=get_download_url",
-        "package_id=" + urllib.parse.quote(package_name),
-        "installed_version=" + urllib.parse.quote(version),
-        "license_key=" + urllib.parse.quote(license_key),
-        "license_signature=" + urllib.parse.quote(license_signature),
-        "update_type=Generic"
-    ]
-    # make the request
-    response = _send_api_request(endpoint, args)
     # get the download url from the response
-    _url = urllib.parse.unquote(json.loads(response)["download_url"])
+    _url = json.loads(response)["download_url"]
     # set the path to the downloaded file
     output_file = os.path.join(tempfile.gettempdir(), package_name + ".zip")
 
     # make the request
-    urllib.request.urlretrieve(_url, output_file)
+    headers = {
+        'User-Agent': 'curl'
+    }
+    request = urllib.request.Request(_url, headers=headers)
+
+    with urllib.request.urlopen(request) as _response:
+
+        with open(output_file, 'wb') as out_file:
+            out_file.write(_response.read())
 
     # return the path to the downloaded file
     return output_file
@@ -228,32 +232,34 @@ def update():
 
     if new_version > version:
         # download the update
-        output_file = _download_update()
+        output_file = _download_update(response)
 
         # extract the zip in /tmp/$(package_name)
         with zipfile.ZipFile(output_file, "r") as zip_file:
-            zip_file.extractall(os.path.join(tempfile.gettempdir(), package_name))
+            # delete the zip if it exists
+            if os.path.exists(os.path.join(tempfile.gettempdir(), package_name)):
+                shutil.rmtree(os.path.join(tempfile.gettempdir(), package_name))
+            zip_file.extractall(tempfile.gettempdir())
 
         if os.path.isdir(os.path.join(tempfile.gettempdir(), package_name)):
-            # get the permissions of the current script
-            octal_mode = oct(os.stat(package_script).st_mode)[-4:]
+            global wppus_config # pylint: disable=global-statement
+            global config_file # pylint: disable=global-statement
 
-             # set the permissions of the new main scripts to the permissions of the
-            # current script
-            for file in os.listdir(os.path.join(tempfile.gettempdir(), package_name)):
-
-                # check if the file starts with the package name
-                if file.startswith(package_name):
-                    path = os.path.join(tempfile.gettempdir(), package_name, file)
-
-                    os.chmod(path, int(octal_mode, 8))
+            conf_path = os.path.join(os.path.dirname(__file__), conf)
 
             # delete all files in the current directory, except for update scripts
             for file in os.listdir(os.path.dirname(__file__)):
 
+                if file == ".installed":
+                    continue
+
                 # check if the file does not start with `wppus`, or is .json
                 if not file.startswith("wppus") or file.endswith(".json"):
-                    os.remove(os.path.join(os.path.dirname(__file__), file))
+
+                    if os.path.isfile(os.path.join(os.path.dirname(__file__), file)):
+                        os.remove(os.path.join(os.path.dirname(__file__), file))
+                    elif os.path.isdir(os.path.join(os.path.dirname(__file__), file)):
+                        shutil.rmtree(os.path.join(os.path.dirname(__file__), file))
 
             # move the updated package files to the current directory ; the
             # updated package is in charge of overriding the update scripts
@@ -270,19 +276,34 @@ def update():
 
                     shutil.move(src, dest)
 
+            # recursively set all files to 644 and all directories to 755
+            for dirpath, dirnames, filenames in os.walk(os.path.dirname(__file__)):
+
+                for file in filenames:
+                    filepath = os.path.join(dirpath, file)
+
+                    if os.path.isfile(filepath):
+                        os.chmod(filepath, 0o644)
+
+                for _dir in dirnames:
+                    dirpath = os.path.join(dirpath, _dir)
+
+                    if os.path.isdir(dirpath):
+                        os.chmod(dirpath, 0o755)
+
+            with open(conf_path, encoding="utf-8") as config_file:
+                wppus_config = json.load(config_file)
+
             # add the license key to wppus.json
             wppus_config["licenseKey"] = license_key
             # add the license signature to wppus.json
             wppus_config["licenseSignature"] = license_signature
 
-            with open(os.path.join(os.path.dirname(__file__), conf), "w", encoding="utf-8") as f:
+            with open(conf_path, "w", encoding="utf-8") as f:
                 json.dump(wppus_config, f, indent=4)
 
             # remove the directory
-            for file in os.listdir(os.path.join(tempfile.gettempdir(), package_name)):
-                os.remove(os.path.join(tempfile.gettempdir(), package_name, file))
-
-            os.rmdir(os.path.join(tempfile.gettempdir(), package_name))
+            shutil.rmtree(os.path.join(tempfile.gettempdir(), package_name))
 
         # remove the zip
         os.remove(output_file)
@@ -292,5 +313,5 @@ def get_update_info():
     ### GETTING THE PACKAGE INFO ###
     """
     response = _check_for_updates()
-    # get the update information - json parsed, knowing it may contain url encoded characters
+    # get the update information
     return json.loads(urllib.parse.unquote(response))

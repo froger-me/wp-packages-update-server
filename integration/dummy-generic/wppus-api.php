@@ -217,18 +217,6 @@ class WPPUS_API {
 
 			if ( is_dir( '/tmp/' . self::$package_name ) ) {
 				$t_ext = PATHINFO_EXTENSION;
-				# get the permissions of the current script
-				$octal_mode = fileperms( self::$package_script );
-
-				# set the permissions of the new main scripts to the permissions of the
-				# current script
-				foreach ( glob( '/tmp/' . self::$package_name . '/*' ) as $file ) {
-
-					# check if the file starts with the package name
-					if ( substr( basename( $file ), 0, strlen( self::$package_name ) + 1 ) === self::$package_name . '.' ) {
-						chmod( $file, $octal_mode ) . "\n"; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
-					}
-				}
 
 				# delete all files in the current directory, except for update scripts
 				foreach ( glob( __DIR__ . '/{,.}*', GLOB_BRACE | GLOB_MARK ) as $file ) {
@@ -263,6 +251,9 @@ class WPPUS_API {
 					}
 				}
 
+				# recursively set all files to 644 and all directories to 755
+				chmodRecursive( dirname( self::$package_script ), 0755, 0644 );
+				# remove the directory
 				deleteFolder( '/tmp/' . self::$package_name );
 			}
 
@@ -339,14 +330,25 @@ function safeRename( $src, $dst ) { // phpcs:ignore WordPress.NamingConventions.
 
 		if ( ! copy( $src, $dst ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_copy
 			throw new Exception( "Failed to copy file: $src to $dst" ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, WordPress.Security.EscapeOutput.ExceptionNotEscaped
-		} else {
-			$perms = fileperms( $src );
-
-			chmod( $dst, $perms ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
 		}
 
 		if ( ! unlink( $src ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 			throw new Exception( "Failed to remove file: $src" ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, WordPress.Security.EscapeOutput.ExceptionNotEscaped
+		}
+	}
+}
+
+function chmodRecursive( $dir, $dir_mod, $file_mod ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
+	$iterator = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator( $dir ),
+		RecursiveIteratorIterator::SELF_FIRST
+	);
+
+	foreach ( $iterator as $item ) {
+		if ( $item->isFile() ) {
+			chmod( $item->getPathname(), $file_mod ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+		} elseif ( $item->isDir() ) {
+			chmod( $item->getPathname(), $dir_mod ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
 		}
 	}
 }

@@ -97,7 +97,7 @@ def get_update_info():
         print("---------")
         print("")
         # Pretty print the response
-        print(json.dumps(wppus_api.get_update_info(), indent=4))
+        print(json.dumps(wppus_api.get_update_info(), indent=4).replace("\\/", "/"))
         print("")
     else:
         print("The package is not installed")
@@ -114,7 +114,8 @@ def update():
         print("Updated")
         print("")
         # Pretty print the response
-        print(json.dumps(wppus_api.get_update_info(), indent=4))
+        print(json.dumps(wppus_api.get_update_info(), indent=4).replace("\\/", "/"))
+        print("")
     else:
         print("The package is not installed")
 

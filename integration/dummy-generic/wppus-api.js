@@ -10,29 +10,34 @@
 // WP Packages Update Server is installed in wppus.json
 
 const modules = require('./node-dist/exports.js');
-const https = require('https');
+const https = modules.https;
+const fs = modules.fs;
 const querystring = require('querystring');
 const events = require('events');
-const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const wppusApi = new events.EventEmitter();
 const AdmZip = modules.AdmZip;
+const machineIdSync = modules.machineIdSync;
 
 function compareVersions(v1, v2) {
     let v1parts = v1.split('.').map(Number);
     let v2parts = v2.split('.').map(Number);
 
     for (let i = 0; i < v1parts.length; ++i) {
+
         if (v2parts.length === i) {
             return 1;
         }
+
         if (v1parts[i] === v2parts[i]) {
             continue;
         }
+
         if (v1parts[i] > v2parts[i]) {
             return 1;
         }
+
         return -1;
     }
 
@@ -41,6 +46,22 @@ function compareVersions(v1, v2) {
     }
 
     return 0;
+}
+
+function chmodRecursive(dir) {
+    let files = fs.readdirSync(dir);
+
+    for (let i = 0; i < files.length; i++) {
+        let file = files[i];
+        let filePath = path.join(dir, file);
+
+        if (fs.lstatSync(filePath).isDirectory()) {
+            fs.chmodSync(filePath, '755');
+            chmodRecursive(filePath);
+        } else {
+            fs.chmodSync(filePath, '644');
+        }
+    }
 }
 
 async function main() {
@@ -198,7 +219,7 @@ async function main() {
 
     const download_update = function (response) {
         // get the download url from the response
-        let url = decodeURIComponent(response.download_url);
+        let url = JSON.parse(response).download_url;
         // set the path to the downloaded file
         let output_file = path.join(os.tmpdir(), package_name + '.zip');
         // make the request
@@ -232,7 +253,7 @@ async function main() {
         // check for updates
         let response = await check_for_updates();
         // get the version from the response
-        let new_version = JSON.parse(decodeURIComponent(response)).version;
+        let new_version = JSON.parse(response).version;
 
         if (compareVersions(version, new_version) < 0) {
             // download the update
@@ -241,7 +262,11 @@ async function main() {
             // extract the zip in /tmp/$(package_name)
             let zip = new AdmZip(output_file);
 
-            zip.extractAllTo('/tmp/' + package_name);
+            if (fs.existsSync('/tmp/' + package_name)) {
+                fs.rmSync('/tmp/' + package_name, { recursive: true, force: true });
+            }
+
+            zip.extractAllTo('/tmp/');
 
             if (fs.existsSync('/tmp/' + package_name)) {
                 // get the permissions of the current script
@@ -266,22 +291,16 @@ async function main() {
                 for (let i = 0; i < files.length; i++) {
                     let file = files[i];
 
+                    if (".installed" === file) {
+                        continue;
+                    }
+
                     // check if the file does not start with `wppus`, or is .json
                     if (!file.startsWith("wppus") || file.endsWith(".json")) {
                         let deletePath = path.join(__dirname, file);
 
                         if (fs.existsSync(deletePath)) {
-
-                            if (parseInt(process.version.slice(1).split('.')[0]) >= 14) {
-                                fs.rmSync(deletePath, { recursive: true, force: true });
-                            } else {
-
-                                if (fs.lstatSync(deletePath).isDirectory()) {
-                                    fs.rmdirSync(deletePath, { recursive: true });
-                                } else {
-                                    fs.unlinkSync(deletePath);
-                                }
-                            }
+                            fs.rmSync(deletePath, { recursive: true, force: true });
                         }
                     }
                 }
@@ -296,13 +315,17 @@ async function main() {
 
                     // check if the file does not start with `wppus`, or is .json
                     if (!file.startsWith("wppus") || file.endsWith(".json")) {
-                        fs.renameSync('/tmp/' + package_name + '/' + file, path.join(__dirname, file));
+                        fs.moveSync('/tmp/' + package_name + '/' + file, path.join(__dirname, file));
                     }
                 }
 
+                // recursively set all files to 644 and all directories to 755
+                chmodRecursive(__dirname);
                 // remove the directory
-                fs.rmdirSync('/tmp/' + package_name);
+                fs.rmSync('/tmp/' + package_name, { recursive: true, force: true });
             }
+
+            config = JSON.parse(fs.readFileSync(path.join(__dirname, 'wppus.json'), 'utf8'));
 
             // add the license key to wppus.json
             config.licenseKey = license_key;

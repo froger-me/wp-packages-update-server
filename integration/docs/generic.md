@@ -658,7 +658,7 @@ if ($http_response_header[0] == 'HTTP/1.1 200 OK') {
 #### Node.js
 
 ```js
-const https = require('https');
+const https = require('follow-redirects').https;
 const fs = require('fs');
 const url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
 

@@ -266,6 +266,10 @@ if [ "$1" == "update" ]; then
             # delete all files in the current directory, except for update scripts
             for file in "$(cd "$(dirname "$0")" || exit; pwd -P)"/*; do
 
+                if [[ "$file" == "$(cd "$(dirname "$0")" || exit; pwd -P)"/.installed ]]; then
+                    continue
+                fi
+
                 # check if the file does not start with `wppus`, or is .json
                 if [[ ! "$file" == "$(cd "$(dirname "$0")" || exit; pwd -P)"/wppus* ]] || [[ "$file" == *.json ]]; then
                     rm -rf "$file"
@@ -283,6 +287,9 @@ if [ "$1" == "update" ]; then
                 fi
             done
 
+            # recursively set all files to 644 and all directories to 755
+            find "$(cd "$(dirname "$0")" || exit; pwd -P)" -type f -exec chmod 644 {} \;
+            find "$(cd "$(dirname "$0")" || exit; pwd -P)" -type d -exec chmod 755 {} \;
             # remove the directory
             rm -rf /tmp/"$package_name"
         fi

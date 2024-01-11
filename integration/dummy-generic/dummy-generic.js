@@ -113,10 +113,11 @@ wppusApi.on('ready', function (api) {
             // If the command is "update" and the script is installed
             if (true === api.is_installed()) {
                 // Get the update information
-                api.update();
+                await api.update();
 
                 console.log("Updated");
-                console.log(api.get_update_info());
+                console.log("");
+                console.log(await api.get_update_info());
             } else {
                 console.log("The package is not installed");
             }

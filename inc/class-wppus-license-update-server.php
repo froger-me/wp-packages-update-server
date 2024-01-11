@@ -104,7 +104,7 @@ class WPPUS_License_Update_Server extends WPPUS_Update_Server {
 				$license_signature
 			)
 		) {
-			$this->exitWithError( '', 403 );
+			$this->exitWithError( 'Invalid license key or signature.', 403 );
 		}
 	}
 
