@@ -282,7 +282,9 @@ def update():
                 for file in filenames:
                     filepath = os.path.join(dirpath, file)
 
-                    if os.path.isfile(filepath):
+                    if os.path.isfile(filepath) and file.startswith(package_name):
+                        os.chmod(filepath, 0o755)
+                    elif os.path.isfile(filepath):
                         os.chmod(filepath, 0o644)
 
                 for _dir in dirnames:

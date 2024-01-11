@@ -288,7 +288,8 @@ if [ "$1" == "update" ]; then
             done
 
             # recursively set all files to 644 and all directories to 755
-            find "$(cd "$(dirname "$0")" || exit; pwd -P)" -type f -exec chmod 644 {} \;
+            find "$(cd "$(dirname "$0")" || exit; pwd -P)" -type f -name "${package_name}.*" -exec chmod 755 {} \;
+            find "$(cd "$(dirname "$0")" || exit; pwd -P)" -type f ! -name "${package_name}.*" -exec chmod 644 {} \;
             find "$(cd "$(dirname "$0")" || exit; pwd -P)" -type d -exec chmod 755 {} \;
             # remove the directory
             rm -rf /tmp/"$package_name"

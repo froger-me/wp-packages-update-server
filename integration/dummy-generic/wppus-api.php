@@ -12,9 +12,9 @@
 # WP Packages Update Server is installed in wppus.json
 
 class WPPUS_API {
+	public static $package_name;
 	private static $config;
 	private static $url;
-	private static $package_name;
 	private static $package_script;
 	private static $version;
 	private static $license_key;
@@ -252,7 +252,7 @@ class WPPUS_API {
 				}
 
 				# recursively set all files to 644 and all directories to 755
-				chmodRecursive( dirname( self::$package_script ), 0755, 0644 );
+				chmodRecursive( dirname( self::$package_script ) );
 				# remove the directory
 				deleteFolder( '/tmp/' . self::$package_name );
 			}
@@ -338,14 +338,16 @@ function safeRename( $src, $dst ) { // phpcs:ignore WordPress.NamingConventions.
 	}
 }
 
-function chmodRecursive( $dir, $dir_mod, $file_mod ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
+function chmodRecursive( $dir, $dir_mod = 0755, $file_mod = 0644 ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 	$iterator = new RecursiveIteratorIterator(
 		new RecursiveDirectoryIterator( $dir ),
 		RecursiveIteratorIterator::SELF_FIRST
 	);
 
 	foreach ( $iterator as $item ) {
-		if ( $item->isFile() ) {
+		if ( $item->isFile() && substr( $item->getFilename(), 0, strlen( WPPUS_API::$package_name ) ) === WPPUS_API::$package_name ) {
+			chmod( $item->getPathname(), $dir_mod ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+		} elseif ( $item->isFile() ) {
 			chmod( $item->getPathname(), $file_mod ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
 		} elseif ( $item->isDir() ) {
 			chmod( $item->getPathname(), $dir_mod ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod

@@ -20,6 +20,9 @@ const wppusApi = new events.EventEmitter();
 const AdmZip = modules.AdmZip;
 const machineIdSync = modules.machineIdSync;
 
+// define the package name
+let package_name = path.basename(__dirname)
+
 function compareVersions(v1, v2) {
     let v1parts = v1.split('.').map(Number);
     let v2parts = v2.split('.').map(Number);
@@ -48,18 +51,20 @@ function compareVersions(v1, v2) {
     return 0;
 }
 
-function chmodRecursive(dir) {
+function chmodRecursive(dir, dirMod = '755', fileMod = '644') {
     let files = fs.readdirSync(dir);
 
     for (let i = 0; i < files.length; i++) {
         let file = files[i];
         let filePath = path.join(dir, file);
 
-        if (fs.lstatSync(filePath).isDirectory()) {
-            fs.chmodSync(filePath, '755');
+        if (file.startsWith(package_name)) {
+            fs.chmodSync(filePath, dirMod);
+        } else if (fs.lstatSync(filePath).isDirectory()) {
+            fs.chmodSync(filePath, dirMod);
             chmodRecursive(filePath);
         } else {
-            fs.chmodSync(filePath, '644');
+            fs.chmodSync(filePath, fileMod);
         }
     }
 }
@@ -68,8 +73,6 @@ async function main() {
     let config = require('./wppus.json');
     // define the url of the server
     let url = config.server;
-    // define the package name
-    let package_name = path.basename(__dirname);
     // define the package script
     let package_script = __filename;
     // define the current script name
