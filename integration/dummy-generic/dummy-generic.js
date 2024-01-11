@@ -118,6 +118,7 @@ wppusApi.on('ready', function (api) {
                 console.log("Updated");
                 console.log("");
                 console.log(await api.get_update_info());
+                console.log("");
             } else {
                 console.log("The package is not installed");
             }

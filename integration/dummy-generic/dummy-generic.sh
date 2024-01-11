@@ -111,7 +111,7 @@ if [ "$1" == "update" ] && [ "$(bash "$(dirname "$0")/wppus-api.sh" is_installed
     echo "Updated"
     echo ""
     bash "$(dirname "$0")/wppus-api.sh" get_update_info
-
+    echo ""
     exit 0
 elif [ "$1" == "update" ]; then
     echo "The package is not installed"
