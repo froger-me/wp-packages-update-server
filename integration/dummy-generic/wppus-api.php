@@ -218,7 +218,7 @@ class WPPUS_API {
 			if ( is_dir( '/tmp/' . self::$package_name ) ) {
 				$t_ext = PATHINFO_EXTENSION;
 				# get the permissions of the current script
-				$octal_mode = substr( sprintf( '%o', fileperms( self::$package_script ) ), -4 );
+				$octal_mode = fileperms( self::$package_script );
 
 				# set the permissions of the new main scripts to the permissions of the
 				# current script
@@ -226,7 +226,7 @@ class WPPUS_API {
 
 					# check if the file starts with the package name
 					if ( substr( basename( $file ), 0, strlen( self::$package_name ) + 1 ) === self::$package_name . '.' ) {
-						chmod( $file, octdec( $octal_mode ) ) . "\n"; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+						chmod( $file, $octal_mode ) . "\n"; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
 					}
 				}
 
@@ -238,7 +238,7 @@ class WPPUS_API {
 					}
 
 					# check if the file does not start with `wppus`, or is .json
-					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) && 'json' !== pathinfo( $file, $t_ext ) ) {
+					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) || 'json' === pathinfo( $file, $t_ext ) ) {
 
 						if ( is_dir( $file ) ) {
 							deleteFolder( $file );
@@ -258,13 +258,15 @@ class WPPUS_API {
 					}
 
 					# check if the file does not start with `wppus`, or is .json
-					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) || 'json' !== pathinfo( $file, $t_ext ) ) {
-						rename( $file, dirname( self::$package_script ) . '/' . basename( $file ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename
+					if ( 'wppus' !== substr( basename( $file ), 0, 5 ) || 'json' === pathinfo( $file, $t_ext ) ) {
+						safeRename( rtrim( $file, '/' ), dirname( self::$package_script ) . '/' . basename( $file ) );
 					}
 				}
 
 				deleteFolder( '/tmp/' . self::$package_name );
 			}
+
+			self::$config = json_decode( file_get_contents( __DIR__ . '/wppus.json' ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
 			# add the license key to wppus.json
 			self::$config['licenseKey'] = self::$license_key;
@@ -311,4 +313,40 @@ function deleteFolder( $dir_path ) { // phpcs:ignore WordPress.NamingConventions
 	}
 
 	rmdir( $dir_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+}
+
+function safeRename( $src, $dst ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
+
+	if ( is_dir( $src ) ) {
+
+		if ( ! @mkdir( $dst ) && ! is_dir( $dst ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_mkdir
+			throw new Exception( "Failed to create directory: $dst" ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, WordPress.Security.EscapeOutput.ExceptionNotEscaped
+		}
+
+		$files = scandir( $src );
+
+		foreach ( $files as $file ) {
+
+			if ( '.' !== $file && '..' !== $file ) {
+				safeRename( "$src/$file", "$dst/$file" );
+			}
+		}
+
+		if ( ! rmdir( $src ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir
+			throw new Exception( "Failed to remove directory: $src" ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, WordPress.Security.EscapeOutput.ExceptionNotEscaped
+		}
+	} elseif ( file_exists( $src ) ) {
+
+		if ( ! copy( $src, $dst ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_copy
+			throw new Exception( "Failed to copy file: $src to $dst" ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, WordPress.Security.EscapeOutput.ExceptionNotEscaped
+		} else {
+			$perms = fileperms( $src );
+
+			chmod( $dst, $perms ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod
+		}
+
+		if ( ! unlink( $src ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
+			throw new Exception( "Failed to remove file: $src" ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, WordPress.Security.EscapeOutput.ExceptionNotEscaped
+		}
+	}
 }
