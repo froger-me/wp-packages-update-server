@@ -121,7 +121,7 @@ fi
 
 ### USAGE ###
 
-echo "Usage: ./wppus-api.sh [command] [arguments]"
+echo "Usage: ./dummy-generic.sh [command] [arguments]"
 echo "Commands:"
 echo "  install [license] - install the package"
 echo "  uninstall - uninstall the package"

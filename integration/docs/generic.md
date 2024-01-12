@@ -1,5 +1,5 @@
-# WP Packages Update Server - Generic API Calls - Developer documentation
-(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-packages-update-server/blob/master/README.md))
+# WP Packages Update Server - Generic Updates Integration - Developer documentation
+(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-packages-update-server/blob/main/README.md))
 
 API calls can be used by generic client packages to interact with the Anyape Update Server from any language or framework to request updates.  
 This document focuses on generic packages - WordPress plugins and themes are supported out of the box, and full integration examples are provided.  
@@ -14,7 +14,8 @@ Similarly, the actual update process, persisting license key & signature, securi
 
 Also of note, in the context of a generic package, the "domain" added to or removed from the list of `allowed_domains` needs not be an internet domain name, but can be any string that uniquely identifies the client.
 
-* [WP Packages Update Server - Generic API Calls - Developer documentation](#wp-packages-update-server---generic-api-calls---developer-documentation)
+* [WP Packages Update Server - Generic Updates Integration - Developer documentation](#wp-packages-update-server---generic-updates-integration---developer-documentation)
+    * [Using the provided examples](#using-the-provided-examples)
     * [Requesting update information](#requesting-update-information)
         * [Parameters](#parameters)
         * [Sample url](#sample-url)
@@ -48,6 +49,77 @@ Also of note, in the context of a generic package, the "domain" added to or remo
             * [JavaScript](#javascript-2)
             * [Python](#python-2)
             * [Bash curl](#bash-curl-2)
+
+## Using the provided examples
+
+Examples of implementations in Node.js, PHP, Bash, and Python are provided in `wp-content/plugins/wp-packages-update-server/integration/dummy-generic`.  
+Although the can be executed, the examples are meant to be used as a starting point for your own implementation, and are **not meant to be used as-is**.  
+Each `wppus-api.[js|php|sh|py]` file contains a header with the following disclaimer:
+
+```
+### EXAMPLE INTEGRATION WITH WP PACKAGES UPDATE SERVER ###
+
+# DO NOT USE THIS FILE AS IT IS IN PRODUCTION !!!
+# It is just a collection of basic functions and snippets, and they do not
+# perform the necessary checks to ensure data integrity ; they assume that all
+# the requests are successful, and do not check paths or permissions.
+# They also assume that the package necessitates a license key.
+
+# replace https://server.domain.tld/ with the URL of the server where
+# WP Packages Update Server is installed in wppus.json
+```
+
+Example of package configuration file `wppus.json` (all properties required except `requireLicense` which defaults to `false`):
+
+```json
+{
+   "server": "https://server.domain.tld/",
+   "requireLicense": true,
+    "packageData": {
+        "Name": "Dummy Generic Package",
+        "Version": "1.4.14",
+        "Homepage": "https://domain.tld/",
+        "Author": "Developer Name",
+        "AuthorURI": "https://domain.tld/",
+        "Description": "Empty generic package to demonstrate the WP Package Updater."
+    }
+}
+```
+
+Use the example by typing:
+
+```
+cd wp-content/plugins/wp-packages-update-server/integration/dummy-generic
+# show the help
+./dummy-generic.[js|php|sh|py]
+# install the package
+./dummy-generic.[js|php|sh|py] install [license_key]
+# activate the license
+./dummy-generic.[js|php|sh|py] activate
+# get the update info
+./dummy-generic.[js|php|sh|py] get_update_info
+# update the package
+./dummy-generic.[js|php|sh|py] update
+# deactivate the license
+./dummy-generic.[js|php|sh|py] deactivate [license_key]
+# uninstall the package
+./dummy-generic.[js|php|sh|py] uninstall
+```
+
+Typing `./dummy-generic.[js|php|sh|py]` without any argument will display the help:
+
+```
+Usage: ./dummy-generic.[js|php|sh|py] [command] [arguments]
+Commands:
+  install [license] - install the package
+  uninstall - uninstall the package
+  activate - activate the license
+  deactivate - deactivate the license
+  get_update_info - output information about the remote package update
+  update - update the package if available
+  status - output the package status
+Note: this package assumes it needs a license.
+```
 
 ## Requesting update information
 

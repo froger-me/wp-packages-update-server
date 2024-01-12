@@ -27,10 +27,11 @@
 	<p>
 		<?php
 		printf(
-			// translators: %1$s is <code>integration/dummy-generic</code>, %2$s is a "here" link to the documentation
-			esc_html__( 'See %1$s for an example of generic package written in bash. The API calls made by generic packages to the license API and Update API are the same, but because they are language-agnostic, there is no library provided. You may refer to the documentation found %2$s.', 'wppus' ),
-			'<a target="_blank" href="' . esc_url( 'https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md' ) . '">' . esc_html__( 'here', 'wppus' ) . '</a>',
+			// translators: %1$s is <code>integration/dummy-generic</code>, %2$s is `wppus-api.[sh|php|js|py]`, %3$s is is a "here" link to the documentation
+			esc_html__( 'See %1$s for examples of a generic package written in Bash, NodeJS, PHP with Curl, and Python. The API calls made by generic packages to the license API and Update API are the same as the WordPress packages. Unlike the upgrade library provided with plugins & themes, the code found in %2$s files is NOT ready for production environment and MUST be adapted. You may refer to the documentation found %3$s.', 'wppus' ),
 			'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration/dummy-generic</code>',
+			'<code>wppwus-api.[sh|php|js|py]</code>',
+			'<a target="_blank" href="' . esc_url( 'https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md' ) . '">' . esc_html__( 'here', 'wppus' ) . '</a>'
 		);
 		?>
 	</p>

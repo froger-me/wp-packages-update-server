@@ -1,5 +1,5 @@
 # WP Packages Update Server - Miscellaneous - Developer documentation
-(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-packages-update-server/blob/master/README.md))
+(Looking for the main documentation page instead? [See here](https://github.com/froger-me/wp-packages-update-server/blob/main/README.md))
 
 WP Packages Update Server provides an API and offers a series of functions, actions and filters for developers to use in their own plugins and themes to modify the behavior of the plugin. Below is the documentation to interface with miscellaneous aspects of WP Packages Update Server. 
 

@@ -1,6 +1,6 @@
-# WP Packages Update Server - Run your own update server for plugins and themes
+# WP Packages Update Server - Run your own update server
 
-* [WP Packages Update Server - Run your own update server for plugins and themes](#wp-packages-update-server---run-your-own-update-server-for-plugins-and-themes)
+* [WP Packages Update Server - Run your own update server](#wp-packages-update-server---run-your-own-update-server)
 	* [Introduction](#introduction)
 		* [Overview](#overview)
 		* [Special Thanks](#special-thanks)
@@ -29,13 +29,14 @@
 
 
 Developer documentation:
-- [Packages](https://github.com/froger-me/wp-packages-update-server/integration/docs/packages.md)
-- [Licenses](https://github.com/froger-me/wp-packages-update-server/integration/docs/licenses.md)
-- [Miscellaneous](https://github.com/froger-me/wp-packages-update-server/integration/docs/misc.md)
+- [Packages](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/packages.md)
+- [Licenses](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/licenses.md)
+- [Miscellaneous](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/misc.md)
+- [Generic Updates Integration](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md)
 
 ## Introduction
 
-WP Packages Update Server allows developers to provide updates for plugins and themes packages not hosted on `wordpress.org`, and possibly control the updates with licenses. It is also useful to provide updates for plugins or themes not compliant with the GPLv2 (or later).
+WP Packages Update Server allows developers to provide updates for plugins & themes not hosted on `wordpress.org` (if not compliant with the GPLv2 or later, for example), or for generic packages unrelated to WordPress altogether. It also allows to control the updates with license.
 Package updates may be either uploaded directly, or hosted in a Remote Repository, public or private, with the latest version of packages stored either locally or in the Cloud. It supports Bitbucket, Github, Gitlab, and self-hosted installations of Gitlab for package updates ; S3 compatible service providers are supported for package storage.
 
 **The `main` branch contains a beta version of WPPUS. The `dev` branch contains an alpha version of WPPUS. For stable versions, please use releases.**  
@@ -49,12 +50,14 @@ This plugin adds the following major features to WordPress:
 
 * **Packages Overview:** manage package updates with a table showing Package Name, Version, Type, File Name, Size, Last Modified and License Status ; includes bulk operations to delete, download and change the license status, and the ability to delete all the packages. Upload updates from your local machine to WPPUS, or let the system to automatically download them to WPPUS from a Remote Repository. Store packages either locally, or in the Cloud with an S3 compatible service. Packages can also be managed through their own API.
 * **Remote Sources:** configure the Remote Repository Service of your choice (Bitbucket, Github, Gitlab, or a self-hosted installation of Gitlab) with secure credentials and a branch name where the updates are hosted ; choose to check for updates recurringly, or when receiveing a webhook notification. WPPUS acts as a middleman between your Remote Repository, your udpates storage (local or Cloud), and your clients.
-* **Licenses:** manage licenses with a table showing ID, License Key, Registered Email, Status, Package Type, Package Slug, Creation Date, and Expiry Date ; add and edit them with a form, or use the API for more control. Licenses prevent plugins and themes installed on client WordPress installation from being updated without a valid license. Licenses are generated automatically by default and the values are unguessable (it is recommended to keep the default). When checking the validity of licenses an extra license signature is also checked to prevent the use of a license on more than the configured allowed domains.
+* **Licenses:** manage licenses with a table showing ID, License Key, Registered Email, Status, Package Type, Package Slug, Creation Date, and Expiry Date ; add and edit them with a form, or use the API for more control. Licenses prevent packages installed on client machines from being updated without a valid license. Licenses are generated automatically by default and the values are unguessable (it is recommended to keep the default). When checking the validity of licenses an extra license signature is also checked to prevent the use of a license on more than the configured allowed domains.
+* **Not limited to WordPress:** with a platform-agnostic API, updates can be served for any type of package, not just WordPress plugins & themes. Basic examples of integration with Node.js, PHP, bash, and Python are provided in the [documentation](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md).
 * **API & Webhooks:** Use the Package API to administer packages (browse, read, edit, add, delete), and request for expirable signed URLs of packages to allow secure downloads. Use the License API to administer licenses (browse, read, edit, add, delete) and check, activate or deactivate licenses. Fire Webhooks to notify any URL of your choice of key events affecting packages and licenses. 
 
 To connect their plugins or themes and WP Packages Update Server, developers can find integration examples in `wp-packages-update-server/integration`:
 * **Dummy Plugin:** a folder `dummy-plugin` with a simple, empty plugin that includes the necessary code in the `dummy-plugin.php` main plugin file and the necessary libraries in a `lib` folder.
 * **Dummy Theme:** a folder `dummy-theme` with a simple, empty child theme of Twenty Seventeen that includes the necessary code in the `functions.php` file and the necessary libraries in a `lib` folder.
+* **Dummy Generic:** a folder `dummy-generic` with a simple command line program written bash, Node.js, PHP, bash, and Python. Execute by calling `./dummy-generic.[js|php|sh|py]` from the command line. See `wppus-api.[js|php|sh|py]` for simple examples of the API calls.
 
 In addition, requests to the various APIs are optimised with a customisable [Must Use Plugin](https://codex.wordpress.org/Must_Use_Plugins) automatically added upon install of WP Packages Update Server. The original file can be found in `wp-packages-update-server/optimisation/wppus-endpoint-optimizer.php`.  
 
@@ -66,7 +69,7 @@ Authorisation to use these libraries freely provided relevant licenses are inclu
 
 * Tested with PHP 8.x - may work with PHP 7.x versions for the most part, but it is not guaranteed
 * WP Packages Update Server proper uses Plugin Update Checker Library 5.3 and WP Update Server Library 2.0.1
-* Integration examples use Plugin Update Checker Library 5.3
+* Integration examples for WordPress packages use Plugin Update Checker Library 5.3
 
 **Pull requests to solve any bugs, improve performance, and keep libraries up to date are welcome and highly encouraged.**  
 **Requests to debug or troubleshoot specific setups will not be addressed.**
@@ -145,12 +148,12 @@ This tab allows administrators to configure how Remote Sources are handled with 
 
 Name                                  | Type      | Description
 ------------------------------------- |:---------:| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-Use Remote Repository Service         | checkbox  | Enables this server to download plugins and themes from a Remote Repository before delivering updates.<br/>Supports Bitbucket, Github and Gitlab.<br/>If left unchecked, zip packages need to be manually uploaded to `wp-content/plugins/wp-packages-update-server/packages`.<br/>**It affects all the packages delivered by this installation of WP Packages Update Server if they have a corresponding repository in the Remote Repository Service.**<br/>**Settings of the "Packages remote source" section will be saved only if this option is checked.**
+Use Remote Repository Service         | checkbox  | Enables this server to download packages from a Remote Repository before delivering updates.<br/>Supports Bitbucket, Github and Gitlab.<br/>If left unchecked, zip packages need to be manually uploaded to `wp-content/plugins/wp-packages-update-server/packages`.<br/>**It affects all the packages delivered by this installation of WP Packages Update Server if they have a corresponding repository in the Remote Repository Service.**<br/>**Settings of the "Packages remote source" section will be saved only if this option is checked.**
 Remote Repository Service URL         | text      | The URL of the Remote Repository Service where packages are hosted.<br/>Must follow the following pattern: `https://repository-service.tld/username` where `https://repository-service.tld` may be a self-hosted instance of Gitlab.<br/>Each package repository URL must follow the following pattern: `https://repository-service.tld/username/package-slug/` ; the package files must be located at the root of the repository, and in the case of plugins the main plugin file must follow the pattern `package-slug.php`.
 Self-hosted Remote Repository Service | checkbox  | Check this only if the Remote Repository Service is a self-hosted instance of Gitlab.
 Packages branch name                  | text      | The branch to download when getting remote packages from the Remote Repository Service.
 Remote Repository Service credentials | text      | Credentials for non-publicly accessible repositories.<br/>In the case of Github and Gitlab, an access token (`token`).<br/>In the case of Bitbucket, the Consumer key and secret separated by a pipe (`consumer_key\|consumer_secret`). IMPORTANT: when creating the consumer, "This is a private consumer" must be checked.	
-Use Webhooks                          | checkbox  | Check so that each repository of the Remote Repository Service calls a Webhook when updates are pushed.<br>When checked, WP Packages Update Server will not regularly poll repositories for package version changes, but relies on events sent by the repositories to schedule a package download.<br>Webhook URL: `https://domain.tld/wppus-webhook/package-type/package-slug` - where `package-type` is the package type (`plugin` or `theme`) and `package-slug` is the slug of the package that needs updates.<br>Note that WP Packages Update Server does not rely on the content of the payload to schedule a package download, so any type of event can be used to trigger the Webhook.
+Use Webhooks                          | checkbox  | Check so that each repository of the Remote Repository Service calls a Webhook when updates are pushed.<br>When checked, WP Packages Update Server will not regularly poll repositories for package version changes, but relies on events sent by the repositories to schedule a package download.<br>Webhook URL: `https://domain.tld/wppus-webhook/package-type/package-slug` - where `package-type` is the package type (`plugin`, `theme`, or `generic`) and `package-slug` is the slug of the package that needs updates.<br>Note that WP Packages Update Server does not rely on the content of the payload to schedule a package download, so any type of event can be used to trigger the Webhook.
 Remote Download Delay                 | number    | Delay in minutes after which WP Packages Update Server will poll the Remote Repository for package updates when the Webhook has been called.<br>Leave at `0` to schedule a package update during the cron run happening immediately after the Webhook notification was received.
 Remote Repository Webhook Secret      | text      | Ideally a random string, the secret string included in the request by the repository service when calling the Webhook.<br>**WARNING: Changing this value will invalidate all the existing Webhooks set up on all package repositories.**<br>After changing this setting, make sure to update the Webhooks secrets in the repository service.
 Remote update check frequency         | select    | Only available in case Webhooks are not used - How often WP Packages Update Server will poll each Remote Repository for package updates - checking too often may slow down the server (recommended "Once Daily").
@@ -330,6 +333,8 @@ The following can also be found under the "Help" tab of the WP Packages Update S
 To link your packages to WP Packages Update Server, and optionally to prevent webmasters from getting updates of your plugins and themes without a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the `functions.php` file (for themes), and provide the necessary libraries in a lib directory at the root of the package.  
 
 See `wp-content/plugins/wp-packages-update-server/integration/dummy-plugin` for an example of plugin, and  `wp-content/plugins/wp-packages-update-server/integration/dummy-theme` for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.  
+
+'See `wp-content/plugins/wp-packages-update-server/integration/dummy-generic` for examples of a generic package written in Bash, NodeJS, PHP with Curl, and Python. The API calls made by generic packages to the license API and Update API are the same as the WordPress packages. Unlike the upgrade library provided with plugins & themes, the code found in `wppwus-api.[sh|php|js|py]` files is **NOT ready for production environment and MUST be adapted**. You may refer to the documentation found [here](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md).
 
 Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in `wp-content/wppus/packages` or `CloudStorageUnit://wppus-packages/`. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in `package-slug.zip` would be `package-slug.php`.  
 
