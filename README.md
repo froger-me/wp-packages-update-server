@@ -354,7 +354,7 @@ $prefix_updater = new WP_Package_Updater(
 - Connect WPPUS with your repository and prime your package, or manually upload your package to WPPUS.
 
 For generic packages, the steps involved entirely depend on the language used to write the package and the update process of the target platform.  
-You may refer to the documentation found [here](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md)
+You may refer to the documentation found [here](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md).
 ___
 
 See `wp-content/plugins/wp-packages-update-server/integration/dummy-plugin` for an example of plugin, and  `wp-content/plugins/wp-packages-update-server/integration/dummy-theme` for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.  
