@@ -330,11 +330,36 @@ The following can also be found under the "Help" tab of the WP Packages Update S
 
 ### Provide updates with WP Packages Update Server - packages requirements 
 
-To link your packages to WP Packages Update Server, and optionally to prevent webmasters from getting updates of your plugins and themes without a license, your plugins and themes need to include some extra code. It is a simple matter of adding a few lines in the main plugin file (for plugins) or in the `functions.php` file (for themes), and provide the necessary libraries in a lib directory at the root of the package.  
+To link your packages to WP Packages Update Server, and optionally to prevent webmasters from getting updates of your ppackages without a license, your packages need to include some extra code.  
+
+For plugins, and themes, it is fairly straightforward:
+- Add a `lib` directory with the `plugin-update-checker` and `wp-update-checker` libraries to the root of the package (provided in `dummy-[plugin|theme]` ; `wp-update-checker` can be customized as you see fit, but `plugin-update-checker` should be left untouched).
+- Add the following code to the main plugin file (for plugins) or in the `functions.php` file (for themes) :
+```php
+/** Enable updates - note the  `$prefix_updater` variable: change `prefix` to a unique string for your package **/
+require_once __DIR__ . '/lib/wp-package-updater/class-wp-package-updater.php';
+
+$prefix_updater = new WP_Package_Updater(
+	wp_normalize_path( __FILE__ ),
+	strpos( __DIR__, WP_PLUGIN_DIR ) === 0 ? wp_normalize_path( __DIR__ ) : get_stylesheet_directory()
+);
+```
+- Add a `wppus.json` file at the root of the package with the following content - change the value of `"server"` to your own (required), and select a value for `"requireLicense"` (optional):
+```json
+{
+   "server": "https://server.domain.tld/",
+   "requireLicense": true|false
+}
+```
+- Connect WPPUS with your repository and prime your package, or manually upload your package to WPPUS.
+
+For generic packages, the steps involved entirely depend on the language used to write the package and the update process of the target platform.  
+You may refer to the documentation found [here](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md)
+___
 
 See `wp-content/plugins/wp-packages-update-server/integration/dummy-plugin` for an example of plugin, and  `wp-content/plugins/wp-packages-update-server/integration/dummy-theme` for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.  
 
-'See `wp-content/plugins/wp-packages-update-server/integration/dummy-generic` for examples of a generic package written in Bash, NodeJS, PHP with Curl, and Python. The API calls made by generic packages to the license API and Update API are the same as the WordPress packages. Unlike the upgrade library provided with plugins & themes, the code found in `wppwus-api.[sh|php|js|py]` files is **NOT ready for production environment and MUST be adapted**. You may refer to the documentation found [here](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md).
+See `wp-content/plugins/wp-packages-update-server/integration/dummy-generic` for examples of a generic package written in Bash, NodeJS, PHP with Curl, and Python. The API calls made by generic packages to the license API and Update API are the same as the WordPress packages. Unlike the upgrade library provided with plugins & themes, the code found in `wppwus-api.[sh|php|js|py]` files is **NOT ready for production environment and MUST be adapted**.
 
 Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in `wp-content/wppus/packages` or `CloudStorageUnit://wppus-packages/`. Packages need to be valid WordPress plugin or theme packages, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in `package-slug.zip` would be `package-slug.php`.  
 
