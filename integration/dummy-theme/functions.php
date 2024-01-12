@@ -27,7 +27,7 @@ require_once __DIR__ . '/lib/wp-package-updater/class-wp-package-updater.php';
 
 $prefix_updater = new WP_Package_Updater(
 	wp_normalize_path( __FILE__ ),
-	strpos( __DIR__, WP_PLUGIN_DIR ) === 0 ? wp_normalize_path( __DIR__ ) : get_stylesheet_directory()
+	0 === strpos( __DIR__, WP_PLUGIN_DIR ) ? wp_normalize_path( __DIR__ ) : get_stylesheet_directory()
 );
 */
 
