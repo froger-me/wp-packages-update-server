@@ -1,5 +1,10 @@
 /* global Wppus, console */
 jQuery(document).ready(function ($) {
+
+	if ($('.wp-packages-update-server_page_wppus-page-licenses').length === 0) {
+		return;
+	}
+
 	editor = wp.codeEditor.initialize($('#wppus_license_data'), WppusAdminLicense.cm_settings);
 
 	$('#add_license_trigger').on('click', function() {
