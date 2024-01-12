@@ -32,23 +32,13 @@ use YahnisElsts\PluginUpdateChecker\v5p3\Plugin\UpdateChecker;
 * Also change $prefix_updater below - replace "prefix" in this variable's name with a unique prefix
 *
 
-/** Use for plugin updates **/
+/** Enable updates **/
 /* phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-require_once plugin_dir_path( __FILE__ ) . 'lib/wp-package-updater/class-wp-package-updater.php';
+require_once __DIR__ . '/lib/wp-package-updater/class-wp-package-updater.php';
 
 $prefix_updater = new WP_Package_Updater(
 	wp_normalize_path( __FILE__ ),
-	wp_normalize_path( plugin_dir_path( __FILE__ ) )
-);
-*/
-
-/** Use for theme updates **/
-/* phpcs:ignore Squiz.PHP.CommentedOutCode.Found
-require_once plugin_dir_path( __FILE__ ) . 'lib/wp-package-updater/class-wp-package-updater.php';
-
-$prefix_updater = new WP_Package_Updater(
-	wp_normalize_path( __FILE__ ),
-	get_stylesheet_directory()
+	strpos( __DIR__, WP_PLUGIN_DIR ) === 0 ? wp_normalize_path( __DIR__ ) : get_stylesheet_directory()
 );
 */
 
