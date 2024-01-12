@@ -78,7 +78,7 @@ $prefix_updater = new WP_Package_Updater(
 			printf(
 				// translators: %1$s is <code>integration/dummy-plugin</code>, %2$s is <code>integration/dummy-theme</code>
 				esc_html__( 'See %1$s for an example of plugin, and %2$ss for an example of theme. They are fully functionnal and can be used to test all the features of the server with a test client installation of WordPress.', 'wppus' ),
-				'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration/dummy-plugin</code>',
+				'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration/dummy-theme</code>',
 				'<code>' . esc_html( WPPUS_PLUGIN_PATH ) . 'integration/dummy-plugin</code>',
 			);
 			?>
@@ -97,7 +97,7 @@ $prefix_updater = new WP_Package_Updater(
 			<?php
 			printf(
 				// translators: %1$s is <code>packages_dir</code>, %2$s is <code>package-slug.zip</code>, %3$s is <code>package-slug.php</code>
-				esc_html__( 'Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in %1$s. A packages need to a valid generic package, or a valid WordPress plugin or theme package, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in %2$s would be %3$s.', 'wppus' ),
+				esc_html__( 'Unless "Use Remote Repository Service" is checked in "Remote Sources", you need to manually upload the packages zip archives (and subsequent updates) in %1$s. A package needs to a valid generic package, or a valid WordPress plugin or theme package, and in the case of a plugin the main plugin file must have the same name as the zip archive. For example, the main plugin file in %2$s would be %3$s.', 'wppus' ),
 				'<code>' . esc_html( $packages_dir ) . '</code>',
 				'<code>package-slug.zip</code>',
 				'<code>package-slug.php</code>',
