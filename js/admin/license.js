@@ -1,6 +1,7 @@
 /* global Wppus, console */
 jQuery(document).ready(function ($) {
-	editor = wp.codeEditor.initialize($('#wppus_license_data'), WppusAdminLicense.cm_settings);
+	var editor = wp.codeEditor;
+	var initEditor = true;
 
 	$('#add_license_trigger').on('click', function() {
 		showLicensePanel($('#wppus_license_panel'), function() {
@@ -102,6 +103,11 @@ jQuery(document).ready(function ($) {
 
 	function populateLicensePanel(licenseData) {
 
+		if (initEditor) {
+			editor = editor.initialize($('#wppus_license_data'), WppusAdminLicense.cm_settings);
+			initEditor = false;
+		}
+
 		if ($.isPlainObject(licenseData)) {
 			$('#wppus_license_id').html(licenseData.id);
 			$('#wppus_license_key').val(licenseData.license_key);
@@ -145,6 +151,7 @@ jQuery(document).ready(function ($) {
 			$('#wppus_license_key').val($('#wppus_license_key').data('random_key'));
 			$('#wppus_license_date_created').val(new Date().toISOString().slice(0, 10));
 			$('#wppus_license_max_allowed_domains').val(1);
+			editor.codemirror.setValue('{}');
 		}
 	}
 
