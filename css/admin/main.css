@@ -33,3 +33,22 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
+
+.wppus-wrap .help-content ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+}
+
+.wppus-wrap .help-content pre {
+    background: rgba(0,0,0,.07);
+    direction: ltr;
+    overflow: auto;
+    padding: 1em;
+    display: inline-block;
+    tab-size: 4;
+}

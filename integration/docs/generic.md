@@ -16,47 +16,37 @@ Also of note, in the context of a generic package, the "domain" added to or remo
 
 * [WP Packages Update Server - Generic Updates Integration - Developer documentation](#wp-packages-update-server---generic-updates-integration---developer-documentation)
     * [Using the provided examples](#using-the-provided-examples)
-    * [Requesting update information](#requesting-update-information)
-        * [Parameters](#parameters)
-        * [Sample url](#sample-url)
-        * [Example response](#example-response)
-        * [Examples request](#examples-request)
-            * [Wordpress](#wordpress)
-            * [PHP Curl](#php-curl)
-            * [Node.js](#nodejs)
-            * [JavaScript](#javascript)
-            * [Python](#python)
-            * [Bash curl](#bash-curl)
+        * [Disclaimer](#disclaimer)
+        * [Configuration](#configuration)
+        * [Usage](#usage)
+    * [API](#api)
+        * [Requesting update information](#requesting-update-information)
+            * [Parameters](#parameters)
+            * [Sample url](#sample-url)
+            * [Example response](#example-response)
+            * [Examples request](#examples-request)
         * [Activating/Deactivating a license](#activatingdeactivating-a-license)
-        * [Parameters](#parameters-1)
-        * [Sample urls](#sample-urls)
-        * [Example response](#example-response-1)
-        * [Examples request](#examples-request-1)
-            * [Wordpress](#wordpress-1)
-            * [PHP Curl](#php-curl-1)
-            * [Node.js](#nodejs-1)
-            * [JavaScript](#javascript-1)
-            * [Python](#python-1)
-            * [Bash curl](#bash-curl-1)
+            * [Parameters](#parameters-1)
+            * [Sample urls](#sample-urls)
+            * [Example response](#example-response-1)
+            * [Examples request](#examples-request-1)
         * [Downloading a package](#downloading-a-package)
-        * [Parameters](#parameters-2)
-        * [Sample url](#sample-url-1)
-        * [Example response](#example-response-2)
-        * [Examples request](#examples-request-2)
-            * [Wordpress](#wordpress-2)
-            * [PHP Curl](#php-curl-2)
-            * [Node.js](#nodejs-2)
-            * [JavaScript](#javascript-2)
-            * [Python](#python-2)
-            * [Bash curl](#bash-curl-2)
+            * [Parameters](#parameters-2)
+            * [Sample url](#sample-url-1)
+            * [Example response](#example-response-2)
+            * [Examples request](#examples-request-2)
 
 ## Using the provided examples
 
 Examples of implementations in Node.js, PHP, Bash, and Python are provided in `wp-content/plugins/wp-packages-update-server/integration/dummy-generic`.  
-Although the can be executed, the examples are meant to be used as a starting point for your own implementation, and are **not meant to be used as-is**.  
+Although they can be executed, the examples are meant to be used as a starting point for your own implementation, and are **not meant to be used as-is**.  
+All the examples have been tested on Linux and MacOS.
+
+### Disclaimer
+
 Each `wppus-api.[js|php|sh|py]` file contains a header with the following disclaimer:
 
-```
+```php
 ### EXAMPLE INTEGRATION WITH WP PACKAGES UPDATE SERVER ###
 
 # DO NOT USE THIS FILE AS IT IS IN PRODUCTION !!!
@@ -68,6 +58,8 @@ Each `wppus-api.[js|php|sh|py]` file contains a header with the following discla
 # replace https://server.domain.tld/ with the URL of the server where
 # WP Packages Update Server is installed in wppus.json
 ```
+
+### Configuration
 
 Example of package configuration file `wppus.json` (all properties required except `requireLicense` which defaults to `false`):
 
@@ -86,9 +78,11 @@ Example of package configuration file `wppus.json` (all properties required exce
 }
 ```
 
-Use the example by typing:
+### Usage
 
-```
+In a terminal, use the example by typing (replace `[js|php|sh|py]` with the extension of the file you want to test):
+
+```bash
 cd wp-content/plugins/wp-packages-update-server/integration/dummy-generic
 # show the help
 ./dummy-generic.[js|php|sh|py]
@@ -108,7 +102,7 @@ cd wp-content/plugins/wp-packages-update-server/integration/dummy-generic
 
 Typing `./dummy-generic.[js|php|sh|py]` without any argument will display the help:
 
-```
+```bash
 Usage: ./dummy-generic.[js|php|sh|py] [command] [arguments]
 Commands:
   install [license] - install the package
@@ -121,9 +115,11 @@ Commands:
 Note: this package assumes it needs a license.
 ```
 
-## Requesting update information
+## API
 
-### Parameters
+### Requesting update information
+
+#### Parameters
 
 | Parameter | Required | Description |
 | --- | --- | --- |
@@ -134,13 +130,13 @@ Note: this package assumes it needs a license.
 | license_signature | no | The license signature of the package, saved by the client |
 | update_type | yes | The type of the update - `Generic` |
 
-### Sample url
+#### Sample url
 
 ```
-https://server.domain.tld/wppus-update-api/?action=get_metadata&package_id=dummy-generic-package&installed_version=1.4.13&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D&update_type=Generic
+https://server.domain.tld/wppus-update-api/?action=get_metadata&package_id=dummy-generic&installed_version=1.4.13&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D&update_type=Generic
 ```
 
-### Example response
+#### Example response
 
 Raw - usable result depends on the language & framework used to get the response.  
 Only the relevant headers are shown here.
@@ -155,13 +151,13 @@ HTTP/1.1 200 OK
 {
     "name": "Dummy Generic Package",
     "version": "1.4.14",
-    "homepage": "https:\/\/dev.tld\/",
-    "author": "Alexandre Froger",
-    "author_homepage": "https:\/\/dev.tld",
+    "homepage": "https:\/\/domain.tld\/",
+    "author": "Developer Name",
+    "author_homepage": "https:\/\/domain.tld\/",
     "description": "Empty Generic Package",
     "last_updated": "2024-01-01 00:00:00",
-    "slug": "dummy-generic-package",
-    "download_url": "https:\/\/server.domain.tld\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package",
+    "slug": "dummy-generic",
+    "download_url": "https:\/\/server.domain.tld\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic",
     "request_time_elapsed": "0.386"
 }
 
@@ -176,12 +172,12 @@ HTTP/1.1 200 OK
 {
     "name": "Dummy Generic Package",
     "version": "1.4.14",
-    "homepage": "https:\/\/dev.tld\/",
-    "author": "Alexandre Froger",
-    "author_homepage": "https:\/\/dev.tld",
+    "homepage": "https:\/\/domain.tld\/",
+    "author": "Developer Name",
+    "author_homepage": "https:\/\/domain.tld\/",
     "description": "Empty Generic Package",
     "last_updated": "2024-01-01 00:00:00",
-    "slug": "dummy-generic-package",
+    "slug": "dummy-generic",
     "license_error": {},
     "request_time_elapsed": "0.386"
 }
@@ -194,13 +190,13 @@ In case a valid license key is provided:
 {
    "name": "Dummy Generic Package",
     "version": "1.4.14",
-    "homepage": "https:\/\/dev.tld\/",
-    "author": "Alexandre Froger",
-    "author_homepage": "https:\/\/dev.tld",
+    "homepage": "https:\/\/domain.tld\/",
+    "author": "Developer Name",
+    "author_homepage": "https:\/\/domain.tld\/",
     "description": "Empty Generic Package",
     "last_updated": "2024-01-01 00:00:00",
-    "slug": "dummy-generic-package",
-    "download_url": "https:\/\/server.domain.tld\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D",
+    "slug": "dummy-generic",
+    "download_url": "https:\/\/server.domain.tld\/wppus-update-api\/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D",
     "license": {
         "id": "9999",
         "license_key": "41ec1eba0f17d47f76827a33c7daab2c",
@@ -213,25 +209,25 @@ In case a valid license key is provided:
         "date_created": "2024-01-01",
         "date_renewed": "0000-00-00",
         "date_expiry": "2025-01-01",
-        "package_slug": "dummy-generic-package",
+        "package_slug": "dummy-generic",
         "package_type": "generic",
         "result": "success",
         "message": "License key details retrieved.",
-        "product_ref": "dummy-generic-package\/dummy-generic-package.json"
+        "product_ref": "dummy-generic\/dummy-generic.json"
     },
     "request_time_elapsed": "0.274"
 }
 ```
 
-### Examples request
+#### Examples request
 
-#### Wordpress
+**Wordpress**
 
 ```php
 $signature = raw_url_encode( 'ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs=' ); 
 $args      = array(
     'action'            => 'get_metadata',
-    'package_id'        => 'dummy-generic-package',
+    'package_id'        => 'dummy-generic',
     'installed_version' => '1.4.13',
     'license_key'       => '41ec1eba0f17d47f76827a33c7daab2c',
     'license_signature' => $signature,
@@ -249,13 +245,13 @@ $response = wp_remote_get(
 );
 ```
 
-#### PHP Curl
+**PHP Curl**
 
 ```php
 $signature = raw_url_encode( 'ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs=' ); 
 $args = array(
     'action'            => 'get_metadata',
-    'package_id'        => 'dummy-generic-package',
+    'package_id'        => 'dummy-generic',
     'installed_version' => '1.4.13',
     'license_key'       => '41ec1eba0f17d47f76827a33c7daab2c',
     'license_signature' => $signature,
@@ -274,7 +270,7 @@ curl_close( $ch );
 
 ```
 
-#### Node.js
+**Node.js**
 
 ```js
 const https = require('https');
@@ -282,7 +278,7 @@ const querystring = require('querystring');
 const signature = encodeURIComponent('ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs=');
 const args = {
     action: 'get_metadata',
-    package_id: 'dummy-generic-package',
+    package_id: 'dummy-generic',
     installed_version: '1.4.13',
     license_key: '41ec1eba0f17d47f76827a33c7daab2c',
     license_signature: signature
@@ -313,13 +309,13 @@ https.get(url, options, (res) => {
 });
 ```
 
-#### JavaScript
+**JavaScript**
 
 ```js
 const signature = encodeURIComponent('ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs=');
 const args = {
     action: 'get_metadata',
-    package_id: 'dummy-generic-package',
+    package_id: 'dummy-generic',
     installed_version: '1.4.13',
     license_key: '41ec1eba0f17d47f76827a33c7daab2c',
     license_signature: signature,
@@ -344,7 +340,7 @@ fetch(url, {
 
 ```
 
-#### Python
+**Python**
 
 ```python
 import requests
@@ -353,7 +349,7 @@ import urllib.parse
 signature = urllib.parse.quote_plus('ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs=')
 args = {
     'action': 'get_metadata',
-    'package_id': 'dummy-generic-package',
+    'package_id': 'dummy-generic',
     'installed_version': '1.4.13',
     'license_key': '41ec1eba0f17d47f76827a33c7daab2c',
     'license_signature': signature,
@@ -368,16 +364,35 @@ else:
     print('Error:', response.status_code)
 ```
 
-#### Bash curl
+**Bash curl**
 
 ```bash
 #!/bin/bash
 
-signature=$(echo -n 'ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs=' | perl -MURI::Escape -ne 'print uri_escape($_)')
+function urlencode() {
+    local old_lc_collate=$LC_COLLATE
+
+    LC_COLLATE=C
+
+    local length="${#1}"
+
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:$i:1}"
+
+        case $c in
+            [a-zA-Z0-9.~_-]) printf '%s' "$c" ;;
+            *) printf '%%%02X' "'$c" ;;
+        esac
+    done
+
+    LC_COLLATE=$old_lc_collate
+}
+
+signature=$(urlencode "ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs=")
 url="https://server.domain.tld/wppus-update-api/"
 args=(
     "action=get_metadata"
-    "package_id=dummy-generic-package"
+    "package_id=dummy-generic"
     "installed_version=1.4.13"
     "license_key=41ec1eba0f17d47f76827a33c7daab2c"
     "license_signature=$signature"
@@ -391,7 +406,7 @@ echo "$response"
 
 ### Activating/Deactivating a license
 
-### Parameters
+#### Parameters
 
 | Parameter | Required | Description |
 | --- | --- | --- |
@@ -401,20 +416,20 @@ echo "$response"
 | package_slug | yes | The package identifier |
 
 
-### Sample urls
+#### Sample urls
 
 Activation:
 ```
-https://server.domain.tld/wppus-update-api/?action=activate&license_key=41ec1eba0f17d47f76827a33c7daab2c&allowed_domains=allowedClientIdentifier&package_slug=dummy-generic-package
+https://server.domain.tld/wppus-update-api/?action=activate&license_key=41ec1eba0f17d47f76827a33c7daab2c&allowed_domains=allowedClientIdentifier&package_slug=dummy-generic
 ```
 ___
 
 Deactivation:
 ```
-https://server.domain.tld/wppus-update-api/?action=deactivate&license_key=41ec1eba0f17d47f76827a33c7daab2c&allowed_domains=allowedClientIdentifier&package_slug=dummy-generic-package
+https://server.domain.tld/wppus-update-api/?action=deactivate&license_key=41ec1eba0f17d47f76827a33c7daab2c&allowed_domains=allowedClientIdentifier&package_slug=dummy-generic
 ```
 
-### Example response
+#### Example response
 
 Raw - usable result depends on the language & framework used to get the response.
 Only the relevant headers are shown here.
@@ -425,7 +440,7 @@ Success - activation:
 ```
 HTTP/1.1 200 OK
 
-{"license_key":"41ec1eba0f17d47f76827a33c7daab2c","max_allowed_domains":999,"allowed_domains":["allowedClientIdentifier"],"status":"activated","txn_id":"","date_created":"2024-01-01","date_renewed":"0000-00-00","date_expiry":"2025-01-01","package_slug":"dummy-generic-package","package_type":"generic","license_signature":"ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs="}
+{"license_key":"41ec1eba0f17d47f76827a33c7daab2c","max_allowed_domains":999,"allowed_domains":["allowedClientIdentifier"],"status":"activated","txn_id":"","date_created":"2024-01-01","date_renewed":"0000-00-00","date_expiry":"2025-01-01","package_slug":"dummy-generic","package_type":"generic","license_signature":"ZaH+a_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs="}
 ```
 
 This is when the license signature must be saved by the client to be used for future update requests.
@@ -436,7 +451,7 @@ Success - deactivation:
 ```
 HTTP/1.1 200 OK
 
-{"license_key":"41ec1eba0f17d47f76827a33c7daab2c","max_allowed_domains":999,"allowed_domains":[],"status":"deactivated","txn_id":"","date_created":"2024-01-01","date_renewed":"0000-00-00","date_expiry":"2025-01-01","package_slug":"dummy-generic-package","package_type":"generic"}
+{"license_key":"41ec1eba0f17d47f76827a33c7daab2c","max_allowed_domains":999,"allowed_domains":[],"status":"deactivated","txn_id":"","date_created":"2024-01-01","date_renewed":"0000-00-00","date_expiry":"2025-01-01","package_slug":"dummy-generic","package_type":"generic"}
 
 ```
 ___
@@ -472,16 +487,16 @@ HTTP/1.1 400 Bad Request
 {"max_allowed_domains":"2"}
 ```
 
-### Examples request
+#### Examples request
 
-#### Wordpress
+**Wordpress**
 
 ```php
 $args      = array(
     'action'           => 'activate', // or 'deactivate'
     'license_key'      => '41ec1eba0f17d47f76827a33c7daab2c',
     'allowed_domains'  => 'allowedClientIdentifier',
-    'package_slug'     => 'dummy-generic-package',
+    'package_slug'     => 'dummy-generic',
 );
 $url      = add_query_arg( $args, 'https://server.domain.tld/wppus-license-api/' );
 
@@ -494,14 +509,14 @@ wp_remote_get(
 );
 ```
 
-#### PHP Curl
+**PHP Curl**
 
 ```php
 $args = array(
     'action'           => 'activate', // or 'deactivate'
     'license_key'      => '41ec1eba0f17d47f76827a33c7daab2c',
     'allowed_domains'  => 'allowedClientIdentifier',
-    'package_slug'     => 'dummy-generic-package',
+    'package_slug'     => 'dummy-generic',
 );
 $url = 'https://server.domain.tld/wppus-license-api/?' . http_build_query($args);
 
@@ -516,7 +531,7 @@ $response = curl_exec($ch);
 curl_close($ch);
 ```
 
-#### Node.js
+**Node.js**
 
 ```js
 const https = require('https');
@@ -525,7 +540,7 @@ const args = {
     action: 'activate', // or 'deactivate'
     license_key: '41ec1eba0f17d47f76827a33c7daab2c',
     allowed_domains: 'allowedClientIdentifier',
-    package_slug: 'dummy-generic-package',
+    package_slug: 'dummy-generic',
 };
 const url = 'https://server.domain.tld/wppus-license-api/?' + querystring.stringify(args);
 
@@ -547,14 +562,14 @@ https.get(url, (res) => {
 });
 ```
 
-#### JavaScript
+**JavaScript**
 
 ```js
 const args = {
     action: 'activate', // or 'deactivate'
     license_key: '41ec1eba0f17d47f76827a33c7daab2c',
     allowed_domains: 'allowedClientIdentifier',
-    package_slug: 'dummy-generic-package',
+    package_slug: 'dummy-generic',
 };
 
 const url = new URL('https://server.domain.tld/wppus-license-api/');
@@ -570,7 +585,7 @@ fetch(url)
     });
 ```
 
-#### Python
+**Python**
 
 ```python
 import requests
@@ -580,7 +595,7 @@ args = {
     'action': 'activate', # or 'deactivate'
     'license_key': '41ec1eba0f17d47f76827a33c7daab2c',
     'allowed_domains': 'allowedClientIdentifier',
-    'package_slug': 'dummy-generic-package',
+    'package_slug': 'dummy-generic',
 }
 
 url = 'https://server.domain.tld/wppus-license-api/?' + urllib.parse.urlencode(args)
@@ -593,7 +608,7 @@ except requests.exceptions.HTTPError as err:
     print(f'Error: {err}')
 ```
 
-#### Bash curl
+**Bash curl**
 
 ```bash
 #!/bin/bash
@@ -603,7 +618,7 @@ args=(
     "action=activate"
     "license_key=41ec1eba0f17d47f76827a33c7daab2c"
     "allowed_domains=allowedClientIdentifier"
-    "package_slug=dummy-generic-package"
+    "package_slug=dummy-generic"
 )
 full_url="${url}?$(IFS=\& ; echo "${args[*]}")"
 response=$(curl -s "$full_url")
@@ -615,7 +630,7 @@ echo $response
 
 Note: the download URL with its one-time use token is acquired from the response to the `get_metadata` API call (see [Requesting update information](#requesting-update-information)).
 
-### Parameters
+#### Parameters
 
 | Parameter | Required | Description |
 | --- | --- | --- |
@@ -625,13 +640,13 @@ Note: the download URL with its one-time use token is acquired from the response
 | license_key | no | The license key of the package, saved by the client |
 | license_signature | no | The license signature of the package, saved by the client |
 
-### Sample url
+#### Sample url
 
 ```
-https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D
+https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D
 ```
 
-### Example response
+#### Example response
 
 Raw - usable result depends on the language & framework used to get the response.
 Only the relevant headers are shown here.
@@ -663,7 +678,7 @@ HTTP/1.1 403 Forbidden
 
 <html>
 <head> <title>403 Forbidden</title> </head>
-<body> <h1>403 Forbidden</h1> <p></p> </body>
+<body> <h1>403 Forbidden</h1> <p>Invalid license key or signature.</p> </body>
 </html>
 ```
 ___
@@ -678,12 +693,12 @@ HTTP/1.1 404 Not Found
 </html>
 ```
 
-### Examples request
+#### Examples request
 
-#### Wordpress
+**Wordpress**
 
 ```php
-$download_url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
+$download_url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
 $response     = wp_remote_get(
     $download_url,
     array(
@@ -702,14 +717,14 @@ if ( 200 === wp_remote_retrieve_response_code( $response ) ) {
         WP_Filesystem();
     }
 
-    $wp_filesystem->put_contents( '/tmp/dummy-generic-package.zip', $package, FS_CHMOD_FILE );
+    $wp_filesystem->put_contents( '/tmp/dummy-generic.zip', $package, FS_CHMOD_FILE );
 }
 ```
 
-#### PHP Curl
+**PHP Curl**
 
 ```php
-$download_url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
+$download_url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
 $options = [
     'http' => [
         'timeout' => 20,
@@ -723,21 +738,21 @@ $context = stream_context_create($options);
 $response = file_get_contents($download_url, false, $context);
 
 if ($http_response_header[0] == 'HTTP/1.1 200 OK') {
-    file_put_contents('/tmp/dummy-generic-package.zip', $response);
+    file_put_contents('/tmp/dummy-generic.zip', $response);
 }
 ```
 
-#### Node.js
+**Node.js**
 
 ```js
 const https = require('follow-redirects').https;
 const fs = require('fs');
-const url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
+const url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
 
 https.get(url, (res) => {
 
     if (res.statusCode === 200) {
-        const file = fs.createWriteStream("/tmp/dummy-generic-package.zip");
+        const file = fs.createWriteStream("/tmp/dummy-generic.zip");
 
         res.pipe(file);
     }
@@ -746,10 +761,10 @@ https.get(url, (res) => {
 });
 ```
 
-#### JavaScript
+**JavaScript**
 
 ```js
-const url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
+const url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D";
 
 fetch(url)
     .then(response => response.blob())
@@ -758,7 +773,7 @@ fetch(url)
         const a = document.createElement('a');
         a.style.display = 'none';
         a.href = url;
-        a.download = 'dummy-generic-package.zip';
+        a.download = 'dummy-generic.zip';
 
         document.body.appendChild(a);
         a.click();
@@ -769,29 +784,29 @@ fetch(url)
     });
 ```
 
-#### Python
+**Python**
 
 ```python
 import requests
 
-url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D"
+url = "https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D"
 response = requests.get(url, stream=True)
 
 if response.status_code == 200:
-    with open('/tmp/dummy-generic-package.zip', 'wb') as f:
+    with open('/tmp/dummy-generic.zip', 'wb') as f:
         for chunk in response.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
 else:
     print(f'Error: HTTP status code {response.status_code}')
 ```
-#### Bash curl
+**Bash curl**
 
 ```bash
 #!/bin/bash
 
-url="https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic-package&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D"
-output_file="/tmp/dummy-generic-package.zip"
+url="https://server.domain.tld/wppus-update-api/?action=download&token=c0c403841752170640518823d752baba&package_id=dummy-generic&license_key=41ec1eba0f17d47f76827a33c7daab2c&license_signature=ZaH%2Ba_p1_EkM3BUIpqn7T53htuVPBem2lDtGIxr28oHjdCycvo_ZkxItYqb7mOHhfCMSwnMofWW7UchztEo0k2TwRgk81rNvZyYv6GfRZIxzDP5SzgREjnSAu6JVxDa5yvdd6uqWHWi_U1wRxff0nItItoAloWsek1SVbWbmQXs%3D"
+output_file="/tmp/dummy-generic.zip"
 
 curl -o $output_file $url
 ```
