@@ -2088,7 +2088,7 @@ class PhpS3
             $combinedHeaders[strtolower($k)] = trim($v);
         }
 
-        uksort($combinedHeaders, array('self', '__sortMetaHeadersCmp'));
+        uksort($combinedHeaders, array(self::class, '__sortMetaHeadersCmp'));
 
         // CredentialScope
         $credentialScope = array($amzDateStamp, self::getRegion(''), self::V4_SERVICE, self::V4_REQUEST_TYPE);
@@ -2106,7 +2106,7 @@ class PhpS3
         // Convert null query string parameters to strings and sort
         $parameters = array_map('strval', $parameters);
 
-        uksort($parameters, array('self', '__sortMetaHeadersCmp'));
+        uksort($parameters, array(self::class, '__sortMetaHeadersCmp'));
 
         $queryString = http_build_query($parameters, '', '&', PHP_QUERY_RFC3986);
 
