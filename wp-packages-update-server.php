@@ -112,7 +112,7 @@ if ( ! did_action( 'wppus_mu_init' ) ) {
 		require_once WPPUS_PLUGIN_PATH . 'functions.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-cli.php';
 
-		WPPUS_CLI::init();
+		WP_CLI::add_command( 'wppus', 'WPPUS_CLI' );
 	}
 }
 

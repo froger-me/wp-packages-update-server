@@ -783,7 +783,7 @@ class WPPUS_Cloud_Storage_Manager {
 				if ( $e instanceof PhpS3Exception ) {
 					php_log( $e );
 				} else {
-					php_log( 'Corrupt archive ' . $filename . ' ; will not be displayed or delivered' );
+					php_log( 'Corrupt archive ' . $filename . ' ; package will not be displayed or delivered' );
 
 					$log  = 'Exception caught: ' . $e->getMessage() . "\n";
 					$log .= 'File: ' . $e->getFile() . "\n";

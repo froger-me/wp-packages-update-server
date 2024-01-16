@@ -796,7 +796,7 @@ class WPPUS_Package_Manager {
 
 			$package = Wpup_Package_Extended::fromArchive( $filename, $slug, $cache );
 		} catch ( Exception $e ) {
-			php_log( 'Corrupt archive ' . $filename . ' ; will not be displayed or delivered' );
+			php_log( 'Corrupt archive ' . $filename . ' ; package will not be displayed or delivered' );
 
 			$log  = 'Exception caught: ' . $e->getMessage() . "\n";
 			$log .= 'File: ' . $e->getFile() . "\n";
