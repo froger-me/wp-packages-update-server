@@ -39,9 +39,9 @@ Developer documentation:
 WP Packages Update Server allows developers to provide updates for plugins & themes not hosted on `wordpress.org` (if not compliant with the GPLv2 or later, for example), or for generic packages unrelated to WordPress altogether. It also allows to control the updates with license.
 Package updates may be either uploaded directly, or hosted in a Remote Repository, public or private, with the latest version of packages stored either locally or in the Cloud. It supports Bitbucket, Github, Gitlab, and self-hosted installations of Gitlab for package updates ; S3 compatible service providers are supported for package storage.
 
-**The `main` branch contains a beta version of WPPUS. The `dev` branch contains an alpha version of WPPUS. For stable versions, please use releases.**  
-**A version 2.x is currently under active development ; once released, a 1.x branch will be created and pull requests will be accepted for maintenance.**  
-**There is no automatic upgrade path from 1.x to 2.x.**
+**The `main` branch contains a beta version of WPPUS v2. The `dev` branch contains an alpha version of WPPUS v2. For stable versions, please use releases.**  
+**The `v1` branch is only maintained by the community via pull requests, and releases are published only based on community feedback. No new feature will be added and no more in-depth maintenance will be performed by the original author.**  
+**There is no formal upgrade path from v1 to v2.**
 
 
 ### Overview
