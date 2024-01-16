@@ -232,7 +232,7 @@ if ( ! function_exists( 'wppus_browse_licenses' ) ) {
 	function wppus_browse_licenses( $browse_query ) {
 		$api = WPPUS_License_API::get_instance();
 
-		return $api->browse( $$browse_query );
+		return $api->browse( $browse_query );
 	}
 }
 

@@ -23,7 +23,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 			* [wppus\_fire\_webhook](#wppus_fire_webhook)
 	* [Actions](#actions)
 		* [wppus\_no\_api\_includes](#wppus_no_api_includes)
-		* [wppus\_no\_license\_api\_includes](#wppus_no_license_api_includes)
+		* [wppus\_no\_priority\_api\_includes](#wppus_no_priority_api_includes)
 		* [wppus\_remote\_sources\_options\_updated](#wppus_remote_sources_options_updated)
 	* [Filters](#filters)
 		* [wppus\_is\_api\_request](#wppus_is_api_request)
@@ -584,14 +584,14 @@ do_action( 'wppus_no_api_includes' );
 Fired when the plugin is including files and the current request is not made by a remote client interacting with any of the plugin's API.
 
 ___
-### wppus_no_license_api_includes
+### wppus_no_priority_api_includes
 
 ```php
-do_action( 'wppus_no_license_api_includes' );
+do_action( 'wppus_no_priority_api_includes' );
 ```
 
 **Description**  
-Fired when the plugin is including files and the current request is not made by a client plugin or theme interacting with the plugin's license API.
+Fired when the plugin is including files and the current request is not made by a client plugin or theme interacting with the plugin's high priority API (typically the license API).
 
 ___
 ### wppus_remote_sources_options_updated

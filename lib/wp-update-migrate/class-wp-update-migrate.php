@@ -4,9 +4,7 @@
  * WordPress plugins and themes update path library.
  *
  * @author Alexandre Froger
- * @version 1.2.2
- * @see https://github.com/froger-me/wp-update-migrate
- * @copyright Alexandre Froger - https://www.froger.me
+ * @version 1.5
  */
 
 /*================================================================================================ */
@@ -31,42 +29,41 @@
  * - each update function returns (bool) true in case of success, a WP_Error object otherwise
  **/
 
-/** For plugins **/
-// require_once plugin_dir_path( __FILE__ ) . 'lib/wp-update-migrate/class-wp-update-migrate.php';
-//
-// $hook = 'plugins_loaded';
+// phpcs:disable
+// require_once __DIR__ . '/lib/wp-update-migrate/class-wp-update-migrate.php';
 
-/** For themes **/
-// require_once trailingslashit( get_stylesheet_directory() ) . 'lib/wp-update-migrate/class-wp-update-migrate.php';
-//
 // $hook = 'after_setup_theme';
 
-// add_action( $hook, function() {
-	// $update_migrate = WP_Update_Migrate::get_instance( __FILE__, 'example_prefix' );
+// add_action(
+// 	0 === strpos( __DIR__, WP_PLUGIN_DIR ) ? 'plugins_loaded' : 'after_setup_theme',
+// 	function () {
+// 		$update_migrate = WP_Update_Migrate::get_instance( __FILE__, 'example_prefix' );
 
-	// if ( false === $update_migrate->get_result() ) {
-		///**
-		// * @todo
-		// * Execute your own logic here in case the update failed.
-		// *
-		// * if ( false !== has_action( 'example_action', 'example_function' ) ) {
-		// *     remove_action( 'example_action', 'example_function', 10 );
-		// * }
-		// **/
-	// }
+// 		if ( false === $update_migrate->get_result() ) {
+// 			/**
+// 			* @todo
+// 			* Execute your own logic here in case the update failed.
+// 			*
+// 			* if ( false !== has_action( 'example_action', 'example_function' ) ) {
+// 			*     remove_action( 'example_action', 'example_function', 10 );
+// 			* }
+// 			**/
+// 		}
 
-	// if ( true === $update_migrate->get_result() ) {
-		///**
-		// * @todo
-		// * Execute your own logic here in case an update was applied successfully.
-		// *
-		// * if ( false === has_action( 'example_action', 'example_function' ) ) {
-		// *     add_action( 'example_action', 'example_function', 10 );
-		// * }
-		// **/
-	// }
-
-// }, PHP_INT_MIN );
+// 		if ( true === $update_migrate->get_result() ) {
+// 			/**
+// 			* @todo
+// 			* Execute your own logic here in case an update was applied successfully.
+// 			*
+// 			* if ( false === has_action( 'example_action', 'example_function' ) ) {
+// 			*     add_action( 'example_action', 'example_function', 10 );
+// 			* }
+// 			**/
+// 		}
+// 	},
+// 	PHP_INT_MIN + 100
+// );
+// phpcs:enable
 
 /*================================================================================================ */
 
@@ -78,7 +75,7 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 
 	class WP_Update_Migrate {
 
-		const VERSION = '1.2.0';
+		const VERSION = '1.5.0';
 
 		protected $failed_update_info;
 		protected $success_update_info;
@@ -117,9 +114,8 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 
 				if ( ! is_null( $this->package_type ) ) {
 					$current_recorded_version = get_option( $package_prefix . '_' . $this->package_type . '_version' );
-					$is_version_current       = version_compare( $current_recorded_version, $latest_version, '>=' );
 
-					if ( ! $is_version_current ) {
+					if ( ! version_compare( $current_recorded_version, $latest_version, '>=' ) ) {
 						$i10n_path = trailingslashit( basename( $this->package_dir ) ) . 'lib/wp-update-migrate/languages';
 
 						if ( 'plugin' === $this->package_type ) {
@@ -146,7 +142,6 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 			$cache = wp_cache_get( $package_prefix, 'wp-update-migrate' );
 
 			if ( ! $cache ) {
-
 				self::$instance = new self( $package_handle, $package_prefix );
 			}
 
@@ -154,14 +149,12 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 		}
 
 		public function get_result() {
-
 			return $this->update_result;
 		}
 
 		public function update_failed_notice() {
 			$class   = 'notice notice-error is-dismissible';
 			$message = '<p>' . $this->failed_update_info . '</p>';
-
 			// translators: %1$s is the package type
 			$message .= '<p>' . sprintf( __( 'The %1$s may not have any effect until the issues are resolved.', 'wp-update-migrate' ), $this->package_type ) . '</p>';
 
@@ -224,7 +217,7 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 				}
 			}
 
-			if ( true === $result ) {
+			if ( $result && ! is_wp_error( $result ) ) {
 
 				if ( ! $this->update_file_exists_for_version( $this->to_version ) ) {
 					$result = $this->update_package_version( $this->to_version );
@@ -234,8 +227,10 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 			if ( true !== $result ) {
 				$this->update_result = false;
 				$result              = $this->handle_error( $result );
-
-				$notice_hooks = apply_filters( 'wpum_update_failure_extra_notice_hooks', array( array( $this, 'update_failed_notice' ) ) );
+				$notice_hooks        = apply_filters(
+					'wpum_update_failure_extra_notice_hooks',
+					array( array( $this, 'update_failed_notice' ) )
+				);
 			} else {
 				$this->update_result = true;
 
@@ -243,7 +238,10 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 					$this->handle_success( sprintf( __( '<br/>All updates have been applied successfully.', 'wp-update-migrate' ), $this->to_version ) );
 				}
 
-				$notice_hooks = apply_filters( 'wpum_update_success_extra_notice_hooks', array( array( $this, 'update_success_notice' ) ) );
+				$notice_hooks = apply_filters(
+					'wpum_update_success_extra_notice_hooks',
+					array( array( $this, 'update_success_notice' ) )
+				);
 			}
 
 			foreach ( $notice_hooks as $hook ) {
@@ -294,7 +292,6 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 
 					return true;
 				} else {
-
 					return $this->handle_error( $result );
 				}
 			}
@@ -311,12 +308,10 @@ if ( ! class_exists( 'WP_Update_Migrate' ) ) {
 		}
 
 		protected function update_file_exists_for_version( $version ) {
-
 			return file_exists( $this->package_dir . 'updates' . DIRECTORY_SEPARATOR . $version . '.php' );
 		}
 
 		protected function get_update_file_path_for_version( $version ) {
-
 			return $this->package_dir . 'updates' . DIRECTORY_SEPARATOR . $version . '.php';
 		}
 

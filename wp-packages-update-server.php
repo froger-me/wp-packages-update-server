@@ -46,33 +46,74 @@ if ( ! defined( 'WPPUS_DEFAULT_CACHE_MAX_SIZE' ) ) {
 	define( 'WPPUS_DEFAULT_CACHE_MAX_SIZE', 100 );
 }
 
-require_once WPPUS_PLUGIN_PATH . 'lib/action-scheduler/action-scheduler.php';
-require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php';
-require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-data-manager.php';
-require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-cloud-storage-manager.php';
-require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-api.php';
-require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-api.php';
-require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-api.php';
+$require = array(
+	WPPUS_PLUGIN_PATH . 'inc/class-wppus-nonce.php',
+	WPPUS_PLUGIN_PATH . 'inc/class-wppus-data-manager.php',
+	WPPUS_PLUGIN_PATH . 'inc/class-wppus-cloud-storage-manager.php',
+	WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-api.php',
+	WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-api.php',
+	WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-api.php',
+);
 
-if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing_api_request() ) {
-	require_once WPPUS_PLUGIN_PATH . 'inc/class-wp-packages-update-server.php';
-	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-remote-sources-manager.php';
-	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-manager.php';
-	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-manager.php';
-	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-manager.php';
-	require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-api-manager.php';
+$require   = apply_filters( 'wppus_mu_require', $require );
+$require[] = WPPUS_PLUGIN_PATH . 'lib/action-scheduler/action-scheduler.php';
 
-	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'activate' ) );
-	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'deactivate' ) );
-	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'uninstall' ) );
-	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_License_Manager', 'activate' ) );
-	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_License_Manager', 'deactivate' ) );
-	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'activate' ) );
-	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'deactivate' ) );
-	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'uninstall' ) );
-	register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Webhook_manager', 'activate' ) );
-	register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Webhook_manager', 'deactivate' ) );
-	register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Webhook_manager', 'uninstall' ) );
+foreach ( $require as $file ) {
+
+	if ( file_exists( $file ) ) {
+		require_once $file;
+	}
+}
+
+if ( ! did_action( 'wppus_mu_init' ) ) {
+
+	if ( class_exists( 'WPPUS_Nonce' ) ) {
+		WPPUS_Nonce::register();
+		WPPUS_Nonce::init_auth(
+			array_merge(
+				json_decode( get_option( 'wppus_package_private_api_keys', '{}' ), true ),
+				json_decode( get_option( 'wppus_license_private_api_keys', '{}' ), true ),
+			)
+		);
+	}
+
+	if ( ! WPPUS_License_API::is_doing_api_request() ) {
+		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server/loader.php';
+		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server-extended/loader.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-server.php';
+	}
+
+	if (
+		! WPPUS_Update_API::is_doing_api_request() &&
+		! WPPUS_License_API::is_doing_api_request()
+	) {
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wp-packages-update-server.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-remote-sources-manager.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-webhook-manager.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-manager.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-manager.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-api-manager.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
+
+		register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'activate' ) );
+		register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'deactivate' ) );
+		register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'uninstall' ) );
+		register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_License_Manager', 'activate' ) );
+		register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_License_Manager', 'deactivate' ) );
+		register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'activate' ) );
+		register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'deactivate' ) );
+		register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Nonce', 'uninstall' ) );
+		register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Webhook_manager', 'activate' ) );
+		register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Webhook_manager', 'deactivate' ) );
+		register_uninstall_hook( WPPUS_PLUGIN_FILE, array( 'WPPUS_Webhook_manager', 'uninstall' ) );
+	}
+
+	if ( defined( 'WP_CLI' ) && constant( 'WP_CLI' ) ) {
+		require_once WPPUS_PLUGIN_PATH . 'functions.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-cli.php';
+
+		WPPUS_CLI::init();
+	}
 }
 
 function wppus_run() {
@@ -83,39 +124,7 @@ function wppus_run() {
 	$license_api_request  = wppus_is_doing_license_api_request();
 	$priority_api_request = apply_filters( 'wppus_is_priority_api_request', $license_api_request );
 	$is_api_request       = $priority_api_request;
-
-	if ( ! $priority_api_request ) {
-		require_once ABSPATH . 'wp-admin/includes/plugin.php';
-		require_once ABSPATH . 'wp-admin/includes/file.php';
-		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server/loader.php';
-		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server-extended/loader.php';
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-server.php';
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
-
-		do_action( 'wppus_no_license_api_includes' );
-
-		$is_api_request = (
-			wppus_is_doing_update_api_request() ||
-			wppus_is_doing_webhook_api_request() ||
-			wppus_is_doing_package_api_request()
-		);
-	}
-
-	$is_api_request = apply_filters( 'wppus_is_api_request', $is_api_request );
-
-	if ( ! $is_api_request ) {
-
-		if ( ! class_exists( 'WP_List_Table' ) ) {
-			require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
-		}
-
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-packages-table.php';
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-licenses-table.php';
-
-		do_action( 'wppus_no_api_includes' );
-	}
-
-	$objects = apply_filters( 'wppus_objects', array() );
+	$objects              = apply_filters( 'wppus_objects', array() );
 
 	if ( ! isset( $objects['license_api'] ) ) {
 		$objects['license_api'] = new WPPUS_License_API( true, false );
@@ -126,6 +135,16 @@ function wppus_run() {
 	}
 
 	if ( ! $priority_api_request ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+
+		do_action( 'wppus_no_priority_api_includes' );
+
+		$is_api_request = (
+			wppus_is_doing_update_api_request() ||
+			wppus_is_doing_webhook_api_request() ||
+			wppus_is_doing_package_api_request()
+		);
 
 		if ( ! isset( $objects['update_api'] ) ) {
 			$objects['update_api'] = new WPPUS_Update_API( true );
@@ -140,7 +159,15 @@ function wppus_run() {
 		}
 	}
 
+	$is_api_request = apply_filters( 'wppus_is_api_request', $is_api_request );
+
 	if ( ! $is_api_request ) {
+
+		if ( ! class_exists( 'WP_List_Table' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+		}
+
+		do_action( 'wppus_no_api_includes' );
 
 		if ( ! isset( $objects['data_manager'] ) ) {
 			$objects['data_manager'] = new WPPUS_Data_Manager( true );
@@ -155,10 +182,14 @@ function wppus_run() {
 		}
 
 		if ( ! isset( $objects['package_manager'] ) ) {
+			require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-packages-table.php';
+
 			$objects['package_manager'] = new WPPUS_Package_Manager( true );
 		}
 
 		if ( ! isset( $objects['license_manager'] ) ) {
+			require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-licenses-table.php';
+
 			$objects['license_manager'] = new WPPUS_License_Manager( true );
 		}
 
@@ -171,20 +202,12 @@ function wppus_run() {
 		}
 	}
 
-	WPPUS_Nonce::register();
-	WPPUS_Nonce::init_auth(
-		array_merge(
-			json_decode( get_option( 'wppus_package_private_api_keys', '{}' ), true ),
-			json_decode( get_option( 'wppus_license_private_api_keys', '{}' ), true ),
-		)
-	);
-
 	do_action( 'wppus_ready', $objects );
 }
 add_action( 'plugins_loaded', 'wppus_run', -99, 0 );
 
 if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing_api_request() ) {
-	require_once plugin_dir_path( WPPUS_PLUGIN_FILE ) . 'lib/wp-update-migrate/class-wp-update-migrate.php';
+	require_once __DIR__ . '/lib/wp-update-migrate/class-wp-update-migrate.php';
 
 	if ( ! wp_doing_ajax() && is_admin() && ! wp_doing_cron() ) {
 		add_action(
@@ -192,7 +215,7 @@ if ( ! WPPUS_Update_API::is_doing_api_request() && ! WPPUS_License_API::is_doing
 			function () {
 				$wppus_update_migrate = WP_Update_Migrate::get_instance( WPPUS_PLUGIN_FILE, 'wppus' );
 
-				if ( false === $wppus_update_migrate->get_result() && '1.2' !== get_option( 'wppus_plugin_version' ) ) {
+				if ( false === $wppus_update_migrate->get_result() ) {
 
 					if ( false !== has_action( 'plugins_loaded', 'wppus_run' ) ) {
 						remove_action( 'plugins_loaded', 'wppus_run', -99 );
