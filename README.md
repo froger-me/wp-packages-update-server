@@ -54,7 +54,7 @@ This plugin adds the following major features to WordPress:
 * **Not limited to WordPress:** with a platform-agnostic API, updates can be served for any type of package, not just WordPress plugins & themes. Basic examples of integration with Node.js, PHP, bash, and Python are provided in the [documentation](https://github.com/froger-me/wp-packages-update-server/blob/main/integration/docs/generic.md).
 * **API & Webhooks:** Use the Package API to administer packages (browse, read, edit, add, delete), and request for expirable signed URLs of packages to allow secure downloads. Use the License API to administer licenses (browse, read, edit, add, delete) and check, activate or deactivate licenses. Fire Webhooks to notify any URL of your choice of key events affecting packages and licenses. 
 
-To connect their plugins or themes and WP Packages Update Server, developers can find integration examples in `wp-packages-update-server/integration`:
+To connect their packages and WP Packages Update Server, developers can find integration examples in `wp-packages-update-server/integration`:
 * **Dummy Plugin:** a folder `dummy-plugin` with a simple, empty plugin that includes the necessary code in the `dummy-plugin.php` main plugin file and the necessary libraries in a `lib` folder.
 * **Dummy Theme:** a folder `dummy-theme` with a simple, empty child theme of Twenty Seventeen that includes the necessary code in the `functions.php` file and the necessary libraries in a `lib` folder.
 * **Dummy Generic:** a folder `dummy-generic` with a simple command line program written bash, Node.js, PHP, bash, and Python. Execute by calling `./dummy-generic.[js|php|sh|py]` from the command line. See `wppus-api.[js|php|sh|py]` for simple examples of the API calls.
