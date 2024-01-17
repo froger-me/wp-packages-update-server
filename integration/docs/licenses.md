@@ -509,7 +509,7 @@ $params = array(
 	'date_renewed'        => '3099-12-015',       // Date of the last time the license was renewed -\n YYYY-MM-DD (optional)
 	'date_expiry'         => '3099-12-31',        // Expiry date of the license - YYY-MM-DD - if omitted, no expiry (optional)
 	'package_slug'        => 'new-package',       // The package slug - only alphanumeric characters and dashes are allowed (required)
-	'package_type'        => 'theme',             // Type of package the license is for - one of plugin, theme (required)
+	'package_type'        => 'theme',             // Type of package the license is for - one of plugin, theme, generic (required)
 	'api_token'           => 'token',             // The authentication token (optional - must provided via X-WPPUS-Token header if absent)
 );
 ```
@@ -574,7 +574,7 @@ $params = array(
 	'date_renewed'        => '2099-12-015',   // Date of the last time the license was renewed -\n YYYY-MM-DD (optional)
 	'date_expiry'         => '2099-12-31',    // Expiry date of the license - YYY-MM-DD - if omitted, no expiry (optional)
 	'package_slug'        => 'test-package',  // The package slug - only alphanumeric characters and dashes are allowed (required)
-	'package_type'        => 'plugin',        // Type of package the license is for - one of plugin, theme (required)
+	'package_type'        => 'plugin',        // Type of package the license is for - one of plugin, theme, generic (required)
 	'api_token'           => 'token',         // The authentication token (optional - must provided via X-WPPUS-Token header if absent)
 );
 ```
@@ -663,7 +663,7 @@ Response `$data` - **failure**:
 ___
 ## Functions
 
-The functions listed below are made publicly available by the plugin for theme and plugin developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).
+The functions listed below are made publicly available by the plugin for plugin and theme developers. They can be used after the action `plugins_loaded` has been fired, or in a `plugins_loaded` action (just make sure the priority is above `-99`).
 Although the main classes can theoretically be instantiated without side effect if the `$hook_init` parameter is set to `false`, it is recommended to use only the following functions as there is no guarantee future updates won't introduce changes of behaviors.
 
 ___

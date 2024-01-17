@@ -136,7 +136,7 @@ Response `$data` - malformed request:
 The description of the API further below is using the following code as reference, where `$params` are the parameters passed to the API (other parameters can be adjusted, they are just WordPress' default) and `$data` is the JSON response:
 
 ```php
-$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
+$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin, theme. generic), and package-slug with the slug of the package  
 
 $response = wp_remote_post(
 	$url,
@@ -181,8 +181,8 @@ The URL can also be built manually, with a token can also be acquired with the f
 $params = array(
 	'data' => array(
 		'package_slug' => 'package-slug', // The slug of the package  
-		'type'      => 'package-type',  // The type of package (plugin or theme)
-		'actions'      => array(        // The actions the token can be used for
+		'type'         => 'package-type', // The type of package (plugin, theme, generic)
+		'actions'      => array(          // The actions the token can be used for
 			'download',
 		),
 	),
@@ -195,7 +195,7 @@ ___
 The `download` operation retrieves a package file. If no corresponding package exists on the file system, the operation fails.
 
 ```php
-$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
+$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin, theme. generic), and package-slug with the slug of the package  
 ```
 
 ```php
@@ -319,6 +319,9 @@ Response `$data` - **success**:
 	"plugin-slug": {
 	   ...
 	},
+	"generic-slug": {
+	   ...
+	},
 	...,
 	"count": 99
 }
@@ -337,7 +340,7 @@ ___
 The `read` operation retrieves information for the specified package. If the package does not exist on the file system, or if the package does not exist in the Remote Repository Service, the operation fails.
 
 ```php
-$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
+$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin, theme, generic), and package-slug with the slug of the package  
 ```
 
 ```php
@@ -403,6 +406,25 @@ Values format in case of a theme package:
 }
 ```
 
+Values format in case of a generic package:
+```json
+{
+	"name": "Generic Package Name",
+	"version": "1.0.0",
+	"homepage": "https:\/\/domain.tld\/",
+	"author": "Author",
+	"author_homepage": "https:\/\/domain.tld",
+	"description": "Generic package description.",
+	"last_updated": "9999-00-00 99:99:99",
+	"slug": "generic-slug",
+	"type": "generic",
+	"file_name": "generic-slug.zip",
+	"file_path": "cloudStorage:\/\/wppus-packages\/generic-slug.zip",
+	"file_size": 999,
+	"file_last_modified": 9999
+}
+```
+
 Response `$data` - **failure** (`404` response code - no result):
 ```json
 false
@@ -414,7 +436,7 @@ ___
 The `edit` operation downloads the package from the Remote Repository Service. If the "Use a Remote Repository Service" option is not active, or if the package does not exist in the Remote Repository Service, the operation fails.
 
 ```php
-$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
+$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin, theme, generic), and package-slug with the slug of the package  
 ```
 
 ```php
@@ -480,6 +502,25 @@ Values format in case of a theme package:
 }
 ```
 
+Values format in case of a generic package:
+```json
+{
+	"name": "Generic Package Name",
+	"version": "1.0.0",
+	"homepage": "https:\/\/domain.tld\/",
+	"author": "Author",
+	"author_homepage": "https:\/\/domain.tld",
+	"description": "Generic package description.",
+	"last_updated": "9999-00-00 99:99:99",
+	"slug": "generic-slug",
+	"type": "generic",
+	"file_name": "generic-slug.zip",
+	"file_path": "cloudStorage:\/\/wppus-packages\/generic-slug.zip",
+	"file_size": 999,
+	"file_last_modified": 9999
+}
+```
+
 Response `$data` - **failure** (`400` response code):
 ```json
 false
@@ -491,7 +532,7 @@ ___
 The `add` operation downloads the package from the Remote Repository Service if it does not exist on the file system. If the "Use a Remote Repository Service" option is not active, the package does not exist in the Remote Repository Service, or if the package already exists on the file system, the operation fails.
 
 ```php
-$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
+$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin, theme, generic), and package-slug with the slug of the package  
 ```
 
 ```php
@@ -558,6 +599,25 @@ Values format in case of a theme package:
 }
 ```
 
+Values format in case of a generic package:
+```json
+{
+	"name": "Generic Package Name",
+	"version": "1.0.0",
+	"homepage": "https:\/\/domain.tld\/",
+	"author": "Author",
+	"author_homepage": "https:\/\/domain.tld",
+	"description": "Generic package description.",
+	"last_updated": "9999-00-00 99:99:99",
+	"slug": "generic-slug",
+	"type": "generic",
+	"file_name": "generic-slug.zip",
+	"file_path": "cloudStorage:\/\/wppus-packages\/generic-slug.zip",
+	"file_size": 999,
+	"file_last_modified": 9999
+}
+```
+
 Response `$data` - **failure** (`409` response code - the package already exists on the file system):
 ```json
 false
@@ -574,7 +634,7 @@ ___
 The `delete` operation deletes the package from the file system. If the package does not exist on the file system, the operation fails.
 
 ```php
-$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
+$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin, theme, generic), and package-slug with the slug of the package  
 ```
 
 ```php
@@ -599,7 +659,7 @@ ___
 The `signed_url` operation returns a public URL signed with a token to download a package with the `download` [operation](#download). By default, the token is reusable and the URL is valid for 60 minutes. If the package does not exist on the file system or in the Remote Repository Service, the operation fails.
 
 ```php
-$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin or theme), and package-slug with the slug of the package  
+$url = 'https://domain.tld/wppus-package-api/package-type/package-slug/'; // Replace domain.tld with the domain where WP Packages Update Server is installed, package-type with the type of package (plugin, theme, generic), and package-slug with the slug of the package  
 ```
 
 ```php
@@ -678,10 +738,10 @@ wppus_is_doing_update_api_request();
 ```
 
 **Description**  
-Determine whether the current request is made by a client plugin or theme interacting with the plugin's API.
+Determine whether the current request is made by a client plugin, theme, or generic package interacting with the plugin's API.
 
 **Return value**
-> (bool) `true` if the current request is a client plugin or theme interacting with the plugin's API, `false` otherwise
+> (bool) `true` if the current request is a client plugin, theme, or generic package interacting with the plugin's API, `false` otherwise
 
 ___
 ### wppus_is_doing_package_api_request
@@ -851,7 +911,7 @@ wppus_get_local_package_path( string $package_slug );
 ```
 
 **Description**  
-Get the path of a plugin or theme package on the file system
+Get the path of a plugin, theme, or generic package on the file system
 
 **Parameters**  
 `$package_slug`
@@ -967,6 +1027,25 @@ Values format in case of a theme package:
 	"file_last_modified": 9999
 }
 ```
+
+Values format in case of a generic package:
+```json
+{
+	"name": "Generic Package Name",
+	"version": "1.0.0",
+	"homepage": "https:\/\/domain.tld\/",
+	"author": "Author",
+	"author_homepage": "https:\/\/domain.tld",
+	"description": "Generic package description.",
+	"last_updated": "9999-00-00 99:99:99",
+	"slug": "generic-slug",
+	"type": "generic",
+	"file_name": "generic-slug.zip",
+	"file_path": "cloudStorage:\/\/wppus-packages\/generic-slug.zip",
+	"file_size": 999,
+	"file_last_modified": 9999
+}
+```
 ___
 ### wppus_get_batch_package_info
 
@@ -994,6 +1073,9 @@ Values format:
 		...
 	},
 	"plugin-slug": {
+	   ...
+	},
+	"generic-slug": {
 	   ...
 	},
 	...
@@ -1244,7 +1326,7 @@ do_action( 'wppus_before_handle_update_request', array $request_params );
 ```
 
 **Description**  
-Fired before handling the request made by a client plugin or theme to the plugin's API.  
+Fired before handling the request made by a client plugin, theme, or generic package to the plugin's API.  
 Fired during client update API request.  
 
 **Parameters**
@@ -1871,7 +1953,7 @@ apply_filters( 'wppus_handle_update_request_params' , array $params );
 ```
 
 **Description**  
-Filter the parameters used to handle the request made by a client plugin or theme to the plugin's API.  
+Filter the parameters used to handle the request made by a client plugin, theme, or generic package to the plugin's API.  
 Fired during client update API request.  
 
 **Parameters**  
