@@ -141,7 +141,6 @@ class WPPUS_CLI extends WP_CLI_Command {
 		}
 	}
 
-	//function wppus_download_remote_package( $slug, $type )
 	/**
 	 * Downloads a package.
 	 *
@@ -207,7 +206,6 @@ class WPPUS_CLI extends WP_CLI_Command {
 		}
 	}
 
-	//function wppus_delete_package( $slug )
 	/**
 	 * Deletes a package.
 	 *
@@ -257,7 +255,6 @@ class WPPUS_CLI extends WP_CLI_Command {
 		}
 	}
 
-	// function wppus_get_package_info( $package_slug, $json_encode = true )
 	/**
 	 * Gets package info.
 	 *
@@ -307,6 +304,131 @@ class WPPUS_CLI extends WP_CLI_Command {
 		}
 	}
 
+	/**
+	 * Creates a nonce.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <true_nonce>
+	 * : Whether to create a true nonce, or a reusable token.
+	 *
+	 * <expiry_length>
+	 * : The expiry length.
+	 *
+	 * <data>
+	 * : The data to store along the nonce, in JSON.
+	 *
+	 * <return_type>
+	 * : The return type - nonce_only or nonce_info_array.
+	 *
+	 * <store>
+	 * : Whether to store the nonce.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus create_nonce --true_nonce=true --expiry_length=30 --data='{}' --return=nonce_only --store=true
+	 */
+	public function create_nonce( $args, $assoc_args ) {
+		$assoc_args = wp_parse_args(
+			$assoc_args,
+			array(
+				'true_nonce'    => true,
+				'expiry_length' => WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH,
+				'data'          => array(),
+				'return_type'   => WPPUS_Nonce::NONCE_ONLY,
+				'store'         => true,
+			)
+		);
+
+		if ( 'nonce_info_array' === $assoc_args['return_type'] ) {
+			$assoc_args['return_type'] = WPPUS_Nonce::NONCE_INFO_ARRAY;
+		} else {
+			$assoc_args['return_type'] = WPPUS_Nonce::NONCE_ONLY;
+		}
+
+		if ( ! is_numeric( $assoc_args['expiry_length'] ) ) {
+			$assoc_args['expiry_length'] = WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH;
+		}
+
+		if ( ! is_bool( $assoc_args['true_nonce'] ) ) {
+			$assoc_args['true_nonce'] = true;
+		}
+
+		if ( ! is_bool( $assoc_args['store'] ) ) {
+			$assoc_args['store'] = true;
+		}
+
+		$assoc_args['data'] = json_decode( $assoc_args['data'], true );
+
+		if ( ! is_array( $assoc_args['data'] ) ) {
+			$assoc_args['data'] = array();
+		}
+
+		$result = wppus_create_nonce(
+			$assoc_args['true_nonce'],
+			$assoc_args['expiry_length'],
+			$assoc_args['data'],
+			$assoc_args['return_type'],
+			$assoc_args['store']
+		);
+
+		if ( $result instanceof WP_Error ) {
+			$this->output(
+				array(
+					'level'  => 'error',
+					'output' => $result->get_error_message(),
+				)
+			);
+
+			return;
+		} else {
+			$message = $result ? $result : 'Unable to create nonce';
+			$level   = $result ? 'success' : 'error';
+
+			$this->output(
+				array(
+					'level'  => $level,
+					'output' => $message,
+				)
+			);
+
+			return;
+		}
+	}
+
+	/**
+	 * Clears nonces.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus clear_nonces
+	 */
+	public function clear_nonces() {
+		$result = wppus_clear_nonces();
+
+		if ( $result instanceof WP_Error ) {
+			$this->output(
+				array(
+					'level'  => 'error',
+					'output' => $result->get_error_message(),
+				)
+			);
+
+			return;
+		} else {
+			$message = $result ? $result : 'Unable to clear nonces';
+			$level   = $result ? 'success' : 'error';
+
+			$this->output(
+				array(
+					'level'  => $level,
+					'output' => $message,
+				)
+			);
+
+			return;
+		}
+	}
 
 	/*******************************************************************
 	 * Protected methods
@@ -332,7 +454,6 @@ class WPPUS_CLI extends WP_CLI_Command {
 	function wppus_get_nonce_expiry( $nonce )
 	function wppus_get_nonce_data( $nonce )
 	function wppus_delete_nonce( $value )
-	function wppus_clear_nonces()
 	function wppus_build_nonce_api_signature( $api_key_id, $api_key, $timestamp, $payload )
 	phpcs:enable
 	*/
