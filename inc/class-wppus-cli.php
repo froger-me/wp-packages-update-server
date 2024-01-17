@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WPPUS_CLI extends WP_CLI_Command {
 	protected const RESOURCE_NOT_FOUND = 3;
+	protected const DEFAULT_ERROR      = 1;
 	protected const LOG_METHODS        = array(
 		'line',
 		'log',
@@ -92,53 +93,15 @@ class WPPUS_CLI extends WP_CLI_Command {
 		$type = $args[1];
 
 		if ( ! in_array( $type, self::PACKAGE_TYPES, true ) ) {
-			$this->output(
-				array(
-					'level'  => 'error',
-					'output' => 'Invalid package type',
-				)
-			);
-			return;
+			$this->process_result( false, '', 'Invalid package type', self::DEFAULT_ERROR, 'error' );
 		}
 
-		$result = wppus_check_remote_package_update( $slug, $type );
+		$result          = wppus_check_remote_package_update( $slug, $type );
+		$success_message = $result ? 'Update available' : 'No update needed';
+		$error_message   = 'Unknown package slug';
+		$result          = null !== $result;
 
-		if ( $result instanceof WP_Error ) {
-			$this->output(
-				array(
-					'level'  => 'error',
-					'output' => $result->get_error_message(),
-				)
-			);
-
-			return;
-		} else {
-			$message = $result ? 'Update available' : 'No update needed';
-			$level   = 'success';
-
-			if ( null === $result ) {
-				$message = 'Unknown package slug';
-				$level   = 'warning';
-			}
-
-			$this->output(
-				array(
-					'level'  => $level,
-					'output' => $message,
-				)
-			);
-
-			if ( 'warning' === $level ) {
-				$this->output(
-					array(
-						'level'  => 'halt',
-						'output' => self::RESOURCE_NOT_FOUND,
-					)
-				);
-			}
-
-			return;
-		}
+		$this->process_result( $result, $success_message, $error_message, self::RESOURCE_NOT_FOUND );
 	}
 
 	/**
@@ -162,48 +125,14 @@ class WPPUS_CLI extends WP_CLI_Command {
 		$type = $args[1];
 
 		if ( ! in_array( $type, self::PACKAGE_TYPES, true ) ) {
-			$this->output(
-				array(
-					'level'  => 'error',
-					'output' => 'Invalid package type',
-				)
-			);
-			return;
+			$this->process_result( false, '', 'Invalid package type', self::DEFAULT_ERROR, 'error' );
 		}
 
-		$result = wppus_download_remote_package( $slug, $type, true );
+		$result          = wppus_download_remote_package( $slug, $type, true );
+		$success_message = 'Package downloaded';
+		$error_message   = 'Unable to download package';
 
-		if ( $result instanceof WP_Error ) {
-			$this->output(
-				array(
-					'level'  => 'error',
-					'output' => $result->get_error_message(),
-				)
-			);
-
-			return;
-		} else {
-			$message = $result ? 'Package downloaded' : 'Unable to download package';
-			$level   = $result ? 'success' : 'warning';
-
-			$this->output(
-				array(
-					'level'  => $level,
-					'output' => $message,
-				)
-			);
-
-			if ( 'warning' === $level ) {
-				$this->output(
-					array(
-						'level'  => 'halt',
-						'output' => self::RESOURCE_NOT_FOUND,
-					)
-				);
-			}
-
-			return;
-		}
+		$this->process_result( $result, $success_message, $error_message, self::RESOURCE_NOT_FOUND );
 	}
 
 	/**
@@ -219,40 +148,12 @@ class WPPUS_CLI extends WP_CLI_Command {
 	 *     wp wppus delete_package my-plugin
 	 */
 	public function delete_package( $args, $assoc_args ) {
-		$slug   = $args[0];
-		$result = wppus_delete_package( $slug );
+		$slug            = $args[0];
+		$result          = wppus_delete_package( $slug );
+		$success_message = 'Package deleted';
+		$error_message   = 'Unable to delete package';
 
-		if ( $result instanceof WP_Error ) {
-			$this->output(
-				array(
-					'level'  => 'error',
-					'output' => $result->get_error_message(),
-				)
-			);
-
-			return;
-		} else {
-			$message = $result ? 'Package deleted' : 'Unable to delete package';
-			$level   = $result ? 'success' : 'warning';
-
-			$this->output(
-				array(
-					'level'  => $level,
-					'output' => $message,
-				)
-			);
-
-			if ( 'warning' === $level ) {
-				$this->output(
-					array(
-						'level'  => 'halt',
-						'output' => self::RESOURCE_NOT_FOUND,
-					)
-				);
-			}
-
-			return;
-		}
+		$this->process_result( $result, $success_message, $error_message, self::RESOURCE_NOT_FOUND );
 	}
 
 	/**
@@ -268,40 +169,11 @@ class WPPUS_CLI extends WP_CLI_Command {
 	 *     wp wppus get_package_info my-plugin
 	 */
 	public function get_package_info( $args, $assoc_args ) {
-		$slug   = $args[0];
-		$result = wppus_get_package_info( $slug );
+		$slug          = $args[0];
+		$result        = wppus_get_package_info( $slug );
+		$error_message = 'Unable to get package info';
 
-		if ( $result instanceof WP_Error ) {
-			$this->output(
-				array(
-					'level'  => 'error',
-					'output' => $result->get_error_message(),
-				)
-			);
-
-			return;
-		} else {
-			$message = $result ? $result : 'Unable to get package info';
-			$level   = $result ? 'success' : 'warning';
-
-			$this->output(
-				array(
-					'level'  => $level,
-					'output' => $message,
-				)
-			);
-
-			if ( 'warning' === $level ) {
-				$this->output(
-					array(
-						'level'  => 'halt',
-						'output' => self::RESOURCE_NOT_FOUND,
-					)
-				);
-			}
-
-			return;
-		}
+		$this->process_result( $result, $result, $error_message, self::RESOURCE_NOT_FOUND );
 	}
 
 	/**
@@ -364,36 +236,66 @@ class WPPUS_CLI extends WP_CLI_Command {
 			$assoc_args['data'] = array();
 		}
 
-		$result = wppus_create_nonce(
+		$result        = wppus_create_nonce(
 			$assoc_args['true_nonce'],
 			$assoc_args['expiry_length'],
 			$assoc_args['data'],
 			$assoc_args['return_type'],
 			$assoc_args['store']
 		);
+		$error_message = 'Unable to create nonce';
 
-		if ( $result instanceof WP_Error ) {
-			$this->output(
-				array(
-					'level'  => 'error',
-					'output' => $result->get_error_message(),
-				)
-			);
+		$this->process_result( $result, $result, $error_message, self::DEFAULT_ERROR, 'error' );
+	}
 
-			return;
-		} else {
-			$message = $result ? $result : 'Unable to create nonce';
-			$level   = $result ? 'success' : 'error';
+	/**
+	 * Build a Nonce API signature.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <api_key_id>
+	 * : The ID of the API key.
+	 *
+	 * <api_key>
+	 * : The API key.
+	 *
+	 * <timestamp>
+	 * : The timestamp.
+	 *
+	 * <payload>
+	 * : The payload.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus build_nonce_api_signature --api_key_id='L**api_key' --timestamp=1704067200 --api_key=da9d20647163a1f3c04844387f91e2c3 --payload='{"key": "value"}'
+	 *
+	 */
+	public function build_nonce_api_signature( $args, $assoc_args ) {
+		$assoc_args            = wp_parse_args(
+			$assoc_args,
+			array(
+				'timestamp' => time(),
+			)
+		);
+		$assoc_args['payload'] = json_decode( $assoc_args['payload'], true );
 
-			$this->output(
-				array(
-					'level'  => $level,
-					'output' => $message,
-				)
-			);
-
-			return;
+		if (
+			empty( $assoc_args['api_key_id'] ) ||
+			empty( $assoc_args['timestamp'] ) ||
+			empty( $assoc_args['api_key'] ) ||
+			empty( $assoc_args['payload'] )
+		) {
+			$this->process_result( false, '', 'Invalid arguments', self::DEFAULT_ERROR, 'error' );
 		}
+
+		$result = wppus_build_nonce_api_signature(
+			$assoc_args['api_key_id,'],
+			$assoc_args['api_key,'],
+			$assoc_args['timestamp,'],
+			$assoc_args['payload']
+		);
+
+		$this->process_result( $result, $result, 'Unable to create signature', self::DEFAULT_ERROR, 'error' );
 	}
 
 	/**
@@ -404,7 +306,284 @@ class WPPUS_CLI extends WP_CLI_Command {
 	 *     wp wppus clear_nonces
 	 */
 	public function clear_nonces() {
-		$result = wppus_clear_nonces();
+		$result          = wppus_clear_nonces();
+		$success_message = 'Expired nonce cleared';
+		$error_message   = 'Unable to create nonce';
+
+		$this->process_result( $result, $success_message, $error_message, self::DEFAULT_ERROR, 'error' );
+	}
+
+	/**
+	 * Gets the expiry time of a nonce.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <nonce>
+	 * : The nonce.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus get_nonce_expiry <nonce>
+	 */
+	public function get_nonce_expiry( $args, $assoc_args ) {
+		$nonce           = $args[0];
+		$result          = wppus_get_nonce_expiry( $nonce );
+		$error_message   = 'Unable to get nonce expiry';
+		$success_message = $result;
+
+		$this->process_result( $result, $success_message, $error_message, self::RESOURCE_NOT_FOUND );
+	}
+
+	/**
+	 * Gets data saved along with a nonce.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <nonce>
+	 * : The nonce.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus get_nonce_data <nonce>
+	 */
+	public function get_nonce_data( $args, $assoc_args ) {
+		$nonce           = $args[0];
+		$result          = wppus_get_nonce_data( $nonce );
+		$error_message   = 'Unable to get nonce data';
+		$success_message = $result;
+
+		$this->process_result( $result, $success_message, $error_message, self::RESOURCE_NOT_FOUND );
+	}
+
+	/**
+	 * Deletes a nonce.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <nonce>
+	 * : The nonce.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus delete_nonce <nonce>
+	 */
+	public function delete_nonce( $args, $assoc_args ) {
+		$nonce           = $args[0];
+		$result          = wppus_delete_nonce( $nonce );
+		$error_message   = 'Unable to delete nonce';
+		$success_message = 'Nonce deleted';
+
+		$this->process_result( $result, $success_message, $error_message, self::RESOURCE_NOT_FOUND );
+	}
+
+	/**
+	 * Browse licenses.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <browse_query>
+	 * : The browse query, as JSON
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus browse_licenses <browse_query>
+	 */
+	public function browse_licenses( $args, $assoc_args ) {
+		$result          = wppus_browse_licenses( $args[0] );
+		$error_message   = 'Unable to browse licenses';
+		$success_message = $result;
+
+		$this->process_result( $result, $success_message, $error_message, self::DEFAULT_ERROR, 'error' );
+	}
+
+	/**
+	 * Read a license by ID or key.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <license_key_or_id>
+	 * : The license key or ID.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus read_license <license_key_or_id>
+	 */
+	public function read_license( $args, $assoc_args ) {
+		$license_data = array();
+
+		if ( is_numeric( $args[0] ) ) {
+			$license_data['id'] = $args[0];
+		} else {
+			$license_data['license_key'] = $args[0];
+		}
+
+		$result          = wppus_read_license( $license_data );
+		$error_message   = 'Unable to read license';
+		$success_message = $result;
+
+		$this->process_result( $result, $success_message, $error_message, self::RESOURCE_NOT_FOUND );
+	}
+
+	/**
+	 * Add a license.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <license_data>
+	 * : The license data, as JSON - see `$params` for the License API action `add` in the License API documentation for details.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus add_license <license_data>
+	 */
+	public function add_license( $args, $assoc_args ) {
+		$result        = wppus_add_license( $args[0] );
+		$error_message = 'Unable to add the license';
+
+		$this->process_result( $result, $result, $error_message, self::DEFAULT_ERROR, 'error' );
+	}
+
+	/**
+	 * Edit a license.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <license_data>
+	 * : The license data, as JSON - see `$params` for the License API action `edit` in the License API documentation for details.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus edit_license <license_data>
+	 */
+	public function edit_license( $args, $assoc_args ) {
+		$result        = wppus_edit_license( $args[0] );
+		$error_message = 'Unable to edit the license';
+
+		$this->process_result( $result, $result, $error_message, self::DEFAULT_ERROR, 'error' );
+	}
+
+	/**
+	 * Delete a license.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <license_key_or_id>
+	 * : The license key or ID.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus delete_license <license_key_or_id>
+	 */
+	public function delete_license( $args, $assoc_args ) {
+		$license_data = array();
+
+		if ( is_numeric( $args[0] ) ) {
+			$license_data['id'] = $args[0];
+		} else {
+			$license_data['license_key'] = $args[0];
+		}
+
+		$result        = wppus_delete_license( $license_data );
+		$error_message = 'Unable to delete the license';
+
+		$this->process_result( $result, $result, $error_message, self::DEFAULT_ERROR, 'error' );
+	}
+
+	/**
+	 * Check a license.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <license_key_or_id>
+	 * : The license key or ID.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus check_license <license_key_or_id>
+	 */
+	public function check_license( $args, $assoc_args ) {
+		$license_data = array();
+
+		if ( is_numeric( $args[0] ) ) {
+			$license_data['id'] = $args[0];
+		} else {
+			$license_data['license_key'] = $args[0];
+		}
+
+		$result        = wppus_check_license( $license_data );
+		$error_message = 'Unable to check the license';
+
+		$this->process_result( $result, $result, $error_message, self::DEFAULT_ERROR, 'error' );
+	}
+
+	/**
+	 * Activate a license for a domain.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <license_key>
+	 * : The license key.
+	 *
+	 * <domain>
+	 * : The domain.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus activate_license <license_key> <domain>
+	 */
+	public function activate_license( $args, $assoc_args ) {
+		$license_data = array(
+			'license_key' => $args[0],
+			'domain'      => $args[1],
+		);
+
+		$result        = wppus_activate_license( $license_data );
+		$error_message = 'Unable to activate the license';
+
+		$this->process_result( $result, $result, $error_message, self::DEFAULT_ERROR, 'error' );
+	}
+
+	/**
+	 * Deactivate a license for a domain.
+	 *
+	 * ## OPTIONS
+	 *
+	 * <license_key>
+	 * : The license key.
+	 *
+	 * <domain>
+	 * : The domain.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp wppus deactivate_license <license_key> <domain>
+	 */
+	public function deactivate_license( $args, $assoc_args ) {
+		$license_data = array(
+			'license_key' => $args[0],
+			'domain'      => $args[1],
+		);
+
+		$result        = wppus_deactivate_license( $license_data );
+		$error_message = 'Unable to deactivate the license';
+
+		$this->process_result( $result, $result, $error_message, self::DEFAULT_ERROR, 'error' );
+	}
+
+	/*******************************************************************
+	 * Protected methods
+	 *******************************************************************/
+
+	protected function cleanup( $method ) {
+		$method          = 'wppus_force_cleanup_' . $method;
+		$result          = $method();
+		$success_message = 'OK';
+		$error_message   = 'Cleanup failed';
+
+		$this->process_result( $result, $success_message, $error_message );
+	}
+
+	protected function process_result( $result, $success_message, $error_message, $error_code = 1, $error_level = 'warning' ) {
 
 		if ( $result instanceof WP_Error ) {
 			$this->output(
@@ -413,11 +592,18 @@ class WPPUS_CLI extends WP_CLI_Command {
 					'output' => $result->get_error_message(),
 				)
 			);
-
-			return;
 		} else {
-			$message = $result ? $result : 'Unable to clear nonces';
-			$level   = $result ? 'success' : 'error';
+
+			if ( empty( $success_message ) ) {
+				$success_message = $result;
+			}
+
+			if ( empty( $error_message ) ) {
+				$error_message = 'Undefined error';
+			}
+
+			$message = $result ? $success_message : $error_message;
+			$level   = $result ? 'success' : $error_level;
 
 			$this->output(
 				array(
@@ -426,55 +612,14 @@ class WPPUS_CLI extends WP_CLI_Command {
 				)
 			);
 
-			return;
-		}
-	}
-
-	/*******************************************************************
-	 * Protected methods
-	 *******************************************************************/
-
-	/* phpcs:disable
-	Commands to implement:
-	function wppus_browse_licenses( $browse_query )
-	function wppus_read_license( $license_data )
-	function wppus_add_license( $license_data )
-	function wppus_edit_license( $license_data )
-	function wppus_delete_license( $license_data )
-	function wppus_check_license( $license_data )
-	function wppus_activate_license( $license_data )
-	function wppus_deactivate_license( $license_data )
-	function wppus_create_nonce(
-		$true_nonce = true,
-		$expiry_length = WPPUS_Nonce::DEFAULT_EXPIRY_LENGTH,
-		$data = array(),
-		$return_type = WPPUS_Nonce::NONCE_ONLY,
-		$store = true
-	)
-	function wppus_get_nonce_expiry( $nonce )
-	function wppus_get_nonce_data( $nonce )
-	function wppus_delete_nonce( $value )
-	function wppus_build_nonce_api_signature( $api_key_id, $api_key, $timestamp, $payload )
-	phpcs:enable
-	*/
-
-	protected function cleanup( $method ) {
-		$method = 'wppus_force_cleanup_' . $method;
-
-		if ( $method() ) {
-			$this->output(
-				array(
-					'level'  => 'success',
-					'output' => 'OK',
-				)
-			);
-		} else {
-			$this->output(
-				array(
-					'level'  => 'warning',
-					'output' => 'Cleanup failed',
-				)
-			);
+			if ( 'warning' === $level ) {
+				$this->output(
+					array(
+						'level'  => 'halt',
+						'output' => $error_code,
+					)
+				);
+			}
 		}
 	}
 

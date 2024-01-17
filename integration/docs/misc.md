@@ -5,6 +5,7 @@ WP Packages Update Server provides an API and offers a series of functions, acti
 
 * [WP Packages Update Server - Miscellaneous - Developer documentation](#wp-packages-update-server---miscellaneous---developer-documentation)
 	* [Nonce API](#nonce-api)
+	* [WP CLI](#wp-cli)
 	* [Consuming Webhooks](#consuming-webhooks)
 	* [Functions](#functions)
 		* [php\_log](#php_log)
@@ -187,6 +188,74 @@ $values = wppus_build_nonce_api_signature( getenv( 'WPPUS_API_KEY_ID' ), getenv(
 echo '<div>The credentials are: ' . esc_html( $values['credentials'] ) . '</div>';
 echo '<div>The signature is: ' . esc_html( $values['signature'] ) . '</div>';
 ```
+
+## WP CLI
+
+WP Packages Update Server provides a series of commands to interact with the plugin:
+
+```bash
+NAME
+
+  wp wppus
+
+SYNOPSIS
+
+  wp wppus <command>
+
+SUBCOMMANDS
+
+  activate_license                 Activate a license for a domain.
+  add_license                      Add a license.
+  browse_licenses                  Browse licenses.
+  build_nonce_api_signature        Build a Nonce API signature.
+  check_license                    Check a license.
+  check_remote_package_update      Checks for updates for a package.
+  cleanup_all                      Cleans up the cache, logs and tmp folders in wp-content/wppus.
+  cleanup_cache                    Cleans up the cache folder in wp-content/wppus.
+  cleanup_logs                     Cleans up the logs folder in wp-content/wppus.
+  cleanup_tmp                      Cleans up the tmp folder in wp-content/wppus.
+  clear_nonces                     Clears nonces.
+  create_nonce                     Creates a nonce.
+  deactivate_license               Deactivate a license for a domain.
+  delete_license                   Delete a license.
+  delete_nonce                     Deletes a nonce.
+  delete_package                   Deletes a package.
+  download_remote_package          Downloads a package.
+  edit_license                     Edit a license.
+  get_nonce_data                   Gets data saved along with a nonce.
+  get_nonce_expiry                 Gets the expiry time of a nonce.
+  get_package_info                 Gets package info.
+  read_license                     Read a license by ID or key.
+```
+
+Subcommands overview:
+
+```bash
+wp wppus activate_license <license_key> <domain>
+wp wppus add_license <license_data>
+wp wppus browse_licenses <browse_query>
+wp wppus build_nonce_api_signature <api_key_id> <api_key> <timestamp> <payload>
+wp wppus check_license <license_key_or_id>
+wp wppus check_remote_package_update <slug> <type>
+wp wppus cleanup_all 
+wp wppus cleanup_cache 
+wp wppus cleanup_logs 
+wp wppus cleanup_tmp 
+wp wppus clear_nonces 
+wp wppus create_nonce <true_nonce> <expiry_length> <data> <return_type> <store>
+wp wppus deactivate_license <license_key> <domain>
+wp wppus delete_license <license_key_or_id>
+wp wppus delete_nonce <nonce>
+wp wppus delete_package <slug>
+wp wppus download_remote_package <slug> <type>
+wp wppus edit_license <license_data>
+wp wppus get_nonce_data <nonce>
+wp wppus get_nonce_expiry <nonce>
+wp wppus get_package_info <slug>
+wp wppus read_license <license_key_or_id>
+```
+
+To get more help on a specific subcommand, use `wp wppus <subcommand> --help`.
 ___
 ## Consuming Webhooks
 
