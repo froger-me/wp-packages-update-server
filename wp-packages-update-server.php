@@ -81,6 +81,7 @@ if ( ! did_action( 'wppus_mu_init' ) ) {
 		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server/loader.php';
 		require_once WPPUS_PLUGIN_PATH . 'lib/wp-update-server-extended/loader.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-update-server.php';
+		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
 	}
 
 	if (
@@ -93,7 +94,6 @@ if ( ! did_action( 'wppus_mu_init' ) ) {
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-manager.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-license-manager.php';
 		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-api-manager.php';
-		require_once WPPUS_PLUGIN_PATH . 'inc/class-wppus-package-api.php';
 
 		register_activation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'activate' ) );
 		register_deactivation_hook( WPPUS_PLUGIN_FILE, array( 'WP_Packages_Update_Server', 'deactivate' ) );
