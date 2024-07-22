@@ -293,8 +293,8 @@ if ( ! class_exists( 'WP_Package_Updater' ) ) {
 				$license_signature = $this->get_option( 'licenseSignature' );
 
 				if ( $license ) {
-					$query_args['license_key']       = rawurlencode( $license );
-					$query_args['license_signature'] = rawurlencode( $license_signature );
+					$query_args['update_license_key']       = rawurlencode( $license );
+					$query_args['update_license_signature'] = rawurlencode( $license_signature );
 				}
 			}
 
