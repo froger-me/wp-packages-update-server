@@ -1,4 +1,4 @@
-**This project has been deprecate in favor of [UpdatePulse Server](https://github.com/Anyape/updatepulse-server).**  
+**This project has been deprecated in favor of [UpdatePulse Server](https://github.com/Anyape/updatepulse-server).**  
 **It is only maintained by the community via pull requests, and releases are published only based on community feedback. No new feature will be added and no more in-depth maintenance will be performed by the original author.**  
 **There is no formal upgrade path from WPPUS to UpdatePulse Server.**
 
