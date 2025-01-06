@@ -1,3 +1,7 @@
+**This project has been deprecate in favor of [UpdatePulse Server](https://github.com/Anyape/updatepulse-server).**  
+**It is only maintained by the community via pull requests, and releases are published only based on community feedback. No new feature will be added and no more in-depth maintenance will be performed by the original author.**  
+**There is no formal upgrade path from WPPUS to UpdatePulse Server.**
+
 # WP Packages Update Server - Run your own update server
 
 * [WP Packages Update Server - Run your own update server](#wp-packages-update-server---run-your-own-update-server)
@@ -38,11 +42,6 @@ Developer documentation:
 
 WP Packages Update Server allows developers to provide updates for plugins & themes not hosted on `wordpress.org` (if not compliant with the GPLv2 or later, for example), or for generic packages unrelated to WordPress altogether. It also allows to control the updates with license.
 Package updates may be either uploaded directly, or hosted in a Remote Repository, public or private, with the latest version of packages stored either locally or in the Cloud. It supports Bitbucket, Github, Gitlab, and self-hosted installations of Gitlab for package updates ; S3 compatible service providers are supported for package storage.
-
-**The `main` branch contains a beta version of WPPUS v2. The `dev` branch contains an alpha version of WPPUS v2. For stable versions, please use releases.**  
-**The `v1` branch is only maintained by the community via pull requests, and releases are published only based on community feedback. No new feature will be added and no more in-depth maintenance will be performed by the original author.**  
-**There is no formal upgrade path from v1 to v2.**
-
 
 ### Overview
 
