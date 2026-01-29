@@ -1,5 +1,5 @@
 **This project has been deprecated in favor of [UpdatePulse Server](https://github.com/Anyape/updatepulse-server).**  
-**It is only maintained by the community via pull requests, and releases are published only based on community feedback. No new feature will be added and no more in-depth maintenance will be performed by the original author.**  
+**It is NOT maintained anymore, and using the code is likely to lead to SECURITY ISSUES as dependencies have remained unmaintained.**  
 **There is no formal upgrade path from WPPUS to UpdatePulse Server.**
 
 # WP Packages Update Server - Run your own update server
